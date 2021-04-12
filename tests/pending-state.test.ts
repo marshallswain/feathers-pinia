@@ -153,4 +153,25 @@ describe('instance pending state', () => {
 
     expect(modelHandler).toBeCalledTimes(3)
   })
+
+  test('pending state for model.remove', async () => {
+    const removeState = computed(() => messagesService.pendingById[0]?.remove)
+    const handler = jest.fn()
+    watch(() => removeState.value, handler, { immediate: true })
+
+    const modelRemoveState = computed(() => messagesService.pendingById.Model?.remove)
+    const modelHandler = jest.fn()
+    watch(() => modelRemoveState.value, modelHandler, { immediate: true })
+
+    await message.value.remove()
+
+    // Not initially in store
+    expect(handler.mock.calls[0][0]).toBeUndefined()
+    // Set to true while pending
+    expect(handler.mock.calls[1][0]).toBe(true)
+    // Record gets removed from store
+    expect(handler.mock.calls[2][0]).toBeUndefined()
+
+    expect(modelHandler).toBeCalledTimes(3)
+  })
 })

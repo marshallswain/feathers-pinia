@@ -176,21 +176,19 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     remove(id: Id, params: Params = {}) {
       params = fastCopy(params)
 
-      // commit('setPending', 'remove')
-      // commit('setIdPending', { method: 'remove', id })
+      this.setPendingById(id, 'remove', true)
+
       return this.service
         .remove(id, params)
         .then((data: any) => {
+          this.setPendingById(id, 'remove', false)
           this.removeFromStore(data)
           return data
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'remove', error })
+          this.setPendingById(id, 'remove', false)
           return Promise.reject(error)
-        })
-        .finally(() => {
-          // commit('unsetPending', 'remove')
-          // commit('unsetIdPending', { method: 'remove', id })
         })
     },
     removeFromStore(data: any) {
@@ -201,6 +199,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.ids = Object.keys(this.itemsById)
 
       this.clonesById = _.omit(this.clonesById, ...idsToRemove)
+      this.pendingById = _.omit(this.pendingById, ...idsToRemove)
       return data
     },
     addOrUpdate(data: any) {
