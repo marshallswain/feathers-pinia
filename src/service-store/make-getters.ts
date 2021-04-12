@@ -12,6 +12,10 @@ const additionalOperators = ['$elemMatch']
 
 export function makeGetters(options: ServiceOptions): ServiceGetters {
   return {
+    // Returns the Feathers service currently assigned to this store.
+    service() {
+      return options.clients[this.clientAlias].service(this.servicePath)
+    },
     listInStore() {
       return (this.ids as Array<unknown>).map((id) => (this.keyedById as any)[id as string])
     },
