@@ -6,20 +6,24 @@ const pinia = createPinia()
 
 const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
 
-class Message extends BaseModel {}
+class Message extends BaseModel {
+  text!: string
+}
 const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
 const messagesService = useMessagesService()
 
 class User extends BaseModel {
-  instanceDefaults(data: any) {
+  id: number | string | undefined
+  name!: string
+  instanceDefaults(data: User) {
     return {
-      id: null,
+      id: undefined,
       name: '',
     }
   }
   get messages() {
     const messagesService = useMessagesService()
-    const messages = messagesService.findInStore({ query: { userId: (this as any).id } }).data
+    const messages = messagesService.findInStore({ query: { userId: this.id } }).data
     return messages
   }
   set messages(messages) {
