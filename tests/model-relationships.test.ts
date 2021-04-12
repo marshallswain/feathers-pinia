@@ -14,7 +14,7 @@ class User extends BaseModel {
   instanceDefaults(data: any) {
     return {
       id: null,
-      name: 'Amogh Palnitkar',
+      name: '',
     }
   }
   get messages() {
