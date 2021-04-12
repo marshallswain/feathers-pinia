@@ -198,7 +198,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.keyedById = _.omit(this.keyedById, ...idsToRemove)
       this.ids = Object.keys(this.keyedById)
 
-      this.copiesById = _.omit(this.copiesById, ...idsToRemove)
+      this.clonesById = _.omit(this.clonesById, ...idsToRemove)
       return data
     },
     addOrUpdate(data: any) {
@@ -228,18 +228,39 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     clearAll() {
       this.ids = []
       this.keyedById = {}
-      this.copiesById = {}
+      this.clonesById = {}
     },
-    copy(item: any) {
-      this.copiesById = fastCopy(item)
-      return this.copiesById[getId(item)]
+    clone(item: any, data = {}) {
+      const originalItem = this.keyedById[getId(item)]
+      const existing = this.clonesById[getId(item)]
+      if (existing) {
+        const readyToReset = Object.assign(existing, originalItem, data)
+        Object.keys(readyToReset).forEach(key => {
+          if (!originalItem.hasOwnProperty(key)) {
+            delete readyToReset[key]
+          }
+        })
+        return readyToReset
+      } else {
+        this.clonesById[getId(item)] = fastCopy(originalItem)
+        const clone = this.clonesById[getId(item)]
+        Object.defineProperty(clone, '__isClone', {
+          value: true,
+          enumerable: false
+        })
+        Object.assign(clone, data)
+        return clone
+      }
     },
-    commitCopy(item: any) {
+    commit(item: any) {
       const id = getId(item)
       if (id != null) {
-        this.keyedById[id] = fastCopy(this.copiesById[id])
+        this.keyedById[id] = fastCopy(this.clonesById[id])
         return this.keyedById[id]
       }
+    },
+    reset(item: any) {
+
     },
 
     /**

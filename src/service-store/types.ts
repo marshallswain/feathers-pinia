@@ -15,7 +15,7 @@ export interface ServiceState<M extends Model = Model> {
     [k: string]: M
     [k: number]: M
   }
-  copiesById: {
+  clonesById: {
     [k: string]: M
     [k: number]: M
   }
@@ -90,7 +90,7 @@ export interface Model {
 
   /**
    * Creates a deep copy of the record and stores it on
-   * `Model.copiesById`. This allows you to make changes
+   * `Model.clonesById`. This allows you to make changes
    * to the clone and not update visible data until you
    * commit or save the data.
    * @param data Properties to modify on the cloned instance

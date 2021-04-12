@@ -8,6 +8,6 @@ export function makeState(options: ServiceOptions) {
     ids: [],
     keyedById: {},
     pagination: {},
-    copiesById: {},
+    clonesById: {},
   })
 }

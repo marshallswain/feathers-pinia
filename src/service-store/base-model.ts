@@ -9,19 +9,12 @@ export class BaseModel {
   static servicePath = null
   static idField = ''
 
-  public __isClone: boolean = false
+  public __isClone!: boolean
 
-  constructor(data: AnyData, options: ModelInstanceOptions) {
+  constructor(data: AnyData, options: ModelInstanceOptions = {}) {
     const store = (this.constructor as typeof BaseModel).store
     Object.assign(this, this.instanceDefaults(data, { models, store }))
     Object.assign(this, this.setupInstance(data, { models, store }))
-
-    if (options.clone) {
-      Object.defineProperty(this, '__isClone', {
-        value: true,
-        enumerable: false
-      })
-    }
     return this
   }
 
@@ -62,10 +55,7 @@ export class BaseModel {
    */
   public clone(data: AnyData): this {
     const { idField, store } = this.constructor as typeof BaseModel
-    if (this.__isClone) {
-      throw new Error('You cannot clone a copy')
-    }
-    return (store as any).clone(this)
+    return (store as any).clone(this, data)
   }
 
   /**
@@ -74,7 +64,7 @@ export class BaseModel {
   public commit(): this {
     const { idField,  store } = this.constructor as typeof BaseModel
     if (this.__isClone) {
-      return (store as any).commitCopy(this)
+      return (store as any).commit(this)
     } else {
       throw new Error('You cannot call commit on a non-copy')
     }
