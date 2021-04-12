@@ -109,7 +109,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const { idField, tempIdField } = this
       params = fastCopy(params) || {}
 
-      this.setPendingById(getId(data) || data[tempIdField], 'get', true)
+      this.setPendingById(getId(data) || data[tempIdField], 'create', true)
 
       return this.service
         .create(data, params)
@@ -121,7 +121,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
         .finally(() => {
-          this.setPendingById(getId(data) || data[tempIdField], 'get', false)
+          this.setPendingById(getId(data) || data[tempIdField], 'create', false)
         })
     },
     update(id: Id, data: any, params: Params) {

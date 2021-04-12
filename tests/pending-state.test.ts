@@ -118,6 +118,25 @@ describe('Pending State', () => {
     })
     afterEach(() => resetStore())
 
+    test('pending state for model.create', async () => {
+      const createState = computed(() => messagesService.pendingById[1]?.create)
+      const handler = jest.fn()
+      watch(() => createState.value, handler, { immediate: true })
+
+      const modelCreateState = computed(() => messagesService.pendingById.Model?.create)
+      const modelHandler = jest.fn()
+      watch(() => modelCreateState.value, modelHandler, { immediate: true })
+
+      const msg = await new Message({ text: 'some new message' }).create()
+
+      // Since there's no id, the handler only gets called once with undefined
+      expect(handler.mock.calls[0][0]).toBeUndefined()
+      expect(handler).toBeCalledTimes(1)
+
+      // The model handler still gets called the same number of times as other methods
+      expect(modelHandler).toBeCalledTimes(3)
+    })
+
     test('pending state for model.patch', async () => {
       const patchState = computed(() => messagesService.pendingById[0]?.patch)
       const handler = jest.fn()
