@@ -312,16 +312,22 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.pagination[qid] = newState
     },
     setPendingById(id: string | number, method: RequestType, val: boolean) {
-      const updatePendingState = (id: string | number) => {
+      const updatePendingState = (id: string | number, method: RequestType) => {
         this.pendingById[id] = this.pendingById[id] || ({ [method]: val } as any)
         this.pendingById[id][method] = val
       }
       if (id != null) {
-        updatePendingState(id)
+        updatePendingState(id, method)
+        if (['create', 'patch', 'update'].includes(method)) {
+          updatePendingState(id, 'save')
+        }
       }
       // If updating pending instance state, also update the Model class's pending state.
       if (id !== 'Model') {
-        updatePendingState('Model')
+        updatePendingState('Model', method)
+        if (['create', 'patch', 'update'].includes(method)) {
+          updatePendingState('Model', 'save')
+        }
       }
     },
   }
