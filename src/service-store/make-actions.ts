@@ -40,7 +40,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       // Swap out the response records for their Vue-observable store versions
       const data = response.data || response
-      const mappedFromState = data.map((i: any) => this.keyedById[getId(i)])
+      const mappedFromState = data.map((i: any) => this.itemsById[getId(i)])
       if (mappedFromState[0] !== undefined) {
         response.data ? (response.data = mappedFromState) : (response = mappedFromState)
       }
@@ -81,7 +81,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           this.addOrUpdate(data)
           // dispatch('addOrUpdate', item)
           // commit('unsetPending', 'get')
-          return this.keyedById[id]
+          return this.itemsById[id]
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'get', error })
@@ -195,8 +195,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const items = Array.isArray(data) ? data : [data]
       const idsToRemove = items.map((item) => getId(item)).filter((id) => id != null)
 
-      this.keyedById = _.omit(this.keyedById, ...idsToRemove)
-      this.ids = Object.keys(this.keyedById)
+      this.itemsById = _.omit(this.itemsById, ...idsToRemove)
+      this.ids = Object.keys(this.itemsById)
 
       this.clonesById = _.omit(this.clonesById, ...idsToRemove)
       return data
@@ -220,18 +220,18 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         return all
       }, {})
 
-      Object.assign(this.keyedById, byId)
-      this.ids = Object.keys(this.keyedById)
+      Object.assign(this.itemsById, byId)
+      this.ids = Object.keys(this.itemsById)
 
       return Array.isArray(data) ? items : items[0]
     },
     clearAll() {
       this.ids = []
-      this.keyedById = {}
+      this.itemsById = {}
       this.clonesById = {}
     },
     clone(item: any, data = {}) {
-      const originalItem = this.keyedById[getId(item)]
+      const originalItem = this.itemsById[getId(item)]
       const existing = this.clonesById[getId(item)]
       if (existing) {
         const readyToReset = Object.assign(existing, originalItem, data)
@@ -255,8 +255,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     commit(item: any) {
       const id = getId(item)
       if (id != null) {
-        this.keyedById[id] = fastCopy(this.clonesById[id])
-        return this.keyedById[id]
+        this.itemsById[id] = fastCopy(this.clonesById[id])
+        return this.itemsById[id]
       }
     },
     reset(item: any) {

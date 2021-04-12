@@ -17,19 +17,19 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return options.clients[this.clientAlias].service(this.servicePath)
     },
     listInStore() {
-      return (this.ids as Array<unknown>).map((id) => (this.keyedById as any)[id as string])
+      return (this.ids as Array<unknown>).map((id) => (this.itemsById as any)[id as string])
     },
     findInStore() {
       return (params: Params) => {
         params = { ...unref(params) } || {}
 
-        const { paramsForServer, whitelist, keyedById } = this
+        const { paramsForServer, whitelist, itemsById } = this
         const q = _.omit(params.query || {}, paramsForServer)
 
         const { query, filters } = filterQuery(q, {
           operators: additionalOperators.concat(whitelist),
         })
-        let values = _.values(keyedById)
+        let values = _.values(itemsById)
 
         if (params.temps) {
           values.push(..._.values(this.tempsById))
@@ -96,7 +96,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         id = unref(id)
         params = { ...unref(params) } || {}
 
-        let item = this.keyedById[id] && select(params, this.idField)(this.keyedById[id])
+        let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
         // if (item) {
         //   const isInstance =
         //     (!!model && item instanceof model) || (item.constructor && !!item.constructor.idField)

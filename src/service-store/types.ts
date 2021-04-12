@@ -11,7 +11,7 @@ export interface ServiceState<M extends Model = Model> {
   }
   idField: string
   ids: string[]
-  keyedById: {
+  itemsById: {
     [k: string]: M
     [k: number]: M
   }

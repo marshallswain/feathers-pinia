@@ -6,7 +6,7 @@ export function makeState(options: ServiceOptions) {
     servicePath: options.servicePath,
     idField: options.idField || 'id',
     ids: [],
-    keyedById: {},
+    itemsById: {},
     pagination: {},
     clonesById: {},
   })
