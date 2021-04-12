@@ -28,11 +28,15 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
       }
       options.Model = DynamicBaseModel
     }
+    if (!options.Model.modelName) {
+      options.Model.modelName = options.Model.name
+    }
 
     // Create and initialize the Pinia store.
     const storeOptions: any = makeServiceStore({
       storeId: options.id || `service.${options.servicePath}`,
-      idField: options.idField || idField,
+      idField: options.idField || idField || 'id',
+      clientAlias: options.clientAlias || 'api',
       servicePath,
       clients,
       Model: options.Model,
@@ -49,7 +53,7 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
       clients,
     })
 
-    registerModel(options.Model, storeOptions)
+    registerModel(options.Model, initializedStore as any)
 
     return useStore
   }

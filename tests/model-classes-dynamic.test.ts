@@ -1,5 +1,5 @@
 import { createPinia } from 'pinia'
-import { setup } from '../src/index'
+import { setup, models } from '../src/index'
 import { api } from './feathers'
 
 const pinia = createPinia()
@@ -19,5 +19,11 @@ describe('DynamicBaseModel', () => {
   test('records are instances of provided class', async () => {
     const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
     expect(message.constructor.name).toBe('DynamicBaseModel')
+  })
+
+  test('registering a model adds it to the models object', () => {
+    console.log(models)
+    expect(models).toHaveProperty('api')
+    expect(models.api).toHaveProperty('Message')
   })
 })
