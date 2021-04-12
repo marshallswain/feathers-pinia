@@ -58,6 +58,15 @@ export class BaseModel {
   }
 
   /**
+   * Update a store instance to match a clone.
+   */
+  public reset(): this {
+    const { idField, store } = this.constructor as typeof BaseModel
+
+    return (store as any).resetCopy(this)
+  }
+
+  /**
    * A shortcut to either call create or patch/update
    * @param params
    */

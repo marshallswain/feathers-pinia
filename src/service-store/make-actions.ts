@@ -223,7 +223,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       Object.assign(this.keyedById, byId)
       this.ids = Object.keys(this.keyedById)
 
-      return data
+      return Array.isArray(data) ? items : items[0]
     },
     clearAll() {
       this.ids = []
