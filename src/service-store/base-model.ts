@@ -8,8 +8,16 @@ export class BaseModel {
   static idField = ''
 
   constructor(data: any) {
-    Object.assign(this, data)
+    Object.assign(this, this.instanceDefaults(data))
+    Object.assign(this, this.setupInstance(data))
     return this
+  }
+
+  public instanceDefaults(data?: any) {
+    return data
+  }
+  public setupInstance(data?: any) {
+    return data
   }
 
   public static find(params?: Params) {
