@@ -4,7 +4,7 @@ import { defineStore as piniaDefineStore } from 'pinia'
 interface SetupOptions {
   pinia: any
   clients: { [alias: string]: any }
-  idField: string
+  idField?: string
 }
 interface DefineStoreOptions {
   id?: string

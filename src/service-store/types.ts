@@ -36,7 +36,7 @@ export interface ServiceOptions {
   clients: { [key: string]: any }
   storeId: string
   clientAlias?: string
-  idField: string
+  idField?: string
   servicePath: string
   Model: any
 }
