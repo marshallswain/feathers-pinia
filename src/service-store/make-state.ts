@@ -6,6 +6,13 @@ export function makeState(options: ServiceOptions) {
     servicePath: options.servicePath,
     idField: options.idField || 'id',
     ids: [],
+    pendingById: {
+      Model: {
+        find: false,
+        count: false,
+        get: false,
+      },
+    },
     itemsById: {},
     pagination: {},
     clonesById: {},

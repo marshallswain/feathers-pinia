@@ -1,5 +1,6 @@
 import { Model, ServiceOptions, ServiceActions, UpdatePaginationForQueryOptions } from './types'
 import { Params } from '../types'
+import { RequestType } from './types'
 import { Id, PaginationOptions } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
@@ -11,14 +12,15 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       params = params || {}
       params = fastCopy(params)
 
-      const service = options.clients[this.clientAlias].service(this.servicePath)
+      this.setPendingById('Model', 'find', true)
 
-      // commit('setPending', 'find')
-
-      return service
+      return this.service
         .find(params as any)
         .then((response: any) => this.handleFindResponse({ params, response }))
         .catch((error: any) => this.handleFindError({ params, error }))
+        .finally(() => {
+          this.setPendingById('Model', 'find', false)
+        })
     },
     /**
      * Handle the response from the find action.
@@ -33,7 +35,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       this.addOrUpdate(response.data || response)
       // dispatch('addOrUpdateList', response)
-      // commit('unsetPending', 'find')
 
       // The pagination data will be under `pagination.default` or whatever qid is passed.
       response.data && this.updatePaginationForQuery({ qid, response, query })
@@ -54,13 +55,29 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
     handleFindError({ params, error }: { params: Params; error: any }) {
       //  commit('setError', { method: 'find', params, error })
-      //  commit('unsetPending', 'find')
       return Promise.reject(error)
+    },
+
+    count(params: Params) {
+      params = params || {}
+      params = fastCopy(params)
+
+      if (!params.query) {
+        throw 'params must contain a `query` object'
+      }
+
+      params.query.$limit = 0
+
+      this.setPendingById('Model', 'count', true)
+
+      return this.service.find(params as any).finally(() => {
+        this.setPendingById('Model', 'count', false)
+      })
     },
 
     // Supports passing params the feathers way: `get(id, params)`
     // Does NOT support the old array syntax: `get([null, params])` which was only needed for Vuex
-    get(id: Id, params: Params) {
+    get(id: Id, params: Params = {}) {
       params = fastCopy(params)
 
       const skipRequestIfExists = params.skipRequestIfExists || this.skipRequestIfExists
@@ -72,20 +89,18 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         return Promise.resolve(existingItem)
       }
 
-      const service = options.clients[this.clientAlias].service(this.servicePath)
+      this.setPendingById('Model', 'get', true)
 
-      // commit('setPending', 'get')
-      return service
+      return this.service
         .get(id, params)
         .then((data: any) => {
           this.addOrUpdate(data)
-          // dispatch('addOrUpdate', item)
-          // commit('unsetPending', 'get')
+          this.setPendingById('Model', 'get', false)
           return this.itemsById[id]
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'get', error })
-          // commit('unsetPending', 'get')
+          this.setPendingById('Model', 'get', false)
           return Promise.reject(error)
         })
     },
@@ -94,11 +109,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const { idField, tempIdField } = this
       params = fastCopy(params) || {}
 
-      // commit('setPending', 'create')
+      this.setPendingById(getId(data) || data[tempIdField], 'get', false)
       // commit('setIdPending', { method: 'create', id: tempIds })
-      const service = options.clients[this.clientAlias].service(this.servicePath)
 
-      return service
+      return this.service
         .create(data, params)
         .then((data: any) => {
           return this.addOrUpdate(data)
@@ -118,9 +132,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       params = fastCopy(params) || {}
 
-      const service = options.clients[this.clientAlias].service(this.servicePath)
-
-      return service
+      return this.service
         .update(id, data, params)
         .then((data: any) => {
           return this.addOrUpdate(data)
@@ -146,9 +158,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (params && params.data) {
         data = params.data
       }
-      const service = options.clients[this.clientAlias].service(this.servicePath)
-
-      return service
+      return this.service
         .patch(id, data, params)
         .then((data: any) => {
           return this.addOrUpdate(data)
@@ -174,9 +184,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       // commit('setPending', 'remove')
       // commit('setIdPending', { method: 'remove', id })
-      const service = options.clients[this.clientAlias].service(this.servicePath)
-
-      return service
+      return this.service
         .remove(id, params)
         .then((data: any) => {
           this.removeFromStore(data)
@@ -235,7 +243,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const existing = this.clonesById[getId(item)]
       if (existing) {
         const readyToReset = Object.assign(existing, originalItem, data)
-        Object.keys(readyToReset).forEach(key => {
+        Object.keys(readyToReset).forEach((key) => {
           if (!originalItem.hasOwnProperty(key)) {
             delete readyToReset[key]
           }
@@ -246,7 +254,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         const clone = this.clonesById[getId(item)]
         Object.defineProperty(clone, '__isClone', {
           value: true,
-          enumerable: false
+          enumerable: false,
         })
         Object.assign(clone, data)
         return clone
@@ -259,9 +267,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         return this.itemsById[id]
       }
     },
-    reset(item: any) {
-
-    },
+    reset(item: any) {},
 
     /**
      * Stores pagination data on state.pagination based on the query identifier
@@ -311,6 +317,19 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const newState = Object.assign({}, this.pagination[qid], qidData)
 
       this.pagination[qid] = newState
+    },
+    setPendingById(id: string | number, method: RequestType, val: boolean) {
+      const updatePendingState = (id: string | number) => {
+        this.pendingById[id] = this.pendingById[id] || ({ [method]: val } as any)
+        this.pendingById[id][method] = val
+      }
+      if (id) {
+        updatePendingState(id)
+      }
+      // If updating pending instance state, also update the Model class's pending state.
+      if (id !== 'Model') {
+        updatePendingState('Model')
+      }
     },
   }
 }

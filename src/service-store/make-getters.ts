@@ -52,7 +52,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         }
 
         if (filters.$select) {
-          values = values.map(value => _.pick(value, ...filters.$select.slice()))
+          values = values.map((value) => _.pick(value, ...filters.$select.slice()))
         }
 
         /**
