@@ -1,5 +1,5 @@
 import { getId } from '../utils'
-import { AnyData } from './types'
+import { AnyData, ModelInstanceOptions } from './types';
 import { Id, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 
@@ -9,10 +9,19 @@ export class BaseModel {
   static servicePath = null
   static idField = ''
 
-  constructor(data: AnyData) {
+  public __isClone: boolean = false
+
+  constructor(data: AnyData, options: ModelInstanceOptions) {
     const store = (this.constructor as typeof BaseModel).store
     Object.assign(this, this.instanceDefaults(data, { models, store }))
     Object.assign(this, this.setupInstance(data, { models, store }))
+
+    if (options.clone) {
+      Object.defineProperty(this, '__isClone', {
+        value: true,
+        enumerable: false
+      })
+    }
     return this
   }
 
@@ -53,9 +62,9 @@ export class BaseModel {
    */
   public clone(data: AnyData): this {
     const { idField, store } = this.constructor as typeof BaseModel
-    // if (this.__isClone) {
-    //   throw new Error('You cannot clone a copy')
-    // }
+    if (this.__isClone) {
+      throw new Error('You cannot clone a copy')
+    }
     return (store as any).clone(this)
   }
 
@@ -63,9 +72,12 @@ export class BaseModel {
    * Update a store instance to match a clone.
    */
   public commit(): this {
-    const { idField, store } = this.constructor as typeof BaseModel
-
-    return (store as any).commitCopy(this)
+    const { idField,  store } = this.constructor as typeof BaseModel
+    if (this.__isClone) {
+      return (store as any).commitCopy(this)
+    } else {
+      throw new Error('You cannot call commit on a non-copy')
+    }
   }
 
   /**

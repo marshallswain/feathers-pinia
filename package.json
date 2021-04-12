@@ -24,8 +24,10 @@
     "@feathersjs/adapter-commons": "^4.5.11",
     "@feathersjs/commons": "^4.5.11",
     "@feathersjs/feathers": "^4.5.11",
+    "@types/lodash": "^4.14.168",
     "fast-copy": "^2.1.1",
     "fast-json-stable-stringify": "^2.1.0",
+    "lodash": "^4.17.21",
     "postcss-nested": "^5.0.5",
     "sift": "^13.5.0"
   },
