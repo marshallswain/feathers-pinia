@@ -7,7 +7,7 @@ const pinia = createPinia()
 const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
 
 class Message extends BaseModel {
-  modelName = 'Message'
+  static modelName = 'Message'
 }
 
 const servicePath = 'messages'
@@ -22,7 +22,7 @@ beforeAll(() => resetStore())
 describe('Model Class', () => {
   test('records are instances of DynamicBaseModel', async () => {
     const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
-  expect(message.constructor.name).toBe('Message')
+    expect(message.constructor.name).toBe('Message')
   })
 
   test('registering a model adds it to the models object', () => {

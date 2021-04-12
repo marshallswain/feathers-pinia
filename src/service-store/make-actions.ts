@@ -109,8 +109,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const { idField, tempIdField } = this
       params = fastCopy(params) || {}
 
-      this.setPendingById(getId(data) || data[tempIdField], 'get', false)
-      // commit('setIdPending', { method: 'create', id: tempIds })
+      this.setPendingById(getId(data) || data[tempIdField], 'get', true)
 
       return this.service
         .create(data, params)
@@ -122,13 +121,11 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
         .finally(() => {
-          // commit('unsetPending', 'create')
-          // commit('unsetIdPending', { method: 'create', id: tempIds })
+          this.setPendingById(getId(data) || data[tempIdField], 'get', false)
         })
     },
     update(id: Id, data: any, params: Params) {
-      // commit('setPending', 'update')
-      // commit('setIdPending', { method: 'update', id })
+      this.setPendingById(id, 'update', true)
 
       params = fastCopy(params) || {}
 
@@ -142,14 +139,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
         .finally(() => {
-          // commit('unsetPending', 'update')
-          // commit('unsetIdPending', { method: 'update', id })
+          this.setPendingById(id, 'update', false)
         })
     },
     patch(id: Id, data: any, params: Params) {
-      // commit('setPending', 'update')
-      // commit('setIdPending', { method: 'update', id })
-
       params = fastCopy(params) || {}
 
       // if (options.Model && (!params || !params.data)) {
@@ -158,6 +151,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (params && params.data) {
         data = params.data
       }
+      this.setPendingById(id, 'patch', true)
+
       return this.service
         .patch(id, data, params)
         .then((data: any) => {
@@ -168,8 +163,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
         .finally(() => {
-          // commit('unsetPending', 'update')
-          // commit('unsetIdPending', { method: 'update', id })
+          this.setPendingById(id, 'patch', false)
         })
     },
 
@@ -323,7 +317,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         this.pendingById[id] = this.pendingById[id] || ({ [method]: val } as any)
         this.pendingById[id][method] = val
       }
-      if (id) {
+      if (id != null) {
         updatePendingState(id)
       }
       // If updating pending instance state, also update the Model class's pending state.

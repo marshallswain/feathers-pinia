@@ -24,7 +24,7 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
       const classes: any = {}
       console.log('servicePath', servicePath)
       class DynamicBaseModel extends BaseModel {
-        modelName = servicePath
+        static modelName = servicePath
       }
       options.Model = DynamicBaseModel
     }
