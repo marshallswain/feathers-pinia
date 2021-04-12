@@ -1,5 +1,6 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
 import { defineStore as piniaDefineStore } from 'pinia'
+import { registerModel } from './models'
 
 interface SetupOptions {
   pinia: any
@@ -8,6 +9,7 @@ interface SetupOptions {
 }
 interface DefineStoreOptions {
   id?: string
+  clientAlias?: string
   servicePath: string
   idField?: string
   Model?: any
@@ -16,6 +18,8 @@ interface DefineStoreOptions {
 export function setup({ pinia, clients, idField }: SetupOptions) {
   function defineStore(options: DefineStoreOptions) {
     const { servicePath } = options
+
+    // If no Model class is provided, create a dynamic one.
     if (!options.Model) {
       const classes: any = {}
       console.log('servicePath', servicePath)
@@ -25,6 +29,7 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
       options.Model = DynamicBaseModel
     }
 
+    // Create and initialize the Pinia store.
     const storeOptions: any = makeServiceStore({
       storeId: options.id || `service.${options.servicePath}`,
       idField: options.idField || idField,
@@ -35,12 +40,16 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
     const useStore = piniaDefineStore(storeOptions)
     const initializedStore = useStore(pinia)
 
+    // Monkey patch the model with the store and other options
     Object.assign(options.Model, {
       store: initializedStore,
+      pinia,
       servicePath: options.servicePath,
       idField: options.idField || idField,
       clients,
     })
+
+    registerModel(options.Model, storeOptions)
 
     return useStore
   }

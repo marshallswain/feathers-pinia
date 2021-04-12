@@ -1,22 +1,25 @@
 import { getId } from '../utils'
 import { AnyData } from './types'
 import { Id, Params } from '@feathersjs/feathers'
+import { models } from '../models'
 
 export class BaseModel {
   static store = null
+  static pinia = null
   static servicePath = null
   static idField = ''
 
   constructor(data: AnyData) {
-    Object.assign(this, this.instanceDefaults(data))
-    Object.assign(this, this.setupInstance(data))
+    const store = (this.constructor as typeof BaseModel).store
+    Object.assign(this, this.instanceDefaults(data, { models, store }))
+    Object.assign(this, this.setupInstance(data, { models, store }))
     return this
   }
 
-  public instanceDefaults(data?: any) {
+  public instanceDefaults(data: AnyData, models: { [name: string]: any }) {
     return data
   }
-  public setupInstance(data?: any) {
+  public setupInstance(data: AnyData, models: { [name: string]: any }) {
     return data
   }
 
