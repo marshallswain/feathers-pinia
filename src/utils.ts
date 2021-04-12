@@ -1,0 +1,60 @@
+import { Params, Paginated } from './types'
+import { _ } from '@feathersjs/commons'
+import stringify from 'fast-json-stable-stringify'
+
+function stringifyIfObject(val: any): string | any {
+  if (typeof val === 'object' && val != null) {
+    return val.toString()
+  }
+  return val
+}
+
+/**
+ * Get the id from a record in this order:
+ *   1. the `idField`
+ *   2. id
+ *   3. _id
+ * @param item
+ * @param idField
+ */
+export function getId(item: any, idField?: string) {
+  if (!item) {
+    return
+  }
+  if ((idField && item[idField] != null) || item.hasOwnProperty(idField)) {
+    return stringifyIfObject(item[idField as string])
+  }
+  if (item.id != null || item.hasOwnProperty('id')) {
+    return stringifyIfObject(item.id)
+  }
+  if (item._id != null || item.hasOwnProperty('_id')) {
+    return stringifyIfObject(item._id)
+  }
+}
+
+export function getQueryInfo(
+  params: Params = {},
+  response: Partial<Pick<Paginated<any>, 'limit' | 'skip'>> = {}
+) {
+  const query = params.query || {}
+  const qid: string = params.qid || 'default'
+  const $limit =
+    response.limit !== null && response.limit !== undefined ? response.limit : query.$limit
+  const $skip = response.skip !== null && response.skip !== undefined ? response.skip : query.$skip
+
+  const queryParams = _.omit(query, ...['$limit', '$skip'])
+  const queryId = stringify(queryParams)
+  const pageParams = $limit !== undefined ? { $limit, $skip } : undefined
+  const pageId = pageParams ? stringify(pageParams) : undefined
+
+  return {
+    qid,
+    query,
+    queryId,
+    queryParams,
+    pageParams,
+    pageId,
+    response: undefined,
+    isOutdated: undefined as boolean | undefined,
+  }
+}
