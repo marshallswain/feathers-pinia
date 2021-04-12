@@ -7,7 +7,7 @@ export class BaseModel {
   static servicePath = null
   static idField = ''
 
-  constructor(data: any) {
+  constructor(data: AnyData) {
     Object.assign(this, this.instanceDefaults(data))
     Object.assign(this, this.setupInstance(data))
     return this
