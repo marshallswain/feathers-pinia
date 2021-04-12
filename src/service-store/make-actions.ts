@@ -318,16 +318,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
       if (id != null) {
         updatePendingState(id, method)
-        if (['create', 'patch', 'update'].includes(method)) {
-          updatePendingState(id, 'save')
-        }
       }
       // If updating pending instance state, also update the Model class's pending state.
       if (id !== 'Model') {
         updatePendingState('Model', method)
-        if (['create', 'patch', 'update'].includes(method)) {
-          updatePendingState('Model', 'save')
-        }
       }
     },
   }

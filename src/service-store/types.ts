@@ -4,7 +4,6 @@ import { StateTree } from 'pinia'
 import { Service, Id } from '@feathersjs/feathers'
 
 interface PendingById {
-  save?: boolean
   create?: boolean
   patch?: boolean
   update?: boolean
@@ -15,7 +14,7 @@ interface ModelPendingState {
   count?: boolean
   get?: boolean
 }
-export type RequestType = 'find' | 'count' | 'get' | 'save' | 'patch' | 'update' | 'remove'
+export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remove'
 
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string

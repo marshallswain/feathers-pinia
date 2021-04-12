@@ -1,5 +1,5 @@
 import { getId } from '../utils'
-import { AnyData, ModelInstanceOptions } from './types';
+import { AnyData, ModelInstanceOptions } from './types'
 import { Id, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 
@@ -50,6 +50,28 @@ export class BaseModel {
     return (this.store as any).removeFromStore(params)
   }
 
+  get isSavePending() {
+    const { idField, store } = this.constructor as typeof BaseModel
+    const pending = (store as any).pendingById[getId(this)]
+    return pending?.create || pending?.update || pending?.patch || false
+  }
+  get isCreatePending() {
+    const { idField, store } = this.constructor as typeof BaseModel
+    return (store as any).pendingById[getId(this)]?.create || false
+  }
+  get isPatchPending() {
+    const { idField, store } = this.constructor as typeof BaseModel
+    return (store as any).pendingById[getId(this)]?.patch || false
+  }
+  get isUpdatePending() {
+    const { idField, store } = this.constructor as typeof BaseModel
+    return (store as any).pendingById[getId(this)]?.update || false
+  }
+  get isRemovePending() {
+    const { idField, store } = this.constructor as typeof BaseModel
+    return (store as any).pendingById[getId(this)]?.remove || false
+  }
+
   /**
    * clone the current record using the `createCopy` mutation
    */
@@ -62,7 +84,7 @@ export class BaseModel {
    * Update a store instance to match a clone.
    */
   public commit(): this {
-    const { idField,  store } = this.constructor as typeof BaseModel
+    const { idField, store } = this.constructor as typeof BaseModel
     if (this.__isClone) {
       return (store as any).commit(this)
     } else {

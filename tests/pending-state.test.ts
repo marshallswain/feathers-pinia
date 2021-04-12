@@ -129,6 +129,9 @@ describe('Pending State', () => {
 
       const msg = await new Message({ text: 'some new message' }).create()
 
+      expect(msg.isCreatePending).toBe(false)
+      expect(msg.isSavePending).toBe(false)
+
       // Since there's no id, the handler only gets called once with undefined
       expect(handler.mock.calls[0][0]).toBeUndefined()
       expect(handler).toBeCalledTimes(1)
@@ -149,6 +152,9 @@ describe('Pending State', () => {
       const data = { test: true }
       await message.value.patch({ data })
 
+      expect(message.value.isSavePending).toBe(false)
+      expect(message.value.isPatchPending).toBe(false)
+
       expect(handler.mock.calls[0][0]).toBeUndefined()
       expect(handler.mock.calls[1][0]).toBe(true)
       expect(handler.mock.calls[2][0]).toBe(false)
@@ -167,6 +173,8 @@ describe('Pending State', () => {
 
       await message.value.update()
 
+      expect(message.value.isUpdatePending).toBe(false)
+
       expect(handler.mock.calls[0][0]).toBeUndefined()
       expect(handler.mock.calls[1][0]).toBe(true)
       expect(handler.mock.calls[2][0]).toBe(false)
@@ -184,6 +192,8 @@ describe('Pending State', () => {
       watch(() => modelRemoveState.value, modelHandler, { immediate: true })
 
       await message.value.remove()
+
+      expect(message.value).toBe(undefined)
 
       // Not initially in store
       expect(handler.mock.calls[0][0]).toBeUndefined()
