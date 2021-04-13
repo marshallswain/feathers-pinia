@@ -1,10 +1,10 @@
 import { Model, ServiceOptions, ServiceActions, UpdatePaginationForQueryOptions } from './types'
 import { Params } from '../types'
-import { RequestType } from './types'
+import { RequestType, AnyData } from './types'
 import { Id, PaginationOptions } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
-import { getId, getQueryInfo } from '../utils'
+import { getId, getTempId, getQueryInfo, keyBy, assignTempId } from '../utils'
 
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
@@ -202,35 +202,58 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.pendingById = _.omit(this.pendingById, ...idsToRemove)
       return data
     },
-    addOrUpdate(data: any) {
+    /**
+     * An alias for addOrUpdate
+     * @param data a single record or array of records.
+     * @returns data added or modified in the store.  If you pass an array, you get an array back.
+     */
+    add(data: AnyData) {
+      return this.addOrUpdate(data)
+    },
+    addOrUpdate(data: AnyData) {
       const items = Array.isArray(data) ? data : [data]
       const { idField, autoRemove } = this
 
+      // Assure each item is an instance
       items.forEach((item, index) => {
         if (!(item instanceof options.Model)) {
-          let { servicePath } = this
-          let { Model } = options
-          const classes = { [servicePath]: Model }
-          items[index] = new classes[servicePath](item)
+          const classes = { [this.servicePath]: options.Model }
+          items[index] = new classes[this.servicePath](item)
         }
       })
 
-      const byId = items.reduce((all, current) => {
-        const id = getId(current)
-        all[id] = current
-        return all
-      }, {})
+      // Move items with both __tempId and idField from tempsById to itemsById
+      const withBoth = items.filter((i) => getId(i) != null && getTempId(i) != null)
+      withBoth.forEach((item) => {
+        const id = getId(item)
+        this.itemsById[id] = this.tempsById[item.__tempId]
+        Object.assign(this.itemsById[id], item)
+        delete this.tempsById[item.__tempId]
+        delete this.itemsById[id].__tempId
+        delete item.__tempId
+      })
 
-      Object.assign(this.itemsById, byId)
+      // Save items that have ids
+      const withId = items.filter((i) => getId(i) != null)
+      const itemsById = keyBy(withId)
+      Object.assign(this.itemsById, itemsById)
       this.ids = Object.keys(this.itemsById)
+
+      // Save temp items
+      const temps = items.filter((i) => getId(i) == null).map((i) => assignTempId(i))
+      const tempsById = keyBy(temps, (i: any) => i.__tempId)
+      Object.assign(this.tempsById, tempsById)
 
       return Array.isArray(data) ? items : items[0]
     },
+
     clearAll() {
       this.ids = []
       this.itemsById = {}
+      this.tempsById = {}
       this.clonesById = {}
     },
+
     clone(item: any, data = {}) {
       const originalItem = this.itemsById[getId(item)]
       const existing = this.clonesById[getId(item)]
@@ -260,7 +283,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         return this.itemsById[id]
       }
     },
-    reset(item: any) {},
 
     /**
      * Stores pagination data on state.pagination based on the query identifier
@@ -311,6 +333,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       this.pagination[qid] = newState
     },
+
     setPendingById(id: string | number, method: RequestType, val: boolean) {
       const updatePendingState = (id: string | number, method: RequestType) => {
         this.pendingById[id] = this.pendingById[id] || ({ [method]: val } as any)

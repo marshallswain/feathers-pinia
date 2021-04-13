@@ -2,6 +2,7 @@ import { watch, computed } from 'vue'
 import { createPinia } from 'pinia'
 import { setup, models } from '../src/index'
 import { api } from './feathers'
+import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
@@ -16,19 +17,15 @@ const useMessagesService = defineStore({ servicePath, Model: Message })
 
 const messagesService = useMessagesService()
 
-const resetStore = () => {
-  const service = api.service('messages')
-  service.store = {}
-  service._uId = 0
-}
+const reset = () => resetStores(api.service('messages'), messagesService)
 
 describe('Pending State', () => {
   describe('Model.find and Model.get', () => {
     beforeEach(async () => {
-      resetStore()
+      reset()
       await messagesService.create({ text: 'test message' })
     })
-    afterAll(() => resetStore())
+    afterAll(() => reset())
 
     test('pending state for find success', async () => {
       // setup the watcher with a mock function
@@ -112,11 +109,10 @@ describe('Pending State', () => {
     const message = computed(() => messagesService.itemsById[0])
 
     beforeEach(async () => {
-      messagesService.clearAll()
-      resetStore()
-      await messagesService.create({ text: 'test message' })
+      // reset()
+      const msg = await messagesService.create({ text: 'test message' })
     })
-    afterEach(() => resetStore())
+    afterEach(() => reset())
 
     test('pending state for model.create', async () => {
       const createState = computed(() => messagesService.pendingById[1]?.create)
@@ -141,6 +137,8 @@ describe('Pending State', () => {
     })
 
     test('pending state for model.patch', async () => {
+      const message = computed(() => messagesService.itemsById[0])
+
       const patchState = computed(() => messagesService.pendingById[0]?.patch)
       const handler = jest.fn()
       watch(() => patchState.value, handler, { immediate: true })

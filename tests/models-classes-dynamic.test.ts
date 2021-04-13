@@ -26,4 +26,8 @@ describe('DynamicBaseModel', () => {
     expect(models).toHaveProperty('api')
     expect(models.api).toHaveProperty('Message')
   })
+
+  test('create local instance', () => {
+    const message = messagesService.add({ text: 'this is a test' })
+  })
 })

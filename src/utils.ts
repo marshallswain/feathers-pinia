@@ -1,6 +1,7 @@
 import { Params, Paginated } from './types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
+import ObjectID from 'bson-objectid'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -18,9 +19,7 @@ function stringifyIfObject(val: any): string | any {
  * @param idField
  */
 export function getId(item: any, idField?: string) {
-  if (!item) {
-    return
-  }
+  if (!item) return
   if ((idField && item[idField] != null) || item.hasOwnProperty(idField)) {
     return stringifyIfObject(item[idField as string])
   }
@@ -29,6 +28,11 @@ export function getId(item: any, idField?: string) {
   }
   if (item._id != null || item.hasOwnProperty('_id')) {
     return stringifyIfObject(item._id)
+  }
+}
+export function getTempId(item: any) {
+  if (item?.__tempId != null || item?.hasOwnProperty('__tempId')) {
+    return stringifyIfObject(item.__tempId)
   }
 }
 
@@ -57,4 +61,23 @@ export function getQueryInfo(
     response: undefined,
     isOutdated: undefined as boolean | undefined,
   }
+}
+
+export function keyBy(items: any, fn: Function = (i: any) => getId(i)) {
+  return items.reduce((all: any, current: any) => {
+    const id = fn(current)
+    all[id] = current
+    return all
+  }, {})
+}
+
+/**
+ * Generate a new tempId and mark the record as a temp
+ * @param state
+ * @param item
+ */
+export function assignTempId(item: any) {
+  const newId = new ObjectID().toHexString()
+  item.__tempId = newId
+  return item
 }

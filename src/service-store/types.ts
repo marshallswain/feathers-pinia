@@ -28,6 +28,10 @@ export interface ServiceState<M extends Model = Model> {
     [k: string]: M
     [k: number]: M
   }
+  tempsById: {
+    [k: string]: M
+    [k: number]: M
+  }
   clonesById: {
     [k: string]: M
     [k: number]: M

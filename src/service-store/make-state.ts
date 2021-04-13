@@ -6,6 +6,9 @@ export function makeState(options: ServiceOptions) {
     servicePath: options.servicePath,
     idField: options.idField || 'id',
     ids: [],
+    itemsById: {},
+    tempsById: {},
+    clonesById: {},
     pendingById: {
       Model: {
         find: false,
@@ -13,8 +16,6 @@ export function makeState(options: ServiceOptions) {
         get: false,
       },
     },
-    itemsById: {},
     pagination: {},
-    clonesById: {},
   })
 }
