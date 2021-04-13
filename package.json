@@ -1,12 +1,12 @@
 {
   "name": "feathers-pinia",
   "version": "0.0.4",
-  "types": "/dist",
   "files": [
     "dist"
   ],
-  "main": "./dist/feathers-pinia.umd.js",
-  "module": "./dist/index.js",
+  "main": "dist/",
+  "module": "dist/",
+  "types": "dist/",
   "exports": {
     ".": {
       "import": "./dist/feathers-pinia.es.js",
