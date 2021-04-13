@@ -22,7 +22,6 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
     // If no Model class is provided, create a dynamic one.
     if (!options.Model) {
       const classes: any = {}
-      console.log('servicePath', servicePath)
       class DynamicBaseModel extends BaseModel {
         static modelName = servicePath
       }
