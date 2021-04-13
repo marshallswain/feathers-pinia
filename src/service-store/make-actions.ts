@@ -193,13 +193,18 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
     removeFromStore(data: any) {
       const items = Array.isArray(data) ? data : [data]
-      const idsToRemove = items.map((item) => getId(item)).filter((id) => id != null)
+      const idsToRemove = items
+        .map((item) => (getId(item) != null ? getId(item) : getTempId(item)))
+        .filter((id) => id != null)
 
       this.itemsById = _.omit(this.itemsById, ...idsToRemove)
       this.ids = Object.keys(this.itemsById)
 
       this.clonesById = _.omit(this.clonesById, ...idsToRemove)
       this.pendingById = _.omit(this.pendingById, ...idsToRemove)
+      this.pendingById = _.omit(this.pendingById, ...idsToRemove)
+      this.tempsById = _.omit(this.tempsById, ...idsToRemove)
+
       return data
     },
     /**

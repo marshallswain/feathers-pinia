@@ -56,4 +56,11 @@ describe('Temporary Records (Local-Only)', () => {
     const data = messagesService.findInStore({ query: {} }).data
     expect(data.length).toBe(0)
   })
+
+  test('temps can be removed from the store', async () => {
+    const message = messagesService.add({ text: 'this is a test' })
+    const tempId = message.__tempId
+    message.removeFromStore()
+    expect(messagesService.tempsById).not.toHaveProperty(tempId)
+  })
 })

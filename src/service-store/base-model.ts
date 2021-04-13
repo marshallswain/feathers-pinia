@@ -172,6 +172,14 @@ export class BaseModel {
     const id: Id = getId(this, idField)
     return (store as any).remove(id, params)
   }
+  /**
+   * Removes the instance from the store
+   * @param params
+   */
+  public removeFromStore(params?: Params): Promise<this> {
+    const { store } = this.constructor as typeof BaseModel
+    return (store as any).removeFromStore(this)
+  }
 }
 
 function checkThis(context: any) {
