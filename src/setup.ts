@@ -22,9 +22,8 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
     // If no Model class is provided, create a dynamic one.
     if (!options.Model) {
       const classes: any = {}
-      console.log('servicePath', servicePath)
       class DynamicBaseModel extends BaseModel {
-        modelName = servicePath
+        static modelName = servicePath
       }
       options.Model = DynamicBaseModel
     }
@@ -41,7 +40,7 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
       clients,
       Model: options.Model,
     })
-    const useStore = piniaDefineStore(storeOptions)
+    const useStore: any = piniaDefineStore(storeOptions)
     const initializedStore = useStore(pinia)
 
     // Monkey patch the model with the store and other options

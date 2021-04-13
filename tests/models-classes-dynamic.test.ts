@@ -22,8 +22,11 @@ describe('DynamicBaseModel', () => {
   })
 
   test('registering a model adds it to the models object', () => {
-    console.log(models)
     expect(models).toHaveProperty('api')
-    expect(models.api).toHaveProperty('Message')
+    expect(models.api).toHaveProperty('messages')
+  })
+
+  test('create local instance', () => {
+    const message = messagesService.add({ text: 'this is a test' })
   })
 })

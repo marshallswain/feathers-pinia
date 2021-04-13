@@ -3,6 +3,19 @@ import { Params, Paginated } from '../types'
 import { StateTree } from 'pinia'
 import { Service, Id } from '@feathersjs/feathers'
 
+interface PendingById {
+  create?: boolean
+  patch?: boolean
+  update?: boolean
+  remove?: boolean
+}
+interface ModelPendingState {
+  find?: boolean
+  count?: boolean
+  get?: boolean
+}
+export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remove'
+
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
@@ -11,13 +24,21 @@ export interface ServiceState<M extends Model = Model> {
   }
   idField: string
   ids: string[]
-  keyedById: {
+  itemsById: {
+    [k: string]: M
+    [k: number]: M
+  }
+  tempsById: {
     [k: string]: M
     [k: number]: M
   }
   clonesById: {
     [k: string]: M
     [k: number]: M
+  }
+  pendingById: {
+    [k: string]: PendingById | ModelPendingState
+    [k: number]: PendingById
   }
 }
 export interface ServiceGetters {
