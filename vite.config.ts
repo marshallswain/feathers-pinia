@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'lib/main.ts'),
+      entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'feathers-pinia',
     },
     rollupOptions: {
@@ -19,6 +19,7 @@ export default defineConfig({
         // for externalized deps
         globals: {
           vue: 'Vue',
+          pinia: 'pinia',
         },
       },
     },
