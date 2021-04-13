@@ -104,7 +104,7 @@ const app = createApp(App)
   .mount('#app')
 ```
 
-### Service Plugins
+### Service Stores
 
 Now that we've created the main `pinia` store, we are ready to setup our first service.  Here's an example that creates a User class and connects it to the `users` service.
 
@@ -120,4 +120,4 @@ export const useUsers = defineStore({ servicePath, Model: User })
 api.service(servicePath).hooks({})
 ```
 
-In Feathers-Pinia, model classes are not required.
+The Model class isn't always required.  Learn more about [Service Stores](./service-stores).

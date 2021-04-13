@@ -1,7 +1,7 @@
 module.exports = {
-  title: "Feathers-Pinia",
-  description: "Connect Feathers.",
-  lang: "en-US",
+  title: 'Feathers-Pinia',
+  description: 'Connect Feathers.',
+  lang: 'en-US',
   themeConfig: {
     nav: [
       // { text: "Guide", link: "/", activeMatch: "^/$|^/guide/" },
@@ -11,30 +11,31 @@ module.exports = {
       //   activeMatch: '^/config/'
       // },
       {
-        text: "Release Notes",
-        link: "https://github.com/marshallswain/feathers-pinia/releases",
+        text: 'Release Notes',
+        link: 'https://github.com/marshallswain/feathers-pinia/releases',
       },
     ],
     sidebar: {
-      "/guide/": getGuideSidebar(),
+      '/guide/': getGuideSidebar(),
       // "/config/": getConfigSidebar(),
-      "/": getGuideSidebar(),
+      '/': getGuideSidebar(),
     },
   },
-};
+}
 
 function getGuideSidebar() {
   return [
     {
-      text: "Guide",
+      text: 'Guide',
       children: [
-        { text: "Introduction", link: "/guide/" },
-        { text: "Setup", link: "/guide/setup" },
+        { text: 'Introduction', link: '/guide/' },
+        { text: 'Setup', link: '/guide/setup' },
+        { text: 'Service Stores', link: '/guide/service-stores' },
       ],
     },
     {
-      text: "Advanced",
-      children: [{ text: "Frontmatter", link: "/guide/frontmatter" }],
+      text: 'Advanced',
+      children: [{ text: 'Frontmatter', link: '/guide/frontmatter' }],
     },
-  ];
+  ]
 }
