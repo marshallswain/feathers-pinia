@@ -40,7 +40,7 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
       clients,
       Model: options.Model,
     })
-    const useStore = piniaDefineStore(storeOptions)
+    const useStore: any = piniaDefineStore(storeOptions)
     const initializedStore = useStore(pinia)
 
     // Monkey patch the model with the store and other options
