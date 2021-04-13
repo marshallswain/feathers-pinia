@@ -44,4 +44,16 @@ describe('Temporary Records (Local-Only)', () => {
     message = await message.save()
     expect(messagesService.tempsById).not.toHaveProperty(tempId)
   })
+
+  test('find getter returns temps when params.temps === true', async () => {
+    const message = messagesService.add({ text: 'this is a test' })
+    const data = messagesService.findInStore({ query: {}, temps: true }).data
+    expect(data.length).toBe(1)
+  })
+
+  test('find getter does not returns temps when params.temps is falsey', async () => {
+    const message = messagesService.add({ text: 'this is a test' })
+    const data = messagesService.findInStore({ query: {} }).data
+    expect(data.length).toBe(0)
+  })
 })
