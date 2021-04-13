@@ -5,7 +5,7 @@
     "dist"
   ],
   "main": "./dist/feathers-pinia.umd.js",
-  "module": "./dist/feathers-pinia.es.js",
+  "module": "./dist/index.js",
   "exports": {
     ".": {
       "import": "./dist/feathers-pinia.es.js",
