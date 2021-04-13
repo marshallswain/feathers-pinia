@@ -4,7 +4,7 @@ import { RequestType, AnyData } from './types'
 import { Id, PaginationOptions } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
-import { getId, getTempId, getQueryInfo, keyBy, assignTempId } from '../utils'
+import { getId, getTempId, getAnyId, getQueryInfo, keyBy, assignTempId } from '../utils'
 
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
@@ -260,8 +260,9 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     clone(item: any, data = {}) {
-      const originalItem = this.itemsById[getId(item)]
-      const existing = this.clonesById[getId(item)]
+      const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
+      const originalItem = this[placeToStore][getAnyId(item)]
+      const existing = this.clonesById[getAnyId(item)]
       if (existing) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
@@ -271,8 +272,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
         return readyToReset
       } else {
-        this.clonesById[getId(item)] = fastCopy(originalItem)
-        const clone = this.clonesById[getId(item)]
+        this.clonesById[getAnyId(item)] = fastCopy(originalItem)
+        const clone = this.clonesById[getAnyId(item)]
         Object.defineProperty(clone, '__isClone', {
           value: true,
           enumerable: false,
@@ -282,9 +283,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
     },
     commit(item: any) {
-      const id = getId(item)
+      const id = getAnyId(item)
       if (id != null) {
-        this.itemsById[id] = fastCopy(this.clonesById[id])
+        const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
+        this[placeToStore][id] = fastCopy(this.clonesById[id])
         return this.itemsById[id]
       }
     },

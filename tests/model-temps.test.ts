@@ -63,4 +63,16 @@ describe('Temporary Records (Local-Only)', () => {
     message.removeFromStore()
     expect(messagesService.tempsById).not.toHaveProperty(tempId)
   })
+
+  test('can clone a temp', () => {
+    const message = messagesService.add({ text: 'this is a test' })
+    message.clone()
+    expect(messagesService.clonesById).toHaveProperty(message.__tempId)
+  })
+
+  test('can commit a temp clone', () => {
+    const message = messagesService.add({ text: 'this is a test' })
+    const committed = message.clone({ foo: 'bar' }).commit()
+    expect(messagesService.tempsById[message.__tempId]).toHaveProperty('foo')
+  })
 })

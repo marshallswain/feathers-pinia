@@ -35,6 +35,9 @@ export function getTempId(item: any) {
     return stringifyIfObject(item.__tempId)
   }
 }
+export function getAnyId(item: any) {
+  return getId(item) != null ? getId(item) : getTempId(item)
+}
 
 export function getQueryInfo(
   params: Params = {},
