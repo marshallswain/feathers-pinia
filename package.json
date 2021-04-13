@@ -20,6 +20,7 @@
     "bson-objectid": "^2.0.1",
     "fast-copy": "^2.1.1",
     "fast-json-stable-stringify": "^2.1.0",
+    "lodash": "^4.17.21",
     "sift": "^13.5.0"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@feathersjs/commons": "^4.5.11",
     "@feathersjs/feathers": "^4.5.11",
     "@types/jest": "^26.0.22",
+    "@types/lodash": "^4.14.168",
     "@types/node": "^14.14.37",
     "@vitejs/plugin-vue": "^1.2.1",
     "@vue/compiler-sfc": "^3.0.11",
