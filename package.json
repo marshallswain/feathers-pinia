@@ -19,7 +19,7 @@
     "docs:serve": "vitepress serve docs",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "prepublish": "tsc",
+    "publish": "tsc",
     "serve": "vite preview"
   },
   "dependencies": {
