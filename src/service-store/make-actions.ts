@@ -202,7 +202,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       this.clonesById = _.omit(this.clonesById, ...idsToRemove)
       this.pendingById = _.omit(this.pendingById, ...idsToRemove)
-      this.pendingById = _.omit(this.pendingById, ...idsToRemove)
       this.tempsById = _.omit(this.tempsById, ...idsToRemove)
 
       return data
