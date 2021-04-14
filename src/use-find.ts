@@ -1,4 +1,4 @@
-import { computed, isRef, reactive, Ref, toRefs, watch } from 'vue'
+import { computed, isRef, reactive, Ref, unref, toRefs, watch } from 'vue'
 import debounce from 'just-debounce'
 import { Params, Paginated } from './types'
 import { getQueryInfo, getItemsFromQueryInfo } from './utils'
@@ -6,8 +6,8 @@ import { Model } from './service-store/types'
 
 interface UseFindOptions {
   model: any
-  params: Params | Ref<Params>
-  fetchParams?: Params | Ref<Params>
+  params: Ref<Params> | Ref<null>
+  fetchParams?: Ref<Params> | Ref<null> | Ref<undefined>
   queryWhen?: Ref<boolean>
   qid?: string
   local?: boolean
@@ -38,41 +38,33 @@ interface UseFindData<M> {
   find(params?: Params | Ref<Params>): Promise<M[] | Paginated<M>>
 }
 
-const unwrapParams = (params: Params | Ref<Params>): Params =>
-  isRef(params) ? params.value : params
-
-export function useFind<M extends Model = Model>(options: UseFindOptions) {
-  const defaults: any = {
-    model: null,
-    params: null,
-    qid: 'default',
-    queryWhen: computed((): boolean => true),
-    local: false,
-    immediate: true,
-  }
-  const { model, params, queryWhen, qid, local, immediate } = Object.assign({}, defaults, options)
-
+export function useFind<M extends Model = Model>({
+  model = null,
+  params = computed(() => null),
+  fetchParams = computed(() => undefined),
+  qid = 'default',
+  queryWhen = computed((): boolean => true),
+  local = false,
+  immediate = true,
+}: UseFindOptions) {
   if (!model) {
     throw new Error(
       `No model provided for useFind(). Did you define and register it with FeathersVuex?`
     )
   }
 
-  const getFetchParams = (providedParams?: Params | Ref<Params>): Params => {
-    const provided = unwrapParams(providedParams as any)
+  const getParamsForFetch = (providedParams?: Params | Ref<Params>): Params | null => {
+    let provided = unref(providedParams)
+    let forFetch = unref(fetchParams)
 
-    if (provided) {
-      return provided
-    }
+    const paramsToUse =
+      provided || provided === null
+        ? provided
+        : forFetch || forFetch === null
+        ? forFetch
+        : unref(params)
 
-    const fetchParams = unwrapParams(options.fetchParams as any)
-    // Returning null fetchParams allows the query to be skipped.
-    if (fetchParams || fetchParams === null) {
-      return fetchParams
-    }
-
-    const params = unwrapParams(options.params)
-    return params
+    return paramsToUse
   }
 
   const state = reactive<UseFindState>({
@@ -88,7 +80,7 @@ export function useFind<M extends Model = Model>(options: UseFindOptions) {
   const computes = {
     // The find getter
     items: computed<M[]>(() => {
-      const getterParams: any = unwrapParams(params)
+      const getterParams: any = unref(params)
 
       if (getterParams) {
         if (getterParams.paginate) {
@@ -115,7 +107,7 @@ export function useFind<M extends Model = Model>(options: UseFindOptions) {
   }
 
   function find(params?: Params | Ref<Params>) {
-    params = unwrapParams(params as any)
+    params = unref(params)
     if (queryWhen.value && !state.isLocal) {
       state.isPending = true
       state.haveBeenRequested = true
@@ -141,7 +133,7 @@ export function useFind<M extends Model = Model>(options: UseFindOptions) {
     },
   }
   function findProxy(params?: Params | Ref<Params>) {
-    const paramsToUse = getFetchParams(params)
+    const paramsToUse = getParamsForFetch(params)
 
     if (paramsToUse && paramsToUse.debounce) {
       if (paramsToUse.debounce !== state.debounceTime) {
@@ -157,16 +149,12 @@ export function useFind<M extends Model = Model>(options: UseFindOptions) {
   }
 
   watch(
-    () => [getFetchParams(), queryWhen.value],
+    () => [getParamsForFetch(), queryWhen.value],
     () => {
       findProxy()
     },
     { immediate }
   )
 
-  return {
-    ...computes,
-    ...toRefs(state),
-    find,
-  }
+  return { ...computes, ...toRefs(state), find }
 }

@@ -116,7 +116,6 @@ describe('useFind', () => {
 
       await timeout(200)
 
-      expect(data.items.value.length).toBe(1)
       expect(data.paginationData.value.default).toHaveProperty('{}')
       expect(data.paginationData.value.default).toHaveProperty('mostRecent')
       expect(data.paginationData.value.defaultLimit).toBe(10)
