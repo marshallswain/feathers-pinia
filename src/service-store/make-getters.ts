@@ -20,6 +20,12 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     items() {
       return Object.values(this.itemsById)
     },
+    temps() {
+      return Object.values(this.tempsById)
+    },
+    clones() {
+      return Object.values(this.clonesById)
+    },
     findInStore() {
       return (params: Params) => {
         params = { ...unref(params) } || {}
