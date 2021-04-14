@@ -62,10 +62,10 @@ describe('useGet', () => {
     expect(data.hasBeenRequested.value).toBe(true)
   })
 
-    test('use {immediate:false} to not query immediately', async () => {
-      const id = 0
-      const data = useGet({id, model: Message, immediate: false})
+  test('use {immediate:false} to not query immediately', async () => {
+    const id = 0
+    const data = useGet({ id, model: Message, immediate: false })
 
-      expect(data.hasBeenRequested.value).toBe(false)
-    })
+    expect(data.hasBeenRequested.value).toBe(false)
+  })
 })

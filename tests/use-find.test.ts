@@ -80,7 +80,7 @@ describe('useFind', () => {
 
     test('use {immediate:false} to not query immediately', async () => {
       const params = computed(() => ({ query: {} }))
-      const data = useFind({ params, model: Message, immediate: false})
+      const data = useFind({ params, model: Message, immediate: false })
 
       expect(data.haveBeenRequested.value).toBe(false)
     })
@@ -131,7 +131,6 @@ describe('useFind', () => {
 
       expect(data.items.value.length).toBe(1)
       expect(data.items.value[0].messageTo).toBe('marshall')
-
     })
   })
 })
