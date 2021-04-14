@@ -1,5 +1,6 @@
 import { computed, reactive, watch, isRef } from 'vue'
-import { isEqual, pick, get } from 'lodash'
+import { isEqual } from 'lodash'
+import { _ } from '@feathersjs/commons'
 import { getId } from './utils'
 
 interface HandleClonesOptions {
@@ -23,7 +24,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
   const clones: any = reactive({})
   const saveHandlers: any = {}
   const watchedProps = computed(() => {
-    return pick(props, watchProps)
+    return _.pick(props, ...watchProps)
   })
   function setup() {
     // Watch each model clone in the props. If the record id changes,
@@ -80,7 +81,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                * @param {Boolean} opts.commit - whether to call clone.commit() before saving. default: true
                * @param {Boolean} opts.save - whether to call save if item[prop] and clone[prop] are not equal. default: true
                * @param {Function} opts.saveWith - a function which receives the the original `item`, the `clone
-               *        the changed `data`, and the `pick` method from lodash. The return value from `saveWith`
+               *        the changed `data`, and the `pick` method from feathers. The return value from `saveWith`
                *        should be an object. The returned object will be merged into the patch data.
                * @
                */
@@ -121,13 +122,13 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
 
                 if (isString) {
                   // Check for equality before commit or the values will be equal.
-                  itemVal = get(item, propOrArray)
-                  cloneVal = get(clone.value, propOrArray)
+                  itemVal = item[propOrArray]
+                  cloneVal = clone.value?.propOrArray
                 } else if (isArray) {
-                  itemVal = pick(item, propOrArray)
-                  cloneVal = pick(clone.value, propOrArray)
+                  itemVal = _.pick(item, ...propOrArray)
+                  cloneVal = _.pick(clone.value, ...propOrArray)
                 } else {
-                  itemVal = pick(item, propOrArray)
+                  itemVal = _.pick(item, ...propOrArray)
                   cloneVal = Object.assign({}, propOrCollection)
                 }
 
@@ -145,7 +146,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                     Object.assign(clone.value, changedData)
                   }
                   const saveWithData =
-                    saveWith({ item, clone: clone.value, data: cloneVal, pick }) || {}
+                    saveWith({ item, clone: clone.value, data: cloneVal, pick: _.pick }) || {}
                   const data = Object.assign(changedData, saveWithData)
                   return clone.value
                     .save({ data })
