@@ -15,6 +15,9 @@
     "build": "vue-tsc --noEmit && vite build",
     "prepare": "tsc",
     "serve": "vite preview",
+    "compile": "shx rm -rf dist/ && tsc",
+    "prepublish": "npm run compile",
+    "publish": "git push origin --tags && git push origin",
     "release:pre": "npm version prerelease && npm publish --tag pre",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
@@ -25,8 +28,8 @@
     "events": "^3.3.0",
     "fast-copy": "^2.1.1",
     "fast-json-stable-stringify": "^2.1.0",
-    "lodash": "^4.17.21",
     "just-debounce": "^1.1.0",
+    "lodash": "^4.17.21",
     "sift": "^13.5.0"
   },
   "devDependencies": {
@@ -45,6 +48,7 @@
     "path": "^0.12.7",
     "pinia": "^2.0.0-alpha.13",
     "postcss-nested": "^5.0.5",
+    "shx": "^0.3.3",
     "tailwindcss": "^2.1.1",
     "ts-jest": "^26.5.4",
     "typescript": "^4.2.4",
