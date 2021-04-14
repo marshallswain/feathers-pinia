@@ -34,7 +34,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const { qid = 'default', query } = params
 
       this.addOrUpdate(response.data || response)
-      // dispatch('addOrUpdateList', response)
 
       // The pagination data will be under `pagination.default` or whatever qid is passed.
       response.data && this.updatePaginationForQuery({ qid, response, query })
