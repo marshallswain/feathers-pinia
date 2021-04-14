@@ -12,16 +12,16 @@ export class BaseModel {
   public __isClone!: boolean
 
   constructor(data: AnyData, options: ModelInstanceOptions = {}) {
-    const store = (this.constructor as typeof BaseModel).store
-    Object.assign(this, this.instanceDefaults(data, { models, store }))
-    Object.assign(this, this.setupInstance(data, { models, store }))
+    const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
+    Object.assign(this, instanceDefaults(data, { models, store }))
+    Object.assign(this, setupInstance(data, { models, store }))
     return this
   }
 
-  public instanceDefaults(data: AnyData, models: { [name: string]: any }) {
+  public static instanceDefaults(data: AnyData, models: { [name: string]: any }) {
     return data
   }
-  public setupInstance(data: AnyData, models: { [name: string]: any }) {
+  public static setupInstance(data: AnyData, models: { [name: string]: any }) {
     return data
   }
 
