@@ -20,10 +20,7 @@ describe('Handle clones test', () => {
   test('it returns a clone', async () => {
     const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
     const props = { message }
-    const { saveHandlers, clones } = handleClones(props)
-    const { save_message } = saveHandlers
-    clones.message.text = 'Doh! it is 911!'
-    const { item } = await save_message(['text'])
+    const { clones } = handleClones(props)
     expect(clones.message).toHaveProperty('__isClone')
     expect(clones.message.__isClone).toBe(true)
     expect(message === clones.message).toBe(false)
