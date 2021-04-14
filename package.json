@@ -1,6 +1,6 @@
 {
   "name": "feathers-pinia",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "files": [
     "dist"
   ],
@@ -18,9 +18,11 @@
   },
   "dependencies": {
     "bson-objectid": "^2.0.1",
+    "events": "^3.3.0",
     "fast-copy": "^2.1.1",
     "fast-json-stable-stringify": "^2.1.0",
     "lodash": "^4.17.21",
+    "just-debounce": "^1.1.0",
     "sift": "^13.5.0"
   },
   "devDependencies": {

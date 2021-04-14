@@ -3,3 +3,7 @@ export function resetStores(service: any, store: any) {
   service._uId = 0
   store.clearAll()
 }
+
+export function timeout(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}

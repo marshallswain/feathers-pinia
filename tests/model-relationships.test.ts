@@ -23,7 +23,7 @@ class User extends BaseModel {
   }
   get messages() {
     const messagesService = useMessagesService()
-    const messages = messagesService.findInStore({ query: { userId: this.id } }).data
+    const messages = messagesService.findInStore({ query: { userId: this.id }, temps: true }).data
     return messages
   }
   set messages(messages) {
