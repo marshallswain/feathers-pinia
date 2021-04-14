@@ -12,10 +12,11 @@ const useMessagesService = defineStore({ servicePath })
 const messagesService = useMessagesService()
 
 const resetStore = () => (api.service('messages').store = {})
-beforeAll(() => resetStore())
-beforeAll(() => resetStore())
 
 describe('Model Instance Methods', () => {
+  beforeAll(() => resetStore())
+  afterAll(() => resetStore())
+
   test('methods are in place', async () => {
     const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
     const props = ['save', 'create', 'patch', 'update', 'remove', 'clone', 'commit', 'reset']
@@ -25,7 +26,6 @@ describe('Model Instance Methods', () => {
     })
   })
 })
-
 
 describe('Clone & commit', () => {
   test('can clone ', async () => {
