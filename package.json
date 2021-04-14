@@ -11,10 +11,16 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:serve": "vitepress serve docs",
+
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "prepare": "tsc",
-    "serve": "vite preview"
+    "serve": "vite preview",
+
+    "release:pre": "npm version prerelease && npm publish --tag pre",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish",
   },
   "dependencies": {
     "bson-objectid": "^2.0.1",
