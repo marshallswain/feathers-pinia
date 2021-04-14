@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { createPinia } from 'pinia'
 import { setup, models } from '../src/index'
 import { api } from './feathers'
@@ -46,4 +46,26 @@ describe('useGet', () => {
 
     expect(data.item.value.id).toBe(0)
   })
+
+  test('use queryWhen', async () => {
+    const id = 0
+    await messagesService.create({ text: 'yo!', id })
+    const now = ref(false)
+    const queryWhen = computed(() => now.value)
+    const data = useGet({ id, model: Message, queryWhen })
+
+    expect(data.hasBeenRequested.value).toBe(false)
+
+    now.value = true
+    await timeout(200)
+
+    expect(data.hasBeenRequested.value).toBe(true)
+  })
+
+    test('use {immediate:false} to not query immediately', async () => {
+      const id = 0
+      const data = useGet({id, model: Message, immediate: false})
+
+      expect(data.hasBeenRequested.value).toBe(false)
+    })
 })
