@@ -57,7 +57,7 @@
     "vitepress": "^0.13.0",
     "vue": "^3.0.5",
     "vue-demi": "^0.7.4",
-    "vue-tsc": "^0.0.23"
+    "vue-tsc": "^0.0.24"
   },
   "peerDependencies": {
     "pinia": "^2.0.0-alpha.13",
