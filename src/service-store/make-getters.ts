@@ -6,6 +6,7 @@ import sift from 'sift'
 import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue'
+import fastCopy from 'fast-copy'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
@@ -16,8 +17,8 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     service() {
       return options.clients[this.clientAlias].service(this.servicePath)
     },
-    listInStore() {
-      return (this.ids as Array<unknown>).map((id) => (this.itemsById as any)[id as string])
+    items() {
+      return Object.values(this.itemsById)
     },
     findInStore() {
       return (params: Params) => {
@@ -55,20 +56,13 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
           values = values.map((value) => _.pick(value, ...filters.$select.slice()))
         }
 
-        /**
-         * Many are of the opinion that having a mutation inside of a getter is a big "no no", It usually is;
-         * however, this allows SSR apps and vuex-persist apps to just work without extra boilerplate, and it's
-         * very fast compared to other hydration options.  This enables seamless, lazy hydration to work.
-         */
-        // values = values.map(item => {
-        //   const isInstance =
-        //     (!!model && item instanceof model) || (item.constructor && !!item.constructor.idField)
-        //   if (model && !isInstance) {
-        //     item = new model(item, { skipStore: true })
-        //     model.replaceItem(item)
-        //   }
-        //   return item
-        // })
+        // Make sure items are instances
+        values = values.map((item) => {
+          if (item && !item.constructor.modelName) {
+            item = this.addOrUpdate(item)
+          }
+          return item
+        })
 
         return {
           total,
@@ -94,13 +88,13 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     getFromStore() {
       return (id: Id, params = {}) => {
         id = unref(id)
-        params = { ...unref(params) } || {}
+        params = fastCopy(unref(params) || {})
         const { Model } = options
 
         let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
 
         // Make sure item is an instance
-        if (item && !!item.constructor.modelName) {
+        if (item && !item.constructor.modelName) {
           item = this.addOrUpdate(item)
         }
         return item
