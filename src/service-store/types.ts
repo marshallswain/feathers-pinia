@@ -1,7 +1,7 @@
 import { Ref } from 'vue'
 import { Params, Paginated } from '../types'
-import { StateTree } from 'pinia'
-import { Service, Id } from '@feathersjs/feathers'
+import { EventEmitter } from 'events'
+import { Id } from '@feathersjs/feathers'
 
 interface PendingById {
   create?: boolean
@@ -165,6 +165,104 @@ export interface Model {
    * Discards changes made on this clone and syncs with the original
    */
   reset(): this
+}
+
+/** Static Model interface */
+export interface ModelStatic extends EventEmitter {
+  /**
+   * The path passed to `FeathersClient.service()` to create the service
+   */
+  servicePath: string
+  /**
+   * The pinia store
+   */
+  readonly store: any
+  /**
+   * The field in each record that will contain the ID
+   */
+  idField: string
+  /**
+   * The client alias in the global `models` object
+   */
+  clientAlias: string
+  /**
+   * Model name used to circumvent Babel transpilation errors
+   */
+  modelName: string
+  /**
+   * All model copies created using `model.clone()`
+   */
+  readonly clonesById: {
+    [key: string]: Model | undefined
+    [key: number]: Model | undefined
+  }
+
+  /**
+   * Create new Model
+   * @param data partial model data
+   * @param options model instance options
+   */
+  new (data?: AnyData, options?: ModelInstanceOptions): Model
+  prototype: Model
+
+  /**
+   * The instanceDefaults API prevents requiring to specify data for new
+   * instances created throughout the app. Depending on the complexity of the
+   * service's "business logic", it can save a lot of boilerplate. Notice that
+   * it is similar to the setupInstance method added in 2.0. The instanceDefaults
+   * method should ONLY be used to return default values for a new
+   * instance. Use setupInstance to handle other transformations on
+   * the data.
+   * @param data the instance data
+   */
+  instanceDefaults(data: AnyData): AnyData
+
+  /**
+   * The setupInstance method allows you to transform the data and setup the
+   * final instance based on incoming data. For example, you can access the
+   * models object to reference other service Model classes and create
+   * data associations.
+   * @param data the instance data
+   * @param ctx setup context
+   */
+  setupInstance(data: AnyData): AnyData
+
+  /**
+   * A proxy for the `find` action
+   * @param params Find params
+   */
+  find<M extends Model = Model>(params?: Params): Promise<M[] | Paginated<M>>
+  /**
+   * A proxy for the `findInStore` getter
+   * @param params Find params
+   */
+  findInStore<M extends Model = Model>(params?: Params | Ref<Params>): Paginated<M>
+
+  /**
+   * A proxy for the `count` action
+   * @param params Find params
+   */
+  count(params?: Params): Promise<number>
+  /**
+   * A proxy for the `countInStore` getter
+   * @param params Find params
+   */
+  countInStore(params?: Params | Ref<Params>): number
+  /**
+   * A proxy for the `get` action
+   * @param id ID of record to retrieve
+   * @param params Get params
+   */
+  get<M extends Model = Model>(id: Id, params?: Params): Promise<M | undefined>
+  /**
+   * A proxy for the `getFromStore` getter
+   * @param id ID of record to retrieve
+   * @param params Get params
+   */
+  getFromStore<M extends Model = Model>(
+    id: Id | Ref<Id>,
+    params?: Params | Ref<Params>
+  ): M | undefined
 }
 
 export interface UpdatePaginationForQueryOptions {

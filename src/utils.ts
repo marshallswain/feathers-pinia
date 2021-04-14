@@ -2,6 +2,7 @@ import { Params, Paginated } from './types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'bson-objectid'
+import { Id } from '@feathersjs/feathers'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -63,6 +64,19 @@ export function getQueryInfo(
     pageId,
     response: undefined,
     isOutdated: undefined as boolean | undefined,
+  }
+}
+
+export function getItemsFromQueryInfo(pagination: any, queryInfo: any, keyedById: any) {
+  const { queryId, pageId } = queryInfo
+  const queryLevel = pagination[queryId]
+  const pageLevel = queryLevel && queryLevel[pageId]
+  const ids = pageLevel && pageLevel.ids
+
+  if (ids && ids.length) {
+    return ids.map((id: Id) => keyedById[id])
+  } else {
+    return []
   }
 }
 
