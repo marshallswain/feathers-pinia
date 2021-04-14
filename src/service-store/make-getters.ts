@@ -95,17 +95,14 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return (id: Id, params = {}) => {
         id = unref(id)
         params = { ...unref(params) } || {}
+        const { Model } = options
 
         let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
-        // if (item) {
-        //   const isInstance =
-        //     (!!model && item instanceof model) || (item.constructor && !!item.constructor.idField)
-        //   if (model && !isInstance) {
-        //     item = new model(item, { skipStore: true })
-        //     model.replaceItem(item)
-        //   }
-        //   return item
-        // }
+
+        // Make sure item is an instance
+        if (item && !!item.constructor.modelName) {
+          item = this.addOrUpdate(item)
+        }
         return item
       }
     },
