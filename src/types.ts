@@ -23,3 +23,10 @@ export interface Paginated<T> {
   skip: number
   data: T[]
 }
+
+export interface HandleEvents {
+  created?: Function
+  patched?: Function
+  updated?: Function
+  removed?: Function
+}

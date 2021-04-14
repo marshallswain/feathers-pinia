@@ -1,11 +1,17 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
 import { defineStore as piniaDefineStore } from 'pinia'
 import { registerModel } from './models'
+import { enableServiceEvents } from './service-store/events'
+import { HandleEvents } from './types'
 
 interface SetupOptions {
   pinia: any
   clients: { [alias: string]: any }
   idField?: string
+  handleEvents?: HandleEvents
+  enableEvents?: boolean
+  debounceEventsTime?: number
+  debounceEventsMaxWait?: number
 }
 interface DefineStoreOptions {
   id?: string
@@ -15,9 +21,27 @@ interface DefineStoreOptions {
   Model?: any
 }
 
-export function setup({ pinia, clients, idField }: SetupOptions) {
+export function setup({
+  pinia,
+  clients,
+  idField,
+  handleEvents = {},
+  enableEvents = true,
+  debounceEventsTime = 20,
+  debounceEventsMaxWait = 1000,
+}: SetupOptions) {
   function defineStore(options: DefineStoreOptions) {
     const { servicePath } = options
+
+    // Setup the event handlers. By default they just return the value of `options.enableEvents`
+    const defaultHandleEvents = {
+      created: () => enableEvents,
+      patched: () => enableEvents,
+      updated: () => enableEvents,
+      removed: () => enableEvents,
+    }
+
+    handleEvents = Object.assign({}, defaultHandleEvents, handleEvents)
 
     // If no Model class is provided, create a dynamic one.
     if (!options.Model) {
@@ -52,7 +76,11 @@ export function setup({ pinia, clients, idField }: SetupOptions) {
       clients,
     })
 
+    const service = clients[options.clientAlias || 'api'].service(servicePath)
+
+    const opts = { idField, debounceEventsTime, debounceEventsMaxWait, handleEvents }
     registerModel(options.Model, initializedStore as any)
+    enableServiceEvents({ service, Model: options.Model, store: initializedStore, options: opts })
 
     return useStore
   }
