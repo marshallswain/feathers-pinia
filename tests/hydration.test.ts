@@ -57,14 +57,14 @@ describe('Hydration', () => {
     expect(message1.value instanceof Message).toBe(false)
   })
 
-  test('hydrate an entire store', () => {
+  test('hydrate an entire store with hydrateAll', () => {
     const message0 = computed(() => messagesService.itemsById[0])
     const message6 = computed(() => messagesService.itemsById[6])
 
     expect(message0.value instanceof Message).toBe(false)
     expect(message6.value instanceof Message).toBe(false)
 
-    messagesService.add(messagesService.items)
+    messagesService.hydrateAll()
 
     expect(message0.value instanceof Message).toBe(true)
     expect(message6.value instanceof Message).toBe(true)

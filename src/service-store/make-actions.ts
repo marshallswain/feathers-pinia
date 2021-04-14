@@ -365,5 +365,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         updatePendingState('Model', method)
       }
     },
+    hydrateAll() {
+      this.add(this.items)
+    },
   }
 }
