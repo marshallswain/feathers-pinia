@@ -1,6 +1,6 @@
 import { computed, reactive, watch, isRef } from 'vue'
-import { isEqualWith, pick, get } from 'lodash'
-import { getId } from './utils';
+import { isEqual, pick, get } from 'lodash'
+import { getId } from './utils'
 
 interface HandleClonesOptions {
   debug?: boolean
@@ -28,7 +28,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
   function setup() {
     // Watch each model clone in the props. If the record id changes,
     // sync the _clone with the new value.
-    Object.keys(props).forEach(key => {
+    Object.keys(props).forEach((key) => {
       const item = isRef(props[key]) ? props[key].value : props[key]
 
       // Cheap check for an instance of BaseModel
@@ -59,7 +59,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
         watch(
           // Since `item` can change, watch the reactive `clone` instead of non-reactive `item`
           () => clone.value && clone.value[cloneId],
-          id => {
+          (id) => {
             // Update the clones and handlers
             if (!clones[cloneKey] || id !== clones[cloneKey][cloneId]) {
               clones[cloneKey] = clone
@@ -84,7 +84,10 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                *        should be an object. The returned object will be merged into the patch data.
                * @
                */
-              saveHandlers[`save_${cloneKey}`] = function saveHandler(propOrCollection: any, opts: SaveHandlerOpts = {} ) {
+              saveHandlers[`save_${cloneKey}`] = function saveHandler(
+                propOrCollection: any,
+                opts: SaveHandlerOpts = {}
+              ) {
                 const isArray = Array.isArray(propOrCollection)
                 const isString = typeof propOrCollection === 'string'
                 const isObject = typeof propOrCollection === 'object' && propOrCollection != null
@@ -128,7 +131,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                   cloneVal = Object.assign({}, propOrCollection)
                 }
 
-                const areEqual = isEqualWith(itemVal, cloneVal)
+                const areEqual = isEqual(itemVal, cloneVal)
 
                 const { commit = true, save = true, saveWith = () => ({}) } = opts
                 commit && clone.value.commit()
