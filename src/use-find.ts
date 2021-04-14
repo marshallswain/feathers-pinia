@@ -157,7 +157,7 @@ export function useFind<M extends Model = Model>(options: UseFindOptions) {
   }
 
   watch(
-    () => getFetchParams(),
+    () => [getFetchParams(), queryWhen.value],
     () => {
       findProxy()
     },

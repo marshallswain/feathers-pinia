@@ -66,13 +66,13 @@ describe('useFind', () => {
     test('use queryWhen', async () => {
       await messagesService.create({ text: 'yo!' })
       const params = computed(() => ({ query: {} }))
-      const now = ref(false)
-      const queryWhen = computed(() => now.value)
+      const isReady = ref(false)
+      const queryWhen = computed(() => isReady.value)
       const data = useFind({ params, model: Message, queryWhen })
 
       expect(data.haveBeenRequested.value).toBe(false)
 
-      now.value = true
+      isReady.value = true
       await timeout(200)
 
       expect(data.haveBeenRequested.value).toBe(true)
