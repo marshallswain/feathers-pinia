@@ -3,6 +3,7 @@ import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'bson-objectid'
 import { Id } from '@feathersjs/feathers'
+import fastCopy from 'fast-copy'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -97,4 +98,65 @@ export function assignTempId(item: any) {
   const newId = new ObjectID().toHexString()
   item.__tempId = newId
   return item
+}
+
+/**
+ * Cleans data to prepare it for the server.
+ * @param data item or array of items
+ * @returns items without private attributes like __isClone and __tempId
+ */
+export function cleanData(data: any) {
+  const { items, isArray } = getArray(data)
+  const cleaned = items.map((item: any) => _.omit(item, '__isClone', '__tempId'))
+
+  return isArray ? cleaned : cleaned[0]
+}
+
+/**
+ * Restores tempIds to the records returned from the server. The tempIds need to be
+ * temporarily put back in place in order to migrate the objects from the tempsById
+ * into the itemsById. A shallow copy of the object
+ *
+ * Note when data is an array, it doesn't matter if the server
+ * returns the items in the same order. It's only important that all of the correct
+ * records are moved from tempsById to itemsById
+ *
+ * @param data item(s) before being passed to the server
+ * @param responseData items(s) returned from the server
+ */
+export function restoreTempIds(data: any, resData: any) {
+  const { items: sourceItems, isArray } = getArray(data)
+  const { items: responseItems } = getArray(resData)
+
+  responseItems.forEach((item: any, index: number) => {
+    const tempId = sourceItems[index].__tempId
+    if (tempId) {
+      item.__tempId = tempId
+    }
+  })
+
+  return isArray ? responseItems : responseItems[0]
+}
+
+/**
+ * Uses fast-copy on any data provided get an independent and reference-free copy.
+ * This makes it easy to work with client-side databases like feathers-memory. It makes
+ * it impossible to accidentally modify stored data due to js object in-memory references.
+ * @param data item or array of items
+ */
+export function useCleanData(data: any) {
+  const { items, isArray } = getArray(data)
+  const cleaned = items.forEach((item: any) => fastCopy(item))
+
+  return isArray ? cleaned : cleaned[0]
+}
+
+/**
+ *
+ * @param data item or array of items
+ * @returns object with { items[], isArray } where isArray is a boolean of if the data was an array.
+ */
+export function getArray(data: any) {
+  const isArray = Array.isArray(data)
+  return { items: isArray ? data : [data], isArray }
 }

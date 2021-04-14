@@ -4,7 +4,17 @@ import { RequestType, AnyData } from './types'
 import { Id, PaginationOptions } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
-import { getId, getTempId, getAnyId, getQueryInfo, keyBy, assignTempId } from '../utils'
+import {
+  getId,
+  getTempId,
+  getAnyId,
+  getQueryInfo,
+  keyBy,
+  assignTempId,
+  cleanData,
+  restoreTempIds,
+  getArray,
+} from '../utils'
 
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
@@ -111,9 +121,9 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.setPendingById(getId(data) || data[tempIdField], 'create', true)
 
       return this.service
-        .create(data, params)
-        .then((data: any) => {
-          return this.addOrUpdate(data)
+        .create(cleanData(data), params)
+        .then((response: any) => {
+          return this.addOrUpdate(restoreTempIds(data, response))
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'create', error })
@@ -129,7 +139,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       params = fastCopy(params) || {}
 
       return this.service
-        .update(id, data, params)
+        .update(id, cleanData(data), params)
         .then((data: any) => {
           return this.addOrUpdate(data)
         })
@@ -153,7 +163,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.setPendingById(id, 'patch', true)
 
       return this.service
-        .patch(id, data, params)
+        .patch(id, cleanData(data), params)
         .then((data: any) => {
           return this.addOrUpdate(data)
         })
@@ -191,10 +201,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
     },
     removeFromStore(data: any) {
-      const items = Array.isArray(data) ? data : [data]
+      const { items, isArray } = getArray(data)
       const idsToRemove = items
-        .map((item) => (getId(item) != null ? getId(item) : getTempId(item)))
-        .filter((id) => id != null)
+        .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item)))
+        .filter((id: any) => id != null)
 
       this.itemsById = _.omit(this.itemsById, ...idsToRemove)
       this.ids = Object.keys(this.itemsById)
@@ -214,11 +224,11 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       return this.addOrUpdate(data)
     },
     addOrUpdate(data: AnyData) {
-      const items = Array.isArray(data) ? data : [data]
+      const { items, isArray } = getArray(data)
       const { idField, autoRemove } = this
 
       // Assure each item is an instance
-      items.forEach((item, index) => {
+      items.forEach((item: any, index: number) => {
         if (!(item instanceof options.Model)) {
           const classes = { [this.servicePath]: options.Model }
           items[index] = new classes[this.servicePath](item)
@@ -226,28 +236,31 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       })
 
       // Move items with both __tempId and idField from tempsById to itemsById
-      const withBoth = items.filter((i) => getId(i) != null && getTempId(i) != null)
-      withBoth.forEach((item) => {
+      const withBoth = items.filter((i: any) => getId(i) != null && getTempId(i) != null)
+      withBoth.forEach((item: any) => {
         const id = getId(item)
-        this.itemsById[id] = this.tempsById[item.__tempId]
-        Object.assign(this.itemsById[id], item)
-        delete this.tempsById[item.__tempId]
-        delete this.itemsById[id].__tempId
+        const existingTemp = this.tempsById[item.__tempId]
+        if (existingTemp) {
+          this.itemsById[id] = existingTemp
+          Object.assign(this.itemsById[id], item)
+          delete this.tempsById[item.__tempId]
+          delete this.itemsById[id].__tempId
+        }
         delete item.__tempId
       })
 
       // Save items that have ids
-      const withId = items.filter((i) => getId(i) != null)
+      const withId = items.filter((i: any) => getId(i) != null)
       const itemsById = keyBy(withId)
       Object.assign(this.itemsById, itemsById)
       this.ids = Object.keys(this.itemsById)
 
       // Save temp items
-      const temps = items.filter((i) => getId(i) == null).map((i) => assignTempId(i))
+      const temps = items.filter((i: any) => getId(i) == null).map((i: any) => assignTempId(i))
       const tempsById = keyBy(temps, (i: any) => i.__tempId)
       Object.assign(this.tempsById, tempsById)
 
-      return Array.isArray(data) ? items : items[0]
+      return isArray ? items : items[0]
     },
 
     clearAll() {
