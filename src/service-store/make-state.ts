@@ -16,6 +16,12 @@ export function makeState(options: ServiceOptions) {
         get: false,
       },
     },
+    eventLocksById: {
+      created: {},
+      patched: {},
+      updated: {},
+      removed: {},
+    },
     pagination: {},
   })
 }

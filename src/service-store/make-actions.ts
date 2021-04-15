@@ -134,9 +134,9 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
     },
     update(id: Id, data: any, params: Params) {
-      this.setPendingById(id, 'update', true)
-
       params = fastCopy(params) || {}
+
+      this.setPendingById(id, 'update', true)
 
       return this.service
         .update(id, cleanData(data), params)
@@ -272,7 +272,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
     clone(item: any, data = {}) {
       const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
-      const originalItem = this[placeToStore][getAnyId(item)]
+      const id = getAnyId(item)
+      const originalItem = this[placeToStore][id]
       const existing = this.clonesById[getAnyId(item)]
       if (existing) {
         const readyToReset = Object.assign(existing, originalItem, data)
@@ -368,5 +369,17 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     hydrateAll() {
       this.add(this.items)
     },
+    setEventLock(data: any, event: string) {
+      setEventLockState(data, event, true, this)
+    },
+    removeEventLock(data: any, event: string) {
+      setEventLockState(data, event, false, this)
+    },
   }
+}
+
+function setEventLockState(data: any, event: string, val: boolean, store: any) {
+  const { items, isArray } = getArray(data)
+  items.forEach((item: any) => (store.eventLocksById[event][getAnyId(item)] = true))
+  return isArray ? data : data[0]
 }
