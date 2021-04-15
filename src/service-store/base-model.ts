@@ -76,7 +76,7 @@ export class BaseModel {
    * clone the current record using the `createCopy` mutation
    */
   public clone(data: AnyData = {}): this {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     return (store as any).clone(this, data)
   }
 
