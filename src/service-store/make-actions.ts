@@ -292,7 +292,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         Object.assign(clone, data)
 
         this.clonesById[id] = clone
-        return clone
+        return this.clonesById[id] // Must return the item from the store
       }
     },
     commit(item: any) {
