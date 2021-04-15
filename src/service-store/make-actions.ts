@@ -362,10 +362,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (id != null) {
         updatePendingState(id, method)
       }
-      // If updating pending instance state, also update the Model class's pending state.
-      if (id !== 'Model') {
-        updatePendingState('Model', method)
-      }
     },
     hydrateAll() {
       this.add(this.items)

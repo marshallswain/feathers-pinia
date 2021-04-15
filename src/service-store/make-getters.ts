@@ -106,5 +106,24 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         return item
       }
     },
+    isCreatePending() {
+      return makePending('create', this)
+    },
+    isPatchPending() {
+      return makePending('patch', this)
+    },
+    isUpdatePending() {
+      return makePending('update', this)
+    },
+    isRemovePending() {
+      return makePending('remove', this)
+    },
   }
+}
+
+function makePending(method: string, store: any): boolean {
+  const isPending = Object.keys(store.pendingById).reduce((isPending, key) => {
+    return store.pendingById[key][method] || isPending
+  }, false)
+  return isPending
 }
