@@ -284,13 +284,14 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
         return readyToReset
       } else {
-        this.clonesById[getAnyId(item)] = fastCopy(originalItem)
-        const clone = this.clonesById[getAnyId(item)]
+        const clone = fastCopy(originalItem)
         Object.defineProperty(clone, '__isClone', {
           value: true,
           enumerable: false,
         })
         Object.assign(clone, data)
+
+        this.clonesById[id] = clone
         return clone
       }
     },
@@ -369,17 +370,20 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     hydrateAll() {
       this.add(this.items)
     },
-    setEventLock(data: any, event: string) {
-      setEventLockState(data, event, true, this)
-    },
-    removeEventLock(data: any, event: string) {
-      setEventLockState(data, event, false, this)
+    toggleEventLock(idOrIds: any, event: string) {
+      setEventLockState(idOrIds, event, true, this)
     },
   }
 }
 
 function setEventLockState(data: any, event: string, val: boolean, store: any) {
-  const { items, isArray } = getArray(data)
-  items.forEach((item: any) => (store.eventLocksById[event][getAnyId(item)] = true))
-  return isArray ? data : data[0]
+  const { items: ids, isArray } = getArray(data)
+  ids.forEach((id: Id) => {
+    const currentLock = store.eventLocksById[event][id]
+    if (currentLock) {
+      delete store.eventLocksById[event][id]
+    } else {
+      store.eventLocksById[event][id] = true
+    }
+  })
 }

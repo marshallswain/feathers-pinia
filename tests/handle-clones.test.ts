@@ -2,6 +2,7 @@ import { createPinia } from 'pinia'
 import { setup, models } from '../src/index'
 import { api } from './feathers'
 import { handleClones } from '../src/handle-clones'
+import { resetStores, timeout } from './test-utils'
 
 const pinia = createPinia()
 
@@ -12,11 +13,10 @@ const useMessagesService = defineStore({ servicePath })
 
 const messagesService = useMessagesService()
 
-const resetStore = () => (api.service('messages').store = {})
+const reset = () => resetStores(api.service('messages'), messagesService)
 
 describe('Handle clones test', () => {
-  beforeAll(() => resetStore())
-  afterAll(() => resetStore())
+  beforeAll(() => reset())
 
   test('it returns a clone', async () => {
     const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
