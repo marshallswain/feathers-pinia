@@ -2,6 +2,7 @@ import {
   useQueuePromise,
   makeGetterName,
   makeState,
+  resetState,
 } from '../src/service-store/event-queue-promise'
 import { computed } from 'vue'
 import { createPinia } from 'pinia'
@@ -20,6 +21,9 @@ const messagesService = useMessagesService()
 const reset = () => resetStores(api.service('messages'), messagesService)
 
 describe('Event Queue Promises', () => {
+  beforeEach(() => {
+    resetState()
+  })
   test('makeGetterName', () => {
     expect(makeGetterName('created')).toBe('isCreatePending')
   })
@@ -52,6 +56,7 @@ describe('Event Queue Promises', () => {
     const promise = useQueuePromise(messagesService, 'created')
     const promise2 = useQueuePromise(messagesService, 'created')
     expect(promise === promise2).toBeTruthy()
+    messagesService.setPendingById(0, 'create', false)
   })
 
   test('returns a new promise after the other one resolves', async () => {

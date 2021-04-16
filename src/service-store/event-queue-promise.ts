@@ -2,11 +2,14 @@ import { TIMEOUT } from 'node:dns'
 import { watch, computed } from 'vue'
 
 type EventName = 'created' | 'updated' | 'patched' | 'removed'
+
 interface QueuePromiseState {
   promise: Promise<any>
   isResolved: boolean
   getter: 'isCreatePending' | 'isUpdatePending' | 'isPatchPending' | 'isRemovePending'
 }
+
+const events = ['created', 'updated', 'patched', 'removed']
 const state: { [key: string]: QueuePromiseState } = {}
 
 export const makeGetterName = (event: EventName) =>
@@ -17,6 +20,11 @@ export const makeState = (event: EventName) => ({
   isResolved: false,
   getter: makeGetterName(event),
 })
+export const resetState = () => {
+  events.forEach((e) => {
+    delete state[e]
+  })
+}
 /**
  * Creates or reuses a promise for each event type, like "created". The promise
  * resolves when the matching `isPending` attribute, like "isCreatePending" becomes
