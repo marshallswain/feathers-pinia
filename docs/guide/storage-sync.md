@@ -1,4 +1,4 @@
-# Storage Sync
+# Sync with Storage
 
 Feathers-Pinia includes a utility for syncing with localStorage (or any Storage api)
 
