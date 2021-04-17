@@ -25,12 +25,14 @@
     "release:major": "npm version major && npm publish"
   },
   "dependencies": {
+    "@types/lz-string": "^1.3.34",
     "bson-objectid": "^2.0.1",
     "events": "^3.3.0",
     "fast-copy": "^2.1.1",
     "fast-json-stable-stringify": "^2.1.0",
     "just-debounce": "^1.1.0",
     "lodash": "^4.17.21",
+    "lz-string": "^1.4.4",
     "sift": "^13.5.0"
   },
   "devDependencies": {
