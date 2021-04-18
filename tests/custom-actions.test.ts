@@ -2,7 +2,8 @@ import { computed } from 'vue'
 import { createPinia } from 'pinia'
 import { setup } from '../src/index'
 import { api } from './feathers'
-import { resetStores } from './test-utils'
+import { resetStores, timeout } from './test-utils'
+import { useFind } from '../src/use-find'
 
 const pinia = createPinia()
 
@@ -22,5 +23,30 @@ describe('Custom Actions', () => {
     messagesService.test()
 
     expect(test).toHaveBeenCalled()
+  })
+
+  test('supports useFind as a customAction', async () => {
+    class Message extends BaseModel {}
+    const useMessagesService = defineStore({
+      servicePath: 'messages',
+      Model: Message,
+      actions: {
+        findMessages(params: any) {
+          return useFind({ params, model: this })
+        },
+      },
+    })
+    const messagesService = useMessagesService()
+
+    const params = computed(() => ({ query: { text: 'this is a test' }, temps: true }))
+    const data = messagesService.findMessages(params)
+
+    expect(data.items.value).toHaveLength(0)
+
+    messagesService.add({ text: 'this is a test' })
+
+    await timeout(100)
+
+    expect(data.items.value).toHaveLength(1)
   })
 })
