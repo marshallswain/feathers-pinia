@@ -49,4 +49,25 @@ describe('Custom Actions', () => {
 
     expect(data.items.value).toHaveLength(1)
   })
+
+  test('custom actions are added to the model class', () => {
+    class Message extends BaseModel {
+      static test: Function
+    }
+    const useMessagesService = defineStore({
+      servicePath: 'messages',
+      Model: Message,
+      actions: {
+        test() {
+          const store: any = this
+          store.idField = 'moose'
+        },
+      },
+    })
+    const messagesService = useMessagesService()
+
+    Message.test()
+
+    expect(messagesService.idField).toBe('moose')
+  })
 })

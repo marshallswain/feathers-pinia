@@ -76,6 +76,10 @@ export function setup({
       servicePath: options.servicePath,
       idField: options.idField || idField,
       clients,
+      ...Object.keys(options.actions || {}).reduce((actions: any, key: string) => {
+        actions[key] = (options.actions as any)[key].bind(initializedStore)
+        return actions
+      }, {}),
     })
 
     const service = clients[options.clientAlias || 'api'].service(servicePath)
