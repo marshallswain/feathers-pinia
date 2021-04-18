@@ -76,6 +76,7 @@ export function setup({
       servicePath: options.servicePath,
       idField: options.idField || idField,
       clients,
+      // Bind `this` in custom actions to the store.
       ...Object.keys(options.actions || {}).reduce((actions: any, key: string) => {
         actions[key] = (options.actions as any)[key].bind(initializedStore)
         return actions
