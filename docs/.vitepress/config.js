@@ -36,9 +36,9 @@ function getGuideSidebar() {
         { text: 'Storage Sync', link: '/guide/storage-sync' },
       ],
     },
-    {
-      text: 'Advanced',
-      children: [{ text: 'Frontmatter', link: '/guide/frontmatter' }],
-    },
+    // {
+    //   text: 'Advanced',
+    //   children: [{ text: 'Frontmatter', link: '/guide/frontmatter' }],
+    // },
   ]
 }
