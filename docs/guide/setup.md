@@ -50,16 +50,6 @@ const socket = io('http://localhost:3030', {transports: ['websocket']})
 export const api = feathers()
   .configure(socketio(socket))
   .configure(auth({ storage: window.localStorage }))
-  .hooks({
-    before: {
-      all: [
-        iff(
-          context => ['create', 'update', 'patch'].includes(context.method),
-          discard('__id', '__isTemp')
-        )
-      ]
-    }
-  })
 ```
 
 For additional Feathers APIs, export another Feathers client instance with a unique variable name (other than `api`).
