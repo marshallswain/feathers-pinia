@@ -19,6 +19,7 @@ interface DefineStoreOptions {
   servicePath: string
   idField?: string
   Model?: any
+  actions?: { [k: string]: Function }
 }
 
 export function setup({
@@ -63,6 +64,7 @@ export function setup({
       servicePath,
       clients,
       Model: options.Model,
+      actions: options.actions,
     })
     const useStore: any = piniaDefineStore(storeOptions)
     const initializedStore = useStore(pinia)

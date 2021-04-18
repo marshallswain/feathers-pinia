@@ -66,6 +66,7 @@ export interface ServiceOptions {
   idField?: string
   servicePath: string
   Model: any
+  actions?: { [key: string]: Function }
 }
 
 export type AnyData = { [key: string]: any }

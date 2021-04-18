@@ -1,4 +1,4 @@
-import { syncWithLocalStorage } from '../src/storage-sync'
+import { syncWithStorage } from '../src/storage-sync'
 import { createPinia } from 'pinia'
 import { setup } from '../src/index'
 import { api } from './feathers'
@@ -20,7 +20,7 @@ const localStorageMock: Storage = {
   length: 0,
   key: jest.fn(),
 }
-syncWithLocalStorage(messagesService, ['tempsById'], localStorageMock)
+syncWithStorage(messagesService, ['tempsById'], localStorageMock)
 
 const reset = () => resetStores(api.service('messages'), messagesService)
 

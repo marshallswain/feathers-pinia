@@ -18,6 +18,8 @@ import {
 
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
+    ...(options.actions || {}),
+
     find(params: Params) {
       params = params || {}
       params = fastCopy(params)
