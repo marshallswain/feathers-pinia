@@ -33,6 +33,7 @@ function getGuideSidebar() {
         { text: 'Service Stores', link: '/guide/service-stores' },
         { text: 'Model Classes', link: '/guide/model-classes' },
         { text: 'Model Instances', link: '/guide/model-instances' },
+        { text: 'Storage Sync', link: '/guide/storage-sync' },
       ],
     },
     {
