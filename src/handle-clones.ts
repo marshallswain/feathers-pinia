@@ -33,7 +33,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
       const item = isRef(props[key]) ? props[key].value : props[key]
 
       // Cheap check for an instance of BaseModel
-      if (item != null) {
+      if (item != null && !!item.constructor.store) {
         /**
          * Create a new clone or return an existing one if options.useExisting is true.
          * This prevents infinite loops when the handle-clones utility is used more than
