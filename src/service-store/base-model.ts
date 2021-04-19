@@ -25,6 +25,9 @@ export class BaseModel {
     return data
   }
 
+  public static add(data?: any) {
+    return (this.store as any).add(data)
+  }
   public static find(params?: Params) {
     return (this.store as any).find(params)
   }
@@ -70,6 +73,14 @@ export class BaseModel {
   get isRemovePending() {
     const { idField, store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.remove || false
+  }
+
+  /**
+   * Add the current record to the store
+   */
+  public addToStore() {
+    const { store }: { store: any } = this.constructor as typeof BaseModel
+    store.add(this)
   }
 
   /**
