@@ -36,4 +36,12 @@ describe('Handle clones test', () => {
     const { item } = await save_message(['text'])
     expect(item.text).toBe('Doh! it is 911!')
   })
+
+  test('only accepts valid service models', async () => {
+    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const booleanField = true
+    const props = { message, booleanField }
+    const { clones } = handleClones(props)
+    expect(clones.booleanField).toBeUndefined()
+  })
 })
