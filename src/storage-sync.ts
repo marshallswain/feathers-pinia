@@ -8,7 +8,6 @@ export function writeToStorage(id: string, data: any, storage: any) {
   const compressed = lz.compress(JSON.stringify(data))
   storage.setItem(id, compressed)
 }
-export const debouncedWrite = debounce(writeToStorage, 500)
 
 // Reads and decompresses data from localStorage
 export function hydrateStore(store: any, storage: any) {
@@ -33,6 +32,7 @@ export function syncWithStorage(
 ) {
   hydrateStore(store, storage)
 
+  const debouncedWrite = debounce(writeToStorage, 500)
   const toWatch = computed(() => _.pick(store, ...stateKeys))
 
   watch(
