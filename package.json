@@ -1,8 +1,9 @@
 {
   "name": "feathers-pinia",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "main": "dist/",
   "module": "dist/",
