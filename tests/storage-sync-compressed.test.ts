@@ -1,8 +1,9 @@
-import { syncWithStorage } from '../src/storage-sync'
+import { syncWithStorageCompressed } from '../src/storage-sync-compressed'
 import { createPinia } from 'pinia'
 import { setup } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
+import lz from 'lz-string'
 
 const pinia = createPinia()
 
@@ -19,7 +20,7 @@ const localStorageMock: Storage = {
   length: 0,
   key: jest.fn(),
 }
-syncWithStorage(messagesService, ['tempsById'], localStorageMock)
+syncWithStorageCompressed(messagesService, ['tempsById'], localStorageMock)
 
 const reset = () => resetStores(api.service('messages'), messagesService)
 
@@ -34,7 +35,7 @@ describe('Storage Sync', () => {
     expect(localStorageMock.setItem).toHaveBeenCalled()
     const [key, value] = (localStorageMock.setItem as any).mock.calls[0]
     expect(key).toBe('service.messages')
-    const val = JSON.parse(value)
+    const val = JSON.parse(lz.decompress(value) as string)
     expect(val.tempsById[msg.__tempId]).toBeTruthy()
   })
 

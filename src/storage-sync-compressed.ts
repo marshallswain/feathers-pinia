@@ -1,10 +1,11 @@
 import { debounce } from 'lodash'
 import { _ } from '@feathersjs/commons'
 import { computed, watch } from 'vue'
+import lz from 'lz-string'
 
 // Writes data to localStorage
 export function writeToStorage(id: string, data: any, storage: any) {
-  const compressed = JSON.stringify(data)
+  const compressed = lz.compress(JSON.stringify(data))
   storage.setItem(id, compressed)
 }
 
@@ -12,7 +13,7 @@ export function writeToStorage(id: string, data: any, storage: any) {
 export function hydrateStore(store: any, storage: any) {
   const data = storage.getItem(store.$id)
   if (data) {
-    const hydrationData = JSON.parse(data as string) || {}
+    const hydrationData = JSON.parse(lz.decompress(data) as string)
     Object.keys(hydrationData).forEach((key: string) => {
       store[key] = hydrationData[key]
     })
@@ -24,7 +25,7 @@ export function hydrateStore(store: any, storage: any) {
  * @param store pinia store
  * @param keys an array of keys to watch and write to localStorage.
  */
-export function syncWithStorage(
+export function syncWithStorageCompressed(
   store: any,
   stateKeys: Array<string> = [],
   storage: Storage = window.localStorage
