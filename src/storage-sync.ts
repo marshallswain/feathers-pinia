@@ -4,16 +4,16 @@ import { computed, watch } from 'vue'
 import lz from 'lz-string'
 
 // Writes data to localStorage
-export function writeToStorage(id: string, data: any, storage: any, { compress = true }) {
-  const toWrite = compress ? lz.compress(JSON.stringify(data)) : JSON.stringify(data)
-  storage.setItem(id, toWrite)
+export function writeToStorage(id: string, data: any, storage: any) {
+  const compressed = lz.compress(JSON.stringify(data))
+  storage.setItem(id, compressed)
 }
 
 // Reads and decompresses data from localStorage
-export function hydrateStore(store: any, storage: any, { compress = true }) {
+export function hydrateStore(store: any, storage: any) {
   const data = storage.getItem(store.$id)
   if (data) {
-    const hydrationData = JSON.parse(compress ? (lz.decompress(data) as string) : data)
+    const hydrationData = JSON.parse(lz.decompress(data) as string)
     Object.keys(hydrationData).forEach((key: string) => {
       store[key] = hydrationData[key]
     })
@@ -28,10 +28,9 @@ export function hydrateStore(store: any, storage: any, { compress = true }) {
 export function syncWithStorage(
   store: any,
   stateKeys: Array<string> = [],
-  storage: Storage = window.localStorage,
-  options: { compress: boolean } = { compress: true }
+  storage: Storage = window.localStorage
 ) {
-  hydrateStore(store, storage, options)
+  hydrateStore(store, storage)
 
   const debouncedWrite = debounce(writeToStorage, 500)
   const toWatch = computed(() => _.pick(store, ...stateKeys))
@@ -39,7 +38,7 @@ export function syncWithStorage(
   watch(
     () => toWatch.value,
     (val) => {
-      debouncedWrite(store.$id, val, storage, options)
+      debouncedWrite(store.$id, val, storage)
     },
     { deep: true }
   )
