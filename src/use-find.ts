@@ -84,7 +84,7 @@ export function useFind<M extends Model = Model>({
 
       if (getterParams) {
         if (getterParams.paginate) {
-          const serviceState = model.store.state[model.servicePath]
+          const serviceState = model.store
           const { defaultSkip, defaultLimit } = serviceState.pagination
           const skip = getterParams.query.$skip || defaultSkip
           const limit = getterParams.query.$limit || defaultLimit
