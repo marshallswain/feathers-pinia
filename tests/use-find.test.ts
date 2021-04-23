@@ -132,4 +132,22 @@ describe('useFind', () => {
       expect(data.items.value[0].messageTo).toBe('marshall')
     })
   })
+
+  describe('set pagination via params', () => {
+    beforeEach(() => reset())
+    afterEach(() => reset())
+
+    test('paginated data returns as per query params', async () => {
+      await messagesService.create({ text: 'test #1' })
+      await messagesService.create({ text: 'test #2' })
+      await messagesService.create({ text: 'test #3' })
+      await messagesService.create({ text: 'test #4' })
+      const params = computed(() => ({
+        query: { $skip: 0, $limit: 2 }
+      }))
+      const data = useFind({ params, model: Message })
+
+      expect(data.items.value.length).toBe(2)
+    })
+  })
 })

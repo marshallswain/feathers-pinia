@@ -24,6 +24,11 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       params = params || {}
       params = fastCopy(params)
 
+      // For working with client-side services, paginate.default must be truthy.
+      if ((params.paginate as any) === true) {
+        ;(params.paginate as any) = { default: true }
+      }
+
       this.setPendingById('Model', 'find', true)
 
       return this.service

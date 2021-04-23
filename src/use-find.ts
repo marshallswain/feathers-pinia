@@ -6,7 +6,7 @@ import { Model } from './service-store/types'
 
 interface UseFindOptions {
   model: any
-  params: Ref<Params> | Ref<null>
+  params: Params | Ref<Params> | Ref<null>
   fetchParams?: Ref<Params> | Ref<null> | Ref<undefined>
   queryWhen?: Ref<boolean>
   qid?: string
@@ -84,14 +84,14 @@ export function useFind<M extends Model = Model>({
 
       if (getterParams) {
         if (getterParams.paginate) {
-          const serviceState = model.store.state[model.servicePath]
+          const serviceState = model.store
           const { defaultSkip, defaultLimit } = serviceState.pagination
           const skip = getterParams.query.$skip || defaultSkip
           const limit = getterParams.query.$limit || defaultLimit
           const pagination = computes.paginationData.value[getterParams.qid || state.qid] || {}
           const response = skip != null && limit != null ? { limit, skip } : {}
           const queryInfo = getQueryInfo(getterParams, response)
-          const items = getItemsFromQueryInfo(pagination, queryInfo, serviceState.keyedById)
+          const items = getItemsFromQueryInfo(pagination, queryInfo, serviceState.itemsById)
           return items
         } else {
           return model.findInStore(getterParams).data
