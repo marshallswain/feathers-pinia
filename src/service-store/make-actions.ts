@@ -20,9 +20,9 @@ export function makeActions(options: ServiceOptions): ServiceActions {
   return {
     ...(options.actions || {}),
 
-    find(params: Params) {
-      params = params || {}
-      params: any = fastCopy(params)
+    find(requestParams: Params) {
+      let params: any = requestParams || {}
+      params = fastCopy(params)
 
       // For working with client-side services, paginate.default must be truthy.
       if (params.paginate === true) {
