@@ -48,7 +48,6 @@ describe('usePagination', () => {
     const { latestQuery, items } = useFind({ model: Message, params })
 
     await timeout(200)
-    console.log({ items: items.value })
 
     const { currentPage, pageCount, toPage, next, prev, canNext, canPrev } = usePagination(
       pagination,

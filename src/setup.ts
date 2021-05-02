@@ -1,6 +1,7 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
 import { defineStore as piniaDefineStore } from 'pinia'
 import { registerModel } from './models'
+import { clients, registerClient } from './clients'
 import { enableServiceEvents } from './service-store/events'
 import { HandleEvents } from './types'
 
@@ -31,6 +32,10 @@ export function setup({
   debounceEventsTime = 20,
   debounceEventsMaxWait = 1000,
 }: SetupOptions) {
+  Object.keys(clients).forEach((name) => {
+    registerClient(name, clients[name])
+  })
+
   function defineStore(options: DefineStoreOptions) {
     const { servicePath } = options
 
