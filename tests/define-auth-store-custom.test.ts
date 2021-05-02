@@ -25,6 +25,9 @@ const useAuth = defineAuthStore({
 const store = useAuth(pinia)
 
 describe('Custom Auth Store functionality', () => {
+  test('has custom id', async () => {
+    expect(store.$id).toBe('my-auth')
+  })
   test('receives custom state', async () => {
     expect(store.test).toBeTruthy
   })
