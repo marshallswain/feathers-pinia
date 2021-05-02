@@ -12,6 +12,9 @@ class Message extends BaseModel {}
 const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
 
 describe('Global Models', () => {
+  afterEach(() => {
+    delete models.api
+  })
   test('calling defineStore adds the models by client alias and modelName', () => {
     expect(models.api.Message).toBeDefined()
   })
