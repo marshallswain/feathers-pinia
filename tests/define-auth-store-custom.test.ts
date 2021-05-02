@@ -4,6 +4,8 @@ import { api } from './feathers'
 import { resetStores } from './test-utils'
 
 const pinia = createPinia()
+const handleResponse = jest.fn()
+const handleError = jest.fn()
 
 const useAuth = defineAuthStore({
   id: 'my-auth',
@@ -20,11 +22,17 @@ const useAuth = defineAuthStore({
     toggleTest() {
       this.test = false
     },
+    handleResponse,
+    handleError,
   },
 })
 const store = useAuth(pinia)
 
 describe('Custom Auth Store functionality', () => {
+  beforeEach(() => {
+    handleResponse.mockClear()
+    handleError.mockClear()
+  })
   test('has custom id', async () => {
     expect(store.$id).toBe('my-auth')
   })
@@ -38,5 +46,15 @@ describe('Custom Auth Store functionality', () => {
     expect(store).toHaveProperty('toggleTest')
     store.toggleTest()
     expect(store.test).toBeFalsy
+  })
+  test('calls handleResponse', async () => {
+    await store.authenticate({ strategy: 'jwt' })
+    expect(handleResponse).toHaveBeenCalled()
+    expect(handleError).not.toHaveBeenCalled()
+  })
+  test('calls handleError', async () => {
+    await store.authenticate({ strategy: 'foo' })
+    expect(handleResponse).not.toHaveBeenCalled()
+    expect(handleError).toHaveBeenCalled()
   })
 })
