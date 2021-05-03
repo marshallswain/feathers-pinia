@@ -28,8 +28,8 @@ export function defineAuthStore({
   }
 
   const defaultGetters = {
-    authentication() {
-      return feathersClient.authentication
+    feathersClient() {
+      return feathersClient
     },
   }
 

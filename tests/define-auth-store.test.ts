@@ -20,4 +20,7 @@ describe('Define Auth Store', () => {
     expect(store.payload).toBeTruthy
     expect(store.user).toBeUndefined
   })
+  test('has a feathersClient getter', async () => {
+    expect(store.feathersClient).toBeTruthy
+  })
 })
