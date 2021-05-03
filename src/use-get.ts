@@ -5,8 +5,8 @@ import { Id } from '@feathersjs/feathers'
 
 interface UseGetOptions {
   model: any
-  id: null | string | number | Ref<null> | Ref<string> | Ref<number>
-  params?: Params | Ref<Params>
+  id: Ref<null> | Ref<string> | Ref<number> | null
+  params?: Ref<Params>
   queryWhen?: Ref<boolean>
   local?: boolean
   immediate?: boolean
@@ -29,17 +29,14 @@ interface UseGetData<M> {
   get(id: Id, params?: Params): Promise<M | undefined>
 }
 
-export function useGet<M extends Model = Model>(options: UseGetOptions) {
-  const defaults: UseGetOptions = {
-    model: null,
-    id: null,
-    params: undefined,
-    queryWhen: computed((): boolean => true),
-    local: false,
-    immediate: true,
-  }
-  const { model, id, params, queryWhen, local, immediate } = Object.assign({}, defaults, options)
-
+export function useGet<M extends Model = Model>({
+  model = null,
+  id = null,
+  params = computed(() => ({})),
+  queryWhen = computed((): boolean => true),
+  local = false,
+  immediate = true,
+}: UseGetOptions) {
   if (!model) {
     throw new Error(
       `No model provided for useGet(). Did you define and register it with FeathersVuex?`
@@ -47,7 +44,7 @@ export function useGet<M extends Model = Model>(options: UseGetOptions) {
   }
 
   function getId(): null | string | number {
-    return isRef(id) ? id.value : id || null
+    return unref(id)
   }
   function getParams(): Params {
     return unref(params as any)
@@ -63,26 +60,22 @@ export function useGet<M extends Model = Model>(options: UseGetOptions) {
 
   const computes = {
     item: computed(() => {
-      const getterId = isRef(id) ? id.value : id
-      const getterParams = isRef(params)
-        ? Object.assign({}, params.value)
-        : params == null
-        ? params
-        : { ...params }
-      if (getterParams != null) {
-        return model.getFromStore(getterId, getterParams) || null
-      } else {
-        return model.getFromStore(getterId) || null
-      }
+      // const getterId = isRef(id) ? id.value : id
+      // const getterParams = unref(params)
+      // if (getterParams != null) {
+      return model.getFromStore(unref(id), unref(params)) || null
+      // } else {
+      // return model.getFromStore(getterId) || null
+      // }
     }),
     servicePath: computed(() => model.servicePath),
   }
 
   function get(id: Id, params?: Params): Promise<M | undefined> {
-    const idToUse = isRef<Id>(id) ? id.value : id
+    const idToUse = unref(id)
     const paramsToUse = isRef(params) ? params.value : params
 
-    if (idToUse != null && queryWhen?.value && !state.isLocal) {
+    if (idToUse != null && queryWhen.value && !state.isLocal) {
       state.isPending = true
       state.hasBeenRequested = true
 
@@ -105,9 +98,9 @@ export function useGet<M extends Model = Model>(options: UseGetOptions) {
   }
 
   watch(
-    [() => getId(), () => getParams()],
+    () => [getId(), getParams(), queryWhen.value],
     ([id, params]) => {
-      get(id as string | number, params as Params)
+      get(id as any, params as Params)
     },
     { immediate }
   )

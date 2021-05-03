@@ -12,16 +12,16 @@ export class BaseModel implements Model {
   public __isClone!: boolean
 
   constructor(data: AnyData, options: ModelInstanceOptions = {}) {
-    const store = (this.constructor as typeof BaseModel).store
-    Object.assign(this, this.instanceDefaults(data, { models, store }))
-    Object.assign(this, this.setupInstance(data, { models, store }))
+    const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
+    Object.assign(this, instanceDefaults(data, { models, store }))
+    Object.assign(this, setupInstance(data, { models, store }))
     return this
   }
 
-  public instanceDefaults(data: AnyData, models: { [name: string]: any }): AnyData {
+  public static instanceDefaults(data: AnyData, models: { [name: string]: any }) {
     return data
   }
-  public setupInstance(data: AnyData, models: { [name: string]: any }): AnyData {
+  public static setupInstance(data: AnyData, models: { [name: string]: any }) {
     return data
   }
 
@@ -42,6 +42,9 @@ export class BaseModel implements Model {
   }
   public static countInStore(params?: Params) {
     return (this.store as any).countInStore(params)
+  }
+  public static addToStore(data?: any) {
+    return (this.store as any).add(data)
   }
   public static remove(params?: Params) {
     return (this.store as any).remove(params)
@@ -73,10 +76,18 @@ export class BaseModel implements Model {
   }
 
   /**
+   * Add the current record to the store
+   */
+  public addToStore() {
+    const { store }: { store: any } = this.constructor as typeof BaseModel
+    store.add(this)
+  }
+
+  /**
    * clone the current record using the `createCopy` mutation
    */
-  public clone(data: AnyData): this {
-    const { idField, store } = this.constructor as typeof BaseModel
+  public clone(data: AnyData = {}): this {
+    const { store } = this.constructor as typeof BaseModel
     return (store as any).clone(this, data)
   }
 

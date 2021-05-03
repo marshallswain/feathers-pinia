@@ -1,6 +1,7 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
 import { defineStore as piniaDefineStore } from 'pinia'
 import { registerModel } from './models'
+import { clients, registerClient } from './clients'
 import { enableServiceEvents } from './service-store/events'
 import { HandleEvents } from './types'
 import { Model } from './service-store/types'
@@ -20,6 +21,7 @@ interface DefineStoreOptions {
   servicePath: string
   idField?: string
   Model?: any
+  actions?: { [k: string]: Function }
 }
 
 interface SetupResult {
@@ -35,7 +37,11 @@ export function setup({
   enableEvents = true,
   debounceEventsTime = 20,
   debounceEventsMaxWait = 1000,
-}: SetupOptions): SetupResult {
+}: SetupOptions) {
+  Object.keys(clients).forEach((name) => {
+    registerClient(name, clients[name])
+  })
+
   function defineStore(options: DefineStoreOptions) {
     const { servicePath } = options
 
@@ -69,6 +75,7 @@ export function setup({
       servicePath,
       clients,
       Model: options.Model,
+      actions: options.actions,
     })
     const useStore: any = piniaDefineStore(storeOptions)
     const initializedStore = useStore(pinia)
@@ -80,6 +87,11 @@ export function setup({
       servicePath: options.servicePath,
       idField: options.idField || idField,
       clients,
+      // Bind `this` in custom actions to the store.
+      ...Object.keys(options.actions || {}).reduce((actions: any, key: string) => {
+        actions[key] = (options.actions as any)[key].bind(initializedStore)
+        return actions
+      }, {}),
     })
 
     const service = clients[options.clientAlias || 'api'].service(servicePath)

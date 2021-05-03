@@ -13,7 +13,7 @@ const messagesService = useMessagesService()
 
 const resetStore = () => (api.service('messages').store = {})
 beforeAll(() => resetStore())
-beforeAll(() => resetStore())
+afterAll(() => resetStore())
 
 describe('DynamicBaseModel', () => {
   test('records are instances of provided class', async () => {

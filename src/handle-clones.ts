@@ -1,7 +1,7 @@
-import { computed, reactive, watch, isRef } from 'vue'
+import { computed, reactive, watch, isRef, unref } from 'vue'
 import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
-import { getId } from './utils'
+import { getAnyId } from './utils'
 
 interface HandleClonesOptions {
   debug?: boolean
@@ -33,7 +33,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
       const item = isRef(props[key]) ? props[key].value : props[key]
 
       // Cheap check for an instance of BaseModel
-      if (item != null) {
+      if (item != null && !!item.constructor.store) {
         /**
          * Create a new clone or return an existing one if options.useExisting is true.
          * This prevents infinite loops when the handle-clones utility is used more than
@@ -42,20 +42,19 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
          * instances except one.
          */
         const clone = computed(() => {
-          const item = isRef(props[key]) ? props[key].value : props[key]
+          const item = unref(props[key])
           if (item == null) {
             return null
           }
-          //TODO
-          //might not need this.
-          // const existingClone = item.constructor.clonesById[getId(item)]
-          // if (existingClone && useExisting) {
-          //   return existingClone
-          // }
+          const id = getAnyId(item)
+          const existingClone = item.constructor.store.clonesById[id]
+          if (existingClone && useExisting) {
+            return existingClone
+          }
           return item.__isClone ? item : item.clone()
         })
         const cloneKey = `${key}`
-        const cloneId = getId(item)
+        const cloneId = getAnyId(item)
 
         watch(
           // Since `item` can change, watch the reactive `clone` instead of non-reactive `item`

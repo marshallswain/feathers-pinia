@@ -43,19 +43,20 @@ const resetStore = () => {
   api.service('messages').store = {}
   api.service('users').store = {}
 }
-beforeAll(async () => {
-  resetStore()
-  amogh = await usersService.create({ name: 'Amogh Palnitkar' })
-
-  await Promise.all([
-    messagesService.create({ text: 'message 1', userId: amogh.id }),
-    messagesService.create({ text: 'message 2', userId: amogh.id }),
-    messagesService.create({ text: 'message 3', userId: amogh.id }),
-  ])
-})
-afterAll(() => resetStore())
 
 describe('Model Relationships', () => {
+  beforeAll(async () => {
+    resetStore()
+    amogh = await usersService.create({ name: 'Amogh Palnitkar' })
+
+    await Promise.all([
+      messagesService.create({ text: 'message 1', userId: amogh.id }),
+      messagesService.create({ text: 'message 2', userId: amogh.id }),
+      messagesService.create({ text: 'message 3', userId: amogh.id }),
+    ])
+  })
+  afterAll(() => resetStore())
+
   test('Access composed stores through es5 getters', async () => {
     expect(amogh.messages.length).toBe(3)
   })

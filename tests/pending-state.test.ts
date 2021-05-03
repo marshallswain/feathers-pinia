@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { setup, models } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
+import { stringify } from 'node:querystring'
 
 const pinia = createPinia()
 
@@ -119,10 +120,6 @@ describe('Pending State', () => {
       const handler = jest.fn()
       watch(() => createState.value, handler, { immediate: true })
 
-      const modelCreateState = computed(() => messagesService.pendingById.Model?.create)
-      const modelHandler = jest.fn()
-      watch(() => modelCreateState.value, modelHandler, { immediate: true })
-
       const msg = await new Message({ text: 'some new message' }).create()
 
       expect(msg.isCreatePending).toBe(false)
@@ -131,9 +128,6 @@ describe('Pending State', () => {
       // Since there's no id, the handler only gets called once with undefined
       expect(handler.mock.calls[0][0]).toBeUndefined()
       expect(handler).toBeCalledTimes(1)
-
-      // The model handler still gets called the same number of times as other methods
-      expect(modelHandler).toBeCalledTimes(3)
     })
 
     test('pending state for model.patch', async () => {
@@ -142,10 +136,6 @@ describe('Pending State', () => {
       const patchState = computed(() => messagesService.pendingById[0]?.patch)
       const handler = jest.fn()
       watch(() => patchState.value, handler, { immediate: true })
-
-      const modelPatchState = computed(() => messagesService.pendingById.Model?.patch)
-      const modelHandler = jest.fn()
-      watch(() => modelPatchState.value, modelHandler, { immediate: true })
 
       const data = { test: true }
       await message.value.patch({ data })
@@ -156,18 +146,12 @@ describe('Pending State', () => {
       expect(handler.mock.calls[0][0]).toBeUndefined()
       expect(handler.mock.calls[1][0]).toBe(true)
       expect(handler.mock.calls[2][0]).toBe(false)
-
-      expect(modelHandler).toBeCalledTimes(3)
     })
 
     test('pending state for model.update', async () => {
       const updateState = computed(() => messagesService.pendingById[0]?.update)
       const handler = jest.fn()
       watch(() => updateState.value, handler, { immediate: true })
-
-      const modelUpdateState = computed(() => messagesService.pendingById.Model?.update)
-      const modelHandler = jest.fn()
-      watch(() => modelUpdateState.value, modelHandler, { immediate: true })
 
       await message.value.update()
 
@@ -176,18 +160,12 @@ describe('Pending State', () => {
       expect(handler.mock.calls[0][0]).toBeUndefined()
       expect(handler.mock.calls[1][0]).toBe(true)
       expect(handler.mock.calls[2][0]).toBe(false)
-
-      expect(modelHandler).toBeCalledTimes(3)
     })
 
     test('pending state for model.remove', async () => {
       const removeState = computed(() => messagesService.pendingById[0]?.remove)
       const handler = jest.fn()
       watch(() => removeState.value, handler, { immediate: true })
-
-      const modelRemoveState = computed(() => messagesService.pendingById.Model?.remove)
-      const modelHandler = jest.fn()
-      watch(() => modelRemoveState.value, modelHandler, { immediate: true })
 
       await message.value.remove()
 
@@ -199,8 +177,23 @@ describe('Pending State', () => {
       expect(handler.mock.calls[1][0]).toBe(true)
       // Record gets removed from store
       expect(handler.mock.calls[2][0]).toBeUndefined()
+    })
+  })
 
-      expect(modelHandler).toBeCalledTimes(3)
+  describe('Model getters for instance state', () => {
+    const config = {
+      isCreatePending: 'create',
+      isPatchPending: 'patch',
+      isUpdatePending: 'update',
+      isRemovePending: 'remove',
+    }
+    Object.entries(config).forEach(([title, method]) => {
+      test(title, () => {
+        messagesService.setPendingById('foo', method, true)
+        expect(messagesService[title]).toBeTruthy()
+        messagesService.setPendingById('foo', method, false)
+        expect(messagesService[title]).toBeFalsy()
+      })
     })
   })
 })
