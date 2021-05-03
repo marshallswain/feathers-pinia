@@ -3,6 +3,7 @@ import { defineStore as piniaDefineStore } from 'pinia'
 import { registerModel } from './models'
 import { enableServiceEvents } from './service-store/events'
 import { HandleEvents } from './types'
+import { Model } from './service-store/types'
 
 interface SetupOptions {
   pinia: any
@@ -21,6 +22,11 @@ interface DefineStoreOptions {
   Model?: any
 }
 
+interface SetupResult {
+  defineStore: any
+  BaseModel: Model
+}
+
 export function setup({
   pinia,
   clients,
@@ -29,7 +35,7 @@ export function setup({
   enableEvents = true,
   debounceEventsTime = 20,
   debounceEventsMaxWait = 1000,
-}: SetupOptions) {
+}: SetupOptions): SetupResult {
   function defineStore(options: DefineStoreOptions) {
     const { servicePath } = options
 
@@ -87,7 +93,7 @@ export function setup({
 
   return {
     defineStore,
-    BaseModel,
+    BaseModel
   }
 }
 

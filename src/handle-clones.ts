@@ -6,7 +6,7 @@ import { getId } from './utils'
 interface HandleClonesOptions {
   debug?: boolean
   useExisting?: boolean
-  watchProps?: Array<any>
+  watchProps?: string[]
 }
 interface SaveHandlerOpts {
   commit?: boolean

@@ -1,9 +1,9 @@
 import { getId } from '../utils'
-import { AnyData, ModelInstanceOptions } from './types'
+import { AnyData, Model, ModelInstanceOptions } from './types'
 import { Id, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 
-export class BaseModel {
+export class BaseModel implements Model {
   static store = null
   static pinia = null
   static servicePath = null
@@ -18,10 +18,10 @@ export class BaseModel {
     return this
   }
 
-  public instanceDefaults(data: AnyData, models: { [name: string]: any }) {
+  public instanceDefaults(data: AnyData, models: { [name: string]: any }): AnyData {
     return data
   }
-  public setupInstance(data: AnyData, models: { [name: string]: any }) {
+  public setupInstance(data: AnyData, models: { [name: string]: any }): AnyData {
     return data
   }
 
@@ -50,24 +50,24 @@ export class BaseModel {
     return (this.store as any).removeFromStore(params)
   }
 
-  get isSavePending() {
+  get isSavePending(): boolean {
     const { idField, store } = this.constructor as typeof BaseModel
     const pending = (store as any).pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
   }
-  get isCreatePending() {
+  get isCreatePending(): boolean {
     const { idField, store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.create || false
   }
-  get isPatchPending() {
+  get isPatchPending(): boolean {
     const { idField, store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.patch || false
   }
-  get isUpdatePending() {
+  get isUpdatePending(): boolean {
     const { idField, store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.update || false
   }
-  get isRemovePending() {
+  get isRemovePending(): boolean {
     const { idField, store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.remove || false
   }
@@ -182,7 +182,7 @@ export class BaseModel {
   }
 }
 
-function checkThis(context: any) {
+function checkThis(context: any): void {
   if (!context) {
     throw new Error(
       `Instance methods must be called with the dot operator. If you are referencing one in an event, use '@click="() => instance.remove()"' so that the correct 'this' context is applied. Using '@click="instance.remove"' will call the remove function with "this" set to 'undefined' because the function is called directly instead of as a method.`

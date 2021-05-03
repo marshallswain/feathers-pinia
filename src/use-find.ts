@@ -5,7 +5,7 @@ import { getQueryInfo, getItemsFromQueryInfo } from './utils'
 import { Model } from './service-store/types'
 
 interface UseFindOptions {
-  model: any
+  model: Model
   params: Params | Ref<Params>
   fetchParams?: Params | Ref<Params>
   queryWhen?: Ref<boolean>

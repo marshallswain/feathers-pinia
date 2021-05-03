@@ -24,6 +24,17 @@ export interface Paginated<T> {
   data: T[]
 }
 
+export interface QueryInfo {
+  qid: string
+  query: Query
+  queryId: string
+  queryParams: Params
+  pageParams: Omit<Params, '$limit' | '$skip'>
+  pageId: string
+  response: any
+  isOutdated: boolean | undefined
+}
+
 export interface HandleEvents {
   created?: Function
   patched?: Function

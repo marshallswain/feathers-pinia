@@ -265,7 +265,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (existing) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
-          if (!originalItem.hasOwnProperty(key)) {
+          if (!Object.prototype.hasOwnProperty.call(originalItem, key)) {
             delete readyToReset[key]
           }
         })
@@ -304,10 +304,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (!this.pagination[qid]) {
         this.pagination[qid] = {}
       }
-      if (!query.hasOwnProperty('$limit') && response.hasOwnProperty('limit')) {
+      if (!Object.prototype.hasOwnProperty.call(query, '$limit') && Object.prototype.hasOwnProperty.call(response, 'limit')) {
         this.pagination.defaultLimit = response.limit
       }
-      if (!query.hasOwnProperty('$skip') && response.hasOwnProperty('skip')) {
+      if (!Object.prototype.hasOwnProperty.call(query, '$skip') && Object.prototype.hasOwnProperty.call(response, 'skip')) {
         this.pagination.defaultSkip = response.skip
       }
 

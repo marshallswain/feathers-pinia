@@ -1,4 +1,4 @@
-import { Params, Paginated } from './types'
+import { Params, Paginated, QueryInfo } from './types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'bson-objectid'
@@ -21,29 +21,34 @@ function stringifyIfObject(val: any): string | any {
  */
 export function getId(item: any, idField?: string) {
   if (!item) return
+  // TODO: why 'hasOwnProperty' at all?
   if ((idField && item[idField] != null) || item.hasOwnProperty(idField)) {
     return stringifyIfObject(item[idField as string])
   }
+  // TODO: why 'hasOwnProperty' at all?
   if (item.id != null || item.hasOwnProperty('id')) {
     return stringifyIfObject(item.id)
   }
+  // TODO: why 'hasOwnProperty' at all?
   if (item._id != null || item.hasOwnProperty('_id')) {
     return stringifyIfObject(item._id)
   }
 }
 export function getTempId(item: any) {
+  // TODO: why 'hasOwnProperty' at all?
   if (item?.__tempId != null || item?.hasOwnProperty('__tempId')) {
     return stringifyIfObject(item.__tempId)
   }
 }
 export function getAnyId(item: any) {
-  return getId(item) != null ? getId(item) : getTempId(item)
+  const id = getId(item)
+  return id != null ? id : getTempId(item)
 }
 
 export function getQueryInfo(
   params: Params = {},
   response: Partial<Pick<Paginated<any>, 'limit' | 'skip'>> = {}
-) {
+): QueryInfo {
   const query = params.query || {}
   const qid: string = params.qid || 'default'
   const $limit =
@@ -64,10 +69,14 @@ export function getQueryInfo(
     pageId,
     response: undefined,
     isOutdated: undefined as boolean | undefined,
-  }
+  } as QueryInfo
 }
 
-export function getItemsFromQueryInfo(pagination: any, queryInfo: any, keyedById: any) {
+export function getItemsFromQueryInfo(
+  pagination: any, 
+  queryInfo: QueryInfo, 
+  keyedById: any
+  ) {
   const { queryId, pageId } = queryInfo
   const queryLevel = pagination[queryId]
   const pageLevel = queryLevel && queryLevel[pageId]
