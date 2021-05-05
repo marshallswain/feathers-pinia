@@ -41,7 +41,5 @@ describe('Clear Storage', () => {
     clearStorage(localStorageMock)
     await timeout(600)
     expect(localStorageMock.removeItem).toHaveBeenCalled()
-    // TODO incomplete test
-    // const [removedKey, removedValue] = (localStorageMock.removeItem as any).mock.calls[0]
   })
 })
