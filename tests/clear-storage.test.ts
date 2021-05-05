@@ -1,4 +1,4 @@
-import { clearStorage } from '../src/clear-storage'
+import { clearStorage } from '../src/index'
 import { syncWithStorage } from '../src/storage-sync'
 import { createPinia } from 'pinia'
 import { setup } from '../src/index'
@@ -34,12 +34,12 @@ describe('Clear Storage', () => {
   test('clear storage', async () => {
     const msg = messagesService.add({ test: true })
     await timeout(600)
+
     expect(localStorageMock.setItem).toHaveBeenCalled()
     const [key, value] = (localStorageMock.setItem as any).mock.calls[0]
     expect(key).toBe('service.messages')
 
     clearStorage(localStorageMock)
-    await timeout(600)
     expect(localStorageMock.removeItem).toHaveBeenCalled()
   })
 })
