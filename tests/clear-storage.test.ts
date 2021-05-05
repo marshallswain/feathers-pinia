@@ -19,6 +19,8 @@ const localStorageMock: Storage = {
   clear: jest.fn(),
   length: 0,
   key: jest.fn(),
+  // Dummy key to make sure removeItem is called
+  'service.items': '{"hey": "there"}',
 }
 syncWithStorage(messagesService, ['tempsById'], localStorageMock)
 
@@ -41,6 +43,5 @@ describe('Clear Storage', () => {
     expect(localStorageMock.removeItem).toHaveBeenCalled()
     // TODO incomplete test
     // const [removedKey, removedValue] = (localStorageMock.removeItem as any).mock.calls[0]
-
   })
 })
