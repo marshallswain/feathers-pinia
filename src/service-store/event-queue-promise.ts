@@ -1,4 +1,3 @@
-import { TIMEOUT } from 'node:dns'
 import { watch, computed } from 'vue'
 
 type EventName = 'created' | 'updated' | 'patched' | 'removed'
@@ -18,7 +17,7 @@ export const makeGetterName = (event: EventName) =>
 export const makeState = (event: EventName) => ({
   promise: null,
   isResolved: false,
-  getter: makeGetterName(event),
+  getter: makeGetterName(event)
 })
 export const resetState = () => {
   events.forEach((e) => {
