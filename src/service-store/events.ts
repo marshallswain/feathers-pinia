@@ -1,21 +1,24 @@
 import { getId } from '../utils'
 import _debounce from 'lodash/debounce'
 import { models } from '../models'
+import { BaseModel } from '.'
+import { OfTypeModel, ServiceOptions, ServiceStore } from './types'
+import { SetupOptions, EventName, Item } from '../types'
 
 export interface ServiceEventsDebouncedQueue {
-  addOrUpdateById: any
-  removeItemById: any
-  enqueueAddOrUpdate(item: any): void
-  enqueueRemoval(item: any): void
+  addOrUpdateById: Record<string|number, Item>
+  removeItemById: Record<string|number, Item>
+  enqueueAddOrUpdate(item: Item): void
+  enqueueRemoval(item: Item): void
   flushAddOrUpdateQueue(): void
   flushRemoveItemQueue(): void
 }
 
 interface EnableServiceEventsOptions {
   service: any
-  Model: any
-  store: any
-  options: any
+  Model: OfTypeModel
+  store: ServiceStore
+  options: Required<Pick<ServiceOptions, "idField">> & Required<Pick<SetupOptions, "debounceEventsMaxWait" | "debounceEventsTime" | "handleEvents">>
 }
 
 export function enableServiceEvents({
@@ -45,11 +48,9 @@ export function enableServiceEvents({
     },
     flushAddOrUpdateQueue: _debounce(
       async function () {
-        // @ts-ignore
         const values = Object.values(this.addOrUpdateById)
         if (values.length === 0) return
         await store.addOrUpdate(values)
-        // @ts-ignore
         this.addOrUpdateById = {}
       },
       options.debounceEventsTime || 20,
@@ -57,11 +58,9 @@ export function enableServiceEvents({
     ),
     flushRemoveItemQueue: _debounce(
       function () {
-        // @ts-ignore
         const values = Object.values(this.removeItemById)
         if (values.length === 0) return
         store.removeFromStore(values)
-        // @ts-ignore
         this.removeItemById = {}
       },
       options.debounceEventsTime || 20,
@@ -69,7 +68,7 @@ export function enableServiceEvents({
     ),
   }
 
-  const handleEvent = (eventName: string, item: any, mutationName: string): void => {
+  const handleEvent = (eventName: EventName, item: any, mutationName: string): void => {
     const handler = options.handleEvents[eventName]
     const confirmOrArray = handler(item, { model: Model, models })
     const [affectsStore, modified = item] = Array.isArray(confirmOrArray)

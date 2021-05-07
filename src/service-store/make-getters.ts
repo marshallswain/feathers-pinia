@@ -1,4 +1,4 @@
-import { Model, ServiceOptions, ServiceGetters } from './types'
+import { Model, ServiceOptions, ServiceGetters, ServiceStore, ServiceState } from './types'
 import { Params } from '../types'
 import { Id } from '@feathersjs/feathers'
 
@@ -11,26 +11,28 @@ import fastCopy from 'fast-copy'
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
 
-export function makeGetters(options: ServiceOptions): ServiceGetters {
+export function makeGetters(
+  options: ServiceOptions
+): ServiceGetters {
   return {
     // Returns the Feathers service currently assigned to this store.
     service() {
-      return options.clients[this.clientAlias].service(this.servicePath)
+      return options.clients[(this as unknown as ServiceStore).clientAlias].service((this as unknown as ServiceStore).servicePath)
     },
     items() {
-      return Object.values(this.itemsById)
+      return Object.values((this as unknown as ServiceStore).itemsById)
     },
     temps() {
-      return Object.values(this.tempsById)
+      return Object.values((this as unknown as ServiceStore).tempsById)
     },
     clones() {
-      return Object.values(this.clonesById)
+      return Object.values((this as unknown as ServiceStore).clonesById)
     },
     findInStore() {
       return (params: Params) => {
         params = { ...unref(params) } || {}
 
-        const { paramsForServer, whitelist, itemsById } = this
+        const { paramsForServer, whitelist, itemsById } = (this as unknown as ServiceStore)
         const q = _.omit(params.query || {}, paramsForServer)
 
         const { query, filters } = filterQuery(q, {
@@ -65,7 +67,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         // Make sure items are instances
         values = values.map((item) => {
           if (item && !item.constructor.modelName) {
-            item = this.addOrUpdate(item)
+            item = (this as unknown as ServiceStore).addOrUpdate(item)
           }
           return item
         })
@@ -88,7 +90,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
 
         params.query = _.omit(params.query, ...FILTERS)
 
-        return this.findInStore(params).total
+        return (this as unknown as ServiceStore).findInStore(params).total
       }
     },
     getFromStore() {
@@ -97,31 +99,37 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         params = fastCopy(unref(params) || {})
         const { Model } = options
 
-        let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
+        const { 
+          itemsById, 
+          idField, 
+          addOrUpdate 
+        } = (this as unknown as ServiceStore)
+
+        let item = itemsById[id] && select(params, idField)(itemsById[id])
 
         // Make sure item is an instance
         if (item && !item.constructor.modelName) {
-          item = this.addOrUpdate(item)
+          item = addOrUpdate(item)
         }
         return item
       }
     },
     isCreatePending() {
-      return makePending('create', this)
+      return makePending('create', (this as unknown as ServiceStore))
     },
     isPatchPending() {
-      return makePending('patch', this)
+      return makePending('patch', (this as unknown as ServiceStore))
     },
     isUpdatePending() {
-      return makePending('update', this)
+      return makePending('update', (this as unknown as ServiceStore))
     },
     isRemovePending() {
-      return makePending('remove', this)
+      return makePending('remove', (this as unknown as ServiceStore))
     },
   }
 }
 
-function makePending(method: string, store: any): boolean {
+function makePending(method: string, store: ServiceStore): boolean {
   const isPending = Object.keys(store.pendingById).reduce((isPending, key) => {
     return store.pendingById[key][method] || isPending
   }, false)

@@ -20,7 +20,7 @@ function stringifyIfObject(val: any): string | any {
  * @param item
  * @param idField
  */
-export function getId(item: any, idField?: string) {
+export function getId(item: any, idField?: string): Id | undefined {
   if (!item) return
   // TODO: why 'hasOwnProperty' at all?
   if ((idField && item[idField] != null) || item.hasOwnProperty(idField)) {
@@ -165,7 +165,9 @@ export function useCleanData(data: any) {
  * @param data item or array of items
  * @returns object with { items[], isArray } where isArray is a boolean of if the data was an array.
  */
-export function getArray(data: any) {
+export function getArray<T>(
+  data: T | T[]
+  ): { items: T[], isArray: boolean } {
   const isArray = Array.isArray(data)
   return { items: isArray ? data : [data], isArray }
 }

@@ -1,16 +1,17 @@
 import { getId } from '../utils'
-import { AnyData, Model, ModelInstanceOptions } from './types'
+import { AnyData, Model, ModelInstanceOptions, ServiceStore } from './types'
 import { Id, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 
 export class BaseModel implements Model {
-  static store = null
+  static store: ServiceStore
   static pinia = null
-  static servicePath = null
-  static idField = ''
+  static servicePath: string
+  static idField: string
 
   public __isClone!: boolean
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(data: AnyData, options: ModelInstanceOptions = {}) {
     const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
     Object.assign(this, instanceDefaults(data, { models, store }))
@@ -18,44 +19,56 @@ export class BaseModel implements Model {
     return this
   }
 
-  public static instanceDefaults(data: AnyData, models: { [name: string]: any }) {
+  public static instanceDefaults(
+    data: AnyData, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    models: { [name: string]: Model },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    store: ServiceStore
+    ): AnyData {
     return data
   }
-  public static setupInstance(data: AnyData, models: { [name: string]: any }) {
+  public static setupInstance(
+    data: AnyData, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    models: { [name: string]: Model },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    store: ServiceStore
+    ): AnyData {
     return data
   }
 
   public static find(params?: Params) {
-    return (this.store as any).find(params)
+    return this.store.find(params)
   }
   public static findInStore(params?: Params) {
-    return (this.store as any).findInStore(params)
+    return this.store.findInStore(params)
   }
   public static get(id: Id, params?: Params) {
-    return (this.store as any).get(id, params)
+    return this.store.get(id, params)
   }
   public static getFromStore(id: Id, params?: Params) {
-    return (this.store as any).getFromStore(id, params)
+    return this.store.getFromStore(id, params)
   }
   public static count(params?: Params) {
-    return (this.store as any).count(params)
+    return this.store.count(params)
   }
   public static countInStore(params?: Params) {
-    return (this.store as any).countInStore(params)
+    return this.store.countInStore(params)
   }
   public static addToStore(data?: any) {
-    return (this.store as any).add(data)
+    return this.store.add(data)
   }
   public static remove(params?: Params) {
-    return (this.store as any).remove(params)
+    return this.store.remove(params)
   }
   public static removeFromStore(params?: Params) {
-    return (this.store as any).removeFromStore(params)
+    return this.store.removeFromStore(params)
   }
 
   get isSavePending(): boolean {
     const { idField, store } = this.constructor as typeof BaseModel
-    const pending = (store as any).pendingById[getId(this)]
+    const pending = (store).pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
   }
   get isCreatePending(): boolean {
@@ -78,8 +91,8 @@ export class BaseModel implements Model {
   /**
    * Add the current record to the store
    */
-  public addToStore() {
-    const { store }: { store: any } = this.constructor as typeof BaseModel
+  public addToStore(): void {
+    const { store } = this.constructor as typeof BaseModel
     store.add(this)
   }
 
@@ -88,7 +101,7 @@ export class BaseModel implements Model {
    */
   public clone(data: AnyData = {}): this {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).clone(this, data)
+    return store.clone(this, data)
   }
 
   /**
@@ -97,7 +110,7 @@ export class BaseModel implements Model {
   public commit(): this {
     const { idField, store } = this.constructor as typeof BaseModel
     if (this.__isClone) {
-      return (store as any).commit(this)
+      return store.commit(this)
     } else {
       throw new Error('You cannot call commit on a non-copy')
     }
@@ -109,14 +122,15 @@ export class BaseModel implements Model {
   public reset(): this {
     const { idField, store } = this.constructor as typeof BaseModel
 
-    return (store as any).resetCopy(this)
+    // TODO @marshallswain: resetCopy is not defined!
+    return store.resetCopy(this)
   }
 
   /**
    * A shortcut to either call create or patch/update
    * @param params
    */
-  public save(params?: any): Promise<this> {
+  public save(params?: Params): Promise<this> {
     const { idField } = this.constructor as typeof BaseModel
     const id = getId(this, idField)
     if (id != null) {
@@ -136,7 +150,7 @@ export class BaseModel implements Model {
     if (data[idField] === null) {
       delete data[idField]
     }
-    return (store as any).create(data, params)
+    return store.create(data, params)
   }
 
   /**
@@ -153,7 +167,7 @@ export class BaseModel implements Model {
       )
       return Promise.reject(error)
     }
-    return (store as any).patch(id, this, params)
+    return store.patch(id, this, params)
   }
 
   /**
@@ -170,7 +184,7 @@ export class BaseModel implements Model {
       )
       return Promise.reject(error)
     }
-    return (store as any).update(id, this, params)
+    return store.update(id, this, params)
   }
 
   /**
@@ -181,7 +195,7 @@ export class BaseModel implements Model {
     checkThis(this)
     const { idField, store } = this.constructor as typeof BaseModel
     const id: Id = getId(this, idField)
-    return (store as any).remove(id, params)
+    return store.remove(id, params)
   }
   /**
    * Removes the instance from the store
@@ -189,7 +203,7 @@ export class BaseModel implements Model {
    */
   public removeFromStore(params?: Params): Promise<this> {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).removeFromStore(this)
+    return store.removeFromStore(this)
   }
 }
 

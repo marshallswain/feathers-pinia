@@ -1,7 +1,9 @@
 import { Ref } from 'vue'
-import { Params, Paginated } from '../types'
+import { Params, Paginated, Item, Temp, Clone, EventName } from '../types'
 import { EventEmitter } from 'events'
-import { Id } from '@feathersjs/feathers'
+import { Id, Service } from '@feathersjs/feathers'
+import { StateTree, GettersTree, Store, DefineStoreOptions } from 'pinia'
+import { SetRequired } from "type-fest";
 
 interface PendingById {
   create?: boolean
@@ -14,9 +16,11 @@ interface ModelPendingState {
   count?: boolean
   get?: boolean
 }
-export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remove'
+export type RequestType = 'find' | 'count' | 'get' | 'create' | 'patch' | 'update' | 'remove'
 
-export interface ServiceState<M extends Model = Model> {
+export type ServiceStore = Store<string, ServiceState, ServiceGetters, ServiceActions>
+export type ServiceStoreOptions = DefineStoreOptions<string, ServiceState, ServiceGetters, ServiceActions>
+export interface ServiceState<M extends Model = Model> extends StateTree {
   clientAlias: string
   servicePath: string
   pagination: {
@@ -47,11 +51,45 @@ export interface ServiceState<M extends Model = Model> {
     removed: { [k: string]: M; [k: number]: M }
   }
 }
-export interface ServiceGetters {
-  [k: string]: any
+
+export type OfTypeModel = new (data: AnyData, options?: ModelInstanceOptions) => Model
+
+export interface ServiceGetters extends GettersTree<ServiceState> {
+  [k: string]: () => any
+  service: () => Service
+  items: () => Item[]
+  temps: () => Temp[]
+  clones: () => Clone[]
+  findInStore: () => ((params: Params) => Paginated<any>)
+  countInStore: () => ((params: Params) => number)
+  getFromStore: () => ((id: Id, params?: Params) => Item | Temp | Clone)
+  isCreatePending: () => boolean
+  isPatchPending: () => boolean
+  isUpdatePending: () => boolean
+  isRemovePending: () => boolean
 }
 export interface ServiceActions {
   [k: string]: any
+  find: (requestParams: Params) => Promise<any>
+  handleFindResponse: ({ params, response }: { params: Params; response: any }) => Promise<any>
+  afterFind: (reponse: any) => any
+  handleFindError: ({ params, error }: { params: Params; error: any }) => Promise<never>
+  count: (params: Params) => Promise<any>
+  get: (id: Id, params: Params) => Promise<any>
+  create: (data: any, params?: Params) => Promise<any>
+  update: (id: Id, data: any, params?: Params) => Promise<any>
+  patch: (id: Id, data: any, params?: Params) => Promise<any>
+  remove: (id: Id, params?: Params) => Promise<any>
+  removeFromStore: (data: any) => any
+  add: (data: AnyData) => any
+  addOrUpdate: (data: AnyData) => AnyData
+  clearAll: () => void
+  clone: (item: Model, data?: any) => Model
+  commit: (item: Model) => Model
+  updatePaginationForQuery: ({ qid, response, query = {} }: UpdatePaginationForQueryOptions) => any
+  setPendingById: (id: Id, method: RequestType, val: boolean) => void
+  hydrateAll: () => void
+  toggleEventLock: (idOrIds: Id | Id[], event: EventName) => void
 }
 export interface PiniaStoreOptions {
   state: ServiceState

@@ -1,7 +1,7 @@
 import { TIMEOUT } from 'node:dns'
 import { watch, computed } from 'vue'
-
-type EventName = 'created' | 'updated' | 'patched' | 'removed'
+import { Event } from '../types'
+import { ServiceStore } from './types'
 
 interface QueuePromiseState {
   promise: Promise<any>
@@ -12,15 +12,15 @@ interface QueuePromiseState {
 const events = ['created', 'updated', 'patched', 'removed']
 const state: { [key: string]: QueuePromiseState } = {}
 
-export const makeGetterName = (event: EventName) =>
+export const makeGetterName = (event: Event): string =>
   `is${event.slice(0, 1).toUpperCase()}${event.slice(1, event.length - 1)}Pending`
 
-export const makeState = (event: EventName) => ({
+export const makeState = (event: Event) => ({
   promise: null,
   isResolved: false,
   getter: makeGetterName(event),
 })
-export const resetState = () => {
+export const resetState = (): void => {
   events.forEach((e) => {
     delete state[e]
   })
@@ -33,7 +33,10 @@ export const resetState = () => {
  * @param event
  * @returns
  */
-export function useQueuePromise(store: any, event: EventName) {
+export function useQueuePromise(
+  store: ServiceStore, 
+  event: Event
+  ): Promise<unknown> {
   state[event] = state[event] || makeState(event)
 
   if (!state[event].promise || state[event].isResolved) {

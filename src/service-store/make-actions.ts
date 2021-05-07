@@ -1,5 +1,5 @@
-import { Model, ServiceOptions, ServiceActions, UpdatePaginationForQueryOptions } from './types'
-import { Params } from '../types'
+import { Model, ServiceOptions, ServiceActions, UpdatePaginationForQueryOptions, ServiceState, ServiceGetters, ServiceStore } from './types'
+import { EventName, Params } from '../types'
 import { RequestType, AnyData } from './types'
 import { Id, PaginationOptions } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
@@ -15,13 +15,16 @@ import {
   restoreTempIds,
   getArray,
 } from '../utils'
+import { DefineStoreOptions, Store } from 'pinia'
 
-export function makeActions(options: ServiceOptions): ServiceActions {
+export function makeActions(
+  options: ServiceOptions
+): ServiceActions {
   return {
     ...(options.actions || {}),
 
     find(requestParams: Params) {
-      let params: any = requestParams || {}
+      let params: Params = requestParams || {}
       params = fastCopy(params)
 
       // For working with client-side services, paginate.default must be truthy.
@@ -29,14 +32,21 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         params.paginate = { default: true }
       }
 
-      this.setPendingById('Model', 'find', true)
+      const {
+        setPendingById,
+        service,
+        handleFindResponse,
+        handleFindError
+      } = (this as unknown as ServiceStore)
 
-      return this.service
-        .find(params as any)
-        .then((response: any) => this.handleFindResponse({ params, response }))
-        .catch((error: any) => this.handleFindError({ params, error }))
+      setPendingById('Model', 'find', true)
+
+      return service
+        .find(params)
+        .then((response: any) => handleFindResponse({ params, response }))
+        .catch((error: any) => handleFindError({ params, error }))
         .finally(() => {
-          this.setPendingById('Model', 'find', false)
+          setPendingById('Model', 'find', false)
         })
     },
     /**
@@ -50,19 +60,26 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     async handleFindResponse({ params, response }: { params: Params; response: any }) {
       const { qid = 'default', query } = params
 
-      this.addOrUpdate(response.data || response)
+      const {
+        addOrUpdate,
+        updatePaginationForQuery,
+        itemsById,
+        afterFind
+      } = (this as unknown as ServiceStore)
+
+      addOrUpdate(response.data || response)
 
       // The pagination data will be under `pagination.default` or whatever qid is passed.
-      response.data && this.updatePaginationForQuery({ qid, response, query })
+      response.data && updatePaginationForQuery({ qid, response, query })
 
       // Swap out the response records for their Vue-observable store versions
       const data = response.data || response
-      const mappedFromState = data.map((i: any) => this.itemsById[getId(i)])
+      const mappedFromState = data.map((i: any) => itemsById[getId(i)])
       if (mappedFromState[0] !== undefined) {
         response.data ? (response.data = mappedFromState) : (response = mappedFromState)
       }
 
-      response = await this.afterFind(response)
+      response = await afterFind(response)
 
       return response
     },
@@ -84,9 +101,14 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       params.query.$limit = 0
 
-      this.setPendingById('Model', 'count', true)
+      const {
+        setPendingById,
+        service
+      } = this as unknown as ServiceStore;
 
-      return this.service.find(params as any).finally(() => {
+      setPendingById('Model', 'count', true)
+
+      return service.find(params as any).finally(() => {
         this.setPendingById('Model', 'count', false)
       })
     },
@@ -96,66 +118,86 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     get(id: Id, params: Params = {}) {
       params = fastCopy(params)
 
+      const {
+        getFromStore,
+        service,
+        addOrUpdate,
+        setPendingById
+      } = (this as unknown as ServiceStore)
+
+      // TODO @marshallswain: `skipRequestIfExists` is defined nowhere else! remove it or add it to state?
       const skipRequestIfExists = params.skipRequestIfExists || this.skipRequestIfExists
       delete params.skipRequestIfExists
 
       // If the records is already in store, return it
-      const existingItem = this.getFromStore(id, params)
+      const existingItem = getFromStore(id, params)
       if (existingItem && skipRequestIfExists) {
         return Promise.resolve(existingItem)
       }
 
-      this.setPendingById('Model', 'get', true)
+      setPendingById('Model', 'get', true)
 
-      return this.service
+      return service
         .get(id, params)
         .then((data: any) => {
-          this.addOrUpdate(data)
-          this.setPendingById('Model', 'get', false)
+          addOrUpdate(data)
+          setPendingById('Model', 'get', false)
           return this.itemsById[id]
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'get', error })
-          this.setPendingById('Model', 'get', false)
+          setPendingById('Model', 'get', false)
           return Promise.reject(error)
         })
     },
 
     create(data: any, params: Params) {
-      const { idField, tempIdField } = this
+      const { 
+        idField, 
+        tempIdField,
+        setPendingById,
+        service,
+        addOrUpdate
+      } = this as unknown as ServiceStore
       params = fastCopy(params) || {}
 
-      this.setPendingById(getId(data) || data[tempIdField], 'create', true)
+      setPendingById(getId(data) || data[tempIdField], 'create', true)
 
-      return this.service
+      return service
         .create(cleanData(data), params)
         .then((response: any) => {
-          return this.addOrUpdate(restoreTempIds(data, response))
+          return addOrUpdate(restoreTempIds(data, response))
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'create', error })
           return Promise.reject(error)
         })
         .finally(() => {
-          this.setPendingById(getId(data) || data[tempIdField], 'create', false)
+          setPendingById(getId(data) || data[tempIdField], 'create', false)
         })
     },
     update(id: Id, data: any, params: Params) {
       params = fastCopy(params) || {}
 
+      const {
+        setPendingById,
+        service,
+        addOrUpdate
+      } = this as unknown as ServiceStore;
+
       this.setPendingById(id, 'update', true)
 
-      return this.service
+      return service
         .update(id, cleanData(data), params)
         .then((data: any) => {
-          return this.addOrUpdate(data)
+          return addOrUpdate(data)
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'update', error })
           return Promise.reject(error)
         })
         .finally(() => {
-          this.setPendingById(id, 'update', false)
+          setPendingById(id, 'update', false)
         })
     },
     patch(id: Id, data: any, params: Params) {
@@ -167,19 +209,26 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (params && params.data) {
         data = params.data
       }
-      this.setPendingById(id, 'patch', true)
 
-      return this.service
+      const {
+        setPendingById,
+        service,
+        addOrUpdate
+      } = this as unknown as ServiceStore
+
+      setPendingById(id, 'patch', true)
+
+      return service
         .patch(id, cleanData(data), params)
         .then((data: any) => {
-          return this.addOrUpdate(data)
+          return addOrUpdate(data)
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'update', error })
           return Promise.reject(error)
         })
         .finally(() => {
-          this.setPendingById(id, 'patch', false)
+          setPendingById(id, 'patch', false)
         })
     },
 
@@ -192,18 +241,24 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     remove(id: Id, params: Params = {}) {
       params = fastCopy(params)
 
-      this.setPendingById(id, 'remove', true)
+      const {
+        setPendingById,
+        service,
+        removeFromStore
+      } = this as unknown as ServiceStore
 
-      return this.service
+      setPendingById(id, 'remove', true)
+
+      return service
         .remove(id, params)
         .then((data: any) => {
-          this.setPendingById(id, 'remove', false)
-          this.removeFromStore(data)
+          setPendingById(id, 'remove', false)
+          removeFromStore(data)
           return data
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'remove', error })
-          this.setPendingById(id, 'remove', false)
+          setPendingById(id, 'remove', false)
           return Promise.reject(error)
         })
     },
@@ -211,14 +266,21 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const { items, isArray } = getArray(data)
       const idsToRemove = items
         .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item)))
-        .filter((id: any) => id != null)
+        .filter((id: Id) => id != null)
 
-      this.itemsById = _.omit(this.itemsById, ...idsToRemove)
-      this.ids = Object.keys(this.itemsById)
+      const {
+        itemsById,
+        clonesById,
+        pendingById,
+        tempsById
+      } = this as unknown as ServiceStore
 
-      this.clonesById = _.omit(this.clonesById, ...idsToRemove)
-      this.pendingById = _.omit(this.pendingById, ...idsToRemove)
-      this.tempsById = _.omit(this.tempsById, ...idsToRemove)
+      (this as unknown as ServiceStore).itemsById = _.omit(itemsById, ...idsToRemove);
+      (this as unknown as ServiceStore).ids = Object.keys(itemsById);
+
+      (this as unknown as ServiceStore).clonesById = _.omit(clonesById, ...idsToRemove);
+      (this as unknown as ServiceStore).pendingById = _.omit(pendingById, ...idsToRemove);
+      (this as unknown as ServiceStore).tempsById = _.omit(tempsById, ...idsToRemove);
 
       return data
     },
@@ -228,17 +290,23 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @returns data added or modified in the store.  If you pass an array, you get an array back.
      */
     add(data: AnyData) {
-      return this.addOrUpdate(data)
+      return (this as unknown as ServiceStore).addOrUpdate(data)
     },
     addOrUpdate(data: AnyData) {
       const { items, isArray } = getArray(data)
-      const { idField, autoRemove } = this
+      const { 
+        idField, 
+        autoRemove,
+        servicePath,
+        tempsById,
+        itemsById
+      } = this as unknown as ServiceStore
 
       // Assure each item is an instance
       items.forEach((item: any, index: number) => {
         if (!(item instanceof options.Model)) {
-          const classes = { [this.servicePath]: options.Model }
-          items[index] = new classes[this.servicePath](item)
+          const classes = { [servicePath]: options.Model }
+          items[index] = new classes[servicePath](item)
         }
       })
 
@@ -246,12 +314,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const withBoth = items.filter((i: any) => getId(i) != null && getTempId(i) != null)
       withBoth.forEach((item: any) => {
         const id = getId(item)
-        const existingTemp = this.tempsById[item.__tempId]
+        const existingTemp = tempsById[item.__tempId]
         if (existingTemp) {
           this.itemsById[id] = existingTemp
-          Object.assign(this.itemsById[id], item)
-          delete this.tempsById[item.__tempId]
-          delete this.itemsById[id].__tempId
+          Object.assign(itemsById[id], item)
+          delete tempsById[item.__tempId]
+          delete itemsById[id].__tempId
         }
         delete item.__tempId
       })
@@ -271,17 +339,23 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     clearAll() {
-      this.ids = []
-      this.itemsById = {}
-      this.tempsById = {}
-      this.clonesById = {}
+      (this as unknown as ServiceStore).ids = []
+      (this as unknown as ServiceStore).itemsById = {}
+      (this as unknown as ServiceStore).tempsById = {}
+      (this as unknown as ServiceStore).clonesById = {}
     },
 
     clone(item: any, data = {}) {
       const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
       const id = getAnyId(item)
-      const originalItem = this[placeToStore][id]
-      const existing = this.clonesById[getAnyId(item)]
+
+      const {
+        clonesById,
+
+      } = this as unknown as ServiceStore
+
+      const originalItem = (this as unknown as ServiceStore)[placeToStore][id]
+      const existing = clonesById[getAnyId(item)]
       if (existing) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
@@ -298,16 +372,20 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
         Object.assign(clone, data)
 
-        this.clonesById[id] = clone
-        return this.clonesById[id] // Must return the item from the store
+        clonesById[id] = clone
+        return clonesById[id] // Must return the item from the store
       }
     },
     commit(item: any) {
       const id = getAnyId(item)
       if (id != null) {
-        const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
-        this[placeToStore][id] = fastCopy(this.clonesById[id])
-        return this.itemsById[id]
+        const { 
+          itemsById,
+          clonesById
+        } = this as unknown as ServiceStore
+        const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById';
+        (this as unknown as ServiceStore)[placeToStore][id] = fastCopy(clonesById[id])
+        return itemsById[id]
       }
     },
 
@@ -317,19 +395,28 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      */
     updatePaginationForQuery({ qid, response, query = {} }: UpdatePaginationForQueryOptions) {
       const { data, total } = response
-      const { idField } = this
+      const { 
+        idField,
+        pagination
+      } = this as unknown as ServiceStore
       const ids = data.map((i: any) => i[idField])
       const queriedAt = new Date().getTime()
       const { queryId, queryParams, pageId, pageParams } = getQueryInfo({ qid, query }, response)
 
       if (!this.pagination[qid]) {
-        this.pagination[qid] = {}
+        pagination[qid] = {}
       }
-      if (!Object.prototype.hasOwnProperty.call(query, '$limit') && Object.prototype.hasOwnProperty.call(response, 'limit')) {
-        this.pagination.defaultLimit = response.limit
+      if (
+        !Object.prototype.hasOwnProperty.call(query, '$limit') && 
+        Object.prototype.hasOwnProperty.call(response, 'limit')
+      ) {
+        pagination.defaultLimit = response.limit
       }
-      if (!Object.prototype.hasOwnProperty.call(query, '$skip') && Object.prototype.hasOwnProperty.call(response, 'skip')) {
-        this.pagination.defaultSkip = response.skip
+      if (
+        !Object.prototype.hasOwnProperty.call(query, '$skip') && 
+        Object.prototype.hasOwnProperty.call(response, 'skip')
+      ) {
+        pagination.defaultSkip = response.skip
       }
 
       const mostRecent = {
@@ -342,7 +429,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         total,
       }
 
-      const qidData = this.pagination[qid] || {}
+      const qidData = pagination[qid] || {}
       Object.assign(qidData, { mostRecent })
       qidData[queryId] = qidData[queryId] || {}
       const queryData = {
@@ -356,14 +443,15 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
       Object.assign(qidData[queryId], pageData)
 
-      const newState = Object.assign({}, this.pagination[qid], qidData)
+      const newState = Object.assign({}, pagination[qid], qidData)
 
-      this.pagination[qid] = newState
+      pagination[qid] = newState
     },
 
-    setPendingById(id: string | number, method: RequestType, val: boolean) {
-      const updatePendingState = (id: string | number, method: RequestType) => {
-        this.pendingById[id] = this.pendingById[id] || ({ [method]: val } as any)
+    setPendingById(id: Id, method: RequestType, val: boolean) {
+      //TODO @marshall: Why not just: `if (!id) { return; }`?
+      const updatePendingState = (id: Id, method: RequestType) => {
+        this.pendingById[id] = this.pendingById[id] || { [method]: val }
         this.pendingById[id][method] = val
       }
       if (id != null) {
@@ -371,15 +459,25 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
     },
     hydrateAll() {
-      this.add(this.items)
+      const {
+        add,
+        items
+      } = (this as unknown as ServiceStore);
+      add(items)
     },
-    toggleEventLock(idOrIds: any, event: string) {
-      setEventLockState(idOrIds, event, true, this)
+    toggleEventLock(idOrIds: Id | Id[], event: EventName) {
+      setEventLockState(idOrIds, event, true, (this as unknown as ServiceStore))
     },
   }
 }
 
-function setEventLockState(data: any, event: string, val: boolean, store: any) {
+// TODO @marshallswain: What's going on here? ` = true`? `val` unused?
+function setEventLockState(
+  data: Id | Id[], 
+  event: EventName, 
+  val: boolean, 
+  store: Store<string, ServiceState, ServiceGetters, ServiceActions>
+  ) {
   const { items: ids, isArray } = getArray(data)
   ids.forEach((id: Id) => {
     const currentLock = store.eventLocksById[event][id]
