@@ -3,7 +3,6 @@ import { createPinia } from 'pinia'
 import { setup, models } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
-import { stringify } from 'node:querystring'
 
 const pinia = createPinia()
 
@@ -185,7 +184,7 @@ describe('Pending State', () => {
       isCreatePending: 'create',
       isPatchPending: 'patch',
       isUpdatePending: 'update',
-      isRemovePending: 'remove',
+      isRemovePending: 'remove'
     }
     Object.entries(config).forEach(([title, method]) => {
       test(title, () => {
