@@ -27,4 +27,15 @@ describe('whitelist', () => {
 
     expect(Array.isArray(data)).toBeTruthy()
   })
+
+  test('find getter fails without whitelist', async () => {
+    const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
+
+    const useMessagesService = defineStore({ servicePath: 'messages' })
+    const messagesService = useMessagesService()
+
+    const fn = () => messagesService.findInStore({ query: { $regex: 'test' } })
+
+    expect(fn).toThrowError()
+  })
 })
