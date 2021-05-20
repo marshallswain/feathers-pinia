@@ -31,7 +31,8 @@ export function setup({
   handleEvents = {},
   enableEvents = true,
   debounceEventsTime = 20,
-  debounceEventsMaxWait = 1000
+  debounceEventsMaxWait = 1000,
+  whitelist = []
 }: SetupOptions) {
   Object.keys(clients).forEach((name) => {
     registerClient(name, clients[name])
@@ -70,7 +71,8 @@ export function setup({
       servicePath,
       clients,
       Model: options.Model,
-      actions: options.actions
+      actions: options.actions,
+      whitelist
     })
     const useStore: any = piniaDefineStore(storeOptions)
     const initializedStore = useStore(pinia)

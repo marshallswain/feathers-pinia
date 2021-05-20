@@ -46,7 +46,7 @@ export interface ServiceState<M extends Model = Model> {
     updated: { [k: string]: M; [k: number]: M }
     removed: { [k: string]: M; [k: number]: M }
   }
-  whitelist: []
+  whitelist?: string[]
 }
 export interface ServiceGetters {
   [k: string]: any

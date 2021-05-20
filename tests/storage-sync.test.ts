@@ -17,7 +17,7 @@ const localStorageMock: Storage = {
   removeItem: jest.fn(),
   clear: jest.fn(),
   length: 0,
-  key: jest.fn(),
+  key: jest.fn()
 }
 syncWithStorage(messagesService, ['tempsById'], localStorageMock)
 
