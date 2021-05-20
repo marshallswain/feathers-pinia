@@ -1,4 +1,4 @@
-import { computed, watch, reactive, isRef, Ref } from 'vue';
+import { computed, watch, reactive, isRef, Ref } from 'vue'
 
 export function usePagination(pagination: any, latestQuery: Ref, options: any = {}) {
   /**
@@ -26,7 +26,7 @@ export function usePagination(pagination: any, latestQuery: Ref, options: any = 
       const $limit = pagination.value.$limit
       const $skip = $limit * (pageNumber - 1)
 
-      pagination.value = {$limit, $skip}
+      pagination.value = { $limit, $skip }
     },
     get() {
       const params = pagination.value
@@ -81,6 +81,6 @@ export function usePagination(pagination: any, latestQuery: Ref, options: any = 
     toEnd,
     toPage,
     next,
-    prev,
+    prev
   }
 }
