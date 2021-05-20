@@ -13,15 +13,16 @@ export function makeState(options: ServiceOptions) {
       Model: {
         find: false,
         count: false,
-        get: false,
-      },
+        get: false
+      }
     },
     eventLocksById: {
       created: {},
       patched: {},
       updated: {},
-      removed: {},
+      removed: {}
     },
     pagination: {},
+    whitelist: []
   })
 }

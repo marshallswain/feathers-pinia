@@ -46,6 +46,7 @@ export interface ServiceState<M extends Model = Model> {
     updated: { [k: string]: M; [k: number]: M }
     removed: { [k: string]: M; [k: number]: M }
   }
+  whitelist: []
 }
 export interface ServiceGetters {
   [k: string]: any
@@ -67,6 +68,7 @@ export interface ServiceOptions {
   servicePath: string
   Model: any
   actions?: { [key: string]: Function }
+  whitelist?: string[]
 }
 
 export type AnyData = { [key: string]: any }
