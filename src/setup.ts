@@ -13,6 +13,7 @@ interface SetupOptions {
   enableEvents?: boolean
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
+  whitelist?: string[]
 }
 interface DefineStoreOptions {
   id?: string
@@ -30,7 +31,7 @@ export function setup({
   handleEvents = {},
   enableEvents = true,
   debounceEventsTime = 20,
-  debounceEventsMaxWait = 1000,
+  debounceEventsMaxWait = 1000
 }: SetupOptions) {
   Object.keys(clients).forEach((name) => {
     registerClient(name, clients[name])
@@ -44,7 +45,7 @@ export function setup({
       created: () => enableEvents,
       patched: () => enableEvents,
       updated: () => enableEvents,
-      removed: () => enableEvents,
+      removed: () => enableEvents
     }
 
     handleEvents = Object.assign({}, defaultHandleEvents, handleEvents)
@@ -69,7 +70,7 @@ export function setup({
       servicePath,
       clients,
       Model: options.Model,
-      actions: options.actions,
+      actions: options.actions
     })
     const useStore: any = piniaDefineStore(storeOptions)
     const initializedStore = useStore(pinia)
@@ -85,7 +86,7 @@ export function setup({
       ...Object.keys(options.actions || {}).reduce((actions: any, key: string) => {
         actions[key] = (options.actions as any)[key].bind(initializedStore)
         return actions
-      }, {}),
+      }, {})
     })
 
     const service = clients[options.clientAlias || 'api'].service(servicePath)
@@ -99,7 +100,7 @@ export function setup({
 
   return {
     defineStore,
-    BaseModel,
+    BaseModel
   }
 }
 
