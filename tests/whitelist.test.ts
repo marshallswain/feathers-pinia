@@ -17,6 +17,17 @@ describe('whitelist', () => {
     expect(messagesService.whitelist[0]).toBe('$regex')
   })
 
+  test('find getter fails without whitelist', async () => {
+    const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
+
+    const useLettersService = defineStore({ servicePath: 'letters' })
+    const lettersService = useLettersService()
+
+    const fn = () => lettersService.findInStore({ query: { $regex: 'test' } })
+
+    expect(fn).toThrowError()
+  })
+
   test('enables custom query params for the find getter', async () => {
     const { defineStore, BaseModel } = setup({ pinia, clients: { api }, whitelist: ['$regex'] })
 
@@ -26,16 +37,5 @@ describe('whitelist', () => {
     const data = messagesService.findInStore({ query: { $regex: 'test' } }).data
 
     expect(Array.isArray(data)).toBeTruthy()
-  })
-
-  test('find getter fails without whitelist', async () => {
-    const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
-
-    const useMessagesService = defineStore({ servicePath: 'messages' })
-    const messagesService = useMessagesService()
-
-    const fn = () => messagesService.findInStore({ query: { $regex: 'test' } })
-
-    expect(fn).toThrowError()
   })
 })
