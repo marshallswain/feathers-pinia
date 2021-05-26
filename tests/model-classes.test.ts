@@ -30,4 +30,8 @@ describe('Model Class', () => {
     expect(models).toHaveProperty('api')
     expect(models.api).toHaveProperty('Message')
   })
+
+  test('Model class is available on the store as a getter', () => {
+    expect(messagesService.Model === Message).toBeTruthy()
+  })
 })

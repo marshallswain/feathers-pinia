@@ -17,6 +17,9 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     service() {
       return options.clients[this.clientAlias].service(this.servicePath)
     },
+    Model() {
+      return options.Model
+    },
     items() {
       return Object.values(this.itemsById)
     },
@@ -34,7 +37,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         const q = _.omit(params.query || {}, paramsForServer)
 
         const { query, filters } = filterQuery(q, {
-          operators: additionalOperators.concat(whitelist),
+          operators: additionalOperators.concat(whitelist)
         })
         let values = _.values(itemsById)
 
@@ -74,7 +77,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
           total,
           limit: filters.$limit || 0,
           skip: filters.$skip || 0,
-          data: values,
+          data: values
         }
       }
     },
@@ -117,7 +120,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     },
     isRemovePending() {
       return makePending('remove', this)
-    },
+    }
   }
 }
 
