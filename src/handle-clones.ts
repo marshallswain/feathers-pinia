@@ -30,10 +30,11 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
     // Watch each model clone in the props. If the record id changes,
     // sync the _clone with the new value.
     Object.keys(props).forEach((key) => {
-      const item = isRef(props[key]) ? props[key].value : props[key]
+      const item: any = unref(props[key])
 
       // Cheap check for an instance of BaseModel
       if (item != null && !!item.constructor.store) {
+        const { store } = item.constructor
         /**
          * Create a new clone or return an existing one if options.useExisting is true.
          * This prevents infinite loops when the handle-clones utility is used more than
@@ -42,12 +43,11 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
          * instances except one.
          */
         const clone = computed(() => {
-          const item = unref(props[key])
           if (item == null) {
             return null
           }
           const id = getAnyId(item)
-          const existingClone = item.constructor.store.clonesById[id]
+          const existingClone = store.clonesById[id]
           if (existingClone && useExisting) {
             return existingClone
           }
@@ -88,6 +88,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 propOrCollection: any,
                 opts: SaveHandlerOpts = {}
               ) {
+                const original = store.getFromStore(getAnyId(item))
                 const isArray = Array.isArray(propOrCollection)
                 const isString = typeof propOrCollection === 'string'
                 const isObject = typeof propOrCollection === 'object' && propOrCollection != null
@@ -116,22 +117,22 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                   ? propOrCollection.map(validateProp)
                   : Object.keys(propOrCollection).map(validateProp)
 
-                let itemVal
+                let originalVal
                 let cloneVal
 
                 if (isString) {
                   // Check for equality before commit or the values will be equal.
-                  itemVal = item[propOrArray]
+                  originalVal = original[propOrArray]
                   cloneVal = clone.value?.propOrArray
                 } else if (isArray) {
-                  itemVal = _.pick(item, ...propOrArray)
+                  originalVal = _.pick(original, ...propOrArray)
                   cloneVal = _.pick(clone.value, ...propOrArray)
                 } else {
-                  itemVal = _.pick(item, ...propOrArray)
+                  originalVal = _.pick(original, ...propOrArray)
                   cloneVal = Object.assign({}, propOrCollection)
                 }
 
-                const areEqual = isEqual(itemVal, cloneVal)
+                const areEqual = isEqual(originalVal, cloneVal)
 
                 const { commit = true, save = true, saveWith = () => ({}) } = opts
                 commit && clone.value.commit()
@@ -145,7 +146,12 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                     Object.assign(clone.value, changedData)
                   }
                   const saveWithData =
-                    saveWith({ item, clone: clone.value, data: cloneVal, pick: _.pick }) || {}
+                    saveWith({
+                      item: original,
+                      clone: clone.value,
+                      data: cloneVal,
+                      pick: _.pick
+                    }) || {}
                   const data = Object.assign(changedData, saveWithData)
                   return clone.value
                     .save({ data })
@@ -156,7 +162,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                       return Promise.reject(error)
                     })
                 }
-                return Promise.resolve({ areEqual: true, item: itemVal })
+                return Promise.resolve({ areEqual: true, item: originalVal })
               }
             }
           },
