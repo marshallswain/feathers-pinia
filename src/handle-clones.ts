@@ -1,7 +1,7 @@
 import { computed, reactive, watch, isRef, unref } from 'vue'
 import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
-import { getAnyId } from './handle-clones-utils'
+import { getAnyId } from './utils'
 
 interface HandleClonesOptions {
   debug?: boolean
