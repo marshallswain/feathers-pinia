@@ -30,9 +30,10 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
     // Watch each model clone in the props. If the record id changes,
     // sync the _clone with the new value.
     Object.keys(props).forEach((key) => {
-      const item: any = unref(props[key])
+      const itemComputed: any = computed(() => props[key])
+      const item = unref(itemComputed)
 
-      // Cheap check for an instance of BaseModel
+      // Check that the item has a store, otherwise we can't clone.
       if (item != null && !!item.constructor.store) {
         const { store } = item.constructor
         /**
@@ -54,14 +55,12 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
           return item.__isClone ? item : item.clone()
         })
         const cloneKey = `${key}`
-        const cloneId = getAnyId(item)
-
         watch(
-          // Since `item` can change, watch the reactive `clone` instead of non-reactive `item`
-          () => clone.value && clone.value[cloneId],
+          // Since `item` can change, watch the reactive `itemComputed` instead of non-reactive `item`
+          () => itemComputed.value && getAnyId(item),
           (id) => {
             // Update the clones and handlers
-            if (!clones[cloneKey] || id !== clones[cloneKey][cloneId]) {
+            if (!clones[cloneKey] || id !== clones[cloneKey][id]) {
               clones[cloneKey] = clone
               /**
                * Each save_handler has the same name as the prop, prepended with `save_`.
