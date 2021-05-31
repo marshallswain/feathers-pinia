@@ -19,7 +19,9 @@ export default defineConfig({
         // for externalized deps
         globals: {
           vue: 'Vue',
-          pinia: 'pinia'
+          pinia: 'pinia',
+          lodash: 'lodash',
+          sift: 'sift'
         }
       }
     }
