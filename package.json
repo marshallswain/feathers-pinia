@@ -2,16 +2,11 @@
   "name": "feathers-pinia",
   "version": "0.12.2",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
-  "main": "./dist/feathers-pinia.umd.js",
-  "module": "./dist/feathers-pinia.es.js",
-  "exports": {
-    ".": {
-      "import": "./dist/feathers-pinia.es.js",
-      "require": "./dist/feathers-pinia.umd.js"
-    }
-  },
+  "main": "dist/",
+  "module": "dist/",
   "types": "dist/",
   "scripts": {
     "docs:dev": "vitepress dev docs",
@@ -23,6 +18,7 @@
     "prepare": "tsc",
     "serve": "vite preview",
     "compile": "shx rm -rf dist/ && tsc",
+    "prepublish": "npm run compile",
     "test": "jest",
     "publish": "git push origin --tags && git push origin",
     "release:pre": "npm version prerelease && npm publish --tag pre",
