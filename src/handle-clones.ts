@@ -1,7 +1,7 @@
 import { computed, reactive, watch, isRef, unref } from 'vue'
 import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
-import { getAnyId } from './utils'
+import { getAnyId } from './handle-clones-utils'
 
 interface HandleClonesOptions {
   debug?: boolean
@@ -30,12 +30,11 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
     // Watch each model clone in the props. If the record id changes,
     // sync the _clone with the new value.
     Object.keys(props).forEach((key) => {
-      const itemComputed: any = computed(() => props[key])
-      const item = unref(itemComputed)
+      const item: any = computed(() => props[key])
 
       // Check that the item has a store, otherwise we can't clone.
-      if (item != null && !!item.constructor.store) {
-        const { store } = item.constructor
+      if (item.value != null && !!item.value.constructor.store) {
+        const { store } = item.value.constructor
         /**
          * Create a new clone or return an existing one if options.useExisting is true.
          * This prevents infinite loops when the handle-clones utility is used more than
@@ -44,24 +43,23 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
          * instances except one.
          */
         const clone = computed(() => {
-          if (item == null) {
+          if (item.value == null) {
             return null
           }
-          const id = getAnyId(item)
+          const id = getAnyId(item.value)
           const existingClone = store.clonesById[id]
           if (existingClone && useExisting) {
             return existingClone
           }
-          return item.__isClone ? item : item.clone()
+          return item.value.__isClone ? item.value : item.value.clone()
         })
-        const cloneKey = `${key}`
         watch(
-          // Since `item` can change, watch the reactive `itemComputed` instead of non-reactive `item`
-          () => itemComputed.value && getAnyId(item),
+          // Since `item` can change, watch the reactive `item` instead of non-reactive `item`
+          () => item.value && getAnyId(item.value),
           (id) => {
             // Update the clones and handlers
-            if (!clones[cloneKey] || id !== clones[cloneKey][id]) {
-              clones[cloneKey] = clone
+            if (!clones[key] || id !== getAnyId(clones[key].value)) {
+              clones[key] = clone
               /**
                * Each save_handler has the same name as the prop, prepended with `save_`.
                * An `environment` prop would have a `save_environment` handler, and
@@ -83,18 +81,18 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                *        should be an object. The returned object will be merged into the patch data.
                * @
                */
-              saveHandlers[`save_${cloneKey}`] = function saveHandler(
+              saveHandlers[`save_${key}`] = function saveHandler(
                 propOrCollection: any,
                 opts: SaveHandlerOpts = {}
               ) {
-                const original = store.getFromStore(getAnyId(item))
+                const original = store.getFromStore(getAnyId(item.value))
                 const isArray = Array.isArray(propOrCollection)
                 const isString = typeof propOrCollection === 'string'
                 const isObject = typeof propOrCollection === 'object' && propOrCollection != null
 
                 function makeError() {
                   throw new Error(
-                    `The first argument to 'save${cloneKey}' must be a prop name, an array of prop names, or an object`
+                    `The first argument to 'save${key}' must be a prop name, an array of prop names, or an object`
                   )
                 }
 
