@@ -13,7 +13,7 @@ import {
   assignTempId,
   cleanData,
   restoreTempIds,
-  getArray
+  getArray,
 } from '../utils'
 
 export function makeActions(options: ServiceOptions): ServiceActions {
@@ -297,7 +297,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         const clone = fastCopy(originalItem)
         Object.defineProperty(clone, '__isClone', {
           value: true,
-          enumerable: false
+          enumerable: false,
         })
         Object.assign(clone, data)
 
@@ -342,7 +342,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         pageId,
         pageParams,
         queriedAt,
-        total
+        total,
       }
 
       const qidData = this.pagination[qid] || {}
@@ -350,12 +350,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       qidData[queryId] = qidData[queryId] || {}
       const queryData = {
         total,
-        queryParams
+        queryParams,
       }
       Object.assign(qidData[queryId], queryData)
 
       const pageData = {
-        [pageId as string]: { pageParams, ids, queriedAt }
+        [pageId as string]: { pageParams, ids, queriedAt },
       }
       Object.assign(qidData[queryId], pageData)
 
@@ -378,7 +378,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
     toggleEventLock(idOrIds: any, event: string) {
       setEventLockState(idOrIds, event, true, this)
-    }
+    },
   }
 }
 
