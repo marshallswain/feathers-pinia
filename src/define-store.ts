@@ -4,13 +4,14 @@ import { registerModel } from './models'
 import { registerClient } from './clients'
 import { enableServiceEvents } from './service-store/events'
 
+import { Application as FeathersClient } from '@feathersjs/feathers'
 import { HandleEvents } from './types'
 
 export interface DefineStoreOptions {
   id?: string
   clientAlias?: string
   servicePath: string
-  clients?: { [alias: string]: any }
+  clients?: { [alias: string]: FeathersClient }
   idField?: string
   handleEvents?: HandleEvents
   enableEvents?: boolean

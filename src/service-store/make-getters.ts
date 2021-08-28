@@ -95,7 +95,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       }
     },
     getFromStore() {
-      return (id: Id, params = {}) => {
+      return (id: Id, params: Params = {}) => {
         id = unref(id)
         params = fastCopy(unref(params) || {})
         const { Model } = options
