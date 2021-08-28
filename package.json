@@ -38,7 +38,7 @@
     "just-debounce": "^1.1.0",
     "lodash": "^4.17.21",
     "lz-string": "^1.4.4",
-    "sift": "^13.5.4"
+    "sift": "^14.0.2"
   },
   "devDependencies": {
     "@feathersjs/authentication-client": "^4.5.11",
@@ -55,7 +55,7 @@
     "feathers-memory": "^4.1.0",
     "jest": "^27.0.6",
     "path": "^0.12.7",
-    "pinia": "^2.0.0-beta.5",
+    "pinia": "^2.0.0-rc.6",
     "postcss-nested": "^5.0.5",
     "shx": "^0.3.3",
     "tailwindcss": "^2.2.4",
@@ -69,8 +69,8 @@
   },
   "peerDependencies": {
     "@vue/composition-api": "*",
-    "vue": "^2 || >=3",
-    "pinia": "^2.0.0-beta.5"
+    "pinia": "^2.0.0-beta.5",
+    "vue": "^2 || >=3"
   },
   "peerDependenciesMeta": {
     "@vue/composition-api": {
