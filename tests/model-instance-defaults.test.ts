@@ -1,10 +1,10 @@
 import { createPinia } from 'pinia'
-import { setup } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
+const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
   // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
@@ -13,7 +13,7 @@ class Message extends BaseModel {
   static instanceDefaults(data: Message) {
     return {
       text: 'this gets overwritten by the class-level `text`',
-      otherText: `this won't get overwritten and works great for a default value`,
+      otherText: `this won't get overwritten and works great for a default value`
     }
   }
 }
@@ -21,7 +21,7 @@ class Message extends BaseModel {
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath, Model: Message })
 
-const messagesService = useMessagesService()
+const messagesService = useMessagesService(pinia)
 
 const resetStore = () => (api.service('messages').store = {})
 
@@ -31,7 +31,7 @@ describe('Model Instance Defaults', () => {
 
   test('class-level defaults do not work because they overwrite provided data', async () => {
     const message = await messagesService.create({
-      text: 'this text will be overwritten by the value in the Message class.',
+      text: 'this text will be overwritten by the value in the Message class.'
     })
     expect(message.text).toBe(
       'The text in the model always wins. You can only overwrite it after instantiation'

@@ -1,15 +1,15 @@
 import { createPinia } from 'pinia'
-import { setup } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
+const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath })
 
-const messagesService = useMessagesService()
+const messagesService = useMessagesService(pinia)
 
 const resetStore = () => (api.service('messages').store = {})
 

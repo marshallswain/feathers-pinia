@@ -1,12 +1,12 @@
 import { watch, computed } from 'vue'
 import { createPinia } from 'pinia'
-import { setup, models } from '../src/index'
+import { setupFeathersPinia, models } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
+const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
   static modelName = 'Message'
@@ -15,7 +15,7 @@ class Message extends BaseModel {
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath, Model: Message })
 
-const messagesService = useMessagesService()
+const messagesService = useMessagesService(pinia)
 
 const reset = () => resetStores(api.service('messages'), messagesService)
 

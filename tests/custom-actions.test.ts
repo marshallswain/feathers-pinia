@@ -1,13 +1,13 @@
 import { computed } from 'vue'
 import { createPinia } from 'pinia'
-import { setup } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
 import { useFind } from '../src/use-find'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
+const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 describe('Custom Actions', () => {
   test('adds custom actions to the store', async () => {
@@ -16,9 +16,9 @@ describe('Custom Actions', () => {
     const useMessagesService = defineStore({
       servicePath: 'messages',
       Model: Message,
-      actions: { test },
+      actions: { test }
     })
-    const messagesService = useMessagesService()
+    const messagesService = useMessagesService(pinia)
 
     messagesService.test()
 
@@ -33,10 +33,10 @@ describe('Custom Actions', () => {
       actions: {
         findMessages(params: any) {
           return useFind({ params, model: this })
-        },
-      },
+        }
+      }
     })
-    const messagesService = useMessagesService()
+    const messagesService = useMessagesService(pinia)
 
     const params = computed(() => ({ query: { text: 'this is a test' }, temps: true }))
     const data = messagesService.findMessages(params)
@@ -61,10 +61,10 @@ describe('Custom Actions', () => {
         test() {
           const store: any = this
           store.idField = 'moose'
-        },
-      },
+        }
+      }
     })
-    const messagesService = useMessagesService()
+    const messagesService = useMessagesService(pinia)
 
     Message.test()
 

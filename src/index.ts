@@ -1,5 +1,6 @@
 export { makeServiceStore, BaseModel } from './service-store/index'
-export { setup } from './setup'
+export { setupFeathersPinia } from './setup'
+export { defineStore } from './define-store'
 export { defineAuthStore } from './define-auth-store'
 export { models } from './models'
 export { clients } from './clients'

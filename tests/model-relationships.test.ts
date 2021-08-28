@@ -1,16 +1,16 @@
 import { createPinia } from 'pinia'
-import { setup } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setup({ pinia, clients: { api } })
+const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
   text!: string
 }
 const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
-const messagesService = useMessagesService()
+const messagesService = useMessagesService(pinia)
 
 class User extends BaseModel {
   id: number | string | undefined
@@ -18,7 +18,7 @@ class User extends BaseModel {
   instanceDefaults(data: User) {
     return {
       id: undefined,
-      name: '',
+      name: ''
     }
   }
   get messages() {
@@ -35,7 +35,7 @@ class User extends BaseModel {
   }
 }
 const useUsersService = defineStore({ servicePath: 'users', Model: User })
-const usersService = useUsersService()
+const usersService = useUsersService(pinia)
 
 let amogh: any
 
@@ -52,7 +52,7 @@ describe('Model Relationships', () => {
     await Promise.all([
       messagesService.create({ text: 'message 1', userId: amogh.id }),
       messagesService.create({ text: 'message 2', userId: amogh.id }),
-      messagesService.create({ text: 'message 3', userId: amogh.id }),
+      messagesService.create({ text: 'message 3', userId: amogh.id })
     ])
   })
   afterAll(() => resetStore())

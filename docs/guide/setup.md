@@ -65,12 +65,12 @@ Adding `.pinia.` to each store's filename will help disambiguate utilities from 
 ```ts
 // store/store.pinia.ts
 import { createPinia } from 'pinia'
-import { setup } from 'feathers-pinia'
+import { setupFeathersPinia } from 'feathers-pinia'
 import { api } from '../feathers'
 
 export const pinia = createPinia()
 
-export const { defineStore, BaseModel } = setup({
+export const { defineStore, BaseModel } = setupFeathersPinia({
   pinia,
   clients: { api },
   idField: '_id',
