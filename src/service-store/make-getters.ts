@@ -20,11 +20,20 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     Model() {
       return options.Model
     },
+    itemIds() {
+      return Object.keys(this.itemsById)
+    },
     items() {
       return Object.values(this.itemsById)
     },
+    tempIds() {
+      return Object.keys(this.tempsById)
+    },
     temps() {
       return Object.values(this.tempsById)
+    },
+    cloneIds() {
+      return Object.keys(this.clonesById)
     },
     clones() {
       return Object.values(this.clonesById)

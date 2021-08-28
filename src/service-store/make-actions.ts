@@ -214,7 +214,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         .filter((id: any) => id != null)
 
       this.itemsById = _.omit(this.itemsById, ...idsToRemove)
-      this.ids = Object.keys(this.itemsById)
 
       this.clonesById = _.omit(this.clonesById, ...idsToRemove)
       this.pendingById = _.omit(this.pendingById, ...idsToRemove)
@@ -263,7 +262,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const withId = items.filter((i: any) => getId(i) != null)
       const itemsById = keyBy(withId)
       Object.assign(this.itemsById, itemsById)
-      this.ids = Object.keys(this.itemsById)
 
       // Save temp items
       const temps = items.filter((i: any) => getId(i) == null).map((i: any) => assignTempId(i))
@@ -274,7 +272,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     clearAll() {
-      this.ids = []
       this.itemsById = {}
       this.tempsById = {}
       this.clonesById = {}
