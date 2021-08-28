@@ -14,8 +14,8 @@ export interface DefineStoreOptions {
   id?: string
   clientAlias?: 'api' | string
   clients?: { [alias: string]: FeathersClient }
-  handleEvents?: HandleEvents
   enableEvents?: boolean
+  handleEvents?: HandleEvents
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
