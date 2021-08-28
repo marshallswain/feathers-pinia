@@ -132,6 +132,6 @@ The following getters are available in every service store.  Since they're gette
 
 ### Custom Properties
 
-You can customize a store using the `state`, `getters` and `actions` options.
+You can customize a store using the `state`, `getters` and `actions` options. Be careful if you're overwriting any of the built-in attributes.
 
 ## Server Side Rendering (SSR)
