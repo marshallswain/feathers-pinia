@@ -64,7 +64,7 @@ export function getQueryInfo(
     pageParams,
     pageId,
     response: undefined,
-    isOutdated: undefined as boolean | undefined,
+    isOutdated: undefined as boolean | undefined
   }
 }
 
@@ -146,7 +146,7 @@ export function restoreTempIds(data: any, resData: any) {
  */
 export function useCleanData(data: any) {
   const { items, isArray } = getArray(data)
-  const cleaned = items.forEach((item: any) => fastCopy(item))
+  const cleaned = items.map((item: any) => fastCopy(item))
 
   return isArray ? cleaned : cleaned[0]
 }
