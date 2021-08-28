@@ -44,3 +44,49 @@ const usersService = useUsers()
 usersService.add({ id: 0, name: 'Marshall' })
 </script>
 ```
+
+## Recipes
+
+### Compound Keys
+
+I've not tried this, but it might be possible to support compound keys in the `idField` of a service by following these steps:
+
+1. Create a custom class (`extends BaseModel`)
+2. Add a virtual property to the class using ES5 accessors `get` and `set`.
+3. Use the name of the virtual property as the `idField` in the `defineStore` options.
+
+It would look something like the example, below.
+
+```ts
+import { defineStore, BaseModel } from 'feathers-pinia'
+import { Id } from '@feathersjs/feathers'
+import { api } from '../feathers'
+
+// (1)^
+export class User extends BaseModel {
+  name!: string
+  timezone!: string
+
+  get myCompoundKey() {
+    return `${this.name}:${this.timezone}`
+  }
+  // This would be necessary if you were going to manually set the key on the frontend.
+  set myCompoundKey(val: string) {
+    const [name, timezone] = val.split(':')
+    this.name = name
+    this.timezone = timezone
+  }
+}
+
+const servicePath = 'users'
+export const useUsers = defineStore({
+  idField: 'id',    // (2)
+  clients: { api }, // (2)
+  servicePath,
+  Model: User
+})
+
+api.service(servicePath).hooks({})
+```
+
+If you do try it out, please let me know in an issue or make a PR to the docs. If it works, the wording of this section should be updated with more certainty. 🤓
