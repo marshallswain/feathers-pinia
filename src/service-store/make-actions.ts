@@ -18,7 +18,7 @@ import {
 
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
-    ...(options.actions || {}),
+    ...options.actions,
 
     find(requestParams: Params) {
       let params: any = requestParams || {}

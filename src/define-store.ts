@@ -8,17 +8,19 @@ import { Application as FeathersClient } from '@feathersjs/feathers'
 import { HandleEvents } from './types'
 
 export interface DefineStoreOptions {
-  id?: string
-  clientAlias?: string
   servicePath: string
+  Model?: any
+  idField?: '_id' | string
+  id?: string
+  clientAlias?: 'api' | string
   clients?: { [alias: string]: FeathersClient }
-  idField?: string
   handleEvents?: HandleEvents
   enableEvents?: boolean
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
-  Model?: any
+  state?: { [k: string]: any }
+  getters?: { [k: string]: Function }
   actions?: { [k: string]: Function }
 }
 
@@ -31,6 +33,9 @@ export function defineStore(options: DefineStoreOptions) {
     debounceEventsTime = 20,
     debounceEventsMaxWait = 1000,
     whitelist = [],
+    state = {},
+    getters = {},
+    actions = {},
   } = options
   let { handleEvents = {} } = options
   let isInitialized = false
@@ -69,7 +74,9 @@ export function defineStore(options: DefineStoreOptions) {
     servicePath,
     clients,
     Model: options.Model,
-    actions: options.actions,
+    state,
+    getters,
+    actions,
     whitelist,
   })
   function useStore(pinia?: Pinia): any {
@@ -86,8 +93,8 @@ export function defineStore(options: DefineStoreOptions) {
         idField: options.idField || idField,
         clients,
         // Bind `this` in custom actions to the store.
-        ...Object.keys(options.actions || {}).reduce((actions: any, key: string) => {
-          actions[key] = (options.actions as any)[key].bind(initializedStore)
+        ...Object.keys(actions || {}).reduce((actions: any, key: string) => {
+          actions[key] = (actions as any)[key].bind(initializedStore)
           return actions
         }, {}),
       })

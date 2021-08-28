@@ -13,6 +13,7 @@ const additionalOperators = ['$elemMatch']
 
 export function makeGetters(options: ServiceOptions): ServiceGetters {
   return {
+    ...options.getters,
     // Returns the Feathers service currently assigned to this store.
     service() {
       return options.clients[this.clientAlias].service(this.servicePath)

@@ -2,6 +2,7 @@ import { ServiceState, ServiceOptions } from './types'
 
 export function makeState(options: ServiceOptions) {
   return (): ServiceState => ({
+    ...options.state,
     clientAlias: options.clientAlias || 'api',
     servicePath: options.servicePath,
     idField: options.idField || 'id',

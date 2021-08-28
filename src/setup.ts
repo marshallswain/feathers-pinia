@@ -12,6 +12,9 @@ interface SetupOptions {
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
+  state?: { [k: string]: any }
+  getters?: { [k: string]: any }
+  actions?: { [k: string]: Function }
 }
 
 export function setupFeathersPinia(globalOptions: SetupOptions) {
@@ -26,6 +29,6 @@ export function setupFeathersPinia(globalOptions: SetupOptions) {
 
   return {
     defineStore: defineStoreWrapper,
-    BaseModel
+    BaseModel,
   }
 }

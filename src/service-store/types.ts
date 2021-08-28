@@ -67,6 +67,8 @@ export interface ServiceOptions {
   idField?: string
   servicePath: string
   Model: any
+  state?: { [key: string]: any }
+  getters?: { [key: string]: Function }
   actions?: { [key: string]: Function }
   whitelist?: string[]
 }
