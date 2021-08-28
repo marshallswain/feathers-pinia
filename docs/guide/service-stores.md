@@ -39,15 +39,15 @@ Here are a few more details about each option:
 
 - **`servicePath {String}`** is the same as the Feathers service path. ***required***
 - **`Model {ModelClass}`** is the class to use for each instance. If you don't provide one, a generic class extending `BaseModel` will be created and used.  For any record-level logic, you'll need t create a custom class extending BaseModel. See [Model Classes](./model-classes)
-- **`idField`**
-- **`id`** is the identifier of the Pinia store.
-- **`clientAlias`** is the name of the FeathersClient instance to use for this service. See [State](#state). Defaults to `api`
-- **`clients`**
-- **`handleEvents`**
-- **`enableEvents`**
-- **`debounceEventsTime`**
-- **`debounceEventsMaxWait`**
-- **`whitelist`**
+- **`idField {String}`** is the attribute on the record that will serve as the unique identifier or "primary key" in the database. See [Model Classes](./model-classes#compound-keys) for a recipe that might work for **compound keys** (multiple fields).
+- **`id {String}`** is the identifier of the Pinia store.
+- **`clientAlias {String}`** is the name of the FeathersClient instance to use for this service. See [State](#state). It must match a value in the `clients` option. Defaults to `api`
+- **`clients {Object}`** is an object whose keys are `clientAlias` strings with their corresponding `FeathersClient` values. The default `api` key must be provided. Additional keys can represent clients to other API servers.
+- **`enableEvents {Boolean}`** enables and disables the built-in realtime event handlers. Defaults to `true`.
+- **`handleEvents {Object}`** is an object that lets you customize how realtime events are handled. Each key is a name of a realtime event handler function: `created`, `patched`, `updated`, or `removed`.  By default, each handler returns the value of `enableEvents`, which is why setting `enableEvents` to false will disable all handlers. You can provide your own handler to customize and override individual events.
+- **`debounceEventsTime {Number}`** determines how long to wait until flushing a batch of events. Defaults to `20`. If no events have been received in a 20 millisecond period, all gathered events will be processed.
+- **`debounceEventsMaxWait {Number}`** allows forcing events to be flushed after a certain number of milliseconds. Defaults to `1000`.
+- **`whitelist`** is an array of keys to allow in the params object for the `findInStore` getter's `params.query` object.
 - **`state`** is an object of custom state to customize the store.
 - **`getters`** is an object of custom getters to customize the store.
 - **`actions`** is an object of custom actions to customize the store.
