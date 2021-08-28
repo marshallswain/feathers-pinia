@@ -45,7 +45,7 @@ export function defineAuthStore({
       } catch (error) {
         // console.log('error during Feathers API Authentication', error)
         ;(this as any).error = error
-        return this.handleError(error)
+        return this.handleError(error as Error)
       }
     },
     /**

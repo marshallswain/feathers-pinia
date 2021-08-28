@@ -44,7 +44,7 @@ export function useGet<M extends Model = Model>({
   }
 
   function getId(): null | string | number {
-    return unref(id)
+    return unref(id as any)
   }
   function getParams(): Params {
     return unref(params as any)
@@ -63,7 +63,7 @@ export function useGet<M extends Model = Model>({
       // const getterId = isRef(id) ? id.value : id
       // const getterParams = unref(params)
       // if (getterParams != null) {
-      return model.getFromStore(unref(id), unref(params)) || null
+      return model.getFromStore(unref(id as any), unref(params)) || null
       // } else {
       // return model.getFromStore(getterId) || null
       // }

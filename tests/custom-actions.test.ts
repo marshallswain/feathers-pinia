@@ -1,22 +1,20 @@
 import { computed } from 'vue'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia } from '../src/index'
+import { setupFeathersPinia, defineStore } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
 import { useFind } from '../src/use-find'
 
-const pinia = createPinia()
-
-const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
-
 describe('Custom Actions', () => {
   test('adds custom actions to the store', async () => {
+    const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+    const pinia = createPinia()
     const test = jest.fn()
     class Message extends BaseModel {}
     const useMessagesService = defineStore({
       servicePath: 'messages',
       Model: Message,
-      actions: { test }
+      actions: { test },
     })
     const messagesService = useMessagesService(pinia)
 
@@ -26,19 +24,22 @@ describe('Custom Actions', () => {
   })
 
   test('supports useFind as a customAction', async () => {
-    class Message extends BaseModel {}
-    const useMessagesService = defineStore({
+    const pinia = createPinia()
+    // class Message extends BaseModel {}
+    const useMessagesService: any = defineStore({
+      clients: { api },
       servicePath: 'messages',
-      Model: Message,
+      // Model: Message,
       actions: {
         findMessages(params: any) {
           return useFind({ params, model: this })
-        }
-      }
+        },
+      },
     })
-    const messagesService = useMessagesService(pinia)
+    const messagesService: any = useMessagesService(pinia)
 
     const params = computed(() => ({ query: { text: 'this is a test' }, temps: true }))
+    // @ts-ignore
     const data = messagesService.findMessages(params)
 
     expect(data.items.value).toHaveLength(0)
@@ -51,6 +52,8 @@ describe('Custom Actions', () => {
   })
 
   test('custom actions are added to the model class', () => {
+    const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+    const pinia = createPinia()
     class Message extends BaseModel {
       static test: Function
     }
@@ -61,8 +64,8 @@ describe('Custom Actions', () => {
         test() {
           const store: any = this
           store.idField = 'moose'
-        }
-      }
+        },
+      },
     })
     const messagesService = useMessagesService(pinia)
 

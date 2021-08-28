@@ -119,7 +119,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
 
                 if (isString) {
                   // Check for equality before commit or the values will be equal.
-                  originalVal = original[propOrArray]
+                  originalVal = original[propOrArray as string]
                   cloneVal = clone.value?.propOrArray
                 } else if (isArray) {
                   originalVal = _.pick(original, ...propOrArray)
@@ -136,7 +136,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
 
                 if (!areEqual && save) {
                   const changedData = isString
-                    ? { [propOrArray]: clone.value[propOrArray] }
+                    ? { [propOrArray as string]: clone.value[propOrArray as string] }
                     : cloneVal
                   // Manually update the clone for objects.
                   if (isObject) {

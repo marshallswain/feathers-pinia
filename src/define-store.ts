@@ -1,5 +1,5 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
-import { defineStore as definePiniaStore } from 'pinia'
+import { defineStore as definePiniaStore, Pinia, Store } from 'pinia'
 import { registerModel } from './models'
 import { registerClient } from './clients'
 import { enableServiceEvents } from './service-store/events'
@@ -29,7 +29,7 @@ export function defineStore(options: DefineStoreOptions) {
     enableEvents = true,
     debounceEventsTime = 20,
     debounceEventsMaxWait = 1000,
-    whitelist = []
+    whitelist = [],
   } = options
   let { handleEvents = {} } = options
   let isInitialized = false
@@ -43,7 +43,7 @@ export function defineStore(options: DefineStoreOptions) {
     created: () => enableEvents,
     patched: () => enableEvents,
     updated: () => enableEvents,
-    removed: () => enableEvents
+    removed: () => enableEvents,
   }
 
   handleEvents = Object.assign({}, defaultHandleEvents, handleEvents)
@@ -69,11 +69,11 @@ export function defineStore(options: DefineStoreOptions) {
     clients,
     Model: options.Model,
     actions: options.actions,
-    whitelist
+    whitelist,
   })
-  function useStore(pinia?: any) {
+  function useStore(pinia?: Pinia): any {
     const useStoreDefinition = definePiniaStore(storeOptions)
-    const initializedStore = useStoreDefinition(pinia)
+    const initializedStore: Store = useStoreDefinition(pinia)
 
     if (!isInitialized) {
       isInitialized = true
@@ -88,7 +88,7 @@ export function defineStore(options: DefineStoreOptions) {
         ...Object.keys(options.actions || {}).reduce((actions: any, key: string) => {
           actions[key] = (options.actions as any)[key].bind(initializedStore)
           return actions
-        }, {})
+        }, {}),
       })
 
       const service = clients[options.clientAlias || 'api'].service(servicePath)
@@ -99,7 +99,7 @@ export function defineStore(options: DefineStoreOptions) {
         service,
         Model: options.Model,
         store: initializedStore,
-        options: opts
+        options: opts,
       })
     }
     return initializedStore
