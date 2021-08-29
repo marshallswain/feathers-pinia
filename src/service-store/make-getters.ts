@@ -16,7 +16,11 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     ...options.getters,
     // Returns the Feathers service currently assigned to this store.
     service() {
-      return options.clients[this.clientAlias].service(this.servicePath)
+      const client = options.clients[this.clientAlias]
+      if (!client) {
+        throw new Error(`There is not a FeathersClient registered name ${this.clientAlias}`)
+      }
+      return client.service(this.servicePath)
     },
     Model() {
       return options.Model
