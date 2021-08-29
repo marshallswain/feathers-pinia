@@ -113,7 +113,12 @@ export function defineStore(options: DefineStoreOptions) {
         }, {}),
       })
 
-      const service = clients[options.clientAlias || 'api'].service(servicePath)
+      const clientAlias = options.clientAlias || 'api'
+      const client = clients[clientAlias]
+      if (!client) {
+        throw new Error(`There is no registered FeathersClient named '${clientAlias}'`)
+      }
+      const service = client.service(servicePath)
 
       const opts = { idField, debounceEventsTime, debounceEventsMaxWait, handleEvents }
       registerModel(options.Model, initializedStore as any)
