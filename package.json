@@ -21,7 +21,7 @@
     "docs:copy-assets": "cp ./docs/feathers-pinia.png ./docs/.vitepress/dist/",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "prepare": "npm run build",
+    "prepare": "npm run test && npm run build",
     "serve": "vite preview",
     "compile": "shx rm -rf dist/ && tsc",
     "prepublish": "npm run compile",
