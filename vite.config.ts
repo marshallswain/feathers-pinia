@@ -8,8 +8,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
-      name: 'feathersPinia'
+      name: 'feathersPinia',
     },
+    sourcemap: true,
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
@@ -21,9 +22,9 @@ export default defineConfig({
           vue: 'Vue',
           pinia: 'pinia',
           lodash: 'lodash',
-          sift: 'sift'
-        }
-      }
-    }
-  }
+          sift: 'sift',
+        },
+      },
+    },
+  },
 })
