@@ -5,8 +5,14 @@
     "dist",
     "src"
   ],
-  "main": "dist/",
-  "module": "dist/",
+  "main": "./dist/feathers-pinia.umd.js",
+  "module": "./dist/feathers-pinia.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/feathers-pinia.es.js",
+      "require": "./dist/feathers-pinia.umd.js"
+    }
+  },
   "types": "dist/",
   "scripts": {
     "docs:dev": "vitepress dev docs",
@@ -15,7 +21,7 @@
     "docs:copy-assets": "cp ./docs/feathers-pinia.png ./docs/.vitepress/dist/",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "prepare": "tsc",
+    "prepare": "npm run build",
     "serve": "vite preview",
     "compile": "shx rm -rf dist/ && tsc",
     "prepublish": "npm run compile",
