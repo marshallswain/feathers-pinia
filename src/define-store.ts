@@ -27,6 +27,7 @@ export interface DefineStoreOptions {
 export function defineStore(options: DefineStoreOptions) {
   const defaults = {
     clients: {},
+    clientAlias: 'api',
     servicePath: '',
     idField: '_id',
     enableEvents: true,
@@ -40,6 +41,7 @@ export function defineStore(options: DefineStoreOptions) {
   options = Object.assign({}, defaults, options)
   const clients: any = options.clients
   const actions: any = options.actions
+  const clientAlias = options.clientAlias || 'api'
   const {
     servicePath,
     idField,
@@ -83,7 +85,7 @@ export function defineStore(options: DefineStoreOptions) {
   const storeOptions: any = makeServiceStore({
     storeId: options.id || `service.${options.servicePath}`,
     idField: options.idField || idField || 'id',
-    clientAlias: options.clientAlias || 'api',
+    clientAlias,
     servicePath,
     clients,
     Model: options.Model,
@@ -113,7 +115,6 @@ export function defineStore(options: DefineStoreOptions) {
         }, {}),
       })
 
-      const clientAlias = options.clientAlias || 'api'
       const client = clients[clientAlias]
       if (!client) {
         throw new Error(
