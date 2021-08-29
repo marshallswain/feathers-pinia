@@ -1,7 +1,7 @@
 import { Model, ServiceOptions, ServiceActions, UpdatePaginationForQueryOptions } from './types'
 import { Params } from '../types'
 import { RequestType, AnyData } from './types'
-import { Id, PaginationOptions } from '@feathersjs/feathers'
+import { Id } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
 import {
@@ -15,6 +15,11 @@ import {
   restoreTempIds,
   getArray,
 } from '../utils'
+
+interface PaginationOptions {
+  default: number
+  max: number
+}
 
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
