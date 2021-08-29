@@ -23,8 +23,6 @@
     "build": "vue-tsc --noEmit && vite build",
     "prepare": "npm run test && npm run build",
     "serve": "vite preview",
-    "compile": "shx rm -rf dist/ && tsc",
-    "prepublish": "npm run compile",
     "test": "jest",
     "publish": "git push origin --tags && git push origin",
     "release:pre": "npm version prerelease && npm publish --tag pre",
