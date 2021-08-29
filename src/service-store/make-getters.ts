@@ -18,7 +18,9 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     service() {
       const client = options.clients[this.clientAlias]
       if (!client) {
-        throw new Error(`There is no registered FeathersClient named '${this.clientAlias}'`)
+        throw new Error(
+          `There is no registered FeathersClient named '${this.clientAlias}'. You need to provide one in the 'defineStore' options.`
+        )
       }
       return client.service(this.servicePath)
     },
