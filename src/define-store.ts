@@ -25,17 +25,30 @@ export interface DefineStoreOptions {
 }
 
 export function defineStore(options: DefineStoreOptions) {
+  const defaults = {
+    clients: {},
+    servicePath: '',
+    idField: '_id',
+    enableEvents: true,
+    debounceEventsTime: 20,
+    debounceEventsMaxWait: 1000,
+    whitelist: [],
+    state: {},
+    getters: {},
+    actions: {},
+  }
+  options = Object.assign({}, defaults, options)
+  const clients: any = options.clients
+  const actions: any = options.actions
   const {
-    clients = {},
     servicePath,
-    idField = '_id',
-    enableEvents = true,
-    debounceEventsTime = 20,
-    debounceEventsMaxWait = 1000,
-    whitelist = [],
-    state = {},
-    getters = {},
-    actions = {},
+    idField,
+    enableEvents,
+    debounceEventsTime,
+    debounceEventsMaxWait,
+    whitelist,
+    state,
+    getters,
   } = options
   let { handleEvents = {} } = options
   let isInitialized = false
@@ -93,9 +106,10 @@ export function defineStore(options: DefineStoreOptions) {
         idField: options.idField || idField,
         clients,
         // Bind `this` in custom actions to the store.
-        ...Object.keys(actions || {}).reduce((actions: any, key: string) => {
-          actions[key] = (actions as any)[key].bind(initializedStore)
-          return actions
+        ...Object.keys(actions).reduce((boundActions: any, key: string) => {
+          const fn = (actions as any)[key]
+          boundActions[key] = fn.bind(initializedStore)
+          return boundActions
         }, {}),
       })
 
