@@ -13,7 +13,6 @@ const additionalOperators = ['$elemMatch']
 
 export function makeGetters(options: ServiceOptions): ServiceGetters {
   return {
-    ...options.getters,
     // Returns the Feathers service currently assigned to this store.
     service() {
       const client = options.clients[this.clientAlias]
@@ -137,6 +136,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     isRemovePending() {
       return makePending('remove', this)
     },
+    ...options.getters,
   }
 }
 

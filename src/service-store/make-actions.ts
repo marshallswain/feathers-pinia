@@ -23,8 +23,6 @@ interface PaginationOptions {
 
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
-    ...options.actions,
-
     find(requestParams: Params) {
       let params: any = requestParams || {}
       params = fastCopy(params)
@@ -381,6 +379,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     toggleEventLock(idOrIds: any, event: string) {
       setEventLockState(idOrIds, event, true, this)
     },
+    ...options.actions,
   }
 }
 
