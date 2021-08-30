@@ -14,9 +14,7 @@ export function hydrateStore(store: any, storage: any) {
   const data = storage.getItem(store.$id)
   if (data) {
     const hydrationData = JSON.parse(lz.decompress(data) as string)
-    Object.keys(hydrationData).forEach((key: string) => {
-      store[key] = hydrationData[key]
-    })
+    Object.assign(store, hydrationData)
   }
 }
 
