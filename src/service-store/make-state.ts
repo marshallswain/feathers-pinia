@@ -2,9 +2,9 @@ import { ServiceState, ServiceOptions } from './types'
 
 export function makeState(options: ServiceOptions) {
   return (): ServiceState => ({
-    clientAlias: options.clientAlias || 'api',
+    clientAlias: options?.clientAlias || 'api',
     servicePath: options.servicePath,
-    idField: options.idField || 'id',
+    idField: options?.idField || 'id',
     ids: [],
     itemsById: {},
     tempsById: {},
@@ -23,7 +23,7 @@ export function makeState(options: ServiceOptions) {
       removed: {},
     },
     pagination: {},
-    whitelist: options.whitelist || [],
-    ...options.state,
+    whitelist: options?.whitelist || [],
+    ...options?.state,
   })
 }
