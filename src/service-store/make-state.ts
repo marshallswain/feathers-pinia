@@ -23,7 +23,7 @@ export function makeState(options: ServiceOptions) {
       removed: {},
     },
     pagination: {},
-    whitelist: options.whitelist,
+    whitelist: options.whitelist || [],
     ...options.state,
   })
 }
