@@ -1,9 +1,17 @@
-import { ServiceState, ServiceOptions } from './types'
+import { ServiceState } from './types'
 
-export function makeState(options: ServiceOptions) {
+interface MakeStateOptions {
+  servicePath: string
+  clientAlias?: string
+  idField?: string
+  state?: { [key: string]: any }
+  whitelist?: string[]
+}
+
+export function makeState(options: MakeStateOptions) {
   return (): ServiceState => ({
     clientAlias: options?.clientAlias || 'api',
-    servicePath: options.servicePath,
+    servicePath: options?.servicePath || '',
     idField: options?.idField || 'id',
     ids: [],
     itemsById: {},
