@@ -6,6 +6,7 @@ import axios from 'axios'
 
 const restClient = rest()
 
+// @ts-ignore
 export const api: any = feathers().configure(restClient.axios(axios)).configure(auth())
 
 api.authentication.service.hooks({
