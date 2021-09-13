@@ -23,7 +23,6 @@ export interface ServiceState<M extends Model = Model> {
     [k: string]: any
   }
   idField: string
-  ids: string[]
   itemsById: {
     [k: string]: M
     [k: number]: M

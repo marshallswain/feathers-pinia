@@ -13,7 +13,6 @@ export function makeState(options: MakeStateOptions) {
     clientAlias: options?.clientAlias || 'api',
     servicePath: options?.servicePath || '',
     idField: options?.idField || 'id',
-    ids: [],
     itemsById: {},
     tempsById: {},
     clonesById: {},
