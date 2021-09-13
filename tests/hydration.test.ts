@@ -21,7 +21,6 @@ describe('Hydration', () => {
     '......'.split('.').forEach((empty: string, id: number) => {
       const message = { id, text: 'hydrate me' }
       messagesService.itemsById[id] = message
-      messagesService.ids.push(id)
     })
   })
   afterEach(() => reset())
