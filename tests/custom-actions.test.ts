@@ -44,7 +44,7 @@ describe('Custom Actions', () => {
 
     expect(data.items.value).toHaveLength(0)
 
-    messagesService.add({ text: 'this is a test' })
+    messagesService.addToStore({ text: 'this is a test' })
 
     await timeout(100)
 

@@ -229,9 +229,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @param data a single record or array of records.
      * @returns data added or modified in the store.  If you pass an array, you get an array back.
      */
-    add(data: AnyData) {
-      return this.addOrUpdate(data)
-    },
     addToStore(data: AnyData) {
       return this.addOrUpdate(data)
     },
@@ -374,7 +371,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
     },
     hydrateAll() {
-      this.add(this.items)
+      this.addToStore(this.items)
     },
     toggleEventLock(idOrIds: any, event: string) {
       setEventLockState(idOrIds, event, true, this)

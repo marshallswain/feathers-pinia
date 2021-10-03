@@ -41,7 +41,7 @@ import { useUsers } from '~/store/users.pinia.ts'
 
 const usersService = useUsers()
 
-usersService.add({ id: 0, name: 'Marshall' })
+usersService.addToStore({ id: 0, name: 'Marshall' })
 </script>
 ```
 

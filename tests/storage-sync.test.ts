@@ -29,7 +29,7 @@ describe('Storage Sync', () => {
   })
 
   test('writes to storage', async () => {
-    const msg = messagesService.add({ test: true })
+    const msg = messagesService.addToStore({ test: true })
     await timeout(600)
     expect(localStorageMock.setItem).toHaveBeenCalled()
     const [key, value] = (localStorageMock.setItem as any).mock.calls[0]
@@ -39,7 +39,7 @@ describe('Storage Sync', () => {
   })
 
   test('reads from storage', async () => {
-    const msg = messagesService.add({ test: true })
+    const msg = messagesService.addToStore({ test: true })
     await timeout(1000)
     expect(localStorageMock.getItem).toHaveBeenCalled()
     const [key, value] = (localStorageMock.getItem as any).mock.calls[0]

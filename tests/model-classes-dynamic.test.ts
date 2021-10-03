@@ -27,6 +27,6 @@ describe('DynamicBaseModel', () => {
   })
 
   test('create local instance', () => {
-    const message = messagesService.add({ text: 'this is a test' })
+    const message = messagesService.addToStore({ text: 'this is a test' })
   })
 })

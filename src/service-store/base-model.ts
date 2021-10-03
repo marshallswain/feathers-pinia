@@ -15,6 +15,7 @@ export class BaseModel {
     const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
     Object.assign(this, instanceDefaults(data, { models, store }))
     Object.assign(this, setupInstance(data, { models, store }))
+    this.__isClone = !!options.clone
     return this
   }
 
@@ -44,7 +45,7 @@ export class BaseModel {
     return (this.store as any).countInStore(params)
   }
   public static addToStore(data?: any) {
-    return (this.store as any).add(data)
+    return (this.store as any).addTostore(data)
   }
   public static remove(params?: Params) {
     return (this.store as any).remove(params)
@@ -80,7 +81,7 @@ export class BaseModel {
    */
   public addToStore() {
     const { store }: { store: any } = this.constructor as typeof BaseModel
-    store.add(this)
+    store.addToStore(this)
   }
 
   /**

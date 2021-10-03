@@ -20,8 +20,8 @@ describe('Lists', () => {
     reset()
     // Manually add some data to the store.
     '......'.split('.').forEach((empty: string, id: number) => {
-      messagesService.add({ id, text: 'hydrate me' })
-      messagesService.add({ text: `temp message ${id}` })
+      messagesService.addToStore({ id, text: 'hydrate me' })
+      messagesService.addToStore({ text: `temp message ${id}` })
     })
   })
   afterEach(() => reset())

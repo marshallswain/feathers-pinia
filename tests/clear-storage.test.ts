@@ -32,7 +32,7 @@ describe('Clear Storage', () => {
   })
 
   test('clear storage', async () => {
-    const msg = messagesService.add({ test: true })
+    const msg = messagesService.addToStore({ test: true })
     await timeout(600)
 
     expect(localStorageMock.setItem).toHaveBeenCalled()
