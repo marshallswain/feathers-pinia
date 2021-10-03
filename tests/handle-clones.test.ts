@@ -8,8 +8,14 @@ const pinia = createPinia()
 
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
+class Message extends BaseModel {
+  static instanceDefaults() {
+    return { text: '' }
+  }
+}
+
 const servicePath = 'messages'
-const useMessagesService = defineStore({ servicePath })
+const useMessagesService = defineStore({ servicePath, Model: Message })
 
 const messagesService = useMessagesService(pinia)
 
@@ -43,5 +49,13 @@ describe('Handle clones test', () => {
     const props = { message, booleanField }
     const { clones } = handleClones(props)
     expect(clones.booleanField).toBeUndefined()
+  })
+
+  test('adds new instances to the store', async () => {
+    const message = new Message({ text: 'I will soon go to the store.' })
+    expect(messagesService.tempIds).toHaveLength(0)
+    const props = { message }
+    const { clones } = handleClones(props)
+    expect(messagesService.tempIds).toHaveLength(1)
   })
 })

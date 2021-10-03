@@ -2,6 +2,7 @@ import { computed, reactive, watch, isRef, unref } from 'vue'
 import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
 import { getAnyId } from './utils'
+import { storeToRefs } from 'pinia'
 
 interface HandleClonesOptions {
   debug?: boolean
@@ -35,6 +36,11 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
       // Check that the item has a store, otherwise we can't clone.
       if (item.value != null && !!item.value.constructor.store) {
         const { store } = item.value.constructor
+        // TODO: add the item to the store if it's not already in the store.
+        if (!store.items.includes(item.value) && !store.temps.includes(item.value) && !store.clones.includes(item.value)) {
+          store.addToStore(item.value)
+        }
+
         /**
          * Create a new clone or return an existing one if options.useExisting is true.
          * This prevents infinite loops when the handle-clones utility is used more than
