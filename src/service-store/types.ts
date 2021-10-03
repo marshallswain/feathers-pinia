@@ -286,14 +286,4 @@ export interface ModelInstanceOptions {
    * is creating clone
    */
   clone?: boolean
-
-  /**
-   * add/commit to store
-   */
-  commit?: boolean
-
-  /**
-   * merge with existing data
-   */
-  merge?: boolean
 }
