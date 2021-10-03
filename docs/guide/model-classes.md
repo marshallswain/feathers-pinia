@@ -33,7 +33,7 @@ If you don't provide a Model class, one will be created dynamically using the se
 
 ### Working without a model class
 
-One caveat about working without a Model class is that you can't use the new operator.  To add an item to the store, pass an object to the `add` action.
+One caveat about working WITHOUT a Model class is that you can't use the `new` operator (you know, since that requires a class;).  To add an item to the store, pass an object to the `addToStore` action.
 
 ```vue
 <script setup lang="ts">
@@ -43,6 +43,63 @@ const usersService = useUsers()
 
 usersService.addToStore({ id: 0, name: 'Marshall' })
 </script>
+```
+
+## Default Class Properties
+
+Another potential caveat with using Model classes in Feathers-Pinia is that any default values defined on a class will override and overwrite the values provided in `instanceDefaults` UNLESS you assign them again in the extending class's constructor. Read the comment and string values in the next example for more information.
+
+```ts
+import { defineStore, BaseModel } from './store.pinia'
+
+class Message extends BaseModel {
+  // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
+  text = 'The text in the model always wins. You can only overwrite it after instantiation'
+
+  static instanceDefaults(data: Message) {
+    return {
+      text: 'this gets overwritten by the class-level `text`',
+      otherText: `this won't get overwritten and works great for a default value`
+    }
+  }
+}
+
+const message = new Message({ text: 'hello there!' })
+console.log(message.text) // --> 'The text in the model always wins. You can only overwrite it after instantiation'
+```
+
+Notice in the above example how even though we've provided `text: 'hello there!'` to the new message, the value ends up being the default value defined in the class definition.  This is an important part of how extending classes works in JavaScript.  If you definitely require to define instance properties inside the class definition, the workaround is to add a `constructor` to the class and re-assign the properties in the same way that the `BaseModel` constructor does it.  Here's what it looks like:
+
+```ts
+import { defineStore, BaseModel } from './store.pinia'
+
+class Message extends BaseModel {
+  // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
+  text = 'The text in the model always wins. You can only overwrite it after instantiation'
+
+
+  constructor(data: any, options: any = {}) {
+    const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
+
+    // You must call `super` to instantiate the BaseModel
+    super(data, options)
+
+    // Assign the default values again, because you can override this class's defaults inside this class's `constructor`.
+    Object.assign(this, instanceDefaults(data, { models, store })) // only needed when this class implements `instanceDefaults`
+    Object.assign(this, setupInstance(data, { models, store })) // only needed when this class implements `setupInstance`
+    return this
+  }
+
+  static instanceDefaults(data: Message, store: any) {
+    return {
+      text: 'this gets overwritten by the class-level `text`',
+      otherText: `this won't get overwritten and works great for a default value`
+    }
+  }
+}
+
+const message = new Message({ text: 'hello there!' })
+console.log(message.text) // --> 'hello there!'
 ```
 
 ## Recipes
@@ -64,8 +121,12 @@ import { api } from '../feathers'
 
 // (1)^
 export class User extends BaseModel {
-  name!: string
-  timezone!: string
+  static instanceDefaults() {
+    return {
+      name = ''
+      timezone: ''
+    }
+  }
 
   get myCompoundKey() {
     return `${this.name}:${this.timezone}`
