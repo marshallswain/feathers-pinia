@@ -6,9 +6,7 @@ const pinia = createPinia()
 
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
-class Message extends BaseModel {
-  static modelName = 'Message'
-}
+class Message extends BaseModel {}
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath, Model: Message })

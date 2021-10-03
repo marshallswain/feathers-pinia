@@ -25,11 +25,9 @@ describe('Custom Actions', () => {
 
   test('supports useFind as a customAction', async () => {
     const pinia = createPinia()
-    // class Message extends BaseModel {}
     const useMessagesService: any = defineStore({
       clients: { api },
       servicePath: 'messages',
-      // Model: Message,
       actions: {
         findMessages(params: any) {
           return useFind({ params, model: this })
