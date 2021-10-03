@@ -72,17 +72,17 @@ Notice in the above example how even though we've provided `text: 'hello there!'
 
 ```ts
 import { defineStore, BaseModel } from './store.pinia'
+import { models } from 'feathers-pinia'
 
 class Message extends BaseModel {
   // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
   text = 'The text in the model always wins. You can only overwrite it after instantiation'
 
-
   constructor(data: any, options: any = {}) {
-    const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
-
-    // You must call `super` to instantiate the BaseModel
+    // You must call `super` very first to instantiate the BaseModel
     super(data, options)
+
+    const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
 
     // Assign the default values again, because you can override this class's defaults inside this class's `constructor`.
     Object.assign(this, instanceDefaults(data, { models, store })) // only needed when this class implements `instanceDefaults`
@@ -92,8 +92,8 @@ class Message extends BaseModel {
 
   static instanceDefaults(data: Message, store: any) {
     return {
-      text: 'this gets overwritten by the class-level `text`',
-      otherText: `this won't get overwritten and works great for a default value`
+      text: 'this gets overwrites the class-level `text`',
+      otherText: `this works great for a default value because there's not a default initialized at the class level. But this could also be moved into the class definition`
     }
   }
 }
@@ -101,6 +101,8 @@ class Message extends BaseModel {
 const message = new Message({ text: 'hello there!' })
 console.log(message.text) // --> 'hello there!'
 ```
+
+But note that in the example, above, you probably don't need to use instanceDefaults, anymore.  If you define a default value for the `otherText` property inside of the Model class, you can remove the `static instanceDefaults` function, completely.  You may or may not want to still use the `setupInstance` method for setting up related data in other stores.
 
 ## Recipes
 
