@@ -126,7 +126,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 if (isString) {
                   // Check for equality before commit or the values will be equal.
                   originalVal = original[propOrArray as string]
-                  cloneVal = clone.value?.propOrArray
+                  cloneVal = clone.value?.[propOrArray as string]
                 } else if (isArray) {
                   originalVal = _.pick(original, ...propOrArray)
                   cloneVal = _.pick(clone.value, ...propOrArray)
