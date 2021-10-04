@@ -37,7 +37,11 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
       if (item.value != null && !!item.value.constructor.store) {
         const { store } = item.value.constructor
         // TODO: add the item to the store if it's not already in the store.
-        if (!store.items.includes(item.value) && !store.temps.includes(item.value) && !store.clones.includes(item.value)) {
+        if (
+          !store.items.includes(item.value) &&
+          !store.temps.includes(item.value) &&
+          !store.clones.includes(item.value)
+        ) {
           store.addToStore(item.value)
         }
 
@@ -153,7 +157,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                       item: original,
                       clone: clone.value,
                       data: cloneVal,
-                      pick: _.pick
+                      pick: _.pick,
                     }) || {}
                   const data = Object.assign(changedData, saveWithData)
                   return clone.value

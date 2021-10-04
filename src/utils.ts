@@ -64,7 +64,7 @@ export function getQueryInfo(
     pageParams,
     pageId,
     response: undefined,
-    isOutdated: undefined as boolean | undefined
+    isOutdated: undefined as boolean | undefined,
   }
 }
 
