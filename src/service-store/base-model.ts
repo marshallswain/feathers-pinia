@@ -45,7 +45,7 @@ export class BaseModel {
     return (this.store as any).countInStore(params)
   }
   public static addToStore(data?: any) {
-    return (this.store as any).addTostore(data)
+    return (this.store as any).addToStore(data)
   }
   public static remove(params?: Params) {
     return (this.store as any).remove(params)
