@@ -16,13 +16,11 @@ class Message extends BaseModel {
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath, Model: Message })
-
 const messagesService = useMessagesService(pinia)
-
 const reset = () => resetStores(api.service('messages'), messagesService)
 
 describe('Handle clones test', () => {
-  beforeAll(() => reset())
+  beforeEach(() => reset())
 
   test('it returns a clone', async () => {
     const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
@@ -57,5 +55,249 @@ describe('Handle clones test', () => {
     const props = { message }
     const { clones } = handleClones(props)
     expect(messagesService.tempIds).toHaveLength(1)
+  })
+
+  describe('save_handlers with temp records', () => {
+    test('temp record: save_handler with string calls create when value is unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const message = new Message({ text: 'about to save with string' })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message('text')
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('about to save with string')
+    })
+
+    test('temp record: save_handler with string calls create after value change', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const message = new Message({ text: 'about to save with string' })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      clones.message.text = 'hi'
+      const { areEqual, wasDataSaved, item } = await save_message('text')
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('hi')
+    })
+
+    test('temp record: save_handler with array calls create when value is unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const text = 'about to save with an array of attribute names'
+      const message = new Message({ text })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message(['text'])
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe(text)
+    })
+
+    test('temp record: save_handler with array calls create after value change', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const message = new Message({ text: 'about to save with an array of attribute names' })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      clones.message.text = 'hi'
+      const { areEqual, wasDataSaved, item } = await save_message(['text'])
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('hi')
+    })
+
+    test('temp record: save_handler with object calls create when value is unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const text = 'about to save with an array of attribute names'
+      const message = new Message({ text })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message({ text })
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe(text)
+    })
+
+    test('save_handler with array calls create after value change', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const message: any = new Message({ text: 'about to save with an array of attribute names' })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message({ text: 'save this text' })
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('save this text')
+    })
+  })
+
+  describe('save_handlers with non-temp records', () => {
+    test('save_handler with string does not call patch when value unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message = await new Message({ text: 'about to save with string' }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message('text')
+
+      expect(hook).not.toHaveBeenCalled()
+      expect(areEqual).toBe(true)
+      expect(wasDataSaved).toBe(false)
+      expect(item.text).toBe('about to save with string')
+    })
+
+    test('save_handler with string calls patch after value change', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message = await new Message({ text: 'about to save with string' }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      clones.message.text = 'hi'
+      const { areEqual, wasDataSaved, item } = await save_message('text')
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('hi')
+    })
+
+    test('save_handler with array does not call patch when value is unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const text = 'about to save with an array of attribute names'
+      const message = new Message({ text })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message(['text'])
+
+      expect(hook).not.toHaveBeenCalled()
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe(text)
+    })
+
+    test('save_handler with array calls patch after value change', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message = await new Message({
+        text: 'about to save with an array of attribute names',
+      }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      clones.message.text = 'hi'
+      const { areEqual, wasDataSaved, item } = await save_message(['text'])
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('hi')
+    })
+
+    test('save_handler with object does not call patch when value is unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const text = 'about to save with an array of attribute names'
+      const message = await new Message({ text }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message({ text })
+
+      expect(hook).not.toHaveBeenCalled()
+      expect(areEqual).toBe(true)
+      expect(wasDataSaved).toBe(false)
+      expect(item.text).toBe(text)
+    })
+
+    test('save_handler with object calls patch after value change', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message: any = await new Message({
+        text: 'about to save with an array of attribute names',
+      }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message({ text: 'save this text' })
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('save this text')
+    })
   })
 })
