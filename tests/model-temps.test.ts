@@ -28,6 +28,12 @@ describe('Temporary Records (Local-Only)', () => {
     expect(message.__tempId).toBeUndefined()
   })
 
+  test('temps can be retrieved with getFromStore', () => {
+    const message = messagesService.addToStore({ text: 'this is a test' })
+    const fromTempStore = messagesService.getFromStore(message.__tempId)
+    expect(fromTempStore.__tempId).toBe(message.__tempId)
+  })
+
   test('temps are added to tempsById', () => {
     const message = messagesService.addToStore({ text: 'this is a test' })
     expect(messagesService.tempsById).toHaveProperty(message.__tempId)

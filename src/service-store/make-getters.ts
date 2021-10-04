@@ -116,6 +116,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         const { Model } = options
 
         let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
+        if (!item) item = this.tempsById[id] && select(params, '__tempId')(this.tempsById[id])
 
         // Make sure item is an instance
         if (item && !item.constructor.modelName) {
