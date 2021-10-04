@@ -140,7 +140,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 const { commit = true, save = true, saveWith = () => ({}) } = opts
                 commit && clone.value.commit()
 
-                if (!areEqual && save) {
+                if ((!areEqual && save) || clone.value.hasOwnProperty('__tempId')) {
                   const changedData = isString
                     ? { [propOrArray as string]: clone.value[propOrArray as string] }
                     : cloneVal
