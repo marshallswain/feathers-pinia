@@ -81,7 +81,7 @@ export class BaseModel {
    */
   public addToStore() {
     const { store }: { store: any } = this.constructor as typeof BaseModel
-    store.addToStore(this)
+    return store.addToStore(this)
   }
 
   /**
