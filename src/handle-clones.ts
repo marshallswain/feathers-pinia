@@ -169,7 +169,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                       return Promise.reject(error)
                     })
                 }
-                return Promise.resolve({ areEqual: true, wasDataSaved: false, item: originalVal })
+                return Promise.resolve({ areEqual: true, wasDataSaved: false, item: original })
               }
             }
           },
