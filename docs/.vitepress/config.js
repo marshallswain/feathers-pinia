@@ -51,8 +51,8 @@ function getGuideSidebar() {
     {
       text: 'Common Tools',
       children: [
-        { text: '🚧 useFind', link: '/guide/use-find' },
-        { text: '🚧 useGet', link: '/guide/use-get' },
+        { text: 'useFind', link: '/guide/use-find' },
+        { text: 'useGet', link: '/guide/use-get' },
         { text: '🚧 usePagination', link: '/guide/use-pagination' },
         { text: 'handleClones', link: '/guide/handle-clones' },
       ],
