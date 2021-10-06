@@ -44,8 +44,8 @@ const { save_user } = saveHandlers
 
 The saveHandlers change their behavior slightly depending on the first argument you provide.  The argument provided will determine which keys get compared between the original item and the clone to check if a request should be sent to the API server:
 
-- `string` like `save_user('name')` will compare `name` property on each object.
-- `array` like `save_user(['name', address])` will compare the keys named in the provided array.
+- `string` like `save_user('name')` will compare `name` property on each object. Dotted paths can be used for values nested inside of objects. The dotted string will be used to compare the deeply-nested values. The entire top-level object will be sent to the server.
+- `array` like `save_user(['name', address])` will compare the keys named in the provided array. The same rules as in `string`, above, apply for dotted strings.
 - `object` like `save_user({ name: 'foo' })` will compare the provided object's keys with the original record.
 - `undefined`, like `save_user()` will compare all of the clone's keys with the original record.
 
