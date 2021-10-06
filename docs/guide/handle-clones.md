@@ -22,9 +22,9 @@ The `handleClones` utility is exported directly from `feathers-pinia`.  It expec
       v-model="clones.user.name"
       type="text"
       placeholder="Enter the User's Name"
-      @keyup.enter="save"
+      @keyup.enter="() => save_user()"
     />
-    <button @click="() => save_user('name')"> Save </button>
+    <button @click="() => save_user()"> Save </button>
   </div>
 </template>
 
