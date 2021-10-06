@@ -58,6 +58,25 @@ describe('Handle clones test', () => {
   })
 
   describe('save_handlers with temp records', () => {
+    test('temp record: save_handler with no arguments calls create when value is unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const message = new Message({ text: 'about to save with string' })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message()
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('about to save with string')
+    })
+
     test('temp record: save_handler with string calls create when value is unchanged', async () => {
       const hook = jest.fn()
       api.service(servicePath).hooks({
@@ -178,6 +197,45 @@ describe('Handle clones test', () => {
   })
 
   describe('save_handlers with non-temp records', () => {
+    test('save_handler with no arguments does not call patch when value is unchanged', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message = await new Message({ text: 'about to save with no arguments' }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message()
+
+      expect(hook).not.toHaveBeenCalled()
+      expect(areEqual).toBe(true)
+      expect(wasDataSaved).toBe(false)
+      expect(item.text).toBe('about to save with no arguments')
+    })
+
+    test('save_handler with no arguments calls patch when value changed', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message = await new Message({ text: 'about to save with no arguments' }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      clones.message.text = 'foo'
+      const { areEqual, wasDataSaved, item } = await save_message()
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('foo')
+    })
+
     test('save_handler with string does not call patch when value unchanged', async () => {
       const hook = jest.fn()
       api.service(servicePath).hooks({

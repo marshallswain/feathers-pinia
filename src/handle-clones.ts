@@ -98,7 +98,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 const original = store.getFromStore(getAnyId(item.value))
                 const isArray = Array.isArray(propOrCollection)
                 const isString = typeof propOrCollection === 'string'
-                const isObject = typeof propOrCollection === 'object' && propOrCollection != null
+                const isObject = !isArray && !isString && propOrCollection != null
 
                 function makeError() {
                   throw new Error(
@@ -106,12 +106,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                   )
                 }
 
-                // First arg must be an array or string
-                if (!isArray && !isString && !isObject) {
-                  makeError()
-                }
-
-                // Validate props
+                // Validate props. For dotted strings, only use the top-level key.
                 function validateProp(prop: string) {
                   if (!prop || typeof prop !== 'string') {
                     makeError()
@@ -122,7 +117,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                   ? validateProp(propOrCollection)
                   : isArray
                   ? propOrCollection.map(validateProp)
-                  : Object.keys(propOrCollection).map(validateProp)
+                  : Object.keys(propOrCollection || clone.value).map(validateProp)
 
                 let originalVal
                 let cloneVal
@@ -131,12 +126,10 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                   // Check for equality before commit or the values will be equal.
                   originalVal = original[propOrArray as string]
                   cloneVal = clone.value?.[propOrArray as string]
-                } else if (isArray) {
-                  originalVal = _.pick(original, ...propOrArray)
-                  cloneVal = _.pick(clone.value, ...propOrArray)
                 } else {
                   originalVal = _.pick(original, ...propOrArray)
-                  cloneVal = Object.assign({}, propOrCollection)
+                  // If an object was provided, prefer it over the clone. (it will overwrite the clone during commit)
+                  cloneVal = _.pick(isObject ? propOrCollection : clone.value, ...propOrArray)
                 }
 
                 const areEqual = isEqual(originalVal, cloneVal)
