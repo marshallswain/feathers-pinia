@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 interface SetupAuthOptions {
   feathersClient: any
   id?: string
-  User?: any
   state?: Function
   getters?: { [k: string]: any }
   actions?: { [k: string]: any }
