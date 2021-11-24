@@ -37,7 +37,7 @@ function getGuideSidebar() {
       text: 'Pinia Stores',
       children: [
         { text: 'Service Stores', link: '/guide/service-stores' },
-        { text: '🚧 Auth Stores', link: '/guide/auth-stores' },
+        { text: 'Auth Stores', link: '/guide/auth-stores' },
       ],
     },
     {
