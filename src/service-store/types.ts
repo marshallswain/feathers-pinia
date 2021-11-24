@@ -40,10 +40,10 @@ export interface ServiceState<M extends Model = Model> {
     [k: number]: PendingById
   }
   eventLocksById: {
-    created: { [k: string]: M;[k: number]: M }
-    patched: { [k: string]: M;[k: number]: M }
-    updated: { [k: string]: M;[k: number]: M }
-    removed: { [k: string]: M;[k: number]: M }
+    created: { [k: string]: M; [k: number]: M }
+    patched: { [k: string]: M; [k: number]: M }
+    updated: { [k: string]: M; [k: number]: M }
+    removed: { [k: string]: M; [k: number]: M }
   }
   whitelist?: string[]
 }
@@ -212,7 +212,7 @@ export interface ModelStatic extends EventEmitter {
    * @param data partial model data
    * @param options model instance options
    */
-  new(data?: AnyData, options?: ModelInstanceOptions): Model
+  new (data?: AnyData, options?: ModelInstanceOptions): Model
   prototype: Model
 
   /**
