@@ -122,12 +122,12 @@ Gives access to the `Model` class provided during setup.
 
 These getters return arrays of `ids` or instances currently in state.
 
-- **`itemIds`** is an array of the keys in `itemsById`.
-- **`items`** is an array of the values in `itemsById`.
-- **`tempIds`** is an array of all keys in `tempsById`.
-- **`temps`** is an array of all values in `tempsById`.
-- **`cloneIds`** is an array of all keys in `clonesById`.
-- **`clones`** is an array of all values in `clonesById`.
+- **`itemIds`** all keys from `itemsById`.
+- **`items`** all values from `itemsById`.
+- **`tempIds`** all keys from `tempsById`.
+- **`temps`** all values from `tempsById`.
+- **`cloneIds`** all keys from `clonesById`.
+- **`clones`** all values from `clonesById`.
 
 ### Pending Status
 
