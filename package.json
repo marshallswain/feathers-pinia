@@ -17,7 +17,7 @@
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs; npm run docs:copy-assets",
-    "docs:serve": "vitepress serve docs",
+    "docs:serve": "vitepress serve docs --port 5001",
     "docs:copy-assets": "cp ./docs/feathers-pinia.png ./docs/.vitepress/dist/",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",

@@ -44,7 +44,7 @@ function getGuideSidebar() {
       text: 'Data Modeling',
       children: [
         { text: 'Model Classes', link: '/guide/model-classes' },
-        { text: '🚧 BaseModel', link: '/guide/base-model' },
+        { text: 'BaseModel', link: '/guide/base-model' },
         { text: '🚧 Model Instances', link: '/guide/model-instances' },
       ],
     },

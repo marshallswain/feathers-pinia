@@ -52,9 +52,7 @@ Here are a few more details about each option:
 - **`getters`** is an object of custom getters to customize the store.
 - **`actions`** is an object of custom actions to customize the store.
 
-## Store API
-
-### State
+## State
 
 Here's the interface for the Service State
 
@@ -105,32 +103,105 @@ Let's go over each part of the state in more detail:
 - **`eventLocksById`** helps prevent receiving normal, duplicate responses from the API server during CRUD actions. Instead of processing both the CRUD response AND the realtime event data, it only handles one of them.
 - **`whitelist`** is an array of key names that are whitelisted in the `findInStore` getter params.
 
-### Getters
+## Getter Attributes
 
-The following getters are available in every service store.  Since they're getters, they are all reactive (meaning the template will update automatically as their values change):
+The following getters are available in every service store.  Since they're getters, they are all reactive (meaning the template will update automatically as their values change).  In the next section you'll find the getters that accepts arguments to query data from the store.
 
-- **`service`** is the FeathersClient service instance. This value is dynamic based on two values in the [State](#state).
-  - Change `clientAlias` to have the store use a different configured api server.
-  - Change `servicePath` to have the store use a different service on the same api server.
-- **`Model`** gives access to the `Model` class provided during setup.
+### `service`
+
+Returns the FeathersClient service instance. This value is dynamic based on two values in the [State](#state).
+
+- Change `clientAlias` to have the store use a different configured api server.
+- Change `servicePath` to have the store use a different service on the same api server.
+
+### `Model`
+
+Gives access to the `Model` class provided during setup.
+
+### IDs & Lists
+
+These getters return arrays of `ids` or instances currently in state.
+
 - **`itemIds`** is an array of the keys in `itemsById`.
 - **`items`** is an array of the values in `itemsById`.
 - **`tempIds`** is an array of all keys in `tempsById`.
 - **`temps`** is an array of all values in `tempsById`.
 - **`cloneIds`** is an array of all keys in `clonesById`.
 - **`clones`** is an array of all values in `clonesById`.
-- **`findInStore(params)`** allows performing reactive queries against the data in `itemsById`. To also include data from `tempsById`, set `params.temps` to `true`.
-- **`countInStore(params)`** returns the `total` returned from `findInStore`, without returning the data.
-- **`getFromStore(id, params)`** works similar to `.get` requests in a Feathers service object.  It only returns records currently populated in the store.
+
+### Pending Status
+
+These getters return boolean pending status for this service store.
+
 - **`isCreatePending`** will be truthy when there's a `create` request pending for this service.
 - **`isPatchPending`** will be truthy when there's a `patch` request pending for this service.
 - **`isUpdatePending`** will be truthy when there's a `update` request pending for this service.
 - **`isRemovePending`** will be truthy when there's a `remove` request pending for this service.
 
-### Actions
+## Query Getters
 
-### Custom Properties
+These special getters accept arguments that allow you to query data from the store. Their return values are still reactive.
 
-You can customize a store using the `state`, `getters` and `actions` options. Be careful if you're overwriting any of the built-in attributes.
+### `findInStore(params)`
+
+Performs reactive queries against the data in `itemsById`. To also include data from `tempsById`, set `params.temps` to `true`.
+
+### `countInStore(params)`
+
+returns the `total` returned from `findInStore`, without returning the data.
+
+### `getFromStore(id, params)`
+
+Works similar to `.get` requests in a Feathers service object.  It only returns records currently populated in the store.
+
+### `addToStore(data)`
+
+Adds the data as a Model instance to the store.
+
+### `removeFromStore(id, params)`
+
+Removes the matching record from the store.
+
+## Actions
+
+### `find(params)`
+
+Uses the Feathers Client to retrieve records from the API server.
+
+```vue
+<script setup>
+import { useTodos } from '../store/todos'
+
+const todoStore = useTodos()
+
+todoStore.find({ query: {} }).then(/* ... */)
+</script>
+```
+
+### `count(params)`
+
+Like `find`, but returns the number of records that match the query.  It does not return the actual records.
+
+### `get(id, params)`
+
+Uses the Feathers Client to retrieve a single record from the API server.
+
+```vue
+<script setup>
+import { useTodos } from '../store/todos'
+
+const todoStore = useTodos()
+
+todoStore.get(1).then(/* ... */)
+</script>
+```
+
+### `remove(id, params)`
+
+Uses the Feathers Client to send a `remove` request to the API server.
+
+## Custom Properties
+
+You can customize a store using the `state`, `getters` and `actions` options. It's possible to overwrite the built-in properties.
 
 ## Server Side Rendering (SSR)
