@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia, models } from '../src/index'
 import { api } from './feathers'

@@ -1,4 +1,4 @@
-import { computed, isRef, reactive, Ref, unref, toRefs, watch } from 'vue'
+import { computed, isRef, reactive, Ref, unref, toRefs, watch } from 'vue-demi'
 import debounce from 'just-debounce'
 import { Params, Paginated } from './types'
 import { getQueryInfo, getItemsFromQueryInfo } from './utils'

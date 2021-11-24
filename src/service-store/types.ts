@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { Ref } from 'vue-demi'
 import { Params, Paginated } from '../types'
 import { EventEmitter } from 'events'
 import { Id } from '@feathersjs/feathers'

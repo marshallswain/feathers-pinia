@@ -5,7 +5,7 @@ import { Id } from '@feathersjs/feathers'
 import sift from 'sift'
 import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
-import { unref } from 'vue'
+import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']

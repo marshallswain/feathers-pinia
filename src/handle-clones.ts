@@ -1,4 +1,4 @@
-import { computed, reactive, watch, isRef, unref } from 'vue'
+import { computed, reactive, watch, isRef, unref } from 'vue-demi'
 import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
 import { getAnyId } from './utils'
