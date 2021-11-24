@@ -92,7 +92,7 @@ class Message extends BaseModel {
 
   static instanceDefaults(data: Message, store: any) {
     return {
-      text: 'this gets overwrites the class-level `text`',
+      text: 'gets overwritten by the class-level `text`',
       otherText: `this works great for a default value because there's not a default initialized at the class level. But this could also be moved into the class definition`
     }
   }
