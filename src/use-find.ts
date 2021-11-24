@@ -61,8 +61,8 @@ export function useFind<M extends Model = Model>({
       provided || provided === null
         ? provided
         : forFetch || forFetch === null
-          ? forFetch
-          : unref(params)
+        ? forFetch
+        : unref(params)
 
     return paramsToUse
   }
