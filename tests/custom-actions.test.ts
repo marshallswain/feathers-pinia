@@ -10,7 +10,7 @@ describe('Custom Actions', () => {
     const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
     const pinia = createPinia()
     const test = jest.fn()
-    class Message extends BaseModel { }
+    class Message extends BaseModel {}
     const useMessagesService = defineStore({
       servicePath: 'messages',
       Model: Message,
