@@ -223,14 +223,57 @@ describe('Handle clones test', () => {
           patch: [hook],
         },
       })
-      const message = await new Message({ text: 'about to save with no arguments' }).save()
+      const message = await new Message({
+        text: 'about to save with no arguments',
+        unchangedProp: true,
+        changedProp: false,
+      }).save()
       const props = { message }
       const { clones, saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
-      clones.message.text = 'foo'
+      Object.assign(clones.message, {
+        text: 'foo',
+        changedProp: true,
+      })
       const { areEqual, wasDataSaved, item } = await save_message()
+      const hookCallArgs = hook.mock.calls[0][0]
 
       expect(hook).toHaveBeenCalledTimes(1)
+      expect(hookCallArgs.data).toEqual({ text: 'foo', changedProp: true })
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('foo')
+    })
+
+    test('save_handler with no arguments calls patch when value changed, can disable diff', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message = await new Message({
+        text: 'about to save with no arguments',
+        unchangedProp: true,
+        changedProp: false,
+      }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      Object.assign(clones.message, {
+        text: 'foo',
+        changedProp: true,
+      })
+      const { areEqual, wasDataSaved, item } = await save_message(undefined, { diff: false })
+      const hookCallArgs = hook.mock.calls[0][0]
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(hookCallArgs.data).toEqual({
+        text: 'foo',
+        changedProp: true,
+        id: 0,
+        unchangedProp: true,
+      })
       expect(areEqual).toBe(false)
       expect(wasDataSaved).toBe(true)
       expect(item.text).toBe('foo')

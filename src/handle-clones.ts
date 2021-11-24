@@ -1,15 +1,19 @@
 import { computed, reactive, watch, isRef, unref } from 'vue-demi'
 import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
-import { getAnyId } from './utils'
+import { getId, getAnyId } from './utils'
 import { storeToRefs } from 'pinia'
 
+interface AnyObj {
+  [key: string]: any
+}
 interface HandleClonesOptions {
   debug?: boolean
   useExisting?: boolean
   watchProps?: Array<any>
 }
 interface SaveHandlerOpts {
+  diff?: boolean
   commit?: boolean
   save?: boolean
   saveWith?: Function
@@ -84,6 +88,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                *
                * @param {String} prop - the dotted path of the key in the object being saved.
                * @param {Object} opts - an options object
+               * @param {Boolean} opts.diff - whether to automatically diff the top-level keys. Only different keys are sent to the server.
                * @param {Boolean} opts.commit - whether to call clone.commit() before saving. default: true
                * @param {Boolean} opts.save - whether to call save if item[prop] and clone[prop] are not equal. default: true
                * @param {Function} opts.saveWith - a function which receives the the original `item`, the `clone
@@ -120,7 +125,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                   : Object.keys(propOrCollection || clone.value).map(validateProp)
 
                 let originalVal
-                let cloneVal
+                let cloneVal: AnyObj
 
                 if (isString) {
                   // Check for equality before commit or the values will be equal.
@@ -138,9 +143,22 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 commit && clone.value.commit()
 
                 if ((!areEqual && save) || clone.value.hasOwnProperty('__tempId')) {
+                  const cloneHasId = getId(cloneVal) != null
+                  // Only diff for patch/update as long as no first argument is provided and diff is not explicitly disabled
+                  // Or in any other case when opts.diff is true.
+                  const diffedCloneVal =
+                    cloneHasId && ((!propOrCollection && opts.diff !== false) || opts.diff === true)
+                      ? Object.keys(cloneVal).reduce((diff: AnyObj, key) => {
+                          if (!isEqual(original[key], cloneVal[key])) {
+                            diff[key] = cloneVal[key]
+                          }
+                          return diff
+                        }, {})
+                      : cloneVal
                   const changedData = isString
                     ? { [propOrArray as string]: clone.value[propOrArray as string] }
-                    : cloneVal
+                    : diffedCloneVal
+
                   // Manually update the clone for objects.
                   if (isObject) {
                     Object.assign(clone.value, changedData)
@@ -149,7 +167,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                     saveWith({
                       item: original,
                       clone: clone.value,
-                      data: cloneVal,
+                      data: diffedCloneVal,
                       pick: _.pick,
                     }) || {}
                   const data = Object.assign(changedData, saveWithData)
