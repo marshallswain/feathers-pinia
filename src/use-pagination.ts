@@ -1,4 +1,4 @@
-import { computed, watch, reactive, isRef, Ref } from 'vue'
+import { computed, watch, reactive, isRef, Ref } from 'vue-demi'
 
 export function usePagination(pagination: any, latestQuery: Ref, options: any = {}) {
   /**

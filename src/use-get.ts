@@ -1,4 +1,4 @@
-import { reactive, computed, toRefs, isRef, unref, watch, Ref } from 'vue'
+import { reactive, computed, toRefs, isRef, unref, watch, Ref } from 'vue-demi'
 import { Params } from './types'
 import { Model } from './service-store/types'
 import { Id } from '@feathersjs/feathers'

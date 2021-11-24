@@ -102,7 +102,7 @@ The final step to setup `pinia` is to add `pinia` as an app plugin, like this:
 
 ```ts
 // src/main.ts
-import { createApp, App as AppType } from 'vue'
+import { createApp, App as AppType } from 'vue-demi'
 import { router } from './routes'
 import { pinia } from './store/store.pinia' // import from the file you just created.
 import App from './App.vue'

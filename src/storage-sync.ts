@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import { _ } from '@feathersjs/commons'
-import { computed, watch } from 'vue'
+import { computed, watch } from 'vue-demi'
 
 // Writes data to localStorage
 export function writeToStorage(id: string, data: any, storage: any) {

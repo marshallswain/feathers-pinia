@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia, models } from '../src/index'
 import { api } from './feathers'
@@ -8,7 +8,7 @@ const pinia = createPinia()
 
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
-class Message extends BaseModel {}
+class Message extends BaseModel { }
 const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
 
 describe('Global Models', () => {
