@@ -19,11 +19,12 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['vue', 'pinia', 'lodash', 'sift'],
+      external: ['vue-demi', 'vue', 'pinia', 'lodash', 'sift'],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
+          'vue-demi': 'VueDemi',
           vue: 'Vue',
           pinia: 'pinia',
           lodash: 'lodash',
