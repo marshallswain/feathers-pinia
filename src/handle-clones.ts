@@ -116,8 +116,8 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 const propOrArray = isString
                   ? validateProp(propOrCollection)
                   : isArray
-                    ? propOrCollection.map(validateProp)
-                    : Object.keys(propOrCollection || clone.value).map(validateProp)
+                  ? propOrCollection.map(validateProp)
+                  : Object.keys(propOrCollection || clone.value).map(validateProp)
 
                 let originalVal
                 let cloneVal
