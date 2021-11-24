@@ -2,6 +2,12 @@ import { getId } from '../utils'
 import { AnyData, ModelInstanceOptions } from './types'
 import { Id, Params } from '@feathersjs/feathers'
 import { models } from '../models'
+import { EventEmitter } from 'events'
+
+interface InstanceModifierOptions {
+  models: { [id: string]: any }
+  store: any
+}
 
 export class BaseModel {
   static store = null
@@ -19,10 +25,10 @@ export class BaseModel {
     return this
   }
 
-  public static instanceDefaults(data: AnyData, models: { [name: string]: any }) {
+  public static instanceDefaults(data: AnyData, options?: InstanceModifierOptions) {
     return data
   }
-  public static setupInstance(data: AnyData, models: { [name: string]: any }) {
+  public static setupInstance(data: AnyData, options?: InstanceModifierOptions) {
     return data
   }
 
@@ -200,4 +206,8 @@ function checkThis(context: any) {
       `Instance methods must be called with the dot operator. If you are referencing one in an event, use '@click="() => instance.remove()"' so that the correct 'this' context is applied. Using '@click="instance.remove"' will call the remove function with "this" set to 'undefined' because the function is called directly instead of as a method.`
     )
   }
+}
+
+for (const n in EventEmitter.prototype) {
+  ;(BaseModel as any)[n] = (EventEmitter.prototype as any)[n]
 }
