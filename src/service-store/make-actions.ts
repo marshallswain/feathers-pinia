@@ -164,9 +164,6 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     patch(id: Id, data: any, params: Params) {
       params = fastCopy(params) || {}
 
-      // if (options.Model && (!params || !params.data)) {
-      //   data = options.Model.diffOnPatch(data)
-      // }
       if (params && params.data) {
         data = params.data
       }

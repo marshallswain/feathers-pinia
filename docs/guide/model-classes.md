@@ -30,7 +30,6 @@ api.service(servicePath).hooks({})
 
 If you don't provide a Model class, one will be created dynamically using the servicePath as the class name.  This means that you can still take advantage of instance methods!  It's pretty convenient!
 
-
 ### Working without a model class
 
 One caveat about working WITHOUT a Model class is that you can't use the `new` operator (you know, since that requires a class;).  To add an item to the store, pass an object to the `addToStore` action.
