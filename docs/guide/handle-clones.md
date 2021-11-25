@@ -40,7 +40,7 @@ const { save_user } = saveHandlers
 </script>
 ```
 
-## Using the `saveHandlers`
+## Using the `save_handlers`
 
 The saveHandlers change their behavior slightly depending on the first argument you provide.  The argument provided will determine which keys get compared between the original item and the clone to check if a request should be sent to the API server:
 
@@ -49,7 +49,7 @@ The saveHandlers change their behavior slightly depending on the first argument 
 - `object` like `save_user({ name: 'foo' })` will compare the provided object's keys with the original record.
 - `undefined`, like `save_user()` will compare all of the clone's keys with the original record.
 
-### `saveHandler` options
+### `save_handler` options
 
 Each saveHandler also accepts an `options` object as its second argument.  The following options are available:
 
