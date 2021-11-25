@@ -8,7 +8,7 @@ actionText: Get Started
 actionLink: /guide/
 features:
   - title: 🍍 Powered by Pinia
-    details: Pinia is the inspiration for the upcoming Vuex 5. It's a joy to use with a clean API and memorable syntax.
+    details: Pinia is Vuex 5. It's a joy to use with a clean API and memorable syntax.
 
   - title: 🧁 Best Practices Baked In
     details: Vue 3 + Composition API 😎 Common Redux patterns included. SWR Fall-through cache by default. Query the store like a local database.
