@@ -146,6 +146,8 @@ These special getters accept arguments that allow you to query data from the sto
 
 Performs reactive queries against the data in `itemsById`. To also include data from `tempsById`, set `params.temps` to `true`.
 
+> Tip: use `findInStore` and enjoy [Automatic Instance Hydration](#automatic-instance-hydration)
+
 ### `countInStore(params)`
 
 returns the `total` returned from `findInStore`, without returning the data.
@@ -153,6 +155,8 @@ returns the `total` returned from `findInStore`, without returning the data.
 ### `getFromStore(id, params)`
 
 Works similar to `.get` requests in a Feathers service object.  It only returns records currently populated in the store.
+
+> Tip: use `getFromStore` and enjoy [Automatic Instance Hydration](#automatic-instance-hydration)
 
 ### `addToStore(data)`
 
@@ -205,3 +209,15 @@ Uses the Feathers Client to send a `remove` request to the API server.
 You can customize a store using the `state`, `getters` and `actions` options. It's possible to overwrite the built-in properties.
 
 ## Server Side Rendering (SSR)
+
+### Automatic Instance Hydration
+
+Normally, during SSR, after the rendered page has been delivered to the client, the browser takes any inline JSON payload and pushes it into the store. This is called hydration.  A common problem with hydration is that it doesn't know about Feathers-Pinia Model classes, or that records should be instances. You recognize the problem when the browser throws an error stating something like:
+
+```text
+Error: object has no method named `.save()`
+```
+
+That's because plain objects don't actually have a `save()` method.  Only once a plain object has been turned back into a Model instance does it have a `save()` method.  So we need to make sure that data is fully hydrated into an actual instance before using its methods.
+
+Instead of automatically hydrating every instance in the store, Feathers-Pinia uses a more performant rule: Only hydrate the instances actually in use.  It achieves this through the Query Getters.  Any plain record returned by `store.findInStore` or `store.getFromStore` will automagically be turned into a fully hydrated model instance.
