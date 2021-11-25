@@ -58,6 +58,24 @@ Each saveHandler also accepts an `options` object as its second argument.  The f
 - `save { Boolean}` whether to call save if item[prop] and clone[prop] are not equal. default: true
 - `saveWith {Function}` a function which receives the the original `item`, the `clone`, the changed `data`, and the `pick` method from feathers. The return value from `saveWith` should be an object. The returned object will be merged into the patch data.
 
+### `save_handler` Return Values
+
+Each save_handler returns a promise.  Any successful request conforms to `Promise<SaveHandlerReturn>`.
+
+```ts
+interface SaveHandlerReturn {
+  areEqual: boolean,
+  wasDataSaved: boolean,
+  item: ApiResult
+}
+```
+
+This response will be different depending on if a request was actually made.
+
+- `areEqual` will return the result of the internal `lodash.isEqual`, regardless of whether data was sent to the server.
+- `wasDataSaved` will be `true` if an API request was made.
+- `item` will be either (A) the response from the API server if a request was made, or (B) the original item from the store (original item as in not the clone).
+
 ## Using with Temp Records
 
 The `handleClones` utility supports temp records (instances which aren't yet in the store OR don't have an `idField` property).  Keep in mind that once temp records have been saved, they get moved in the state from `tempsById` to `itemsById`.  This means that you may need to make an adjustment to obtain the correct data after saving a temp. For example, instead of passing the temp record to the `user` in the first example, the correct record retrieved from the store's `itemsById` would need to be provided after saving.
