@@ -57,6 +57,53 @@ describe('Handle clones test', () => {
     expect(messagesService.tempIds).toHaveLength(1)
   })
 
+  describe('save_handlers work with params', () => {
+    test('save_handlers allow passing params for create', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          create: [hook],
+        },
+      })
+      const message = new Message({ text: 'about to save with string' })
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      const { areEqual, wasDataSaved, item } = await save_message(undefined, {
+        $populateParams: { name: 'withRelatedData' },
+      })
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(hook.mock.calls[0][0].params.$populateParams.name).toBe('withRelatedData')
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('about to save with string')
+    })
+
+    test('save_handlers allow passing params for patch', async () => {
+      const hook = jest.fn()
+      api.service(servicePath).hooks({
+        before: {
+          patch: [hook],
+        },
+      })
+      const message = await new Message({ text: 'about to save with string' }).save()
+      const props = { message }
+      const { clones, saveHandlers } = handleClones(props)
+      const { save_message } = saveHandlers
+      clones.message.text = 'change it up'
+      const { areEqual, wasDataSaved, item } = await save_message(undefined, {
+        $populateParams: { name: 'withRelatedData' },
+      })
+
+      expect(hook).toHaveBeenCalledTimes(1)
+      expect(hook.mock.calls[0][0].params.$populateParams.name).toBe('withRelatedData')
+      expect(areEqual).toBe(false)
+      expect(wasDataSaved).toBe(true)
+      expect(item.text).toBe('change it up')
+    })
+  })
+
   describe('save_handlers with temp records', () => {
     test('temp record: save_handler with no arguments calls create when value is unchanged', async () => {
       const hook = jest.fn()

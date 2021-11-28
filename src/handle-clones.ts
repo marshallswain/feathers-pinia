@@ -1,8 +1,8 @@
-import { computed, reactive, watch, isRef, unref } from 'vue-demi'
-import { isEqual } from 'lodash'
+import { computed, reactive, watch } from 'vue-demi'
+import { isEqual, omit } from 'lodash'
 import { _ } from '@feathersjs/commons'
 import { getId, getAnyId } from './utils'
-import { storeToRefs } from 'pinia'
+import { Params } from '@feathersjs/feathers'
 
 interface AnyObj {
   [key: string]: any
@@ -12,7 +12,7 @@ interface HandleClonesOptions {
   useExisting?: boolean
   watchProps?: Array<any>
 }
-interface SaveHandlerOpts {
+interface SaveHandlerOpts extends Params {
   diff?: boolean
   commit?: boolean
   save?: boolean
@@ -87,18 +87,18 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                * as the prop, the entire `address` object will be sent in the patch request.
                *
                * @param {String} prop - the dotted path of the key in the object being saved.
-               * @param {Object} opts - an options object
-               * @param {Boolean} opts.diff - whether to automatically diff the top-level keys. Only different keys are sent to the server.
-               * @param {Boolean} opts.commit - whether to call clone.commit() before saving. default: true
-               * @param {Boolean} opts.save - whether to call save if item[prop] and clone[prop] are not equal. default: true
-               * @param {Function} opts.saveWith - a function which receives the the original `item`, the `clone
+               * @param {Object} params - the params options object, including some special params for this save_handler.
+               * @param {Boolean} params.diff - whether to automatically diff the top-level keys. Only different keys are sent to the server.
+               * @param {Boolean} params.commit - whether to call clone.commit() before saving. default: true
+               * @param {Boolean} params.save - whether to call save if item[prop] and clone[prop] are not equal. default: true
+               * @param {Function} params.saveWith - a function which receives the the original `item`, the `clone
                *        the changed `data`, and the `pick` method from feathers. The return value from `saveWith`
                *        should be an object. The returned object will be merged into the patch data.
                * @
                */
               saveHandlers[`save_${key}`] = function saveHandler(
                 propOrCollection: any,
-                opts: SaveHandlerOpts = {}
+                opts: SaveHandlerOpts = {},
               ) {
                 const original = store.getFromStore(getAnyId(item.value))
                 const isArray = Array.isArray(propOrCollection)
@@ -107,7 +107,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
 
                 function makeError() {
                   throw new Error(
-                    `The first argument to 'save${key}' must be a prop name, an array of prop names, or an object`
+                    `The first argument to 'save${key}' must be a prop name, an array of prop names, or an object`,
                   )
                 }
 
@@ -171,8 +171,13 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                       pick: _.pick,
                     }) || {}
                   const data = Object.assign(changedData, saveWithData)
+                  const params = Object.assign(
+                    { data },
+                    omit(opts, ['diff', 'commit', 'save', 'saveWith']),
+                  )
+
                   return clone.value
-                    .save({ data })
+                    .save(params)
                     .then((result: any) => {
                       return Promise.resolve({ areEqual: false, wasDataSaved: true, item: result })
                     })
@@ -184,7 +189,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
               }
             }
           },
-          { immediate: true }
+          { immediate: true },
         )
       }
     })
@@ -195,7 +200,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
       () => watchedProps.value,
       () => {
         setup()
-      }
+      },
     )
   }
 
