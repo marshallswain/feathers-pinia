@@ -2,7 +2,7 @@
 
 ## Setup
 
-Let's start with the most basic example of authentication. We'll use `defineAuthStore` utility and pass our client to the options object. This is the only required option, we'll go through the rest in the later part of the chapter. 
+Let's start with the most basic example of authentication. We'll use `defineAuthStore` utility and pass our client to the options object. This is the only required option, we'll go through the rest in the later part of the chapter.
 
 ```ts
 // store/auth.ts
@@ -38,13 +38,9 @@ import { User } from './users.ts'
 
 const authStore = defineAuthStore({
   feathersClient,
-  state() {
-    return { userId: null }
-  },
+  state: () => ({ userId: null }),
   getters: {
-    user() {
-      return this.userId ? User.getFromStore(this.userId) : null
-    }
+    user: (state) => state.userId ? User.getFromStore(state.userId) : null
   },
   actions: {
     handleResponse(response: any) {
@@ -77,9 +73,9 @@ The `defineAuthStore` utility accepts an option objects according to specificati
 interface SetupAuthOptions {
   feathersClient: any
   id?: string
-  state?: Function
-  getters?: { [k: string]: any }
-  actions?: { [k: string]: any }
+  state?: () => { [k: string]: any }
+  getters?: { [k: string]: (state: any) => any }
+  actions?: { [k: string]: () => any }
 }
 ```
 

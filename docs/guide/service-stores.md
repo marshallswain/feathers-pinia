@@ -23,9 +23,9 @@ interface DefineStoreOptions {
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
-  state?: { [k: string]: any }
-  getters?: { [k: string]: Function }
-  actions?: { [k: string]: Function }
+  state?: () => { [k: string]: any }
+  getters?: { [k: string]: (state: any) => any }
+  actions?: { [k: string]: () => any }
 }
 interface HandleEvents {
   created?: Function
