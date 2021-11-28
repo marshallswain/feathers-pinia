@@ -34,7 +34,7 @@ export function defineStore(options: DefineStoreOptions) {
     debounceEventsTime: 20,
     debounceEventsMaxWait: 1000,
     whitelist: [],
-    state: {},
+    state: () => ({}),
     getters: {},
     actions: {},
   }
