@@ -26,13 +26,11 @@ const useUsersStore = defineStore({
   },
   actions: {
     greet() {
-      console.log(`Hello ${this.fullName}`)
       return `Hello ${this.fullName}`
     }
   }
 })
 const store = useUsersStore(pinia)
-console.log(store.$state)
 
 describe('Define Users Store', () => {
   test('can interact with store', async () => {
