@@ -49,14 +49,32 @@ The saveHandlers change their behavior slightly depending on the first argument 
 - `object` like `save_user({ name: 'foo' })` will compare the provided object's keys with the original record.
 - `undefined`, like `save_user()` will compare all of the clone's keys with the original record.
 
-### `save_handler` options
+### `save_handler` params
 
-Each saveHandler also accepts an `options` object as its second argument.  The following options are available:
+Each saveHandler also accepts a `params` object as its second argument.  This params object is used for the underlying request (if a request occurs) as well as for configuring `save_handler` options.  The following options are available:
 
 - `commit {Boolean}` whether to call clone.commit() before saving. default: true
 - `diff {Boolean}` whether to auto-diff and only save changed properties. See the details, below. default: true
 - `save { Boolean}` whether to call save if item[prop] and clone[prop] are not equal. default: true
 - `saveWith {Function}` a function which receives the the original `item`, the `clone`, the changed `data`, and the `pick` method from feathers. The return value from `saveWith` should be an object. The returned object will be merged into the patch data.
+
+Note, the above options will not go out in the request, since they are omitted, internally.  Any other keys inside `params` will be sent out with the request.  This allows you to use utilities like [paramsForServer](https://feathers-graph-populate.netlify.app/getting-started.html#enable-custom-client-side-params) from feathers-graph-populate to send additional, custom query params to the server.
+
+```ts
+import { handleClones } from 'feathers-pinia'
+
+const props = defineProps({
+  user: { type: Object },
+})
+
+const { clones, saveHandlers } = handleClones(props)
+const { save_user } = saveHandlers
+
+clones.user.name = 'Deku'
+
+// Pass params as the second argument.
+save_user(undefined, { $populateParams: { name: 'withRelatedQuirks' } })
+```
 
 ### `save_handler` Return Values
 
