@@ -1,12 +1,21 @@
 import { createPinia } from 'pinia'
-import { defineStore } from '../src/index'
+import { setupFeathersPinia } from '../src/setup'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
-const useStore = defineStore({
-  servicePath: 'sample',
+export const { defineStore, BaseModel } = setupFeathersPinia({
+  clients: { api },
+  idField: '_id',
+  whitelist: ['$regex', '$options'],
+})
+
+class User extends BaseModel { }
+
+const useUsersStore = defineStore({
+  servicePath: 'users',
+  Model: User,
   state: () => ({
     firstName: 'Bob',
     lastName: 'Smith',
@@ -22,9 +31,10 @@ const useStore = defineStore({
     }
   }
 })
-const store = useStore(pinia)
+const store = useUsersStore(pinia)
+console.log(store.$state)
 
-describe('Define Sample Store', () => {
+describe('Define Users Store', () => {
   test('can interact with store', async () => {
     expect(store.firstName).toBe('Bob')
     expect(store.fullName).toBe('Bob Smith')
