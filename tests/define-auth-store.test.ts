@@ -1,7 +1,6 @@
 import { createPinia } from 'pinia'
 import { defineAuthStore } from '../src/index'
 import { api } from './feathers'
-import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
@@ -15,7 +14,7 @@ describe('Define Auth Store', () => {
     expect(response).toHaveProperty('payload')
   })
   test('adds auth data to the store', async () => {
-    const response = await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
+    await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
     expect(store.accessToken).toBeTruthy
     expect(store.payload).toBeTruthy
     expect(store.user).toBeUndefined

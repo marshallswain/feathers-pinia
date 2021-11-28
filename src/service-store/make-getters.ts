@@ -1,4 +1,4 @@
-import { Model, ServiceOptions, ServiceGetters } from './types'
+import { ServiceOptions, ServiceGetters } from './types'
 import { Params } from '../types'
 import { Id } from '@feathersjs/feathers'
 
@@ -98,7 +98,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     },
     countInStore() {
       return (params: Params) => {
-        params = { ...unref(params) } || {}
+        params = { ...unref(params) }
 
         if (!params.query) {
           throw 'params must contain a query-object'
@@ -113,7 +113,6 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return (id: Id, params: Params = {}) => {
         id = unref(id)
         params = fastCopy(unref(params) || {})
-        const { Model } = options
 
         let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
         if (!item) item = this.tempsById[id] && select(params, '__tempId')(this.tempsById[id])

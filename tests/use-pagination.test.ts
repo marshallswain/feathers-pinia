@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue-demi'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia, models } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
-import { resetStores, timeout } from './test-utils'
+import { timeout } from './test-utils'
 import { useFind } from '../src/use-find'
 import { usePagination } from '../src/use-pagination'
 
@@ -38,18 +38,18 @@ describe('usePagination', () => {
 
     const pagination = ref({
       $limit: pageLimit,
-      $skip: 0
+      $skip: 0,
     })
     const params = computed(() => {
       const query = {}
       Object.assign(query, pagination.value)
       return { query, paginate: true }
     })
-    const { latestQuery, items } = useFind({ model: Message, params })
+    const { latestQuery } = useFind({ model: Message, params })
 
     await timeout(200)
 
-    const { currentPage, pageCount, toPage, next, prev, canNext, canPrev } = usePagination(
+    const { currentPage, pageCount, next, canNext, canPrev } = usePagination(
       pagination,
       latestQuery
     )

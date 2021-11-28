@@ -1,9 +1,8 @@
 import { computed, ref } from 'vue-demi'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia, models } from '../src/index'
+import { setupFeathersPinia, useFind } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
-import { useFind } from '../src'
 
 const pinia = createPinia()
 
@@ -91,7 +90,7 @@ describe('useFind', () => {
       const messagesService = api.service('messages')
       messagesService.options.paginate = {
         default: 10,
-        max: 100
+        max: 100,
       }
     })
     beforeEach(() => reset())
@@ -143,7 +142,7 @@ describe('useFind', () => {
       await messagesService.create({ text: 'test #3' })
       await messagesService.create({ text: 'test #4' })
       const params = computed(() => ({
-        query: { $skip: 0, $limit: 2 }
+        query: { $skip: 0, $limit: 2 },
       }))
       const data = useFind({ params, model: Message })
 

@@ -2,13 +2,12 @@ import {
   useQueuePromise,
   makeGetterName,
   makeState,
-  resetState
+  resetState,
 } from '../src/service-store/event-queue-promise'
-import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
-import { resetStores, timeout } from './test-utils'
+import { timeout } from './test-utils'
 
 const pinia = createPinia()
 
@@ -17,8 +16,6 @@ const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 class Message extends BaseModel {}
 const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
 const messagesService = useMessagesService(pinia)
-
-const reset = () => resetStores(api.service('messages'), messagesService)
 
 describe('Event Queue Promises', () => {
   beforeEach(() => {
@@ -31,7 +28,7 @@ describe('Event Queue Promises', () => {
     expect(makeState('created')).toStrictEqual({
       promise: null,
       isResolved: false,
-      getter: 'isCreatePending'
+      getter: 'isCreatePending',
     })
   })
 

@@ -20,7 +20,9 @@ describe('Model Class', () => {
   afterAll(() => resetStore())
 
   test('records are instances of DynamicBaseModel', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     expect(message.constructor.name).toBe('Message')
   })
 

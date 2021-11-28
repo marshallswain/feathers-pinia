@@ -43,6 +43,7 @@ export function defineAuthStore({
         return this.handleResponse(response) || response
       } catch (error) {
         // console.log('error during Feathers API Authentication', error)
+        // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;(this as any).error = error
         return this.handleError(error as Error)
       }
@@ -65,6 +66,7 @@ export function defineAuthStore({
      * For tracking first-load state. Used by the watcher, below.
      */
     setLoaded() {
+      // eslint-disable-next-line @typescript-eslint/no-extra-semi
       ;(this as any).isLoading = false
     },
   }

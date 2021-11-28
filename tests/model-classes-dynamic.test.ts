@@ -4,7 +4,7 @@ import { api } from './feathers'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+const { defineStore } = setupFeathersPinia({ clients: { api } })
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath })
@@ -17,7 +17,9 @@ afterAll(() => resetStore())
 
 describe('DynamicBaseModel', () => {
   test('records are instances of provided class', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     expect(message.constructor.name).toBe('DynamicBaseModel')
   })
 
@@ -27,6 +29,6 @@ describe('DynamicBaseModel', () => {
   })
 
   test('create local instance', () => {
-    const message = messagesService.addToStore({ text: 'this is a test' })
+    messagesService.addToStore({ text: 'this is a test' })
   })
 })

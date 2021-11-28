@@ -1,6 +1,6 @@
-import { computed, watch, reactive, isRef, Ref } from 'vue-demi'
+import { computed, watch, Ref } from 'vue-demi'
 
-export function usePagination(pagination: any, latestQuery: Ref, options: any = {}) {
+export function usePagination(pagination: any, latestQuery: Ref) {
   /**
    * The number of pages available based on the results returned in the latestQuery prop.
    */
@@ -35,7 +35,7 @@ export function usePagination(pagination: any, latestQuery: Ref, options: any = 
       } else {
         return 1
       }
-    }
+    },
   })
 
   watch(
@@ -81,6 +81,6 @@ export function usePagination(pagination: any, latestQuery: Ref, options: any = 
     toEnd,
     toPage,
     next,
-    prev
+    prev,
   }
 }

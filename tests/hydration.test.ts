@@ -34,7 +34,7 @@ describe('Hydration', () => {
     expect(message3.value instanceof Message).toBe(false)
     expect(message4.value instanceof Message).toBe(false)
 
-    const msg = Message.findInStore({ query: { id: { $lte: 3 } } })
+    Message.findInStore({ query: { id: { $lte: 3 } } })
 
     expect(message0.value instanceof Message).toBe(true)
     expect(message3.value instanceof Message).toBe(true)
@@ -49,7 +49,7 @@ describe('Hydration', () => {
     expect(message0.value instanceof Message).toBe(false)
     expect(message1.value instanceof Message).toBe(false)
 
-    const msg = Message.getFromStore(0)
+    Message.getFromStore(0)
 
     expect(message0.value instanceof Message).toBe(true)
     // other items were not hydrated.

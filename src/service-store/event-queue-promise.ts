@@ -1,4 +1,4 @@
-import { watch, computed } from 'vue-demi'
+import { watch } from 'vue-demi'
 
 type EventName = 'created' | 'updated' | 'patched' | 'removed'
 
@@ -17,7 +17,7 @@ export const makeGetterName = (event: EventName) =>
 export const makeState = (event: EventName) => ({
   promise: null,
   isResolved: false,
-  getter: makeGetterName(event)
+  getter: makeGetterName(event),
 })
 export const resetState = () => {
   events.forEach((e) => {

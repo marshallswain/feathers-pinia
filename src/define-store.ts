@@ -71,7 +71,6 @@ export function defineStore(options: DefineStoreOptions) {
 
   // If no Model class is provided, create a dynamic one.
   if (!options.Model) {
-    const classes: any = {}
     class DynamicBaseModel extends BaseModel {
       static modelName = servicePath
     }
