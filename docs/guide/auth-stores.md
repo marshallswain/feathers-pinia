@@ -38,7 +38,9 @@ import { User } from './users.ts'
 
 const authStore = defineAuthStore({
   feathersClient,
-  state: () => ({ userId: null }),
+  state: () => ({
+    userId: null
+  }),
   getters: {
     user: (state) => state.userId ? User.getFromStore(state.userId) : null
   },
@@ -75,7 +77,7 @@ interface SetupAuthOptions {
   id?: string
   state?: () => { [k: string]: any }
   getters?: { [k: string]: (state: any) => any }
-  actions?: { [k: string]: () => any }
+  actions?: { [k: string]: Function }
 }
 ```
 
