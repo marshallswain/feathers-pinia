@@ -22,39 +22,38 @@ function stringifyIfObject(val: any): string | any {
  */
 export function getId(item: any, idField?: string) {
   if (!item) return
-  if ((idField && item[idField] != null) || item.hasOwnProperty(idField)) {
+  if (idField && item[idField] != undefined) {
     return stringifyIfObject(item[idField as string])
   }
-  if (item.id != null || item.hasOwnProperty('id')) {
+  if (item.id != undefined) {
     return stringifyIfObject(item.id)
   }
-  if (item._id != null || item.hasOwnProperty('_id')) {
+  if (item._id != undefined) {
     return stringifyIfObject(item._id)
   }
 }
 export function getTempId(item: any) {
-  if (item?.__tempId != null || item?.hasOwnProperty('__tempId')) {
+  if (item?.__tempId != undefined) {
     return stringifyIfObject(item.__tempId)
   }
 }
 export function getAnyId(item: any) {
-  return getId(item) != null ? getId(item) : getTempId(item)
+  return getId(item) != undefined ? getId(item) : getTempId(item)
 }
 
 export function getQueryInfo(
   params: Params = {},
   response: Partial<Pick<Paginated<any>, 'limit' | 'skip'>> = {}
 ) {
-  const query = params.query || {}
-  const qid: string = params.qid || 'default'
-  const $limit =
-    response.limit !== null && response.limit !== undefined ? response.limit : query.$limit
-  const $skip = response.skip !== null && response.skip !== undefined ? response.skip : query.$skip
+  const { query = {}, qid = 'default' } = params
+  const $limit = response.limit != undefined ? response.limit : query?.$limit
+  const $skip = response.skip != undefined ? response.skip : query?.$skip
 
-  const queryParams = _.omit(query, ...['$limit', '$skip'])
-  const queryId = stringify(queryParams)
   const pageParams = $limit !== undefined ? { $limit, $skip } : undefined
   const pageId = pageParams ? stringify(pageParams) : undefined
+
+  const queryParams = _.omit(query, '$limit', '$skip')
+  const queryId = stringify(queryParams)
 
   return {
     qid,
@@ -68,7 +67,11 @@ export function getQueryInfo(
   }
 }
 
-export function getItemsFromQueryInfo(pagination: any, queryInfo: any, keyedById: any) {
+export function getItemsFromQueryInfo(
+  pagination: any,
+  queryInfo: any,
+  keyedById: any
+): any[] {
   const { queryId, pageId } = queryInfo
   const queryLevel = pagination[queryId]
   const pageLevel = queryLevel && queryLevel[pageId]
@@ -160,3 +163,5 @@ export function getArray(data: any) {
   const isArray = Array.isArray(data)
   return { items: isArray ? data : [data], isArray }
 }
+
+export const hasOwn = Object.prototype.hasOwnProperty
