@@ -2,7 +2,7 @@
 
 ## Setup
 
-Let's start with the most basic example of authentication. We'll use `defineAuthStore` utility and pass our client to the options object. This is the only required option, we'll go through the rest in the later part of the chapter. 
+Let's start with the most basic example of authentication. We'll use `defineAuthStore` utility and pass our client to the options object. This is the only required option, we'll go through the rest in the later part of the chapter.
 
 ```ts
 // store/auth.ts
@@ -10,7 +10,7 @@ import { defineAuthStore } from 'feathers-pinia'
 import { api as feathersClient } from '~/feathers'
 
 export const useAuth = defineAuthStore({
-  feathersClient
+  feathersClient,
 })
 ```
 
@@ -23,7 +23,7 @@ const auth = useAuth()
 auth.authenticate({
   strategy: 'local',
   email: 'meow@meow.cat',
-  password: 'purr'
+  password: 'purr',
 })
 ```
 
@@ -44,15 +44,15 @@ const authStore = defineAuthStore({
   getters: {
     user() {
       return this.userId ? User.getFromStore(this.userId) : null
-    }
+    },
   },
   actions: {
     handleResponse(response: any) {
       this.userId = response.user.id || response.user._id
       User.addToStore(response.user)
       return response
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -85,7 +85,7 @@ interface SetupAuthOptions {
 
 Here are a few more details about each option:
 
-- **`feathersClient`** is the Feathers client we want to authenticate. This is the only ***required*** option.
+- **`feathersClient`** is the Feathers client we want to authenticate. This is the only **_required_** option.
 - **`id {String}`** is the identifier of the Pinia store. By default it's set to `auth`.
 - **`state {Function}`** provides custom state properties you want to use in the auth store.
 - **`getters {Object}`** provides custom getters. The most common use case is to return the current user from the User store.

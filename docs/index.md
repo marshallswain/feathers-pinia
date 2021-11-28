@@ -28,7 +28,6 @@ features:
 footer: MIT Licensed. Many thanks go to the Vue, Vuex, Pinia, and FeathersJS communities for keeping software development FUN!
 ---
 
-
 <style>
 figure img.image {
   max-height: 360px !important;
