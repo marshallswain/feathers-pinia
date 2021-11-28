@@ -31,6 +31,6 @@ export function makeState(options: MakeStateOptions) {
     },
     pagination: {},
     whitelist: options?.whitelist || [],
-    ...options?.state,
+    ...(typeof options.state === 'function' ? options.state() : options?.state),
   })
 }

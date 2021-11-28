@@ -12,8 +12,8 @@ interface SetupOptions {
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
-  state?: { [k: string]: any }
-  getters?: { [k: string]: any }
+  state?: () => { [k: string]: any }
+  getters?: { [k: string]: (state: any) => any }
   actions?: { [k: string]: Function }
 }
 
