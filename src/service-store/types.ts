@@ -16,6 +16,8 @@ interface ModelPendingState {
 }
 export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remove'
 
+export type AnyData = Record<string, any>
+
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
@@ -23,35 +25,25 @@ export interface ServiceState<M extends Model = Model> {
     [k: string]: any
   }
   idField: string
-  itemsById: {
-    [k: string]: M
-    [k: number]: M
-  }
-  tempsById: {
-    [k: string]: M
-    [k: number]: M
-  }
-  clonesById: {
-    [k: string]: M
-    [k: number]: M
-  }
+  itemsById: Record<string | number, M>
+  tempsById: Record<string | number, M>
+  clonesById: Record<string | number, M>
   pendingById: {
     [k: string]: PendingById | ModelPendingState
     [k: number]: PendingById
   }
   eventLocksById: {
-    created: { [k: string]: M; [k: number]: M }
-    patched: { [k: string]: M; [k: number]: M }
-    updated: { [k: string]: M; [k: number]: M }
-    removed: { [k: string]: M; [k: number]: M }
+    created: Record<string | number, M>
+    patched: Record<string | number, M>
+    updated: Record<string | number, M>
+    removed: Record<string | number, M>
   }
   whitelist?: string[]
 }
-export interface ServiceGetters {
-  [k: string]: any
-}
-export interface ServiceActions {
-  [k: string]: any
+export type ServiceGetters = AnyData
+
+export interface ServiceActions extends AnyData {
+  handleFindError({ params, error }: { params: Params; error: any }): Promise<any>
 }
 export interface PiniaStoreOptions {
   state: ServiceState
@@ -60,21 +52,19 @@ export interface PiniaStoreOptions {
 }
 
 export interface ServiceOptions {
-  clients: { [key: string]: any }
+  clients: AnyData
   storeId: string
   clientAlias?: string
   idField?: string
   servicePath: string
   Model: any
-  state?: { [key: string]: any }
-  getters?: { [key: string]: Function }
-  actions?: { [key: string]: Function }
+  state?: AnyData
+  getters?: Record<string, Function>
+  actions?: Record<string, Function>
   whitelist?: string[]
 }
 
-export type AnyData = { [key: string]: any }
-
-export interface PatchParams<D extends {} = AnyData> extends Params {
+export interface PatchParams<D extends AnyData> extends Params {
   data?: Partial<D>
 }
 
@@ -143,7 +133,7 @@ export interface Model {
    * with partial data.
    * @param params Params passed to the Feathers client request
    */
-  patch<D extends {} = AnyData>(params?: PatchParams<D>): Promise<this>
+  patch<D extends AnyData>(params?: PatchParams<D>): Promise<this>
   /**
    * The remove method calls the remove action (service method)
    * using the instance data. The instance's id field is used
@@ -202,10 +192,7 @@ export interface ModelStatic extends EventEmitter {
   /**
    * All model copies created using `model.clone()`
    */
-  readonly clonesById: {
-    [key: string]: Model | undefined
-    [key: number]: Model | undefined
-  }
+  readonly clonesById: Record<string | number, Model | undefined>
 
   /**
    * Create new Model

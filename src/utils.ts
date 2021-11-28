@@ -67,11 +67,7 @@ export function getQueryInfo(
   }
 }
 
-export function getItemsFromQueryInfo(
-  pagination: any,
-  queryInfo: any,
-  keyedById: any
-): any[] {
+export function getItemsFromQueryInfo(pagination: any, queryInfo: any, keyedById: any): any[] {
   const { queryId, pageId } = queryInfo
   const queryLevel = pagination[queryId]
   const pageLevel = queryLevel && queryLevel[pageId]
