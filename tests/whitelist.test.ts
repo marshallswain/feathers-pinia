@@ -37,8 +37,16 @@ describe('whitelist', () => {
     const useMessagesService = defineStore({ servicePath: 'messages' })
     const messagesService = useMessagesService(pinia)
 
-    const data = messagesService.findInStore({ query: { $regex: 'test' } }).data
+    await messagesService.create({ text: 'test' })
+    await messagesService.create({ text: 'yo!' })
+
+    const data = messagesService.findInStore({
+      query: {
+        text: { $regex: 'test' },
+      },
+    }).data
 
     expect(Array.isArray(data)).toBeTruthy()
+    expect(data[0].text).toBe('test')
   })
 })

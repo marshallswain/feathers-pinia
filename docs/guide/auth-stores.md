@@ -38,9 +38,9 @@ import { User } from './users.ts'
 
 const authStore = defineAuthStore({
   feathersClient,
-  state() {
-    return { userId: null }
-  },
+  state: () => ({
+    userId: null
+  }),
   getters: {
     user() {
       return this.userId ? User.getFromStore(this.userId) : null
@@ -77,9 +77,9 @@ The `defineAuthStore` utility accepts an option objects according to specificati
 interface SetupAuthOptions {
   feathersClient: any
   id?: string
-  state?: Function
-  getters?: { [k: string]: any }
-  actions?: { [k: string]: any }
+  state?: () => { [k: string]: any }
+  getters?: { [k: string]: (state: any) => any }
+  actions?: { [k: string]: Function }
 }
 ```
 

@@ -19,8 +19,8 @@ export interface DefineStoreOptions {
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
-  state?: { [k: string]: any }
-  getters?: { [k: string]: Function }
+  state?: () => { [k: string]: any }
+  getters?: { [k: string]: (state: any) => any }
   actions?: { [k: string]: Function }
 }
 
@@ -34,7 +34,7 @@ export function defineStore(options: DefineStoreOptions) {
     debounceEventsTime: 20,
     debounceEventsMaxWait: 1000,
     whitelist: [],
-    state: {},
+    state: () => ({}),
     getters: {},
     actions: {},
   }

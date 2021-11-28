@@ -23,8 +23,8 @@ interface DefineStoreOptions {
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
-  state?: { [k: string]: any }
-  getters?: { [k: string]: Function }
+  state?: () => { [k: string]: any }
+  getters?: { [k: string]: (state: any) => any }
   actions?: { [k: string]: Function }
 }
 interface HandleEvents {
@@ -48,7 +48,7 @@ Here are a few more details about each option:
 - **`debounceEventsTime {Number}`** determines how long to wait until flushing a batch of events. Defaults to `20`. If no events have been received in a 20 millisecond period, all gathered events will be processed.
 - **`debounceEventsMaxWait {Number}`** allows forcing events to be flushed after a certain number of milliseconds. Defaults to `1000`.
 - **`whitelist`** is an array of keys to allow in the params object for the `findInStore` getter's `params.query` object.
-- **`state`** is an object of custom state to customize the store.
+- **`state`** is a function that returns an object of custom state to customize the store.
 - **`getters`** is an object of custom getters to customize the store.
 - **`actions`** is an object of custom actions to customize the store.
 
