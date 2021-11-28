@@ -25,10 +25,13 @@ export class BaseModel {
     return this
   }
 
-  public static instanceDefaults(data: AnyData, options?: InstanceModifierOptions) {
+  public static instanceDefaults(data: AnyData, options?: InstanceModifierOptions): AnyData
+  public static instanceDefaults(data: AnyData) {
     return data
   }
-  public static setupInstance(data: AnyData, options?: InstanceModifierOptions) {
+
+  public static setupInstance(data: AnyData, options?: InstanceModifierOptions): AnyData
+  public static setupInstance(data: AnyData) {
     return data
   }
 
@@ -61,25 +64,31 @@ export class BaseModel {
   }
 
   get isSavePending() {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     const pending = (store as any).pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
   }
   get isCreatePending() {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.create || false
   }
   get isPatchPending() {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.patch || false
   }
   get isUpdatePending() {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.update || false
   }
   get isRemovePending() {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     return (store as any).pendingById[getId(this)]?.remove || false
+  }
+
+  get isPending() {
+    const { store } = this.constructor as typeof BaseModel
+    const pending = (store as any).pendingById[getId(this)]
+    return pending?.create || pending?.update || pending?.patch || pending?.remove || false
   }
 
   /**
@@ -102,7 +111,7 @@ export class BaseModel {
    * Update a store instance to match a clone.
    */
   public commit(): this {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     if (this.__isClone) {
       return (store as any).commit(this)
     } else {
@@ -114,7 +123,7 @@ export class BaseModel {
    * Update a store instance to match a clone.
    */
   public reset(): this {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
 
     return (store as any).resetCopy(this)
   }
@@ -194,7 +203,9 @@ export class BaseModel {
    * Removes the instance from the store
    * @param params
    */
-  public removeFromStore(params?: Params): Promise<this> {
+
+  public removeFromStore(params?: Params): Promise<this>
+  public removeFromStore(): Promise<this> {
     const { store } = this.constructor as typeof BaseModel
     return (store as any).removeFromStore(this)
   }
@@ -209,5 +220,6 @@ function checkThis(context: any) {
 }
 
 for (const n in EventEmitter.prototype) {
+  // eslint-disable-next-line @typescript-eslint/no-extra-semi
   ;(BaseModel as any)[n] = (EventEmitter.prototype as any)[n]
 }
