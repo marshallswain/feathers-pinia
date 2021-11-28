@@ -30,8 +30,7 @@ function getGuideSidebar() {
       children: [
         { text: 'Introduction', link: '/guide/' },
         { text: 'Module Overview', link: '/guide/module-overview' },
-        { text: 'Setup', link: '/guide/setup' },
-        { text: 'Migration from Vuex ≤ 4', link: '/guide/migration-from-vuex' },
+        { text: 'Setup', link: '/guide/setup' }
       ],
     },
     {
