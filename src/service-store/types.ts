@@ -18,23 +18,25 @@ export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remov
 
 export type AnyData = Record<string, any>
 
+type ModelsById<M> = { [id: string | number]: M }
+
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
   pagination: AnyData
   idField: string
-  itemsById: Record<string | number, M>
-  tempsById: Record<string | number, M>
-  clonesById: Record<string | number, M>
+  itemsById: ModelsById<M>
+  tempsById: ModelsById<M>
+  clonesById: ModelsById<M>
   pendingById: {
-    [k: string]: PendingById | ModelPendingState
-    [k: number]: PendingById
+    [id: string]: PendingById | ModelPendingState
+    [id: number]: PendingById
   }
   eventLocksById: {
-    created: Record<string | number, M>
-    patched: Record<string | number, M>
-    updated: Record<string | number, M>
-    removed: Record<string | number, M>
+    created: ModelsById<M>
+    patched: ModelsById<M>
+    updated: ModelsById<M>
+    removed: ModelsById<M>
   }
   whitelist?: string[]
 }
@@ -67,8 +69,7 @@ export interface PatchParams<D extends AnyData> extends Params {
 }
 
 /** Model instance interface */
-export interface Model {
-  [key: string]: any
+export interface Model extends AnyData {
   /**
    * model's temporary ID
    */
@@ -171,26 +172,31 @@ export interface ModelStatic extends EventEmitter {
    * The path passed to `FeathersClient.service()` to create the service
    */
   servicePath: string
+
   /**
    * The pinia store
    */
   readonly store: any
+
   /**
    * The field in each record that will contain the ID
    */
   idField: string
+
   /**
    * The client alias in the global `models` object
    */
   clientAlias: string
+
   /**
    * Model name used to circumvent Babel transpilation errors
    */
   modelName: string
+
   /**
    * All model copies created using `model.clone()`
    */
-  readonly clonesById: Record<string | number, Model | undefined>
+  readonly clonesById: { [id: string | number]: Model | undefined }
 
   /**
    * Create new Model
@@ -227,6 +233,7 @@ export interface ModelStatic extends EventEmitter {
    * @param params Find params
    */
   find<M extends Model = Model>(params?: Params): Promise<M[] | Paginated<M>>
+
   /**
    * A proxy for the `findInStore` getter
    * @param params Find params
@@ -238,17 +245,20 @@ export interface ModelStatic extends EventEmitter {
    * @param params Find params
    */
   count(params?: Params): Promise<number>
+
   /**
    * A proxy for the `countInStore` getter
    * @param params Find params
    */
   countInStore(params?: Params | Ref<Params>): number
+
   /**
    * A proxy for the `get` action
    * @param id ID of record to retrieve
    * @param params Get params
    */
   get<M extends Model = Model>(id: Id, params?: Params): Promise<M | undefined>
+
   /**
    * A proxy for the `getFromStore` getter
    * @param id ID of record to retrieve

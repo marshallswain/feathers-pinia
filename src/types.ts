@@ -1,7 +1,7 @@
 import { AnyData } from './service-store/types'
 
 export interface Filters {
-  $sort?: Record<string, -1 | 1>
+  $sort?: { [prop: string]: -1 | 1 }
   $limit?: number
   $skip?: number
   $select?: string[]
