@@ -21,9 +21,7 @@ export type AnyData = Record<string, any>
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
-  pagination: {
-    [k: string]: any
-  }
+  pagination: AnyData
   idField: string
   itemsById: Record<string | number, M>
   tempsById: Record<string | number, M>
@@ -52,7 +50,7 @@ export interface PiniaStoreOptions {
 }
 
 export interface ServiceOptions {
-  clients: { [key: string]: any }
+  clients: AnyData
   id: string
   clientAlias?: string
   idField?: string
