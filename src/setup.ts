@@ -23,7 +23,10 @@ export function setupFeathersPinia(globalOptions: SetupOptions) {
     registerClient(name, clients[name])
   })
 
-  function defineStoreWrapper(options: DefineStoreOptions) {
+  function defineStoreWrapper(...args: [DefineStoreOptions] | [string, DefineStoreOptions]) {
+    const id = args.length === 2 ? args[0] : args[0].id
+    const options = args.length === 2 ? args[1] : args[0]
+    options.id = id || `service.${options.servicePath}`
     return defineStore(Object.assign({}, globalOptions, options))
   }
 
