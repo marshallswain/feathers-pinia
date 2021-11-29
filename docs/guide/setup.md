@@ -9,7 +9,7 @@ Pinia's well-designed architecture allows it to be modular while also functionin
 Install these packages using your preferred package manager:
 
 ```
-pinia@next feathers-pinia
+pinia feathers-pinia
 ```
 
 ## Install Feathers
