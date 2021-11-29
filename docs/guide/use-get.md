@@ -1,8 +1,8 @@
 # useGet
 
-The `useGet` Composition API utility provides the same fall-through cache functionality as `useFind`.  It has a slightly simpler API, only requiring a `model` and `id` instead of the `params` object.  Still, the `params` object can be used to send along additional query parameters in the request.  Below is an example of how you might use the `useGet` utility.
+The `useGet` Composition API utility provides the same fall-through cache functionality as `useFind`. It has a slightly simpler API, only requiring a `model` and `id` instead of the `params` object. Still, the `params` object can be used to send along additional query parameters in the request. Below is an example of how you might use the `useGet` utility.
 
-The goal with the examples is to focus as much as possible on functionality and not boilerplate.  As such, all examples use [auto-import](https://github.com/antfu/unplugin-auto-import) for Vue APIs like `computed` and `ref`. They also use Vue's `script setup` feature.  Both features come preinstalled with the [Vitesse Template for Vue](https://github.com/antfu/vitesse) and the [Vitesse-Feathers-Pinia Demo](https://github.com/marshallswain/vitesse-feathers-pinia).
+The goal with the examples is to focus as much as possible on functionality and not boilerplate. As such, all examples use [auto-import](https://github.com/antfu/unplugin-auto-import) for Vue APIs like `computed` and `ref`. They also use Vue's `script setup` feature. Both features come preinstalled with the [Vitesse Template for Vue](https://github.com/antfu/vitesse) and the [Vitesse-Feathers-Pinia Demo](https://github.com/marshallswain/vitesse-feathers-pinia).
 
 ```html
 <template>
@@ -53,7 +53,7 @@ And here's a look at each individual property:
 - `params` is a FeathersJS Params object OR a Composition API `ref` (or `computed`, since they return a `ref` instance) which returns a Params object.
   - Unlike the `useFind` utility, `useGet` does not currently have built-in debouncing.
 - `queryWhen` must be a `computed` property which returns a `boolean`. It provides a logical separation for preventing API requests apart from `null` in the `id`.
-- `immediate`, which is `true` by default, determines if the internal `watch` should fire immediately.  Set `immediate: false` and the query will not fire immediately.  It will only fire on subsequent changes to the `id` or `params`.
+- `immediate`, which is `true` by default, determines if the internal `watch` should fire immediately. Set `immediate: false` and the query will not fire immediately. It will only fire on subsequent changes to the `id` or `params`.
 
 ### Returned Attributes
 

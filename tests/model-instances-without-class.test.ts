@@ -4,7 +4,7 @@ import { api } from './feathers'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+const { defineStore } = setupFeathersPinia({ clients: { api } })
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath })
@@ -18,7 +18,9 @@ describe('Model Instance Methods', () => {
   afterAll(() => resetStore())
 
   test('methods are in place even when no class is provided', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     const props = ['save', 'create', 'patch', 'update', 'remove', 'clone', 'commit', 'reset']
 
     props.forEach((prop) => {

@@ -1,21 +1,29 @@
-export interface Query {
-  [key: string]: any
+import { AnyData } from './service-store/types'
+
+export interface Filters {
+  $sort?: { [prop: string]: -1 | 1 }
+  $limit?: number
+  $skip?: number
+  $select?: string[]
 }
+export interface Query extends Filters, AnyData {}
 
 export interface PaginationOptions {
   default: number
   max: number
 }
 
-export interface Params {
+export interface Params extends AnyData {
   query?: Query
   paginate?: false | Pick<PaginationOptions, 'max'>
   provider?: string
-  route?: { [key: string]: string }
-  headers?: { [key: string]: any }
+  route?: Record<string, string>
+  headers?: Record<string, any>
   temps?: boolean
   copies?: boolean
-  [key: string]: any
+  qid?: string
+  skipRequestIfExists?: boolean
+  data?: any
 }
 export interface Paginated<T> {
   total: number

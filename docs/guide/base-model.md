@@ -19,7 +19,7 @@ export interface ModelInstanceOptions {
 }
 ```
 
-Feathers-Vuex users will notice that the options have been simplified. In Feathers-Pinia, creating a new instance does not automatically add that instance to the store.  Most previous options were useful as workarounds when that feature was undesireable.  With Feathers-Pinia, you manually add instances to the store with the `addToStore(instance)` method.
+Feathers-Vuex users will notice that the options have been simplified. In Feathers-Pinia, creating a new instance does not automatically add that instance to the store. Most previous options were useful as workarounds when that feature was undesirable. With Feathers-Pinia, you manually add instances to the store with the `addToStore(instance)` method.
 
 ## Model Attributes
 
@@ -30,7 +30,7 @@ The following static attributes exist directly on the Model class:
 - `servicePath` - the path where the Feathers service is registered.
 - `idField` - the field that contains the unique identifier for this service.
 
-There are also a few computed ES5 getters for tracking pending request status. These are only accurate when you use methods from the store or Model class.  If you use the Feathers client, directly, it circumvents the actions that update these values.
+There are also a few computed ES5 getters for tracking pending request status. These are only accurate when you use methods from the store or Model class. If you use the Feathers client, directly, it circumvents the actions that update these values.
 
 - `isSavePending` - evaluates to true if there's a pending `create`, `patch`, or `update` request.
 - `isCreatePending`
@@ -44,7 +44,7 @@ There are two unique static methods: `instanceDefaults` and `setupInstance`.
 
 ### `instanceDefaults`
 
-The `instanceDefaults` method's purpose is to normalize default data for new instances created throughout the app.  For Vue 2, it's required due to the limitations of Vue 2's reactivity layer.  Vue 3's reactivity layer is more flexible, allowing a partial definition, if desired. Depending on the complexity of the service's "business logic", it can save a lot of boilerplate.
+The `instanceDefaults` method's purpose is to normalize default data for new instances created throughout the app. For Vue 2, it's required due to the limitations of Vue 2's reactivity layer. Vue 3's reactivity layer is more flexible, allowing a partial definition, if desired. Depending on the complexity of the service's "business logic", it can save a lot of boilerplate.
 
 ```ts
 public static instanceDefaults(data, { models, store }): AnyInstanceData {}
@@ -125,7 +125,7 @@ The majority of BaseModel's static methods are proxy methods to Actions and Gett
 
 ## Model Events <Badge text="0.17.0+" />
 
-Model classes are EventEmitter instances which emit service events when received (technically, EventEmitter methods are mixed onto each Model class). All FeathersJS events are supported. Oh, and one more thing: it works with `feathers-rest` (you won't receive socket events, but you can listen for when instances are created in other parts of the app.)  BaseModel contains all EventEmitter.prototype properties and methods.  [Read more about the `events` package on npm](https://npmjs.com/package/events).
+Model classes are EventEmitter instances which emit service events when received (technically, EventEmitter methods are mixed onto each Model class). All FeathersJS events are supported. Oh, and one more thing: it works with `feathers-rest` (you won't receive socket events, but you can listen for when instances are created in other parts of the app.) BaseModel contains all EventEmitter.prototype properties and methods. [Read more about the `events` package on npm](https://npmjs.com/package/events).
 
 Here’s an example of how to use it:
 
@@ -135,7 +135,7 @@ import { onBeforeUnmount } from 'vue'
 
 const todoStore = useTodos()
 
-const handleTodoCreated(todo) {
+const handleTodoCreated = (todo) => {
   console.log(todo)
 }
 // Bind to all Model.created events
@@ -151,7 +151,7 @@ Since they have all of the EventEmitter methods, Model classes can be used as a 
 ```js
 const { Todo } = this.$FeathersVuex.api
 
-Todo.on('custom-event', data => {
+Todo.on('custom-event', (data) => {
   console.log(data) // { test: true }
 })
 

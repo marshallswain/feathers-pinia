@@ -8,7 +8,10 @@ export default {
       type: String,
       default: 'tip',
     },
-    text: String,
+    text: {
+      type: String,
+      default: '',
+    },
     vertical: {
       type: String,
       default: 'top',

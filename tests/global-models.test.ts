@@ -1,8 +1,6 @@
-import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia, models } from '../src/index'
 import { api } from './feathers'
-import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 

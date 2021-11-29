@@ -1,7 +1,6 @@
-import { clearStorage } from '../src/index'
 import { syncWithStorage } from '../src/storage-sync'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia } from '../src/index'
+import { setupFeathersPinia, clearStorage } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
 
@@ -20,7 +19,7 @@ const localStorageMock: Storage = {
   length: 0,
   key: jest.fn(),
   // Dummy key to make sure removeItem is called
-  'service.items': '{"hey": "there"}'
+  'service.items': '{"hey": "there"}',
 }
 syncWithStorage(messagesService, ['tempsById'], localStorageMock)
 
@@ -32,11 +31,11 @@ describe('Clear Storage', () => {
   })
 
   test('clear storage', async () => {
-    const msg = messagesService.addToStore({ test: true })
+    messagesService.addToStore({ test: true })
     await timeout(600)
 
     expect(localStorageMock.setItem).toHaveBeenCalled()
-    const [key, value] = (localStorageMock.setItem as any).mock.calls[0]
+    const [key] = (localStorageMock.setItem as any).mock.calls[0]
     expect(key).toBe('service.messages')
 
     clearStorage(localStorageMock)

@@ -6,6 +6,7 @@ import axios from 'axios'
 
 const restClient = rest()
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export const api: any = feathers().configure(restClient.axios(axios)).configure(auth())
 

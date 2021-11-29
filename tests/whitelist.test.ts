@@ -1,15 +1,12 @@
-import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
-import { resetStores, timeout } from './test-utils'
-import { useFind } from '../src/use-find'
 
 const pinia = createPinia()
 
 describe('whitelist', () => {
   test('adds whitelist to the state', async () => {
-    const { defineStore, BaseModel } = setupFeathersPinia({
+    const { defineStore } = setupFeathersPinia({
       clients: { api },
       whitelist: ['$regex'],
     })
@@ -21,7 +18,7 @@ describe('whitelist', () => {
   })
 
   test('find getter fails without whitelist', async () => {
-    const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+    const { defineStore } = setupFeathersPinia({ clients: { api } })
 
     const useLettersService = defineStore({ servicePath: 'letters' })
     const lettersService = useLettersService(pinia)
@@ -32,7 +29,7 @@ describe('whitelist', () => {
   })
 
   test('enables custom query params for the find getter', async () => {
-    const { defineStore, BaseModel } = setupFeathersPinia({
+    const { defineStore } = setupFeathersPinia({
       clients: { api },
       whitelist: ['$regex'],
     })

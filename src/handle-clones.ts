@@ -1,7 +1,7 @@
 import { computed, reactive, watch } from 'vue-demi'
 import { isEqual, omit } from 'lodash'
 import { _ } from '@feathersjs/commons'
-import { getId, getAnyId } from './utils'
+import { getId, getAnyId, hasOwn } from './utils'
 import { Params } from '@feathersjs/feathers'
 
 interface AnyObj {
@@ -25,7 +25,7 @@ interface SaveHandlerOpts extends Params {
  * @param {*} props can be a component's `props` object OR a plain object full of refs.
  */
 export function handleClones(props: any, options: HandleClonesOptions = {}) {
-  const { debug = false, useExisting = true, watchProps = [] } = options
+  const { useExisting = true, watchProps = [] } = options
   const clones: any = reactive({})
   const saveHandlers: any = {}
   const watchedProps = computed(() => {
@@ -142,7 +142,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 const { commit = true, save = true, saveWith = () => ({}) } = opts
                 commit && clone.value.commit()
 
-                if ((!areEqual && save) || clone.value.hasOwnProperty('__tempId')) {
+                if ((!areEqual && save) || hasOwn.call(clone.value, '__tempId')) {
                   const cloneHasId = getId(cloneVal) != null
                   // Only diff for patch/update as long as no first argument is provided and diff is not explicitly disabled
                   // Or in any other case when opts.diff is true.
@@ -179,13 +179,21 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                   return clone.value
                     .save(params)
                     .then((result: any) => {
-                      return Promise.resolve({ areEqual: false, wasDataSaved: true, item: result })
+                      return Promise.resolve({
+                        areEqual: false,
+                        wasDataSaved: true,
+                        item: result,
+                      })
                     })
                     .catch((error: any) => {
                       return Promise.reject(error)
                     })
                 }
-                return Promise.resolve({ areEqual: true, wasDataSaved: false, item: original })
+                return Promise.resolve({
+                  areEqual: true,
+                  wasDataSaved: false,
+                  item: original,
+                })
               }
             }
           },

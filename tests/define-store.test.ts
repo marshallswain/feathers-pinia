@@ -1,7 +1,6 @@
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/setup'
 import { api } from './feathers'
-import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
@@ -11,14 +10,14 @@ export const { defineStore, BaseModel } = setupFeathersPinia({
   whitelist: ['$regex', '$options'],
 })
 
-class User extends BaseModel { }
+class User extends BaseModel {}
 
 const storeOptions = {
   Model: User,
   state: () => ({
     firstName: 'Bob',
     lastName: 'Smith',
-    age: 20
+    age: 20,
   }),
   getters: {
     fullName: (state: any): string => `${state.firstName} ${state.lastName}`,

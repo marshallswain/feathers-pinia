@@ -1,6 +1,6 @@
 import { watch, computed } from 'vue-demi'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia, models } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
 
@@ -33,7 +33,7 @@ describe('Pending State', () => {
       watch(() => messagesService.pendingById.Model.find, handler)
 
       // Trigger the watcher with a request.
-      const response = await messagesService.find({ query: {} })
+      await messagesService.find({ query: {} })
 
       // The first time it's called, the first argument should be true.
       expect(handler.mock.calls[0][0]).toBe(true)
@@ -47,7 +47,7 @@ describe('Pending State', () => {
 
       try {
         // Feathers will throw because of $custom
-        const response = await messagesService.find({ query: { $custom: null } })
+        await messagesService.find({ query: { $custom: null } })
       } catch (error) {
         expect(handler.mock.calls[0][0]).toBe(true)
         expect(handler.mock.calls[1][0]).toBe(false)
@@ -60,7 +60,7 @@ describe('Pending State', () => {
       watch(() => messagesService.pendingById.Model.count, handler)
 
       // Trigger the watcher with a request.
-      const response = await messagesService.count({ query: {} })
+      await messagesService.count({ query: {} })
 
       // The first time it's called, the first argument should be true.
       expect(handler.mock.calls[0][0]).toBe(true)
@@ -74,7 +74,7 @@ describe('Pending State', () => {
 
       try {
         // Feathers will throw because of $custom
-        const response = await messagesService.count({ query: { $custom: null } })
+        await messagesService.count({ query: { $custom: null } })
       } catch (error) {
         expect(handler.mock.calls[0][0]).toBe(true)
         expect(handler.mock.calls[1][0]).toBe(false)
@@ -85,7 +85,7 @@ describe('Pending State', () => {
       const handler = jest.fn()
       watch(() => messagesService.pendingById.Model.get, handler)
 
-      const response = await messagesService.get(0)
+      await messagesService.get(0)
 
       expect(handler.mock.calls[0][0]).toBe(true)
       expect(handler.mock.calls[1][0]).toBe(false)
@@ -97,7 +97,7 @@ describe('Pending State', () => {
 
       try {
         // Feathers will throw because there's no record with id: 1
-        const response = await messagesService.get(1)
+        await messagesService.get(1)
       } catch (error) {
         expect(handler.mock.calls[0][0]).toBe(true)
         expect(handler.mock.calls[1][0]).toBe(false)
@@ -110,7 +110,7 @@ describe('Pending State', () => {
 
     beforeEach(async () => {
       // reset()
-      const msg = await messagesService.create({ text: 'test message' })
+      await messagesService.create({ text: 'test message' })
     })
     afterEach(() => reset())
 
@@ -184,7 +184,7 @@ describe('Pending State', () => {
       isCreatePending: 'create',
       isPatchPending: 'patch',
       isUpdatePending: 'update',
-      isRemovePending: 'remove'
+      isRemovePending: 'remove',
     }
     Object.entries(config).forEach(([title, method]) => {
       test(title, () => {

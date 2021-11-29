@@ -2,7 +2,7 @@ import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia, defineStore } from '../src/index'
 import { api } from './feathers'
-import { resetStores, timeout } from './test-utils'
+import { timeout } from './test-utils'
 import { useFind } from '../src/use-find'
 
 describe('Custom Actions', () => {
@@ -37,6 +37,7 @@ describe('Custom Actions', () => {
     const messagesService: any = useMessagesService(pinia)
 
     const params = computed(() => ({ query: { text: 'this is a test' }, temps: true }))
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const data = messagesService.findMessages(params)
 
@@ -60,8 +61,8 @@ describe('Custom Actions', () => {
       Model: Message,
       actions: {
         test() {
-          const store: any = this
-          store.idField = 'moose'
+          // eslint-disable-next-line @typescript-eslint/no-extra-semi
+          ;(this as any).idField = 'moose'
         },
       },
     })

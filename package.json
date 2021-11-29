@@ -28,7 +28,11 @@
     "release:pre": "npm version prerelease && npm publish --tag pre",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
-    "release:major": "npm version major && npm publish"
+    "release:major": "npm version major && npm publish",
+    "spell-check": "cspell-cli '{src,docs,tests,example}/**/*'",
+    "format": "prettier -w .",
+    "lint": "eslint --ext .js,.ts,.vue --fix --ignore-path .gitignore .",
+    "sfl": "npm run spell-check && npm run format && npm run lint"
   },
   "dependencies": {
     "@feathersjs/adapter-commons": "5.0.0-pre.9",
@@ -45,21 +49,31 @@
     "sift": "^15.0.0"
   },
   "devDependencies": {
+    "@cspell/dict-fr-fr": "^2.0.1",
     "@feathersjs/authentication-client": "5.0.0-pre.9",
     "@feathersjs/authentication-jwt": "^2.0.10",
     "@feathersjs/rest-client": "5.0.0-pre.9",
     "@types/jest": "^27.0.3",
     "@types/lodash": "^4.14.177",
     "@types/node": "^16.11.10",
-    "@vitejs/plugin-vue": "^1.10.0",
-    "@vue/compiler-sfc": "^3.2.22",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "@vitejs/plugin-vue": "^1.10.1",
+    "@vue/compiler-sfc": "^3.2.23",
+    "@vue/composition-api": "^1.4.0",
+    "@vue/eslint-config-typescript": "^9.1.0",
     "autoprefixer": "^10.4.0",
     "axios": "^0.24.0",
+    "cspell-cli": "^5.6.10",
+    "eslint": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-vue": "^8.1.1",
     "feathers-memory": "^4.1.0",
     "jest": "^27.3.1",
     "path": "^0.12.7",
     "pinia": "^2.0.4",
     "postcss-nested": "^5.0.6",
+    "prettier": "^2.5.0",
     "shx": "^0.3.3",
     "tailwindcss": "^2.2.19",
     "ts-jest": "^27.0.7",
@@ -68,12 +82,12 @@
     "vitepress": "^0.20.1",
     "vue": "^3.2.6",
     "vue-demi": "latest",
-    "vue-tsc": "^0.29.6"
+    "vue-tsc": "^0.29.7"
   },
   "peerDependencies": {
-    "@vue/composition-api": "*",
     "pinia": "^2.0.0-rc.11",
-    "vue": "^2 || >=3"
+    "@vue/composition-api": "^1.0.0-rc.1",
+    "vue": "^2.0.0 || >=3.0.0"
   },
   "peerDependenciesMeta": {
     "@vue/composition-api": {
