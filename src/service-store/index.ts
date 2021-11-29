@@ -8,7 +8,7 @@ export { makeState, makeGetters, makeActions, BaseModel }
 
 export function makeServiceStore(options: ServiceOptions) {
   return {
-    id: options.storeId,
+    id: options.id,
     state: makeState(options),
     getters: makeGetters(options),
     actions: makeActions(options),
