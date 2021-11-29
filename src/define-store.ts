@@ -82,7 +82,7 @@ export function defineStore(options: DefineStoreOptions) {
 
   // Create and initialize the Pinia store.
   const storeOptions: any = makeServiceStore({
-    storeId: options.id || `service.${options.servicePath}`,
+    id: options.id || `service.${options.servicePath}`,
     idField: options.idField || idField || 'id',
     clientAlias,
     servicePath,

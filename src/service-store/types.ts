@@ -52,8 +52,8 @@ export interface PiniaStoreOptions {
 }
 
 export interface ServiceOptions {
-  clients: AnyData
-  storeId: string
+  clients: { [key: string]: any }
+  id: string
   clientAlias?: string
   idField?: string
   servicePath: string
