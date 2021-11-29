@@ -51,7 +51,7 @@ describe('usePagination', () => {
 
     const { currentPage, pageCount, next, canNext, canPrev } = usePagination(
       pagination,
-      latestQuery
+      latestQuery,
     )
     expect(currentPage.value).toBe(1)
     expect(pageCount.value).toBe(Math.ceil(totalItems / pageLimit))

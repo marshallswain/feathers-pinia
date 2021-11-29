@@ -258,7 +258,7 @@ export interface ModelStatic extends EventEmitter {
    */
   getFromStore<M extends Model = Model>(
     id: Id | Ref<Id>,
-    params?: Params | Ref<Params>
+    params?: Params | Ref<Params>,
   ): M | undefined
 }
 

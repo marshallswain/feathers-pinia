@@ -30,7 +30,7 @@ function getGuideSidebar() {
       children: [
         { text: 'Introduction', link: '/guide/' },
         { text: 'Module Overview', link: '/guide/module-overview' },
-        { text: 'Setup', link: '/guide/setup' }
+        { text: 'Setup', link: '/guide/setup' },
       ],
     },
     {

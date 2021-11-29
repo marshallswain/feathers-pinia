@@ -48,7 +48,7 @@ export function useQueuePromise(store: any, event: EventName) {
             }, 0)
           }
         },
-        { immediate: true }
+        { immediate: true },
       )
     })
   }

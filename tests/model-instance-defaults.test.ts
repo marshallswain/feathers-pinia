@@ -35,7 +35,7 @@ describe('Model Instance Defaults', () => {
       text: 'this text will be overwritten by the value in the Message class.',
     })
     expect(message.text).toBe(
-      'The text in the model always wins. You can only overwrite it after instantiation'
+      'The text in the model always wins. You can only overwrite it after instantiation',
     )
   })
 

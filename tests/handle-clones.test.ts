@@ -73,7 +73,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message(undefined, {
         $populateParams: { name: 'withRelatedData' },

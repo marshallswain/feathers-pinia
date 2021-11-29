@@ -30,7 +30,8 @@
     "getfromstore",
     "amogh",
     "Amogh",
-    "Palnitkar"
+    "Palnitkar",
+    "Deku"
   ],
   "import": ["@cspell/dict-fr-fr/cspell-ext.json"]
 }

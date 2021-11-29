@@ -55,7 +55,7 @@ export function enableServiceEvents({
         this.addOrUpdateById = {}
       },
       options.debounceEventsTime || 20,
-      { maxWait: options.debounceEventsMaxWait }
+      { maxWait: options.debounceEventsMaxWait },
     ),
     flushRemoveItemQueue: _debounce(
       function () {
@@ -69,7 +69,7 @@ export function enableServiceEvents({
         this.removeItemById = {}
       },
       options.debounceEventsTime || 20,
-      { maxWait: options.debounceEventsMaxWait }
+      { maxWait: options.debounceEventsMaxWait },
     ),
   }
 

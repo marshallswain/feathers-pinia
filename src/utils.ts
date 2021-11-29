@@ -43,7 +43,7 @@ export function getAnyId(item: any) {
 
 export function getQueryInfo(
   params: Params = {},
-  response: Partial<Pick<Paginated<any>, 'limit' | 'skip'>> = {}
+  response: Partial<Pick<Paginated<any>, 'limit' | 'skip'>> = {},
 ) {
   const { query = {}, qid = 'default' } = params
   const $limit = response.limit != undefined ? response.limit : query?.$limit

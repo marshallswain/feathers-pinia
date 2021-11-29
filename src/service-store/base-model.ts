@@ -165,7 +165,7 @@ export class BaseModel {
 
     if (id == null) {
       const error = new Error(
-        `Missing ${idField} property. You must create the data before you can patch with this data`
+        `Missing ${idField} property. You must create the data before you can patch with this data`,
       )
       return Promise.reject(error)
     }
@@ -182,7 +182,7 @@ export class BaseModel {
 
     if (id == null) {
       const error = new Error(
-        `Missing ${idField} property. You must create the data before you can patch with this data`
+        `Missing ${idField} property. You must create the data before you can patch with this data`,
       )
       return Promise.reject(error)
     }
@@ -214,7 +214,7 @@ export class BaseModel {
 function checkThis(context: any) {
   if (!context) {
     throw new Error(
-      `Instance methods must be called with the dot operator. If you are referencing one in an event, use '@click="() => instance.remove()"' so that the correct 'this' context is applied. Using '@click="instance.remove"' will call the remove function with "this" set to 'undefined' because the function is called directly instead of as a method.`
+      `Instance methods must be called with the dot operator. If you are referencing one in an event, use '@click="() => instance.remove()"' so that the correct 'this' context is applied. Using '@click="instance.remove"' will call the remove function with "this" set to 'undefined' because the function is called directly instead of as a method.`,
     )
   }
 }

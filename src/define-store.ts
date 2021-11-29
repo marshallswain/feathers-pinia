@@ -117,7 +117,7 @@ export function defineStore(options: DefineStoreOptions) {
       const client = clients[clientAlias]
       if (!client) {
         throw new Error(
-          `There is no registered FeathersClient named '${clientAlias}'. You need to provide one in the 'defineStore' options.`
+          `There is no registered FeathersClient named '${clientAlias}'. You need to provide one in the 'defineStore' options.`,
         )
       }
       const service = client.service(servicePath)

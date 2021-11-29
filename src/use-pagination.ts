@@ -45,7 +45,7 @@ export function usePagination(pagination: any, latestQuery: Ref) {
       if (lq && lq.response && currentPage.value > pageCount.value) {
         currentPage.value = pageCount.value
       }
-    }
+    },
   )
 
   const canPrev = computed(() => {
