@@ -49,4 +49,26 @@ describe('whitelist', () => {
     expect(Array.isArray(data)).toBeTruthy()
     expect(data[0].text).toBe('test')
   })
+
+  test('retrieves custom query params ($options) from the service options', async () => {
+    // The $options param is defined on the service in feathers.ts
+    const { defineStore } = setupFeathersPinia({
+      clients: { api },
+      whitelist: ['$regex'],
+    })
+
+    const useMessagesService = defineStore({ servicePath: 'messages' })
+    const messagesService = useMessagesService(pinia)
+
+    await messagesService.create({ text: 'test' })
+    await messagesService.create({ text: 'yo!' })
+
+    const data = messagesService.findInStore({
+      query: {
+        text: { $regex: 'test', $options: 'igm' },
+      },
+    }).data
+
+    expect(Array.isArray(data)).toBeTruthy()
+  })
 })

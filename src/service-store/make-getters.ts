@@ -52,7 +52,9 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         const q = _.omit(params.query || {}, paramsForServer)
 
         const { query, filters } = filterQuery(q, {
-          operators: additionalOperators.concat(whitelist),
+          operators: additionalOperators
+            .concat(whitelist)
+            .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
         let values = _.values(itemsById)
 

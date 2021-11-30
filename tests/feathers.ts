@@ -23,5 +23,11 @@ api.authentication.service.hooks({
   },
 })
 
-api.use('messages', memory({ paginate: { default: 10, max: 100 } }))
+api.use(
+  'messages',
+  memory({
+    paginate: { default: 10, max: 100 },
+    whitelist: ['$options'],
+  }),
+)
 api.use('users', memory())
