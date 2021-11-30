@@ -1,13 +1,14 @@
-import { computed, watch, Ref } from 'vue-demi'
+import { computed, watch, Ref, unref } from 'vue-demi'
 
 export function usePagination(pagination: any, latestQuery: Ref) {
   /**
    * The number of pages available based on the results returned in the latestQuery prop.
    */
   const pageCount = computed(() => {
-    const q = latestQuery.value
+    const q = unref(latestQuery)
+    const { $limit } = unref(pagination)
     if (q && q.response) {
-      return Math.ceil(q.response.total / pagination.value.$limit)
+      return Math.ceil(q.response.total / $limit)
     } else {
       return 1
     }
@@ -23,13 +24,19 @@ export function usePagination(pagination: any, latestQuery: Ref) {
       } else if (pageNumber > pageCount.value) {
         pageNumber = pageCount.value
       }
-      const $limit = pagination.value.$limit
+      const { $limit } = unref(pagination)
       const $skip = $limit * (pageNumber - 1)
 
-      pagination.value = { $limit, $skip }
+      const newPagination = { $limit, $skip }
+
+      if (pagination.value) {
+        pagination.value = newPagination
+      } else {
+        Object.assign(pagination, newPagination)
+      }
     },
     get() {
-      const params = pagination.value
+      const params = unref(pagination)
       if (params) {
         return pageCount.value === 0 ? 0 : params.$skip / params.$limit + 1
       } else {
