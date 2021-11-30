@@ -33,9 +33,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     find(requestParams: Params) {
       let params: any = requestParams || {}
       params = fastCopy(params)
+      const { query } = params
+      const isPaginated =
+        params.paginate === true || hasOwn(query, '$limit') || hasOwn(query, '$skip')
 
-      // For working with client-side services, paginate.default must be truthy.
-      if (params.paginate === true) {
+      // For client-side services, like feathers-memory, paginate.default must be truthy.
+      if (isPaginated) {
         params.paginate = { default: true }
       }
 
