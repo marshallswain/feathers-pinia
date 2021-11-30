@@ -65,7 +65,7 @@ const {
 
 ## Return Values
 
-The return valueu from `usePagination` is an object containing these 9 utilities:
+The return value from `usePagination` is an object containing these 9 utilities:
 
 - `next() {Function}` calling `next` moves to the next page by incrementing the value of `$skip`. When connected to a "Next Page" button, it enables viewing the next set of results.
 - `prev() {Function}` calling `prev` moves to the previous page by decreasing `$skip`. When connected to a `Previous Page" button, it enables viewing the previous set of results.
