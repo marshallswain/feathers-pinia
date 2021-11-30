@@ -63,7 +63,7 @@ And here's a look at each individual property:
   - You can use `params.qid` to dynamically specify the query identifier for any API request. The `qid` is used for tracking pagination data and enabling the fall-through cache across multiple queries.
   - Set `params.paginate` to `true` to use server-side pagination. Realtime updates will continue to come into the store. UI results will only update when another response is sent from the server for the same query.
   - Set `params.debounce` to an integer and the API requests will automatically be debounced by that many milliseconds. For example, setting `debounce: 1000` will assure that the API request will be made at most every 1 second.
-  - Set `params.temps` to `true` to include temporary (local-only) items in the results. Temporary records are instances that have been created but not yet saved to the database.
+  - Set `params.temps` to `true` to include temporary (local-only) items in the results. Temporary records are instances in the store without a server-assigned id. They have not been saved to the database, yet.
   - Set `params.copies` to `true` to include cloned items in the results. The queried items get replaced with the corresponding copies from `copiesById`
 - `fetchParams` This is a separate set of params that, when provided, will become the params sent to the API server. The `params` will then only be used to query data from the local data store.
   - Explicitly returning `null` will prevent an API request from being made.
