@@ -25,8 +25,8 @@ const storeOptions = {
   actions: {
     greet(): string {
       return 'Hello from action'
-    }
-  }
+    },
+  },
 }
 
 describe('Define User Store 1 (from options without options.id)', () => {
