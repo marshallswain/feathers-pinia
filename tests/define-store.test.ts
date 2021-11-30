@@ -25,8 +25,8 @@ const storeOptions = {
   actions: {
     greet(): string {
       return 'Hello from action'
-    }
-  }
+    },
+  },
 }
 
 describe('Define Store 1 (from options without options.id)', () => {
@@ -81,7 +81,11 @@ describe('Define Store 3 (from id and options without options.id)', () => {
 })
 
 describe('Define Store 4 (from id and options with options.id)', () => {
-  const useUsersStore = defineStore('users4', { id: 'should-be-overriden', servicePath: 'users', ...storeOptions })
+  const useUsersStore = defineStore('users4', {
+    id: 'should-be-overriden',
+    servicePath: 'users',
+    ...storeOptions,
+  })
   const store = useUsersStore(pinia)
 
   test('can interact with store', async () => {
