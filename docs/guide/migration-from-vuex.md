@@ -57,7 +57,7 @@ Note also that re-exporting files from a single file like shown above should not
 
 ## Setup
 
-For a more detailed walkthrough refer to the [setup guide](/docs/guide/setup.md).
+For a more detailed walkthrough refer to the [setup guide](/guide/setup).
 
 ```javascript
 // src/stores/store.js
@@ -142,7 +142,7 @@ This makes it easy to distinguish regular pinia stores from those created with f
 ## Steps
 
 
-**If you haven't completed the initial [setup](/guides/setup.md), please do so first.**
+**If you haven't completed the initial [setup](/guides/setup), please do so first.**
 
 The following steps outline the specific migration steps to apply to your codebase. The list might not be exhaustive, be sure to apply these concepts to any custom implmentation or variation you might have.
 
@@ -170,10 +170,10 @@ Make sure you import and create store beforehand with `const <id>Store = use<id>
 
 #### Common Tools
 
-- **useFind:** (optional) the `useFind` utility should require no changes (see [here](/docs/guide/use-find.md))
-- **useGet:** (optional) the `useGet` utility should require no changes (see [here](/docs/guide/use-get.md))
+- **useFind:** (optional) the `useFind` utility should require no changes (see [here](/guide/use-find))
+- **useGet:** (optional) the `useGet` utility should require no changes (see [here](/guide/use-get))
 - **usePagination:** (optional) replace custom implementations of pagination with the `usePagination` utility
-- **handleClones:** the new `handleClones` utility removes boilerplate from the clone and commit pattern (see [here](/docs/guide/handle-clones.md))
+- **handleClones:** the new `handleClones` utility removes boilerplate from the clone and commit pattern (see [here](/guide/handle-clones))
 
 #### Renderless components
 
