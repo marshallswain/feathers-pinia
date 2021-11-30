@@ -66,7 +66,7 @@ And here's a look at each individual property:
   - Set `params.temps` to `true` to include temporary (local-only) items in the results. Temporary records are instances in the store without a server-assigned id. They have not been saved to the database, yet.
   - Set `params.copies` to `true` to include cloned items in the results. The queried items get replaced with the corresponding copies from `copiesById`
 - `fetchParams` This is a separate set of params that, when provided, will become the params sent to the API server. The `params` will then only be used to query data from the local data store.
-  - Explicitly returning `null` will prevent an API request from being made.
+  - Explicitly returning `null` will prevent an API request from being made (but only for Vue 3. For Vue 2, use `queryWhen`).
 - `queryWhen` must be a `computed` property which returns a `boolean`. It provides a logical separation for preventing API requests _outside_ of the `params`.
 - `qid` allows you to specify a query identifier (used in the pagination data in the store). This can also be set dynamically by returning a `qid` in the params.
 - `immediate`, which is `true` by default, determines if the internal `watch` should fire immediately. Set `immediate: false` and the query will not fire immediately. It will only fire on subsequent changes to the params.
