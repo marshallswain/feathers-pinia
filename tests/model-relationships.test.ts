@@ -15,15 +15,18 @@ const messagesService = useMessagesService(pinia)
 class User extends BaseModel {
   id: number | string | undefined
   name!: string
-  instanceDefaults(data: User) {
+  instanceDefaults() {
     return {
       id: undefined,
-      name: ''
+      name: '',
     }
   }
   get messages() {
     const messagesService = useMessagesService()
-    const messages = messagesService.findInStore({ query: { userId: this.id }, temps: true }).data
+    const messages = messagesService.findInStore({
+      query: { userId: this.id },
+      temps: true,
+    }).data
     return messages
   }
   set messages(messages) {
@@ -52,7 +55,7 @@ describe('Model Relationships', () => {
     await Promise.all([
       messagesService.create({ text: 'message 1', userId: amogh.id }),
       messagesService.create({ text: 'message 2', userId: amogh.id }),
-      messagesService.create({ text: 'message 3', userId: amogh.id })
+      messagesService.create({ text: 'message 3', userId: amogh.id }),
     ])
   })
   afterAll(() => resetStore())

@@ -1,4 +1,4 @@
-import { getId } from '../utils'
+import { getId, hasOwn } from '../utils'
 import _debounce from 'lodash/debounce'
 import { models } from '../models'
 
@@ -30,7 +30,7 @@ export function enableServiceEvents({
     enqueueAddOrUpdate(item): void {
       const id = getId(item, options.idField)
       this.addOrUpdateById[id] = item
-      if (this.removeItemById.hasOwnProperty(id)) {
+      if (hasOwn(this.removeItemById, id)) {
         delete this.removeItemById[id]
       }
       this.flushAddOrUpdateQueue()
@@ -38,34 +38,38 @@ export function enableServiceEvents({
     enqueueRemoval(item): void {
       const id = getId(item, options.idField)
       this.removeItemById[id] = item
-      if (this.addOrUpdateById.hasOwnProperty(id)) {
+      if (hasOwn(this.addOrUpdateById, id)) {
         delete this.addOrUpdateById[id]
       }
       this.flushRemoveItemQueue()
     },
     flushAddOrUpdateQueue: _debounce(
       async function () {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const values = Object.values(this.addOrUpdateById)
         if (values.length === 0) return
         await store.addOrUpdate(values)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.addOrUpdateById = {}
       },
       options.debounceEventsTime || 20,
-      { maxWait: options.debounceEventsMaxWait }
+      { maxWait: options.debounceEventsMaxWait },
     ),
     flushRemoveItemQueue: _debounce(
       function () {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const values = Object.values(this.removeItemById)
         if (values.length === 0) return
         store.removeFromStore(values)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.removeItemById = {}
       },
       options.debounceEventsTime || 20,
-      { maxWait: options.debounceEventsMaxWait }
+      { maxWait: options.debounceEventsMaxWait },
     ),
   }
 

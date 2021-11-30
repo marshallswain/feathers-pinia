@@ -1,20 +1,20 @@
 # Model Classes
 
-Each Service Store gets its own Model Class.  If you don't explicitly create it, one gets created under the hood.  There are some benefits to using them:
+Each Service Store gets its own Model Class. If you don't explicitly create it, one gets created under the hood. There are some benefits to using them:
 
-- Convenient access to Feathers Service methods.  Methods directly on the Model will effect the store.  You can also directly access the Feathers service at `Model.service`.  Using the Feathers Service directly allows you to bypass the store when needed.
-- The Model Class API provides a common interface that abstracts away the underlying implementation.  This is similar to how FeathersJS database adapters work.  FeathersJS supports many database adapters.  By swapping out an adapter, the same code that was previously running on one database now runs on some other database.
+- Convenient access to Feathers Service methods. Methods directly on the Model will effect the store. You can also directly access the Feathers service at `Model.service`. Using the Feathers Service directly allows you to bypass the store when needed.
+- The Model Class API provides a common interface that abstracts away the underlying implementation. This is similar to how FeathersJS database adapters work. FeathersJS supports many database adapters. By swapping out an adapter, the same code that was previously running on one database now runs on some other database.
 - You can extend the common interface with custom methods, getters, and setters.
 
 ## Model Class Optional
 
 On the section on [Setup: Service Stores](./setup#service-stores), we learned how to setup a basic service store with a Model class.
 
-In Feathers-Pinia, model classes are not required in all cases.  Model classes are especially beneficial to
+In Feathers-Pinia, model classes are not required in all cases. Model classes are especially beneficial to
 
 - Define Relationships with other stores 🥰
-- Define default data.  This is especially important if we add support for Vue 2.
-- Be able to use the `new` operator.  No Model class means to `new`.
+- Define default data. This is especially important if we add support for Vue 2.
+- Be able to use the `new` operator. No Model class means to `new`.
 
 If neither of the above scenarios applies to your situation, you can shorten the service setup and remove the `Model`.
 
@@ -28,11 +28,11 @@ export const useUsers = defineStore({ servicePath })
 api.service(servicePath).hooks({})
 ```
 
-If you don't provide a Model class, one will be created dynamically using the servicePath as the class name.  This means that you can still take advantage of instance methods!  It's pretty convenient!
+If you don't provide a Model class, one will be created dynamically using the servicePath as the class name. This means that you can still take advantage of instance methods! It's pretty convenient!
 
 ### Working without a model class
 
-One caveat about working WITHOUT a Model class is that you can't use the `new` operator (you know, since that requires a class;).  To add an item to the store, pass an object to the `addToStore` action.
+One caveat about working WITHOUT a Model class is that you can't use the `new` operator (you know, since that requires a class;). To add an item to the store, pass an object to the `addToStore` action.
 
 ```vue
 <script setup lang="ts">
@@ -58,7 +58,7 @@ class Message extends BaseModel {
   static instanceDefaults(data: Message) {
     return {
       text: 'this gets overwritten by the class-level `text`',
-      otherText: `this won't get overwritten and works great for a default value`
+      otherText: `this won't get overwritten and works great for a default value`,
     }
   }
 }
@@ -67,7 +67,7 @@ const message = new Message({ text: 'hello there!' })
 console.log(message.text) // --> 'The text in the model always wins. You can only overwrite it after instantiation'
 ```
 
-Notice in the above example how even though we've provided `text: 'hello there!'` to the new message, the value ends up being the default value defined in the class definition.  This is an important part of how extending classes works in JavaScript.  If you definitely require to define instance properties inside the class definition, the workaround is to add a `constructor` to the class and re-assign the properties in the same way that the `BaseModel` constructor does it.  Here's what it looks like:
+Notice in the above example how even though we've provided `text: 'hello there!'` to the new message, the value ends up being the default value defined in the class definition. This is an important part of how extending classes works in JavaScript. If you definitely require to define instance properties inside the class definition, the workaround is to add a `constructor` to the class and re-assign the properties in the same way that the `BaseModel` constructor does it. Here's what it looks like:
 
 ```ts
 import { defineStore, BaseModel } from './store.pinia'
@@ -92,7 +92,7 @@ class Message extends BaseModel {
   static instanceDefaults(data: Message, store: any) {
     return {
       text: 'gets overwritten by the class-level `text`',
-      otherText: `this works great for a default value because there's not a default initialized at the class level. But this could also be moved into the class definition`
+      otherText: `this works great for a default value because there's not a default initialized at the class level. But this could also be moved into the class definition`,
     }
   }
 }
@@ -101,7 +101,7 @@ const message = new Message({ text: 'hello there!' })
 console.log(message.text) // --> 'hello there!'
 ```
 
-But note that in the example, above, you probably don't need to use instanceDefaults, anymore.  If you define a default value for the `otherText` property inside of the Model class, you can remove the `static instanceDefaults` function, completely.  You may or may not want to still use the `setupInstance` method for setting up related data in other stores.
+But note that in the example, above, you probably don't need to use instanceDefaults, anymore. If you define a default value for the `otherText` property inside of the Model class, you can remove the `static instanceDefaults` function, completely. You may or may not want to still use the `setupInstance` method for setting up related data in other stores.
 
 ## Recipes
 
@@ -124,8 +124,8 @@ import { api } from '../feathers'
 export class User extends BaseModel {
   static instanceDefaults() {
     return {
-      name = ''
-      timezone: ''
+      name: '',
+      timezone: '',
     }
   }
 
@@ -142,10 +142,10 @@ export class User extends BaseModel {
 
 const servicePath = 'users'
 export const useUsers = defineStore({
-  idField: 'id',    // (2)
+  idField: 'id', // (2)
   clients: { api }, // (2)
   servicePath,
-  Model: User
+  Model: User,
 })
 
 api.service(servicePath).hooks({})

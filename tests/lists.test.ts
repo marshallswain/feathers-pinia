@@ -1,9 +1,7 @@
-import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
-import { getItemsFromQueryInfo } from '../src/utils'
 
 const pinia = createPinia()
 

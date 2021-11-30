@@ -1,11 +1,11 @@
-import { reactive, computed, toRefs, isRef, unref, watch, Ref } from 'vue-demi'
+import { reactive, computed, toRefs, unref, watch, Ref, ComputedRef } from 'vue-demi'
 import { Params } from './types'
 import { Model } from './service-store/types'
 import { Id } from '@feathersjs/feathers'
 
 interface UseGetOptions {
   model: any
-  id: Ref<null> | Ref<string> | Ref<number> | null
+  id: Ref<Id | null> | null
   params?: Ref<Params>
   queryWhen?: Ref<boolean>
   local?: boolean
@@ -18,20 +18,15 @@ interface UseGetState {
   error: null | Error
   isLocal: boolean
 }
-interface UseGetData<M> {
-  item: Ref<Readonly<M | null>>
-  servicePath: Ref<string>
-  isPending: Ref<boolean>
-  hasBeenRequested: Ref<boolean>
-  hasLoaded: Ref<boolean>
-  isLocal: Ref<boolean>
-  error: Ref<Error>
-  get(id: Id, params?: Params): Promise<M | undefined>
+
+interface UseGetComputed {
+  item: ComputedRef<any>
+  servicePath: ComputedRef<string>
 }
 
 export function useGet<M extends Model = Model>({
-  model = null,
-  id = null,
+  model,
+  id,
   params = computed(() => ({})),
   queryWhen = computed((): boolean => true),
   local = false,
@@ -39,15 +34,15 @@ export function useGet<M extends Model = Model>({
 }: UseGetOptions) {
   if (!model) {
     throw new Error(
-      `No model provided for useGet(). Did you define and register it with FeathersVuex?`
+      `No model provided for useGet(). Did you define and register it with FeathersVuex?`,
     )
   }
 
-  function getId(): null | string | number {
-    return unref(id as any)
+  function getId() {
+    return unref(id)
   }
-  function getParams(): Params {
-    return unref(params as any)
+  function getParams() {
+    return unref(params)
   }
 
   const state = reactive<UseGetState>({
@@ -55,25 +50,17 @@ export function useGet<M extends Model = Model>({
     hasBeenRequested: false,
     hasLoaded: false,
     error: null,
-    isLocal: local as boolean,
+    isLocal: local,
   })
 
-  const computes = {
-    item: computed(() => {
-      // const getterId = isRef(id) ? id.value : id
-      // const getterParams = unref(params)
-      // if (getterParams != null) {
-      return model.getFromStore(unref(id as any), unref(params)) || null
-      // } else {
-      // return model.getFromStore(getterId) || null
-      // }
-    }),
+  const computes: UseGetComputed = {
+    item: computed(() => model.getFromStore(getId(), getParams()) || null),
     servicePath: computed(() => model.servicePath),
   }
 
-  function get(id: Id, params?: Params): Promise<M | undefined> {
+  function get(id: Id | null, params?: Params): Promise<M | undefined | any> {
     const idToUse = unref(id)
-    const paramsToUse = isRef(params) ? params.value : params
+    const paramsToUse = unref(params)
 
     if (idToUse != null && queryWhen.value && !state.isLocal) {
       state.isPending = true
@@ -100,9 +87,9 @@ export function useGet<M extends Model = Model>({
   watch(
     () => [getId(), getParams(), queryWhen.value],
     ([id, params]) => {
-      get(id as any, params as Params)
+      get(id as Id | null, params as Params)
     },
-    { immediate }
+    { immediate },
   )
 
   return {

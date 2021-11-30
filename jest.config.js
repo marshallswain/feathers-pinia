@@ -1,5 +1,5 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  maxWorkers: '20%'
-};
+  maxWorkers: '20%',
+}

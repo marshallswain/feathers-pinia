@@ -7,8 +7,8 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     hmr: {
-      port: parseInt(process.env.KUBERNETES_SERVICE_PORT, 10) || 3000
-    }
+      port: parseInt(process.env.KUBERNETES_SERVICE_PORT, 10) || 3000,
+    },
   },
   build: {
     lib: {

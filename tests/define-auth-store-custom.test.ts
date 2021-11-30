@@ -1,7 +1,6 @@
 import { createPinia } from 'pinia'
 import { defineAuthStore } from '../src/index'
 import { api } from './feathers'
-import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 const handleResponse = jest.fn()

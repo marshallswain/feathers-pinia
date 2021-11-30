@@ -1,6 +1,11 @@
-import { Model, ServiceOptions, ServiceActions, UpdatePaginationForQueryOptions } from './types'
+import {
+  ServiceOptions,
+  ServiceActions,
+  UpdatePaginationForQueryOptions,
+  RequestType,
+  AnyData,
+} from './types'
 import { Params } from '../types'
-import { RequestType, AnyData } from './types'
 import { Id } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
@@ -14,8 +19,10 @@ import {
   cleanData,
   restoreTempIds,
   getArray,
+  hasOwn,
 } from '../utils'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PaginationOptions {
   default: number
   max: number
@@ -26,9 +33,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     find(requestParams: Params) {
       let params: any = requestParams || {}
       params = fastCopy(params)
+      const { query } = params
+      const isPaginated =
+        params.paginate === true || hasOwn(query, '$limit') || hasOwn(query, '$skip')
 
-      // For working with client-side services, paginate.default must be truthy.
-      if (params.paginate === true) {
+      // For client-side services, like feathers-memory, paginate.default must be truthy.
+      if (isPaginated) {
         params.paginate = { default: true }
       }
 
@@ -72,7 +82,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     async afterFind(response: any) {
       return response
     },
-    handleFindError({ params, error }: { params: Params; error: any }) {
+    handleFindError({ error }: { params: Params; error: any }) {
       //  commit('setError', { method: 'find', params, error })
       return Promise.reject(error)
     },
@@ -95,7 +105,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     // Supports passing params the feathers way: `get(id, params)`
-    // Does NOT support the old array syntax: `get([null, params])` which was only needed for Vuex
+    // Does NOT support the old array syntax:
+    // `get([null, params])` which was only needed for Vuex
     get(id: Id, params: Params = {}) {
       params = fastCopy(params)
 
@@ -125,7 +136,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     create(data: any, params: Params) {
-      const { idField, tempIdField } = this
+      const { tempIdField } = this
       params = fastCopy(params) || {}
 
       this.setPendingById(getId(data) || data[tempIdField], 'create', true)
@@ -184,7 +195,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     /**
-     * Sends API request to remove the record with the given id. Calls `removeFromStore` after response.
+     * Sends API request to remove the record with the given id.
+     * Calls `removeFromStore` after response.
      * @param id
      * @param params
      * @returns
@@ -208,7 +220,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
     },
     removeFromStore(data: any) {
-      const { items, isArray } = getArray(data)
+      const { items } = getArray(data)
       const idsToRemove = items
         .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item)))
         .filter((id: any) => id != null)
@@ -224,14 +236,14 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     /**
      * An alias for addOrUpdate
      * @param data a single record or array of records.
-     * @returns data added or modified in the store.  If you pass an array, you get an array back.
+     * @returns data added or modified in the store.
+     *  If you pass an array, you get an array back.
      */
     addToStore(data: AnyData) {
       return this.addOrUpdate(data)
     },
     addOrUpdate(data: AnyData) {
       const { items, isArray } = getArray(data)
-      const { idField, autoRemove } = this
 
       // Assure each item is an instance
       items.forEach((item: any, index: number) => {
@@ -282,7 +294,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (existing) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
-          if (!originalItem.hasOwnProperty(key)) {
+          if (!hasOwn(originalItem, key)) {
             delete readyToReset[key]
           }
         })
@@ -322,10 +334,11 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (!this.pagination[qid]) {
         this.pagination[qid] = {}
       }
-      if (!query.hasOwnProperty('$limit') && response.hasOwnProperty('limit')) {
+
+      if (!hasOwn(query, '$limit') && hasOwn(response, 'limit')) {
         this.pagination.defaultLimit = response.limit
       }
-      if (!query.hasOwnProperty('$skip') && response.hasOwnProperty('skip')) {
+      if (!hasOwn(query, '$skip') && hasOwn(response, 'skip')) {
         this.pagination.defaultSkip = response.skip
       }
 
@@ -378,7 +391,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 }
 
 function setEventLockState(data: any, event: string, val: boolean, store: any) {
-  const { items: ids, isArray } = getArray(data)
+  const { items: ids } = getArray(data)
   ids.forEach((id: Id) => {
     const currentLock = store.eventLocksById[event][id]
     if (currentLock) {

@@ -25,7 +25,7 @@ export function hydrateStore(store: any, storage: any) {
 export function syncWithStorage(
   store: any,
   stateKeys: Array<string> = [],
-  storage: Storage = window.localStorage
+  storage: Storage = window.localStorage,
 ) {
   hydrateStore(store, storage)
 
@@ -37,6 +37,6 @@ export function syncWithStorage(
     (val) => {
       debouncedWrite(store.$id, val, storage)
     },
-    { deep: true }
+    { deep: true },
   )
 }

@@ -18,7 +18,7 @@ const localStorageMock: Storage = {
   removeItem: jest.fn(),
   clear: jest.fn(),
   length: 0,
-  key: jest.fn()
+  key: jest.fn(),
 }
 syncWithStorageCompressed(messagesService, ['tempsById'], localStorageMock)
 
@@ -40,7 +40,7 @@ describe('Storage Sync', () => {
   })
 
   test('reads from storage', async () => {
-    const msg = messagesService.addToStore({ test: true })
+    messagesService.addToStore({ test: true })
     await timeout(1000)
     expect(localStorageMock.getItem).toHaveBeenCalled()
     const [key, value] = (localStorageMock.getItem as any).mock.calls[0]

@@ -1,14 +1,12 @@
-import { computed } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia, clients } from '../src/index'
 import { api } from './feathers'
-import { resetStores } from './test-utils'
 
-const pinia = createPinia()
+createPinia()
 
 describe('Global Clients', () => {
   test('calling setup adds the clients by key name', () => {
-    const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+    setupFeathersPinia({ clients: { api } })
     expect(clients.api).toBeDefined()
   })
 })

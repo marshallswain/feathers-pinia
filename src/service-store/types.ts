@@ -16,42 +16,34 @@ interface ModelPendingState {
 }
 export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remove'
 
+export type AnyData = Record<string, any>
+
+type ModelsById<M> = { [id: string | number]: M }
+
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
-  pagination: {
-    [k: string]: any
-  }
+  pagination: AnyData
   idField: string
-  itemsById: {
-    [k: string]: M
-    [k: number]: M
-  }
-  tempsById: {
-    [k: string]: M
-    [k: number]: M
-  }
-  clonesById: {
-    [k: string]: M
-    [k: number]: M
-  }
+  itemsById: ModelsById<M>
+  tempsById: ModelsById<M>
+  clonesById: ModelsById<M>
   pendingById: {
-    [k: string]: PendingById | ModelPendingState
-    [k: number]: PendingById
+    [id: string]: PendingById | ModelPendingState
+    [id: number]: PendingById
   }
   eventLocksById: {
-    created: { [k: string]: M; [k: number]: M }
-    patched: { [k: string]: M; [k: number]: M }
-    updated: { [k: string]: M; [k: number]: M }
-    removed: { [k: string]: M; [k: number]: M }
+    created: ModelsById<M>
+    patched: ModelsById<M>
+    updated: ModelsById<M>
+    removed: ModelsById<M>
   }
   whitelist?: string[]
 }
-export interface ServiceGetters {
-  [k: string]: any
-}
-export interface ServiceActions {
-  [k: string]: any
+export type ServiceGetters = AnyData
+
+export interface ServiceActions extends AnyData {
+  handleFindError({ params, error }: { params: Params; error: any }): Promise<any>
 }
 export interface PiniaStoreOptions {
   state: ServiceState
@@ -60,27 +52,24 @@ export interface PiniaStoreOptions {
 }
 
 export interface ServiceOptions {
-  clients: { [key: string]: any }
+  clients: AnyData
   id: string
   clientAlias?: string
   idField?: string
   servicePath: string
   Model: any
-  state?: { [key: string]: any }
-  getters?: { [key: string]: Function }
-  actions?: { [key: string]: Function }
+  state?: AnyData
+  getters?: Record<string, Function>
+  actions?: Record<string, Function>
   whitelist?: string[]
 }
 
-export type AnyData = { [key: string]: any }
-
-export interface PatchParams<D extends {} = AnyData> extends Params {
+export interface PatchParams<D extends AnyData> extends Params {
   data?: Partial<D>
 }
 
 /** Model instance interface */
-export interface Model {
-  [key: string]: any
+export interface Model extends AnyData {
   /**
    * model's temporary ID
    */
@@ -143,7 +132,7 @@ export interface Model {
    * with partial data.
    * @param params Params passed to the Feathers client request
    */
-  patch<D extends {} = AnyData>(params?: PatchParams<D>): Promise<this>
+  patch<D extends AnyData>(params?: PatchParams<D>): Promise<this>
   /**
    * The remove method calls the remove action (service method)
    * using the instance data. The instance's id field is used
@@ -183,29 +172,31 @@ export interface ModelStatic extends EventEmitter {
    * The path passed to `FeathersClient.service()` to create the service
    */
   servicePath: string
+
   /**
    * The pinia store
    */
   readonly store: any
+
   /**
    * The field in each record that will contain the ID
    */
   idField: string
+
   /**
    * The client alias in the global `models` object
    */
   clientAlias: string
+
   /**
    * Model name used to circumvent Babel transpilation errors
    */
   modelName: string
+
   /**
    * All model copies created using `model.clone()`
    */
-  readonly clonesById: {
-    [key: string]: Model | undefined
-    [key: number]: Model | undefined
-  }
+  readonly clonesById: { [id: string | number]: Model | undefined }
 
   /**
    * Create new Model
@@ -242,6 +233,7 @@ export interface ModelStatic extends EventEmitter {
    * @param params Find params
    */
   find<M extends Model = Model>(params?: Params): Promise<M[] | Paginated<M>>
+
   /**
    * A proxy for the `findInStore` getter
    * @param params Find params
@@ -253,17 +245,20 @@ export interface ModelStatic extends EventEmitter {
    * @param params Find params
    */
   count(params?: Params): Promise<number>
+
   /**
    * A proxy for the `countInStore` getter
    * @param params Find params
    */
   countInStore(params?: Params | Ref<Params>): number
+
   /**
    * A proxy for the `get` action
    * @param id ID of record to retrieve
    * @param params Get params
    */
   get<M extends Model = Model>(id: Id, params?: Params): Promise<M | undefined>
+
   /**
    * A proxy for the `getFromStore` getter
    * @param id ID of record to retrieve
@@ -271,7 +266,7 @@ export interface ModelStatic extends EventEmitter {
    */
   getFromStore<M extends Model = Model>(
     id: Id | Ref<Id>,
-    params?: Params | Ref<Params>
+    params?: Params | Ref<Params>,
   ): M | undefined
 }
 

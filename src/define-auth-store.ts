@@ -45,8 +45,8 @@ export function defineAuthStore(...args: [SetupAuthOptions] | [string, SetupAuth
         Object.assign(this, { ...response, isAuthenticated: true })
         return this.handleResponse(response) || response
       } catch (error) {
-        // console.log('error during Feathers API Authentication', error)
-        ; (this as any).error = error
+        // eslint-disable-next-line @typescript-eslint/no-extra-semi
+        ;(this as any).error = error
         return this.handleError(error as Error)
       }
     },
@@ -68,7 +68,8 @@ export function defineAuthStore(...args: [SetupAuthOptions] | [string, SetupAuth
      * For tracking first-load state. Used by the watcher, below.
      */
     setLoaded() {
-      ; (this as any).isLoading = false
+      // eslint-disable-next-line @typescript-eslint/no-extra-semi
+      ;(this as any).isLoading = false
     },
   }
 

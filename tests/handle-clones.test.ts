@@ -1,8 +1,8 @@
 import { createPinia } from 'pinia'
-import { setupFeathersPinia, models } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { handleClones } from '../src/handle-clones'
-import { resetStores, timeout } from './test-utils'
+import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
@@ -23,7 +23,9 @@ describe('Handle clones test', () => {
   beforeEach(() => reset())
 
   test('it returns a clone', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     const props = { message }
     const { clones } = handleClones(props)
     expect(clones.message).toHaveProperty('__isClone')
@@ -32,7 +34,9 @@ describe('Handle clones test', () => {
   })
 
   test('can update via save handler', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     const props = { message }
     const { saveHandlers, clones } = handleClones(props)
     const { save_message } = saveHandlers
@@ -42,7 +46,9 @@ describe('Handle clones test', () => {
   })
 
   test('only accepts valid service models', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     const booleanField = true
     const props = { message, booleanField }
     const { clones } = handleClones(props)
@@ -53,7 +59,7 @@ describe('Handle clones test', () => {
     const message = new Message({ text: 'I will soon go to the store.' })
     expect(messagesService.tempIds).toHaveLength(0)
     const props = { message }
-    const { clones } = handleClones(props)
+    handleClones(props)
     expect(messagesService.tempIds).toHaveLength(1)
   })
 
@@ -67,7 +73,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message(undefined, {
         $populateParams: { name: 'withRelatedData' },
@@ -114,7 +120,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message()
 
@@ -133,7 +139,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message('text')
 
@@ -173,7 +179,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = new Message({ text })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message(['text'])
 
@@ -190,7 +196,9 @@ describe('Handle clones test', () => {
           create: [hook],
         },
       })
-      const message = new Message({ text: 'about to save with an array of attribute names' })
+      const message = new Message({
+        text: 'about to save with an array of attribute names',
+      })
       const props = { message }
       const { clones, saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
@@ -213,7 +221,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = new Message({ text })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message({ text })
 
@@ -230,11 +238,15 @@ describe('Handle clones test', () => {
           create: [hook],
         },
       })
-      const message: any = new Message({ text: 'about to save with an array of attribute names' })
+      const message: any = new Message({
+        text: 'about to save with an array of attribute names',
+      })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message({ text: 'save this text' })
+      const { areEqual, wasDataSaved, item } = await save_message({
+        text: 'save this text',
+      })
 
       expect(hook).toHaveBeenCalledTimes(1)
       expect(areEqual).toBe(false)
@@ -251,9 +263,11 @@ describe('Handle clones test', () => {
           patch: [hook],
         },
       })
-      const message = await new Message({ text: 'about to save with no arguments' }).save()
+      const message = await new Message({
+        text: 'about to save with no arguments',
+      }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message()
 
@@ -311,7 +325,9 @@ describe('Handle clones test', () => {
         text: 'foo',
         changedProp: true,
       })
-      const { areEqual, wasDataSaved, item } = await save_message(undefined, { diff: false })
+      const { areEqual, wasDataSaved, item } = await save_message(undefined, {
+        diff: false,
+      })
       const hookCallArgs = hook.mock.calls[0][0]
 
       expect(hook).toHaveBeenCalledTimes(1)
@@ -335,7 +351,7 @@ describe('Handle clones test', () => {
       })
       const message = await new Message({ text: 'about to save with string' }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message('text')
 
@@ -375,7 +391,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = new Message({ text })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message(['text'])
 
@@ -417,7 +433,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = await new Message({ text }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message({ text })
 
@@ -438,9 +454,11 @@ describe('Handle clones test', () => {
         text: 'about to save with an array of attribute names',
       }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { saveHandlers } = handleClones(props)
       const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message({ text: 'save this text' })
+      const { areEqual, wasDataSaved, item } = await save_message({
+        text: 'save this text',
+      })
 
       expect(hook).toHaveBeenCalledTimes(1)
       expect(areEqual).toBe(false)

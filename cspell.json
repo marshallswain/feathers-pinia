@@ -1,0 +1,37 @@
+{
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "language": "en,fr",
+  "dictionaries": [],
+  "words": [
+    "automagically",
+    "bson",
+    "feathersjs",
+    "featureful",
+    "gzipped",
+    "Nuxt",
+    "Pinia",
+    "stylesheet",
+    "swrv",
+    "Todos",
+    "Vuex",
+    "socketio",
+    "typeof",
+    "Vetur"
+  ],
+  "ignoreWords": [
+    "findinstore",
+    "addtostore",
+    "keyup",
+    "removefromstore",
+    "useget",
+    "countinstore",
+    "getfromstore",
+    "amogh",
+    "Amogh",
+    "Palnitkar",
+    "Deku"
+  ],
+  "import": ["@cspell/dict-fr-fr/cspell-ext.json"]
+}

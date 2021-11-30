@@ -1,11 +1,11 @@
 import { createPinia } from 'pinia'
-import { setupFeathersPinia, models } from '../src/index'
+import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+const { defineStore } = setupFeathersPinia({ clients: { api } })
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath })
@@ -52,13 +52,13 @@ describe('Temporary Records (Local-Only)', () => {
   })
 
   test('find getter returns temps when params.temps === true', async () => {
-    const message = messagesService.addToStore({ text: 'this is a test' })
+    messagesService.addToStore({ text: 'this is a test' })
     const data = messagesService.findInStore({ query: {}, temps: true }).data
     expect(data.length).toBe(1)
   })
 
-  test('find getter does not returns temps when params.temps is falsey', async () => {
-    const message = messagesService.addToStore({ text: 'this is a test' })
+  test('find getter does not returns temps when params.temps is falsy', async () => {
+    messagesService.addToStore({ text: 'this is a test' })
     const data = messagesService.findInStore({ query: {} }).data
     expect(data.length).toBe(0)
   })
@@ -78,7 +78,7 @@ describe('Temporary Records (Local-Only)', () => {
 
   test('can commit a temp clone', () => {
     const message = messagesService.addToStore({ text: 'this is a test' })
-    const committed = message.clone({ foo: 'bar' }).commit()
+    message.clone({ foo: 'bar' }).commit()
     expect(messagesService.tempsById[message.__tempId]).toHaveProperty('foo')
   })
 })

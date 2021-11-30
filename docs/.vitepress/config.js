@@ -30,7 +30,7 @@ function getGuideSidebar() {
       children: [
         { text: 'Introduction', link: '/guide/' },
         { text: 'Module Overview', link: '/guide/module-overview' },
-        { text: 'Setup', link: '/guide/setup' }
+        { text: 'Setup', link: '/guide/setup' },
       ],
     },
     {
@@ -53,7 +53,7 @@ function getGuideSidebar() {
       children: [
         { text: 'useFind', link: '/guide/use-find' },
         { text: 'useGet', link: '/guide/use-get' },
-        { text: '🚧 usePagination', link: '/guide/use-pagination' },
+        { text: 'usePagination', link: '/guide/use-pagination' },
         { text: 'handleClones', link: '/guide/handle-clones' },
       ],
     },

@@ -4,18 +4,18 @@ import { api } from './feathers'
 
 const pinia = createPinia()
 
-const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+const { defineStore } = setupFeathersPinia({ clients: { api } })
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath })
 
 const messagesService = useMessagesService(pinia)
 
-const resetStore = () => (api.service('messages').store = {})
-
 describe('Clone & commit', () => {
   test('can clone ', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     const clone = message.clone({ additionalData: 'a boolean is fine' })
     expect(clone).toHaveProperty('__isClone')
     expect(clone.__isClone).toBe(true)
@@ -25,7 +25,9 @@ describe('Clone & commit', () => {
   })
 
   test('can commit ', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     const clone = message.clone()
     clone.foo = 'bar'
     const committed = clone.commit()
@@ -35,7 +37,9 @@ describe('Clone & commit', () => {
   })
 
   test('can reset', async () => {
-    const message = await messagesService.create({ text: 'Quick, what is the number to 911?' })
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
     const clone = message.clone({ foo: 'bar' })
     const reset = clone.clone()
 
