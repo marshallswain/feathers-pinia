@@ -8,13 +8,16 @@ interface SetupAuthOptions {
   actions?: { [k: string]: any }
 }
 
-export function defineAuthStore({
-  feathersClient,
-  id = 'auth',
-  state = () => ({}),
-  getters = {},
-  actions = {},
-}: SetupAuthOptions): any {
+export function defineAuthStore(...args: [SetupAuthOptions] | [string, SetupAuthOptions]): any {
+  const id = args.length === 2 ? args[0] : args[0].id || 'auth'
+  const options = args.length === 2 ? args[1] : args[0]
+  const {
+    feathersClient,
+    state = () => ({}),
+    getters = {},
+    actions = {},
+  } = options
+
   /**
    * Default State
    */
@@ -42,7 +45,6 @@ export function defineAuthStore({
         Object.assign(this, { ...response, isAuthenticated: true })
         return this.handleResponse(response) || response
       } catch (error) {
-        // console.log('error during Feathers API Authentication', error)
         // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;(this as any).error = error
         return this.handleError(error as Error)

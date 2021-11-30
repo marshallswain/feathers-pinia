@@ -29,7 +29,7 @@ const storeOptions = {
   },
 }
 
-describe('Define Store 1 (from options without options.id)', () => {
+describe('Define User Store 1 (from options without options.id)', () => {
   const useUsersStore = defineStore({ servicePath: 'users', ...storeOptions })
   const store = useUsersStore(pinia)
 
@@ -46,7 +46,7 @@ describe('Define Store 1 (from options without options.id)', () => {
   })
 })
 
-describe('Define Store 2 (from options with options.id)', () => {
+describe('Define User Store 2 (from options with options.id)', () => {
   const useUsersStore = defineStore({ id: 'users2', servicePath: 'users', ...storeOptions })
   const store = useUsersStore(pinia)
 
@@ -63,7 +63,7 @@ describe('Define Store 2 (from options with options.id)', () => {
   })
 })
 
-describe('Define Store 3 (from id and options without options.id)', () => {
+describe('Define User Store 3 (from id and options without options.id)', () => {
   const useUsersStore = defineStore('users3', { servicePath: 'users', ...storeOptions })
   const store = useUsersStore(pinia)
 
@@ -80,12 +80,8 @@ describe('Define Store 3 (from id and options without options.id)', () => {
   })
 })
 
-describe('Define Store 4 (from id and options with options.id)', () => {
-  const useUsersStore = defineStore('users4', {
-    id: 'should-be-overriden',
-    servicePath: 'users',
-    ...storeOptions,
-  })
+describe('Define User Store 4 (from id and options with options.id)', () => {
+  const useUsersStore = defineStore('users4', { id: 'should-be-overriden', servicePath: 'users', ...storeOptions })
   const store = useUsersStore(pinia)
 
   test('can interact with store', async () => {
