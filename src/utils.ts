@@ -4,6 +4,7 @@ import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'bson-objectid'
 import { Id } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
+import { AnyData } from './service-store/types'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -160,4 +161,5 @@ export function getArray(data: any) {
   return { items: isArray ? data : [data], isArray }
 }
 
-export const hasOwn = Object.prototype.hasOwnProperty
+export const hasOwn = (obj: AnyData, prop: string) =>
+  Object.prototype.hasOwnProperty.call(obj, prop)

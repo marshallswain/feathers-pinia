@@ -30,7 +30,7 @@ export function enableServiceEvents({
     enqueueAddOrUpdate(item): void {
       const id = getId(item, options.idField)
       this.addOrUpdateById[id] = item
-      if (hasOwn.call(this.removeItemById, id)) {
+      if (hasOwn(this.removeItemById, id)) {
         delete this.removeItemById[id]
       }
       this.flushAddOrUpdateQueue()
@@ -38,7 +38,7 @@ export function enableServiceEvents({
     enqueueRemoval(item): void {
       const id = getId(item, options.idField)
       this.removeItemById[id] = item
-      if (hasOwn.call(this.addOrUpdateById, id)) {
+      if (hasOwn(this.addOrUpdateById, id)) {
         delete this.addOrUpdateById[id]
       }
       this.flushRemoveItemQueue()

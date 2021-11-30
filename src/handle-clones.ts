@@ -142,7 +142,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 const { commit = true, save = true, saveWith = () => ({}) } = opts
                 commit && clone.value.commit()
 
-                if ((!areEqual && save) || hasOwn.call(clone.value, '__tempId')) {
+                if ((!areEqual && save) || hasOwn(clone.value, '__tempId')) {
                   const cloneHasId = getId(cloneVal) != null
                   // Only diff for patch/update as long as no first argument is provided and diff is not explicitly disabled
                   // Or in any other case when opts.diff is true.
