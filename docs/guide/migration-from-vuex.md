@@ -158,13 +158,14 @@ The following steps outline the specific migration steps to apply to your codeba
 
 #### Stores
 
-Make sure you import and create store beforehand with `const <name>Store = use<Name>Store`
+Make sure you import and create store beforehand with `const <id>Store = use<id>Store`
 
-- **state:** find and replace all `$store.state.<name>.<prop>` with `<name>Store.<prop>`
-- **getters:** find and replace all `$store.state.<name>.<prop>` with `<name>Store.<prop>`
-- **mutations:** find and replace all `$store.state.<name>.<prop>` with `<name>Store.<prop>`
-- **actions:** find and replace all `$store.state.<name>.<prop>` with `<name>Store.<prop>`
+- **state:** find and replace all `$store.state.<id>.<stateName>` with `<id>Store.<stateName>`
+- **getters:** find and replace all `$store.state.<id>.<getterName>` with `<id>Store.<getterName>`
+- **mutations:** find and remove all mutations and invocations via `$store.commit`. Replace with actions if needed.
+- **actions:** find and replace all `$store.dispatch('<id>/<actionName>', payload)` with `<id>Store.<actionName>(payload)`
 - Now apply the aforementioned steps by replacing `$store` with `store` (without `$`).
+- **computed props from state:** find and replace any object computed properties e.g. `const doneTodos = computed({ get: () => $store.state.todos.doneTodos, set: (val) => $store.commit('todos/SET_DONE_TODOS', val) })` simply by accessin the reactive store directly via `todosStore.doneTodos` (and add this property to the state of the store). The same is true for computed props from getters.
 - **ModelClass:** find and replace all direct access via `ModelClass` with `store.Model`. Note you could still use e.g. `const ModelClass = models.api[modelName]`, however store must be first initialized. Accessing the Model indirectly through the store ensures the store is previously instantiated.
 
 #### Common Tools
