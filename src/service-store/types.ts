@@ -127,7 +127,7 @@ export interface Model extends AnyData {
    * using the instance data. The instance's id field is used
    * for the patch id.
    *
-   * You can provide an object as `params.data`, and Feathers-Vuex
+   * You can provide an object as `params.data`, and Feathers-Pinia
    * will use `params.data` as the patch data. This allows patching
    * with partial data.
    * @param params Params passed to the Feathers client request

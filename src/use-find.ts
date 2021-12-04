@@ -40,7 +40,7 @@ export function useFind<M extends Model = Model>({
 }: UseFindOptions) {
   if (!model) {
     throw new Error(
-      `No model provided for useFind(). Did you define and register it with FeathersVuex?`,
+      `No model provided for useFind(). Did you define and register it with FeathersPinia?`,
     )
   }
 

@@ -76,7 +76,7 @@ todo.create() // --> Creates the todo on the server using the instance data
 
 The `patch` method calls the `patch` action (service method) using the instance data. The instance's id field is used for the `patch` id. The `params` argument will be used in the Feathers client request. See the [Feathers Service](https://docs.feathersjs.com/guides/basics/services.html#service-methods) docs, for reference.
 
-Similar to the `.create()` method, you might not ever need to use `.patch()` if you just use `.save()` and let `feathers-vuex` figure out how to handle it.
+Similar to the `.create()` method, you might not ever need to use `.patch()` if you just use `.save()` and let Feathers-Pinia figure out how to handle it.
 
 ```js
 import { Todo } from '../stores/todos'

@@ -20,7 +20,7 @@ interface SaveHandlerOpts extends Params {
 }
 
 /**
- * Pass in an object with Feathers-Vuex instances at `key` and it will return an object
+ * Pass in an object with Feathers-Pinia instances at `key` and it will return an object
  * with ref clones at `_key`.
  * @param {*} props can be a component's `props` object OR a plain object full of refs.
  */
