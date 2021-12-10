@@ -248,8 +248,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       // Assure each item is an instance
       items.forEach((item: any, index: number) => {
         if (!(item instanceof options.Model)) {
-          const classes = { [this.servicePath]: options.Model }
-          items[index] = new classes[this.servicePath](item)
+          items[index] = new options.Model(item)
         }
       })
 
