@@ -1,6 +1,6 @@
 import { getId } from '../utils'
 import { AnyData, ModelInstanceOptions } from './types'
-import { Id, Params } from '@feathersjs/feathers'
+import { Id, NullableId, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 import { EventEmitter } from 'events'
 
@@ -56,8 +56,14 @@ export class BaseModel {
   public static addToStore(data?: any) {
     return (this.store as any).addToStore(data)
   }
-  public static remove(params?: Params) {
-    return (this.store as any).remove(params)
+  public static update(id: Id, data: any, params?: Params) {
+    return (this.store as any).update(id, data, params);
+  }
+  public static patch(id: NullableId, data: any, params?: Params) {
+    return (this.store as any).patch(id, data, params);
+  }
+  public static remove(id: NullableId, params?: Params) {
+    return (this.store as any).remove(id, params)
   }
   public static removeFromStore(params?: Params) {
     return (this.store as any).removeFromStore(params)

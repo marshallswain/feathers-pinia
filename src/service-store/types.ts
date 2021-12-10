@@ -1,7 +1,7 @@
 import { Ref } from 'vue-demi'
 import { Params, Paginated } from '../types'
 import { EventEmitter } from 'events'
-import { Id } from '@feathersjs/feathers'
+import { Id, NullableId } from '@feathersjs/feathers'
 
 interface PendingById {
   create?: boolean
@@ -17,6 +17,7 @@ interface ModelPendingState {
 export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remove'
 
 export type AnyData = Record<string, any>
+export type AnyDataOrArray = AnyData | AnyData[]
 
 type ModelsById<M> = { [id: string | number]: M }
 
@@ -268,6 +269,51 @@ export interface ModelStatic extends EventEmitter {
     id: Id | Ref<Id>,
     params?: Params | Ref<Params>,
   ): M | undefined
+
+  /**
+   * Add a item to the pinia store
+   * @param data item to add to store
+   */
+  addToStore<M extends Model = Model>(
+    data: AnyData
+  ): M
+
+  /**
+   * Add multiple items to the pinia store
+   * @param data items to add to store
+   */
+  addToStore<M extends Model = Model>(
+    data: AnyData[]
+  ): M[]
+
+  /**
+   * A proxy for the `update` action
+   * @param id ID of item
+   * @param data data to update
+   * @param params update params
+   */
+  update<M extends Model = Model>(id: Id, data: any, params?: Params): Promise<M>
+
+  /**
+   * A proxy for the `patch` action
+   * @param id ID of item or null
+   * @param data data to patch
+   * @param params patch params
+   */
+  patch<M extends Model = Model>(id: NullableId, data: any, params?: Params): Promise<M>
+
+  /**
+   * A proxy for the `remove` action
+   * @param id ID of item or null
+   * @param params remove params
+   */
+  remove(id: NullableId, params?: Params): Promise<any>
+
+  /**
+   * A proxy for the `removeFromStore` action
+   * @param data data to remove from store
+   */
+   remove<T extends AnyDataOrArray = AnyDataOrArray>(data: T): T
 }
 
 export interface UpdatePaginationForQueryOptions {
