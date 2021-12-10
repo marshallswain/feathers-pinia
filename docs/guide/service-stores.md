@@ -200,6 +200,14 @@ todoStore.get(1).then(/* ... */)
 </script>
 ```
 
+### `update(id, data, params)`
+
+Uses the Feathers Client to send an `update` request to the API server.
+
+### `patch(id, data, params)`
+
+Uses the Feathers Client to send an `patch` request to the API server.
+
 ### `remove(id, params)`
 
 Uses the Feathers Client to send a `remove` request to the API server.
