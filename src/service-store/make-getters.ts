@@ -7,6 +7,7 @@ import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
+import { getId } from '../utils'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
@@ -56,13 +57,19 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
             .concat(whitelist)
             .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
-        let values = _.values(itemsById)
+        let values: any[] = Object.values(itemsById)
 
         if (params.temps) {
-          values.push(..._.values(this.tempsById))
+          values.push(...Object.values(this.tempsById))
         }
 
         values = values.filter(sift(query))
+
+        if (params.clones) {
+          const { clonesById } = this;
+
+          values = values.map(item => clonesById[getId(item, this.idField)] || item)
+        }
 
         const total = values.length
 
@@ -78,8 +85,12 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
           values = values.slice(0, filters.$limit)
         }
 
+        // keep transformed items by $select separately
+        // so `addOrUpdate` can transform the original item to an instance
+        // otherwise the picked Values would go through `addOrUpdate` every time
+        let pickedValues: any[] | undefined = undefined;
         if (filters.$select) {
-          values = values.map((value) => _.pick(value, ...filters.$select.slice()))
+          pickedValues = values.map((value) => _.pick(value, ...filters.$select.slice()))
         }
 
         // Make sure items are instances
@@ -94,7 +105,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
           total,
           limit: filters.$limit || 0,
           skip: filters.$skip || 0,
-          data: values,
+          data: pickedValues || values,
         }
       }
     },
