@@ -3,8 +3,7 @@ import {
   ServiceActions,
   UpdatePaginationForQueryOptions,
   RequestType,
-  AnyData,
-  AnyDataOrArray,
+  AnyDataOrArray
 } from './types'
 import { Params } from '../types'
 import { Id, NullableId } from '@feathersjs/feathers'

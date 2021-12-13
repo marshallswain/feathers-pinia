@@ -1,5 +1,5 @@
 import { getId } from '../utils'
-import { AnyData, ModelInstanceOptions } from './types'
+import { AnyData, AnyDataOrArray, ModelInstanceOptions } from './types'
 import { Id, NullableId, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 import { EventEmitter } from 'events'
@@ -53,20 +53,20 @@ export class BaseModel {
   public static countInStore(params?: Params) {
     return (this.store as any).countInStore(params)
   }
-  public static addToStore(data?: any) {
+  public static addToStore(data?: AnyDataOrArray) {
     return (this.store as any).addToStore(data)
   }
-  public static update(id: Id, data: any, params?: Params) {
+  public static update(id: Id, data: AnyData, params?: Params) {
     return (this.store as any).update(id, data, params);
   }
-  public static patch(id: NullableId, data: any, params?: Params) {
+  public static patch(id: NullableId, data: AnyData, params?: Params) {
     return (this.store as any).patch(id, data, params);
   }
   public static remove(id: NullableId, params?: Params) {
     return (this.store as any).remove(id, params)
   }
-  public static removeFromStore(params?: Params) {
-    return (this.store as any).removeFromStore(params)
+  public static removeFromStore(data: AnyDataOrArray) {
+    return (this.store as any).removeFromStore(data)
   }
 
   get isSavePending() {
@@ -207,11 +207,8 @@ export class BaseModel {
   }
   /**
    * Removes the instance from the store
-   * @param params
    */
-
-  public removeFromStore(params?: Params): Promise<this>
-  public removeFromStore(): Promise<this> {
+  public removeFromStore(): this {
     const { store } = this.constructor as typeof BaseModel
     return (store as any).removeFromStore(this)
   }
