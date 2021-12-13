@@ -123,7 +123,7 @@ The majority of BaseModel's static methods are proxy methods to Actions and Gett
 - `update(id, data, params)`: same as [store.update](./service-stores.html#update-id-data-params)
 - `patch(id, data, params)`: same as [store.patch](./service-stores.html#patch-id-data-params)
 - `remove(id, params)`: same as [store.remove](./service-stores#remove-id-params).
-- `removeFromStore(id, params)`: same as [store.removeFromStore](./service-stores#removefromstore-id-params).
+- `removeFromStore(data)`: same as [store.removeFromStore](./service-stores#removefromstore-data).
 
 ## Model Events <Badge text="0.17.0+" />
 
