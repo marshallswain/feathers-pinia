@@ -1,7 +1,7 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
 import { defineStore as definePiniaStore, Pinia, Store } from 'pinia'
 import { registerModel } from './models'
-import { registerClient } from './clients'
+import { registerClient, clients } from './clients'
 import { enableServiceEvents } from './service-store/events'
 
 import { Application as FeathersClient } from '@feathersjs/feathers'
@@ -39,7 +39,6 @@ export function defineStore(options: DefineStoreOptions) {
     actions: {},
   }
   options = Object.assign({}, defaults, options)
-  const clients: any = options.clients
   const actions: any = options.actions
   const clientAlias = options.clientAlias || 'api'
   const {
@@ -55,7 +54,7 @@ export function defineStore(options: DefineStoreOptions) {
   let { handleEvents = {} } = options
   let isInitialized = false
 
-  Object.keys(clients).forEach((name) => {
+  Object.keys(options.clients || {}).forEach((name) => {
     registerClient(name, clients[name])
   })
 
