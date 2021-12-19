@@ -118,6 +118,7 @@ const app = createApp(App)
 Now that we've created the main `pinia` store, we are ready to setup our first service. Here's an example that creates a User class and connects it to the `users` service. This next example uses the global configuration, so it won't work well for SSR:
 
 ```ts
+// src/store/users.ts
 import { defineStore, BaseModel } from './store.pinia'
 import { api } from '../feathers'
 
