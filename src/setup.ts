@@ -5,6 +5,7 @@ import { defineStore, DefineStoreOptions } from './define-store'
 import { HandleEvents } from './types'
 
 interface SetupOptions {
+  ssr?: boolean
   clients: { [alias: string]: any }
   idField?: string
   handleEvents?: HandleEvents

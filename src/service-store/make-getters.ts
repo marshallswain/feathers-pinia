@@ -26,6 +26,9 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     Model() {
       return options.Model
     },
+    isSsr() {
+      return !!options.ssr
+    },
     itemIds() {
       return Object.keys(this.itemsById)
     },

@@ -8,6 +8,7 @@ import { Application as FeathersClient } from '@feathersjs/feathers'
 import { HandleEvents } from './types'
 
 export interface DefineStoreOptions {
+  ssr?: boolean
   servicePath: string
   Model?: any
   idField?: '_id' | string
@@ -26,6 +27,7 @@ export interface DefineStoreOptions {
 
 export function defineStore(options: DefineStoreOptions) {
   const defaults = {
+    ssr: false,
     clients: {},
     clientAlias: 'api',
     servicePath: '',
@@ -42,6 +44,7 @@ export function defineStore(options: DefineStoreOptions) {
   const actions: any = options.actions
   const clientAlias = options.clientAlias || 'api'
   const {
+    ssr,
     servicePath,
     idField,
     enableEvents,
@@ -81,6 +84,7 @@ export function defineStore(options: DefineStoreOptions) {
 
   // Create and initialize the Pinia store.
   const storeOptions: any = makeServiceStore({
+    ssr,
     id: options.id || `service.${options.servicePath}`,
     idField: options.idField || idField || 'id',
     clientAlias,

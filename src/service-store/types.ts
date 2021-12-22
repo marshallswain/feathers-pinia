@@ -52,6 +52,7 @@ export interface PiniaStoreOptions {
 }
 
 export interface ServiceOptions {
+  ssr?: boolean
   clients: AnyData
   id: string
   clientAlias?: string
