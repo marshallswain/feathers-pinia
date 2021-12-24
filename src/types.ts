@@ -32,6 +32,17 @@ export interface Paginated<T> {
   data: T[]
 }
 
+export interface QueryInfo {
+  qid: string
+  query: Query
+  queryId: string
+  queryParams: Query
+  pageParams: { $limit: number; $skip: number | undefined } | undefined
+  pageId: string | undefined
+  response: Paginated<any[]> | undefined
+  isOutdated: boolean | undefined
+}
+
 export interface HandleEvents {
   created?: Function
   patched?: Function
