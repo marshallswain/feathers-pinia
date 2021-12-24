@@ -327,7 +327,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     updatePaginationForQuery({ qid, response, query = {} }: UpdatePaginationForQueryOptions) {
       const { data, total } = response
       const { idField } = this
-      const ids = data.map((i: any) => i[idField])
+      const ids = data.map((i: any) => getId(i, idField))
       const queriedAt = new Date().getTime()
       const { queryId, queryParams, pageId, pageParams } = getQueryInfo({ qid, query }, response)
 
