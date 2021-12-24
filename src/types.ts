@@ -15,7 +15,7 @@ export interface PaginationOptions {
 
 export interface Params extends AnyData {
   query?: Query
-  paginate?: false | Pick<PaginationOptions, 'max'>
+  paginate?: boolean | Pick<PaginationOptions, 'max'>
   provider?: string
   route?: Record<string, string>
   headers?: Record<string, any>
@@ -24,6 +24,7 @@ export interface Params extends AnyData {
   qid?: string
   skipRequestIfExists?: boolean
   data?: any
+  preserveSsr?: boolean
 }
 export interface Paginated<T> {
   total: number

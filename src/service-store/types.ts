@@ -1,7 +1,7 @@
 import { Ref } from 'vue-demi'
 import { Params, Paginated } from '../types'
 import { EventEmitter } from 'events'
-import { Id } from '@feathersjs/feathers'
+import { Id, Query } from '@feathersjs/feathers'
 
 interface PendingById {
   create?: boolean
@@ -23,7 +23,35 @@ type ModelsById<M> = { [id: string | number]: M }
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
-  pagination: AnyData
+  pagination: {
+    [qid: string]: {
+      [queryId: string]: {
+      //   [pageId: string]: {
+      //     ids: Id[]
+      //     pageParams: {
+      //       $limit: number
+      //       $skip: number
+      //     }
+      //     queriedAt: number
+      //     ssr: boolean
+      //   }
+      //   queryParams: Query
+      //   total: number
+      // }
+      // mostRecent: {
+      //   pageId: string
+      //   pageParams: {
+      //     $limit: number
+      //     $skip: number
+      //   }
+      //   queriedAt: number
+      //   query: Query
+      //   queryId: string
+      //   queryParams: Query
+      //   total: number
+      // }
+    }
+  }
   idField: string
   itemsById: ModelsById<M>
   tempsById: ModelsById<M>
@@ -275,6 +303,7 @@ export interface UpdatePaginationForQueryOptions {
   qid: string
   response: any
   query: any
+  preserveSsr: boolean
 }
 
 export interface ModelInstanceOptions {

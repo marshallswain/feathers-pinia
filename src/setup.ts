@@ -1,11 +1,12 @@
 import { BaseModel } from './service-store/index'
 import { registerClient } from './clients'
 import { defineStore, DefineStoreOptions } from './define-store'
+import { Ref } from 'vue-demi'
 
 import { HandleEvents } from './types'
 
 interface SetupOptions {
-  ssr?: boolean
+  ssr?: boolean | Ref<boolean>
   clients: { [alias: string]: any }
   idField?: string
   handleEvents?: HandleEvents
