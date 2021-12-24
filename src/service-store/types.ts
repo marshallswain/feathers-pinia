@@ -20,37 +20,39 @@ export type AnyData = Record<string, any>
 
 type ModelsById<M> = { [id: string | number]: M }
 
+// interface StatePagination {
+//   [queryId: string]: {
+//     [pageId: string]: {
+//       ids: Id[]
+//       pageParams: {
+//         $limit: number
+//         $skip: number
+//       }
+//       queriedAt: number
+//       ssr: boolean
+//     }
+//     queryParams: Query
+//     total: number
+//   }
+//   mostRecent: {
+//     pageId: string
+//     pageParams: {
+//       $limit: number
+//       $skip: number
+//     }
+//     queriedAt: number
+//     query: Query
+//     queryId: string
+//     queryParams: Query
+//     total: number
+//   }
+// }
+
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
   pagination: {
-    [qid: string]: {
-      [queryId: string]: {
-      //   [pageId: string]: {
-      //     ids: Id[]
-      //     pageParams: {
-      //       $limit: number
-      //       $skip: number
-      //     }
-      //     queriedAt: number
-      //     ssr: boolean
-      //   }
-      //   queryParams: Query
-      //   total: number
-      // }
-      // mostRecent: {
-      //   pageId: string
-      //   pageParams: {
-      //     $limit: number
-      //     $skip: number
-      //   }
-      //   queriedAt: number
-      //   query: Query
-      //   queryId: string
-      //   queryParams: Query
-      //   total: number
-      // }
-    }
+    [qid: string]: any
   }
   idField: string
   itemsById: ModelsById<M>
