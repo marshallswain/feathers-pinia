@@ -1,14 +1,14 @@
-import { computed, reactive, Ref, ComputedRef, unref, toRefs, watch } from 'vue-demi'
+import { computed, reactive, Ref, ComputedRef, unref, toRefs, watch, toRaw } from 'vue-demi'
 import debounce from 'just-debounce'
 import { Params, Paginated } from './types'
 import { getQueryInfo, getItemsFromQueryInfo } from './utils'
-import { AnyData, Model } from './service-store/types'
+import { AnyData, Model, QueryWhenFunction } from './service-store/types'
 
 interface UseFindOptions {
   model: any
   params: Params | ComputedRef<Params | null>
   fetchParams?: ComputedRef<Params | null | undefined>
-  queryWhen?: ComputedRef<boolean>
+  queryWhen?: ComputedRef<boolean> | QueryWhenFunction
   qid?: string
   local?: boolean
   immediate?: boolean
@@ -98,8 +98,39 @@ export function useFind<M extends Model = Model>({
     servicePath: computed(() => model.servicePath),
   }
 
-  function find(params?: Params | Ref<Params>): Promise<M[] | Paginated<M>> | void {
-    if (!queryWhen.value || state.isLocal) return
+  /**
+   * If queryWhen is a function, call queryWhen with a context, otherwise return it's value.
+   * @param queryWhen
+   * @param params
+   * @returns boolean
+   */
+  function handleQueryWhen(queryWhen: any, params: Params | Ref<Params>): boolean {
+    const val = unref(queryWhen)
+    // If queryWhen returns a function, call it with a context
+    if (typeof val === 'function') {
+      const info = getQueryInfo(params, {})
+      const qidData = model.store.pagination[info.qid]
+      const queryData = qidData?.[info.queryId]
+      const pageData = queryData?.[info.pageId as string]
+      const context = {
+        items: computes.items,
+        queryInfo: info,
+        qidData,
+        queryData,
+        pageData,
+      }
+      return val(context)
+    }
+    return val
+  }
+
+  /**
+   * Fetch records from the API server.
+   * @param params
+   * @returns query results
+   */
+  function find(params: Params | Ref<Params>): Promise<M[] | Paginated<M>> | void {
+    if (state.isLocal) return
 
     params = unref(params)
     state.isPending = true
@@ -120,7 +151,7 @@ export function useFind<M extends Model = Model>({
     })
   }
   const methods = {
-    findDebounced(params?: Params) {
+    findDebounced(params: Params) {
       return find(params)
     },
   }
@@ -140,13 +171,24 @@ export function useFind<M extends Model = Model>({
     }
   }
 
+  const wrappedQueryWhen = computed(() => {
+    const params = getParamsForFetch()
+    if (typeof queryWhen.value === 'function') {
+      return handleQueryWhen(queryWhen.value, params as Params)
+    } else {
+      return queryWhen.value
+    }
+  })
+
   watch(
-    () => [getParamsForFetch(), queryWhen.value],
-    () => {
-      findProxy()
+    () => wrappedQueryWhen.value,
+    (val) => {
+      if (val) {
+        findProxy()
+      }
     },
     { immediate },
   )
 
-  return { ...computes, ...toRefs(state), find }
+  return { ...computes, ...toRefs(state), find: findProxy }
 }
