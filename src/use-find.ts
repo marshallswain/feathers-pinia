@@ -22,11 +22,13 @@ interface UseFindState {
   error: null | Error
   latestQuery: null | object
   isLocal: boolean
+  request: Promise<any> | null
 }
-interface UseGetComputed<M> {
+interface UseFindComputed<M> {
   items: ComputedRef<M[]>
   servicePath: ComputedRef<string>
   paginationData: ComputedRef<AnyData>
+  isSsr: ComputedRef<boolean>
 }
 
 export function useFind<M extends Model = Model>({
@@ -67,9 +69,10 @@ export function useFind<M extends Model = Model>({
     debounceTime: null,
     latestQuery: null,
     isLocal: local,
+    request: null,
   })
 
-  const computes: UseGetComputed<M> = {
+  const computes: UseFindComputed<M> = {
     // The find getter
     items: computed(() => {
       const getterParams: any = unref(params)
@@ -96,6 +99,7 @@ export function useFind<M extends Model = Model>({
       return model.store.pagination
     }),
     servicePath: computed(() => model.servicePath),
+    isSsr: computed(() => model.store.isSsr),
   }
 
   /**
@@ -136,7 +140,7 @@ export function useFind<M extends Model = Model>({
     state.isPending = true
     state.haveBeenRequested = true
 
-    return model.find(params).then((response: any) => {
+    const request = model.find(params).then((response: any) => {
       // To prevent thrashing, only clear error on response, not on initial request.
       state.error = null
       state.haveLoaded = true
@@ -149,6 +153,8 @@ export function useFind<M extends Model = Model>({
       state.isPending = false
       return response
     })
+    state.request = request
+    return request
   }
   const methods = {
     findDebounced(params: Params) {
