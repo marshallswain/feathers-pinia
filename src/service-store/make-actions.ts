@@ -389,7 +389,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
       Object.assign(qidData[queryId], queryData)
 
-      const ssr = preserveSsr ? existingPageData.ssr : unref(options.ssr)
+      const ssr = preserveSsr ? existingPageData?.ssr : unref(options.ssr)
 
       const pageData = {
         [pageId as string]: { pageParams, ids, queriedAt, ssr: !!ssr },
