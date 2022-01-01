@@ -3,28 +3,41 @@ import { createPinia } from 'pinia'
 import { setupFeathersPinia, useFind } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
+import { QueryWhenContext, QueryWhenFunction } from '../src/service-store/types'
 
-const pinia = createPinia()
+function createTestContext() {
+  const pinia = createPinia()
 
-const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+  const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
-class Message extends BaseModel {
-  static modelName = 'Message'
+  class Message extends BaseModel {
+    static modelName = 'Message'
+  }
+
+  const servicePath = 'messages'
+  const useMessagesService = defineStore({ servicePath, Model: Message })
+
+  const messagesService = useMessagesService(pinia)
+
+  const reset = () => resetStores(api.service('messages'), messagesService)
+
+  return { pinia, defineStore, BaseModel, Message, messagesService, reset }
 }
-
-const servicePath = 'messages'
-const useMessagesService = defineStore({ servicePath, Model: Message })
-
-const messagesService = useMessagesService(pinia)
-
-const reset = () => resetStores(api.service('messages'), messagesService)
 
 describe('useFind', () => {
   describe('pagination off', () => {
-    beforeEach(() => reset())
-    afterEach(() => reset())
+    beforeEach(() => {
+      const { reset } = createTestContext()
+      reset()
+    })
+    afterEach(() => {
+      const { reset } = createTestContext()
+      reset()
+    })
 
     test('returns correct data', async () => {
+      const { Message } = createTestContext()
+
       const params = computed(() => ({ query: {} }))
       const data = useFind({ params, model: Message })
 
@@ -40,9 +53,12 @@ describe('useFind', () => {
       expect(data.paginationData.value).toBeDefined()
       expect(data.qid.value).toBe('default')
       expect(data.servicePath.value).toBe('messages')
+      expect(data.isSsr.value).toBe(false)
+      expect((data.request.value as any).then)
     })
 
     test('reactive data works correctly', async () => {
+      const { Message, messagesService } = createTestContext()
       const params = computed(() => ({ query: {} }))
       const data = useFind({ params, model: Message })
 
@@ -54,6 +70,8 @@ describe('useFind', () => {
     })
 
     test('use params', async () => {
+      const { Message, messagesService } = createTestContext()
+
       await messagesService.create({ text: 'yo!', messageTo: 'marshall' })
       const params = computed(() => ({ query: { messageTo: 'marshall' } }))
       const data = useFind({ params, model: Message })
@@ -63,6 +81,8 @@ describe('useFind', () => {
     })
 
     test('use queryWhen', async () => {
+      const { Message, messagesService } = createTestContext()
+
       await messagesService.create({ text: 'yo!' })
       const params = computed(() => ({ query: {} }))
       const isReady = ref(false)
@@ -77,7 +97,36 @@ describe('useFind', () => {
       expect(data.haveBeenRequested.value).toBe(true)
     })
 
+    test('queryWhen can return a function', async () => {
+      const { Message, messagesService } = createTestContext()
+
+      await messagesService.create({ text: 'yo!' })
+      const params = computed(() => ({ query: { $limit: 10, $skip: 0 } }))
+      const isReady = ref(false)
+      const queryWhenFunction = jest.fn((context: QueryWhenContext) => {
+        expect(context.items.value)
+        expect(context.queryInfo)
+        expect(context.qidData)
+        expect(context.queryData)
+        expect(context.pageData)
+        return isReady.value
+      })
+      const queryWhen: QueryWhenFunction = computed(() => queryWhenFunction)
+      const data = useFind({ params, model: Message, queryWhen })
+
+      expect(queryWhenFunction).toHaveBeenCalledTimes(1)
+
+      isReady.value = true
+      await timeout(200)
+
+      expect(queryWhenFunction).toHaveBeenCalledTimes(4)
+
+      expect(data.haveBeenRequested.value).toBe(true)
+    })
+
     test('use {immediate:false} to not query immediately', async () => {
+      const { Message } = createTestContext()
+
       const params = computed(() => ({ query: {} }))
       const data = useFind({ params, model: Message, immediate: false })
 
@@ -93,10 +142,18 @@ describe('useFind', () => {
         max: 100,
       }
     })
-    beforeEach(() => reset())
-    afterEach(() => reset())
+    beforeEach(() => {
+      const { reset } = createTestContext()
+      reset()
+    })
+    afterEach(() => {
+      const { reset } = createTestContext()
+      reset()
+    })
 
     test('reactive data works correctly', async () => {
+      const { Message, messagesService } = createTestContext()
+
       const params = computed(() => ({ query: {} }))
       const data = useFind({ params, model: Message })
 
@@ -108,6 +165,8 @@ describe('useFind', () => {
     })
 
     test('pagination data updates', async () => {
+      const { Message } = createTestContext()
+
       const params = computed(() => ({ query: {} }))
       const data = useFind({ params, model: Message })
 
@@ -123,6 +182,8 @@ describe('useFind', () => {
     })
 
     test('use params', async () => {
+      const { Message, messagesService } = createTestContext()
+
       await messagesService.create({ text: 'yo!', messageTo: 'marshall' })
       const params = computed(() => ({ query: { messageTo: 'marshall' } }))
       const data = useFind({ params, model: Message })
@@ -133,10 +194,18 @@ describe('useFind', () => {
   })
 
   describe('set pagination via params', () => {
-    beforeEach(() => reset())
-    afterEach(() => reset())
+    beforeEach(() => {
+      const { reset } = createTestContext()
+      reset()
+    })
+    afterEach(() => {
+      const { reset } = createTestContext()
+      reset()
+    })
 
     test('paginated data returns as per query params', async () => {
+      const { Message, messagesService } = createTestContext()
+
       await messagesService.create({ text: 'test #1' })
       await messagesService.create({ text: 'test #2' })
       await messagesService.create({ text: 'test #3' })

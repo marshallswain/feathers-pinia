@@ -1,13 +1,14 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
 import { defineStore as definePiniaStore, Pinia, Store } from 'pinia'
 import { registerModel } from './models'
-import { registerClient } from './clients'
+import { registerClient, clients } from './clients'
 import { enableServiceEvents } from './service-store/events'
 
 import { Application as FeathersClient } from '@feathersjs/feathers'
 import { HandleEvents } from './types'
 
 export interface DefineStoreOptions {
+  ssr?: boolean
   servicePath: string
   Model?: any
   idField?: '_id' | string
@@ -26,6 +27,7 @@ export interface DefineStoreOptions {
 
 export function defineStore(options: DefineStoreOptions) {
   const defaults = {
+    ssr: false,
     clients: {},
     clientAlias: 'api',
     servicePath: '',
@@ -39,10 +41,10 @@ export function defineStore(options: DefineStoreOptions) {
     actions: {},
   }
   options = Object.assign({}, defaults, options)
-  const clients: any = options.clients
   const actions: any = options.actions
   const clientAlias = options.clientAlias || 'api'
   const {
+    ssr,
     servicePath,
     idField,
     enableEvents,
@@ -55,7 +57,7 @@ export function defineStore(options: DefineStoreOptions) {
   let { handleEvents = {} } = options
   let isInitialized = false
 
-  Object.keys(clients).forEach((name) => {
+  Object.keys(options.clients || {}).forEach((name) => {
     registerClient(name, clients[name])
   })
 
@@ -82,6 +84,7 @@ export function defineStore(options: DefineStoreOptions) {
 
   // Create and initialize the Pinia store.
   const storeOptions: any = makeServiceStore({
+    ssr,
     id: options.id || `service.${options.servicePath}`,
     idField: options.idField || idField || 'id',
     clientAlias,

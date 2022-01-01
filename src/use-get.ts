@@ -34,7 +34,7 @@ export function useGet<M extends Model = Model>({
 }: UseGetOptions) {
   if (!model) {
     throw new Error(
-      `No model provided for useGet(). Did you define and register it with FeathersVuex?`,
+      `No model provided for useGet(). Did you define and register it with FeathersPinia?`,
     )
   }
 

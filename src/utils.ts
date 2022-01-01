@@ -1,4 +1,4 @@
-import { Params, Paginated } from './types'
+import { Params, Paginated, QueryInfo } from './types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'bson-objectid'
@@ -45,7 +45,7 @@ export function getAnyId(item: any) {
 export function getQueryInfo(
   params: Params = {},
   response: Partial<Pick<Paginated<any>, 'limit' | 'skip'>> = {},
-) {
+): QueryInfo {
   const { query = {}, qid = 'default' } = params
   const $limit = response.limit != undefined ? response.limit : query?.$limit
   const $skip = response.skip != undefined ? response.skip : query?.$skip
