@@ -5,7 +5,7 @@ export { makeServiceStore, BaseModel } from './service-store/index'
 export { makeState } from './service-store/make-state'
 
 export { models } from './models'
-export { clients } from './clients'
+export { clients, registerClient } from './clients'
 
 export { useFind } from './use-find'
 export { useGet } from './use-get'

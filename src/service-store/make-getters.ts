@@ -26,6 +26,10 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     Model() {
       return options.Model
     },
+    isSsr() {
+      const ssr = unref(options.ssr)
+      return !!ssr
+    },
     itemIds() {
       return Object.keys(this.itemsById)
     },
