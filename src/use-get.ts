@@ -5,7 +5,7 @@ import { Id } from '@feathersjs/feathers'
 
 interface UseGetOptions {
   model: any
-  id: Ref<Id | null> | null
+  id: Ref<Id | null> | ComputedRef<Id | null> | null
   params?: Ref<Params>
   queryWhen?: Ref<boolean>
   local?: boolean
