@@ -160,15 +160,15 @@ Works similar to `.get` requests in a Feathers service object. It only returns r
 
 > Tip: use `getFromStore` and enjoy [Automatic Instance Hydration](#automatic-instance-hydration)
 
+## Actions
+
 ### `addToStore(data)`
 
-Adds the data as a Model instance to the store.
+Adds the data as a Model instance / multiple instances to the store.
 
-### `removeFromStore(id, params)`
+### `removeFromStore(data)`
 
-Removes the matching record from the store.
-
-## Actions
+Removes the matching record(s) from the store.
 
 ### `find(params)`
 
@@ -201,6 +201,14 @@ const todoStore = useTodos()
 todoStore.get(1).then(/* ... */)
 </script>
 ```
+
+### `update(id, data, params)`
+
+Uses the Feathers Client to send an `update` request to the API server.
+
+### `patch(id, data, params)`
+
+Uses the Feathers Client to send an `patch` request to the API server.
 
 ### `remove(id, params)`
 

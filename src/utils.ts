@@ -4,7 +4,7 @@ import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'bson-objectid'
 import { Id } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
-import { AnyData } from './service-store/types'
+import { AnyData, AnyDataOrArray } from './service-store/types'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -105,9 +105,9 @@ export function assignTempId(item: any) {
  * @param data item or array of items
  * @returns items without private attributes like __isClone and __tempId
  */
-export function cleanData(data: any) {
+export function cleanData<T = AnyDataOrArray>(data: T): T {
   const { items, isArray } = getArray(data)
-  const cleaned = items.map((item: any) => _.omit(item, '__isClone', '__tempId'))
+  const cleaned = items.map(item => _.omit(item, '__isClone', '__tempId'))
 
   return isArray ? cleaned : cleaned[0]
 }
@@ -124,7 +124,7 @@ export function cleanData(data: any) {
  * @param data item(s) before being passed to the server
  * @param responseData items(s) returned from the server
  */
-export function restoreTempIds(data: any, resData: any) {
+export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray) {
   const { items: sourceItems, isArray } = getArray(data)
   const { items: responseItems } = getArray(resData)
 
@@ -156,7 +156,7 @@ export function useCleanData(data: any) {
  * @param data item or array of items
  * @returns object with { items[], isArray } where isArray is a boolean of if the data was an array.
  */
-export function getArray(data: any) {
+export function getArray<T>(data: T | T[]) {
   const isArray = Array.isArray(data)
   return { items: isArray ? data : [data], isArray }
 }

@@ -3,10 +3,10 @@ import {
   ServiceActions,
   UpdatePaginationForQueryOptions,
   RequestType,
-  AnyData,
+  AnyDataOrArray
 } from './types'
 import { Params } from '../types'
-import { Id } from '@feathersjs/feathers'
+import { Id, NullableId } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
 import {
@@ -156,12 +156,14 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
     },
 
-    create(data: any, params: Params) {
+    create(data: AnyDataOrArray, params: Params) {
       const { tempIdField } = this
       params = fastCopy(unref(params || {}))
 
-      this.setPendingById(getId(data) || data[tempIdField], 'create', true)
-
+      if (!Array.isArray(data)) {
+        this.setPendingById(getId(data) || data[tempIdField], 'create', true)
+      }
+      
       return this.service
         .create(cleanData(data), params)
         .then((response: any) => {
@@ -172,7 +174,9 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
         .finally(() => {
-          this.setPendingById(getId(data) || data[tempIdField], 'create', false)
+          if (!Array.isArray(data)) {
+            this.setPendingById(getId(data) || data[tempIdField], 'create', false)
+          }
         })
     },
     update(id: Id, data: any, params: Params) {
@@ -193,7 +197,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           this.setPendingById(id, 'update', false)
         })
     },
-    patch(id: Id, data: any, params: Params) {
+    patch(id: NullableId, data: any, params: Params) {
       params = fastCopy(unref(params || {}))
 
       if (params && params.data) {
@@ -222,7 +226,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @param params
      * @returns
      */
-    remove(id: Id, params: Params = {}) {
+    remove(id: NullableId, params: Params = {}) {
       params = fastCopy(unref(params || {}))
 
       this.setPendingById(id, 'remove', true)
@@ -240,7 +244,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
     },
-    removeFromStore(data: any) {
+    removeFromStore(data: AnyDataOrArray) {
       const { items } = getArray(data)
       const idsToRemove = items
         .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item)))
@@ -260,10 +264,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @returns data added or modified in the store.
      *  If you pass an array, you get an array back.
      */
-    addToStore(data: AnyData) {
+    addToStore(data: AnyDataOrArray) {
       return this.addOrUpdate(data)
     },
-    addOrUpdate(data: AnyData) {
+    addOrUpdate(data: AnyDataOrArray) {
       const { items, isArray } = getArray(data)
 
       // Assure each item is an instance
