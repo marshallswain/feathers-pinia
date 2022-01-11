@@ -62,7 +62,11 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
           }
           const id = getAnyId(item.value)
           const existingClone = store.clonesById[id]
-          if (existingClone && useExisting && clone.value.constructor === item.value.constructor) {
+          if (
+            existingClone &&
+            useExisting &&
+            existingClone.constructor === item.value.constructor
+          ) {
             return existingClone
           }
           return item.value.__isClone ? item.value : item.value.clone()
