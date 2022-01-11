@@ -316,7 +316,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const id = getAnyId(item)
       const originalItem = this[placeToStore][id]
       const existing = this.clonesById[getAnyId(item)]
-      if (existing) {
+      if (existing && existing.constructor.name === originalItem.constructor.name) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
           if (!hasOwn(originalItem, key)) {

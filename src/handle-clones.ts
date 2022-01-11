@@ -65,7 +65,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
           if (
             existingClone &&
             useExisting &&
-            existingClone.constructor?.name === item.value.constructor?.name
+            existingClone.constructor.name === item.value.constructor.name
           ) {
             return existingClone
           }
