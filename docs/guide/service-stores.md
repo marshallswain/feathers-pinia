@@ -146,7 +146,7 @@ These special getters accept arguments that allow you to query data from the sto
 
 ### `findInStore(params)`
 
-Performs reactive queries against the data in `itemsById`. To also include data from `tempsById`, set `params.temps` to `true`.
+Performs reactive queries against the data in `itemsById`. To also include data from `tempsById`, set `params.temps` to `true`. To return clones, if existent from `clonesById`, set `params.clones` to `true`.
 
 > Tip: use `findInStore` and enjoy [Automatic Instance Hydration](#automatic-instance-hydration)
 
@@ -156,7 +156,7 @@ returns the `total` returned from `findInStore`, without returning the data.
 
 ### `getFromStore(id, params)`
 
-Works similar to `.get` requests in a Feathers service object. It only returns records currently populated in the store.
+Works similar to `.get` requests in a Feathers service object. It only returns records currently populated in the store. It can also return temp data from `tempsById` if the provided `id` is a `__tempId`. It can also return a clone, if `params.clones` is `true`.
 
 > Tip: use `getFromStore` and enjoy [Automatic Instance Hydration](#automatic-instance-hydration)
 
