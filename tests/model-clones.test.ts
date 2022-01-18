@@ -97,6 +97,20 @@ describe('Model Clones', () => {
     expect(data).toStrictEqual([cloneOfMessage1, message2])
   });
 
+  test('find getter returns modified clones when params.clones === true', async () => {
+    const message = messagesService.addToStore({ _id: 0, text: 'this is a test'});
+    const clone = message.clone({ text: 'seriously a test' });
+    const noClones = messagesService.findInStore({ query: { text: 'this is a test' }, clones: true }).data;
+    expect(noClones.length).toBe(0);
+
+    const noItems = messagesService.findInStore({ query: { text: 'seriously a test' } }).data;
+    expect(noItems.length).toBe(0);
+
+    const clones = messagesService.findInStore({ query: { text: 'seriously a test' }, clones: true }).data;
+    expect(clones.length).toBe(1);
+    
+  });
+
   test('get getter returns clone when params.clones === true', async () => {
     const message = messagesService.addToStore({ _id: 0, text: 'this is a test'});
     const clone = message.clone();

@@ -67,13 +67,13 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
           values.push(...this.temps)
         }
 
-        values = values.filter(sift(query))
-
         if (params.clones) {
           const { clonesById } = this;
 
           values = values.map(item => clonesById[getAnyId(item, this.idField)] || item)
         }
+
+        values = values.filter(sift(query))
 
         const total = values.length
 
