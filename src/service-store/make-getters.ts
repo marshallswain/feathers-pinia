@@ -7,7 +7,7 @@ import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
-import { getId } from '../utils'
+import { getAnyId } from '../utils'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
@@ -53,7 +53,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return (params: Params) => {
         params = { ...unref(params) } || {}
 
-        const { paramsForServer, whitelist, itemsById } = this
+        const { paramsForServer, whitelist } = this
         const q = _.omit(params.query || {}, paramsForServer)
 
         const { query, filters } = filterQuery(q, {
@@ -61,10 +61,10 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
             .concat(whitelist)
             .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
-        let values: any[] = Object.values(itemsById)
+        let values: any[] = this.items.slice()
 
         if (params.temps) {
-          values.push(...Object.values(this.tempsById))
+          values.push(...this.temps)
         }
 
         values = values.filter(sift(query))
@@ -72,7 +72,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         if (params.clones) {
           const { clonesById } = this;
 
-          values = values.map(item => clonesById[getId(item, this.idField)] || item)
+          values = values.map(item => clonesById[getAnyId(item, this.idField)] || item)
         }
 
         const total = values.length
