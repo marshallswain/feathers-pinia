@@ -69,6 +69,15 @@ describe('Model Clones', () => {
     expect(data[0]).toStrictEqual(message);
   })
 
+  test('find getter returns existing clones and non clones when params.clones === true', async () => {
+    const message1 = messagesService.addToStore({ _id: 0, text: 'this is a test'});
+    const message2 = messagesService.addToStore({ _id: 1, text: 'this is a test'});
+    const cloneOfMessage1 = message1.clone();
+    const data = messagesService.findInStore({ query: { $sort: { id: 1 }}, clones: true }).data;
+    expect(data.length).toBe(2);
+    expect(data).toStrictEqual([cloneOfMessage1, message2])
+  });
+
   test('get getter returns clone when params.clones === true', async () => {
     const message = messagesService.addToStore({ _id: 0, text: 'this is a test'});
     const clone = message.clone();
