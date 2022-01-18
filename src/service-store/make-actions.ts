@@ -312,9 +312,9 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
     clone(item: any, data = {}) {
       const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
-      const id = getAnyId(item)
+      const id = getAnyId(item, this.idField)
       const originalItem = this[placeToStore][id]
-      const existing = this.clonesById[getAnyId(item)]
+      const existing = this.clonesById[getAnyId(item, this.idFIeld)]
       if (existing && existing.constructor.name === originalItem.constructor.name) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
@@ -336,7 +336,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
     },
     commit(item: any) {
-      const id = getAnyId(item)
+      const id = getAnyId(item, this.idField)
       if (id != null) {
         const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
         this[placeToStore][id] = fastCopy(this.clonesById[id])
