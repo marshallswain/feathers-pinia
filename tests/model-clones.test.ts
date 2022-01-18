@@ -1,6 +1,7 @@
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
+import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
@@ -11,8 +12,13 @@ const useMessagesService = defineStore({ servicePath })
 
 const messagesService = useMessagesService(pinia)
 
-describe('Clone & commit', () => {
-  test('can clone ', async () => {
+const reset = () => resetStores(api.service('messages'), messagesService)
+
+describe('Model Clones', () => {
+  beforeEach(() => reset())
+  afterEach(() => reset())
+
+  test('can clone', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
@@ -24,7 +30,7 @@ describe('Clone & commit', () => {
     expect(clone.additionalData).toBe('a boolean is fine')
   })
 
-  test('can commit ', async () => {
+  test('can commit', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
@@ -46,4 +52,48 @@ describe('Clone & commit', () => {
     expect(reset.foo).toBeUndefined()
     expect(clone === reset).toBeTruthy()
   })
+
+  test('find getter returns clones when params.clones === true', async () => {
+    const message = messagesService.addToStore({ _id: 0, text: 'this is a test'});
+    const clone = message.clone();
+    const data = messagesService.findInStore({ query: {}, clones: true }).data;
+    expect(data.length).toBe(1);
+    expect(data[0]).toStrictEqual(clone);
+  });
+
+  test('find getter does not return clones when params.clones is falsy', async () => {
+    const message = messagesService.addToStore({ _id: 0, text: 'this is a test'});
+    message.clone();
+    const data = messagesService.findInStore({ query: {} }).data;
+    expect(data.length).toBe(1);
+    expect(data[0]).toStrictEqual(message);
+  })
+
+  test('get getter returns clone when params.clones === true', async () => {
+    const message = messagesService.addToStore({ _id: 0, text: 'this is a test'});
+    const clone = message.clone();
+    const cloneFromStore = messagesService.getFromStore(0, { clones: true });
+    expect(cloneFromStore).toStrictEqual(clone);
+  });
+
+  test('get getter does not return clone when params.clones is falsy', async () => {
+    const message = messagesService.addToStore({ _id: 0, text: 'this is a test'});
+    message.clone();
+    const messageFromStore = messagesService.getFromStore(0);
+    expect(messageFromStore).toStrictEqual(message);
+  });
+
+  test('get getter returns temp clone when params.clones === true', async () => {
+    const message = messagesService.addToStore({ text: 'this is a test'});
+    const clone = message.clone();
+    const cloneFromStore = messagesService.getFromStore(message.__tempId, { clones: true });
+    expect(cloneFromStore === clone).toBe(true);
+  });
+
+  test('get getter does not return temp clone when params.clones is falsy', async () => {
+    const message = messagesService.addToStore({ text: 'this is a test'});
+    message.clone();
+    const messageFromStore = messagesService.getFromStore(message.__tempId);
+    expect(messageFromStore).toStrictEqual(message);
+  });
 })
