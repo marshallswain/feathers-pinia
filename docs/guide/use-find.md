@@ -1,3 +1,7 @@
+<script setup>
+import Badge from '../components/Badge.vue'
+</script>
+
 # useFind
 
 The `useFind` utility reduces boilerplate for querying with fall-through cache and realtime updates. To get started with it you provide a `model` class and a computed `params` object.
@@ -48,7 +52,7 @@ interface UseFindOptions {
   model: Function
   params: Params | Ref<Params>
   fetchParams?: Params | Ref<Params>
-  queryWhen?: Ref<Function>
+  queryWhen?: ComputedRef<boolean> | QueryWhenFunction
   qid?: string
   immediate?: boolean
 }
@@ -67,7 +71,9 @@ And here's a look at each individual property:
   - Set `params.copies` to `true` to include cloned items in the results. The queried items get replaced with the corresponding copies from `copiesById`
 - `fetchParams` This is a separate set of params that, when provided, will become the params sent to the API server. The `params` will then only be used to query data from the local data store.
   - Explicitly returning `null` will prevent an API request from being made (but only for Vue 3. For Vue 2, use `queryWhen`).
-- `queryWhen` must be a `computed` property which returns a `boolean`. It provides a logical separation for preventing API requests _outside_ of the `params`.
+- `queryWhen` provides a logical separation for preventing API requests _outside_ of the `params`. It must be a `computed` property that returns one of the following:
+  - a `boolean`
+  - a `QueryWhenFunction`, receiving a `QueryWhenContext` and returning a boolean. <Badge text="0.25.0+" />
 - `qid` allows you to specify a query identifier (used in the pagination data in the store). This can also be set dynamically by returning a `qid` in the params.
 - `immediate`, which is `true` by default, determines if the internal `watch` should fire immediately. Set `immediate: false` and the query will not fire immediately. It will only fire on subsequent changes to the params.
 
@@ -89,6 +95,8 @@ interface UseFindData {
   latestQuery: Ref<object>
   isLocal: Ref<boolean>
   find: Function
+  isSsr: Ref<boolean>
+  request: Ref<Promise<Request> | null>
 }
 ```
 
@@ -105,9 +113,142 @@ Let's look at the functionality that each one provides:
 - `latestQuery` is an object that holds the latest query information. It populates after each successful API response. The information it contains can be used to pull data from the `paginationData`.
 - `paginationData` is an object containing all of the pagination data for the current service.
 - `error` is null until an API error occurs. The error object will be serialized into a plain object and available here.
-- `find` is the find method used internally. You can manually make API requests. This is most useful for when you have `paginate: true` in the params. You can manually query refreshed data from the server, when desired.
+- `find` is the find method used internally. You can manually make API requests. This is most useful for when you have `paginate: true` in the params. You can manually query refreshed data from the server, when desired. Calling `find` actually calls in the internal `findProxy`, so if you have `debounceTime` set, requests will be debounced.
+- `isSsr` is a boolean that matches the value of the `ssr` option in either `setupFeathersPinia` or `defineStore`. <Badge text="0.27.0+" />
+- `request` will contain the promise for any active request. <Badge text="0.27.0+" />
 
-### Working with Refs
+## Conditionally Running Queries
+
+There are two ways of controlling whether or not queries go out.
+
+- Return `null` in the `params` or `fetchParams`. (Vue 3, only)
+- Use the `queryWhen` property. This is the recommended option.
+
+The `queryWhen` property accepts a computed property that returns either a boolean OR a function that returns a boolean.
+
+### `queryWhen` as a Computed Boolean
+
+The below example uses a boolean. No query is made initially, because `queryWhen` returns false.  When the timeout sets `isReady` to true, `queryWhen` returns true and Vue's wonderful reactivity layer automagically fires the request.  If you were to toggle `isReady`, each time it evaluates to `true` the request will go out again.
+
+```vue
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useFind } from 'feathers-pinia'
+import { useUsers } from '~/store/users.ts'
+
+const userStore = useUsers()
+
+const isReady = ref(false)
+const params = computed(() => {
+  return { query: { $limit: 10, $skip: 0 } }
+})
+const queryWhen = computed(() => isReady.value)
+const { items } = useFind({
+  model: userStore.Model,
+  params,
+  queryWhen
+})
+
+setTimeout(() => {
+  isReady.value = true
+}, 5000)
+</script>
+```
+
+### `queryWhen` as a Computed Function <Badge text="0.25.0+" />
+
+The `queryWhen` property can also be implemented as a computed property that returns a function. The function receives a `context` object and needs to return a boolean.  The `context` object has some useful information that you can use to determine whether to return `true` or `false`. Here's what `context` looks like:
+
+```ts
+export interface QueryWhenContext {
+  items: ComputedRef<AnyData[]>
+  queryInfo: QueryInfo
+  qidData: PaginationStateQid
+  queryData: PaginationStateQuery
+  pageData: PaginationStatePage
+}
+```
+
+The `qidData`, `queryData`, and `pageData` properties all come from the service store's `pagination` object, which contains useful information for every query.  Let's review the `pagination` object before we see how to use the `context` object.
+
+#### Pagination State <Badge text="0.25.0+" />
+
+The `qid`, `queryId`, and `pageId` in the below structure are all determined by the attributes in the params.
+
+- `qid` comes from `params.qid`. All queries with the same `qid` will be kept in the same object. The `mostRecentQuery` attribute contains queryInfo about where in the pagination structure you'll find the most recent query.
+- `queryId` is a stringified representation of all attributes in `params.query` except `$limit` and `$skip`.
+- `pageId` is a stringified representation of `$limit` and `$skip`, which are the page-level attributes.
+
+```ts
+// This is a pseudo-TypeScript interface that illustrates the pagination structure.
+interface PaginationState {
+  [qid: string]: {        // This level is the `qidData`
+    [queryId: string]: {  // This level is the `queryData`
+      [pageId: string]: { // This level is the `pageData`
+        ids: Id[]
+        pageParams: QueryPagination
+        queriedAt: number // timestamp
+        ssr: boolean
+      }
+      queryParams: Query
+      total: number
+    }
+    mostRecent: MostRecentQuery
+  }
+}
+interface MostRecentQuery {
+  pageId: string
+  pageParams: QueryPagination
+  queriedAt: number
+  query: Query
+  queryId: string
+  queryParams: Query
+  total: number
+}
+```
+
+#### `queryWhen` Function Example <Badge text="0.25.0+" />
+
+```vue
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useFind } from 'feathers-pinia'
+import { useUsers } from '~/store/users.ts'
+
+const userStore = useUsers()
+
+const params = computed(() => {
+  return { query: { $limit: 10, $skip: 0 } }
+})
+// Notice the two arrow functions. This is a computed that returns a function.
+// Lots of return examples here. Not valid JS, just for illustration.  ;)
+const queryWhen = computed(() => (context) => {
+  const { items, queryInfo, qidData, queryData, pageData } = context
+
+  // Allow the query if we don't have any items. If you do this you have to manually call find(), as done in the timeout.
+  return !items.length
+
+  // Allow the query if over 5 minutes have passed
+  return !pageData || pageData?.queriedAt < new Date.getTime() - 300_000
+})
+const { items, find } = useFind({
+  model: userStore.Model,
+  params,
+  queryWhen
+})
+
+setTimeout(() => {
+  find()
+}, 5000)
+</script>
+```
+
+A couple of best practices
+
+1. Always use `$limit` and `$skip` in queries. This allows Feathers-Pinia to store more accurate pagination data.
+2. Recognize that pagination-related objects will be `undefined` until after the first query response. This is why we use the conditional in `pageData?`.queriedAt`. It will only exist if a matching query has previously been made.
+
+## Working with Refs
 
 Pay special attention to the properties of type `Ref`, in the TypeScript interface, above. Those properties are Vue Composition API `ref` instances. This means that you need to reference their value by using `.value`. In the next example the `completeTodos` and `incompleteTodos` are derived from the `todos`, using `todos.value`
 

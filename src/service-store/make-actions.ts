@@ -3,10 +3,10 @@ import {
   ServiceActions,
   UpdatePaginationForQueryOptions,
   RequestType,
-  AnyData,
+  AnyDataOrArray
 } from './types'
 import { Params } from '../types'
-import { Id } from '@feathersjs/feathers'
+import { Id, NullableId } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
 import {
@@ -21,6 +21,7 @@ import {
   getArray,
   hasOwn,
 } from '../utils'
+import { unref } from 'vue-demi'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PaginationOptions {
@@ -31,7 +32,7 @@ interface PaginationOptions {
 export function makeActions(options: ServiceOptions): ServiceActions {
   return {
     find(requestParams: Params) {
-      let params: any = requestParams || {}
+      let params: any = unref(requestParams || {})
       params = fastCopy(params)
       const { query } = params
       const isPaginated =
@@ -44,8 +45,28 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       this.setPendingById('Model', 'find', true)
 
-      return this.service
-        .find(params as any)
+      const info = getQueryInfo(params, {})
+      const qidData = this.pagination[info.qid]
+      const queryData = qidData?.[info.queryId]
+      const pageData = queryData?.[info.pageId as string]
+
+      let ssrPromise
+
+      if (pageData?.ssr) {
+        const ssrResponse = {
+          data: pageData.ids.map((id: Id) => this.getFromStore(id)),
+          limit: pageData.pageParams.$limit,
+          skip: pageData.pageParams.$skip,
+          total: queryData.total,
+          fromSsr: true,
+        }
+        ssrPromise = Promise.resolve(ssrResponse)
+        if (!params.preserveSsr) {
+          this.unflagSsr(params)
+        }
+      }
+
+      return (ssrPromise || this.service.find(params as any))
         .then((response: any) => this.handleFindResponse({ params, response }))
         .catch((error: any) => this.handleFindError({ params, error }))
         .finally(() => {
@@ -61,12 +82,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      *   @param response
      */
     async handleFindResponse({ params, response }: { params: Params; response: any }) {
-      const { qid = 'default', query } = params
+      const { qid = 'default', query, preserveSsr } = params
 
       this.addOrUpdate(response.data || response)
 
       // The pagination data will be under `pagination.default` or whatever qid is passed.
-      response.data && this.updatePaginationForQuery({ qid, response, query })
+      response.data && this.updatePaginationForQuery({ qid, response, query, preserveSsr })
 
       // Swap out the response records for their Vue-observable store versions
       const data = response.data || response
@@ -108,7 +129,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     // Does NOT support the old array syntax:
     // `get([null, params])` which was only needed for Vuex
     get(id: Id, params: Params = {}) {
-      params = fastCopy(params)
+      params = fastCopy(unref(params))
 
       const skipRequestIfExists = params.skipRequestIfExists || this.skipRequestIfExists
       delete params.skipRequestIfExists
@@ -135,12 +156,14 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
     },
 
-    create(data: any, params: Params) {
+    create(data: AnyDataOrArray, params: Params) {
       const { tempIdField } = this
-      params = fastCopy(params) || {}
+      params = fastCopy(unref(params || {}))
 
-      this.setPendingById(getId(data) || data[tempIdField], 'create', true)
-
+      if (!Array.isArray(data)) {
+        this.setPendingById(getId(data) || data[tempIdField], 'create', true)
+      }
+      
       return this.service
         .create(cleanData(data), params)
         .then((response: any) => {
@@ -151,11 +174,13 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
         .finally(() => {
-          this.setPendingById(getId(data) || data[tempIdField], 'create', false)
+          if (!Array.isArray(data)) {
+            this.setPendingById(getId(data) || data[tempIdField], 'create', false)
+          }
         })
     },
     update(id: Id, data: any, params: Params) {
-      params = fastCopy(params) || {}
+      params = fastCopy(unref(params || {}))
 
       this.setPendingById(id, 'update', true)
 
@@ -172,8 +197,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           this.setPendingById(id, 'update', false)
         })
     },
-    patch(id: Id, data: any, params: Params) {
-      params = fastCopy(params) || {}
+    patch(id: NullableId, data: any, params: Params) {
+      params = fastCopy(unref(params || {}))
 
       if (params && params.data) {
         data = params.data
@@ -201,8 +226,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @param params
      * @returns
      */
-    remove(id: Id, params: Params = {}) {
-      params = fastCopy(params)
+    remove(id: NullableId, params: Params = {}) {
+      params = fastCopy(unref(params || {}))
 
       this.setPendingById(id, 'remove', true)
 
@@ -219,7 +244,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
     },
-    removeFromStore(data: any) {
+    removeFromStore(data: AnyDataOrArray) {
       const { items } = getArray(data)
       const idsToRemove = items
         .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item)))
@@ -239,15 +264,15 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @returns data added or modified in the store.
      *  If you pass an array, you get an array back.
      */
-    addToStore(data: AnyData) {
+    addToStore(data: AnyDataOrArray) {
       return this.addOrUpdate(data)
     },
-    addOrUpdate(data: AnyData) {
+    addOrUpdate(data: AnyDataOrArray) {
       const { items, isArray } = getArray(data)
 
       // Assure each item is an instance
       items.forEach((item: any, index: number) => {
-        if (!(item instanceof options.Model)) {
+        if (this.isSsr || !(item instanceof options.Model)) {
           items[index] = new options.Model(item)
         }
       })
@@ -290,7 +315,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const id = getAnyId(item)
       const originalItem = this[placeToStore][id]
       const existing = this.clonesById[getAnyId(item)]
-      if (existing) {
+      if (existing && existing.constructor.name === originalItem.constructor.name) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
           if (!hasOwn(originalItem, key)) {
@@ -323,10 +348,15 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * Stores pagination data on state.pagination based on the query identifier
      * (qid) The qid must be manually assigned to `params.qid`
      */
-    updatePaginationForQuery({ qid, response, query = {} }: UpdatePaginationForQueryOptions) {
+    updatePaginationForQuery({
+      qid,
+      response,
+      query = {},
+      preserveSsr = false,
+    }: UpdatePaginationForQueryOptions) {
       const { data, total } = response
       const { idField } = this
-      const ids = data.map((i: any) => i[idField])
+      const ids = data.map((i: any) => getId(i, idField))
       const queriedAt = new Date().getTime()
       const { queryId, queryParams, pageId, pageParams } = getQueryInfo({ qid, query }, response)
 
@@ -351,6 +381,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         total,
       }
 
+      const existingPageData = this.pagination[qid]?.[queryId]?.[pageId as string]
+
       const qidData = this.pagination[qid] || {}
       Object.assign(qidData, { mostRecent })
       qidData[queryId] = qidData[queryId] || {}
@@ -360,8 +392,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
       Object.assign(qidData[queryId], queryData)
 
+      const ssr = preserveSsr ? existingPageData?.ssr : unref(options.ssr)
+
       const pageData = {
-        [pageId as string]: { pageParams, ids, queriedAt },
+        [pageId as string]: { pageParams, ids, queriedAt, ssr: !!ssr },
       }
       Object.assign(qidData[queryId], pageData)
 
@@ -384,6 +418,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
     toggleEventLock(idOrIds: any, event: string) {
       setEventLockState(idOrIds, event, true, this)
+    },
+    unflagSsr(params: Params) {
+      const queryInfo = getQueryInfo(params, {})
+      const { qid, queryId, pageId } = queryInfo
+      const pageData = this.pagination[qid]?.[queryId]?.[pageId as string]
+      pageData.ssr = false
     },
     ...options.actions,
   }

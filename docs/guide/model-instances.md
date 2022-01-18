@@ -43,6 +43,8 @@ So let's dive into the common interface. Here's the instance API.
 
 ### `instance.addToStore()`
 
+### `instance.removeFromStore()`
+
 ### `instance.save(params)`
 
 The `save` method is a convenience wrapper for the `create/patch` methods, by default. If the records has no `_id` or `id`, the `instance.create()`method will be used. The`params` argument will be used in the Feathers client request. See the [Feathers Service](https://docs.feathersjs.com/guides/basics/services.html#service-methods) docs, for reference on where params are used in each method.
@@ -58,7 +60,7 @@ Once the `create` response returns, the record will have an `_id`. If you call `
 
 > Note: Feathers-Pinia does not currently support `preferUpdate`, which was available in Feathers-Vuex. You can either call `.update()` instead of `save()` or open an issue stating that you need the feature.
 
-### `instance.create(params)`=
+### `instance.create(params)`
 
 The `create` method calls the `create` action (service method) using the instance data. The `params` argument will be used in the Feathers client request. See the [Feathers Service](https://docs.feathersjs.com/guides/basics/services.html#service-methods) docs, for reference.
 

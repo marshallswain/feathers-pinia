@@ -1,7 +1,7 @@
-import { Ref } from 'vue-demi'
-import { Params, Paginated } from '../types'
+import { Ref, ComputedRef } from 'vue-demi'
+import { Params, Paginated, QueryInfo } from '../types'
 import { EventEmitter } from 'events'
-import { Id } from '@feathersjs/feathers'
+import { Id, Query, NullableId } from '@feathersjs/feathers'
 
 interface PendingById {
   create?: boolean
@@ -17,13 +17,71 @@ interface ModelPendingState {
 export type RequestType = 'find' | 'count' | 'get' | 'patch' | 'update' | 'remove'
 
 export type AnyData = Record<string, any>
+export type AnyDataOrArray = AnyData | AnyData[]
 
 type ModelsById<M> = { [id: string | number]: M }
+
+interface QueryPagination {
+  $limit: number
+  $skip: number
+}
+interface MostRecentQuery {
+  pageId: string
+  pageParams: QueryPagination
+  queriedAt: number
+  query: Query
+  queryId: string
+  queryParams: Query
+  total: number
+}
+
+/**
+ * Pagination State Types: below are types for the basic format shown here.
+ * I'm surprised that something like the below can't work in TypeScript. Instead,
+ * it has to be spread across the jumbled mess of interfaces and types shown below.
+ * If somebody has knowledge of a cleaner representation, I'd appreciate a PR. - Marshall
+ *
+ * interface PaginationState {
+ *   [queryId: string]: {
+ *     [pageId: string]: {
+ *       ids: Id[]
+ *       pageParams: QueryPagination
+ *       queriedAt: number
+ *       ssr: boolean
+ *     }
+ *     queryParams: Query
+ *     total: number
+ *   }
+ *   mostRecent: MostRecentQuery
+ * }
+ */
+export interface PaginationPageData {
+  ids: Id[]
+  pageParams: QueryPagination
+  queriedAt: number
+  ssr: boolean
+}
+export type PaginationStatePage = {
+  [pageId: string]: PaginationPageData
+}
+export type PaginationStateQuery =
+  | PaginationStatePage
+  | {
+      queryParams: Query
+      total: number
+    }
+export type PaginationStateQid =
+  | PaginationStateQuery
+  | {
+      mostRecent: MostRecentQuery
+    }
 
 export interface ServiceState<M extends Model = Model> {
   clientAlias: string
   servicePath: string
-  pagination: AnyData
+  pagination: {
+    [qid: string]: PaginationStateQid
+  }
   idField: string
   itemsById: ModelsById<M>
   tempsById: ModelsById<M>
@@ -52,6 +110,7 @@ export interface PiniaStoreOptions {
 }
 
 export interface ServiceOptions {
+  ssr?: boolean
   clients: AnyData
   id: string
   clientAlias?: string
@@ -268,12 +327,58 @@ export interface ModelStatic extends EventEmitter {
     id: Id | Ref<Id>,
     params?: Params | Ref<Params>,
   ): M | undefined
+
+  /**
+   * Add a item to the pinia store
+   * @param data item to add to store
+   */
+  addToStore<M extends Model = Model>(
+    data: AnyData
+  ): M
+
+  /**
+   * Add multiple items to the pinia store
+   * @param data items to add to store
+   */
+  addToStore<M extends Model = Model>(
+    data: AnyData[]
+  ): M[]
+
+  /**
+   * A proxy for the `update` action
+   * @param id ID of item
+   * @param data data to update
+   * @param params update params
+   */
+  update<M extends Model = Model>(id: Id, data: any, params?: Params): Promise<M>
+
+  /**
+   * A proxy for the `patch` action
+   * @param id ID of item or null
+   * @param data data to patch
+   * @param params patch params
+   */
+  patch<M extends Model = Model>(id: NullableId, data: any, params?: Params): Promise<M>
+
+  /**
+   * A proxy for the `remove` action
+   * @param id ID of item or null
+   * @param params remove params
+   */
+  remove(id: NullableId, params?: Params): Promise<any>
+
+  /**
+   * A proxy for the `removeFromStore` action
+   * @param data data to remove from store
+   */
+   remove<T extends AnyDataOrArray = AnyDataOrArray>(data: T): T
 }
 
 export interface UpdatePaginationForQueryOptions {
   qid: string
   response: any
   query: any
+  preserveSsr: boolean
 }
 
 export interface ModelInstanceOptions {
@@ -282,3 +387,15 @@ export interface ModelInstanceOptions {
    */
   clone?: boolean
 }
+
+export interface QueryWhenContext {
+  items: ComputedRef<AnyData[]>
+  queryInfo: QueryInfo
+  /**
+   * Pagination data for the current qid
+   */
+  qidData: PaginationStateQid
+  queryData: PaginationStateQuery
+  pageData: PaginationStatePage
+}
+export type QueryWhenFunction = ComputedRef<(context: QueryWhenContext) => boolean>

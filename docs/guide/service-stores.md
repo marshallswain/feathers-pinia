@@ -12,6 +12,7 @@ Here's a look at the `DefineStoreOptions` interface. By the way, there's lots of
 import { Application as FeathersClient } from '@feathersjs/feathers'
 
 interface DefineStoreOptions {
+  ssr?: boolean // New in 0.24.0
   servicePath: string
   Model?: any
   idField?: '_id' | string
@@ -37,6 +38,7 @@ interface HandleEvents {
 
 Here are a few more details about each option:
 
+- **`ssr {Boolean}`** indicates if Feathers-Pinia is loading in an SSR environment. Paginated queries made during SSR will be marked with `ssr: true`.
 - **`servicePath {String}`** is the same as the Feathers service path. **_required_**
 - **`Model {ModelClass}`** is the class to use for each instance. If you don't provide one, a generic class extending `BaseModel` will be created and used. For any record-level logic, you'll need t create a custom class extending BaseModel. See [Model Classes](./model-classes)
 - **`idField {String}`** is the attribute on the record that will serve as the unique identifier or "primary key" in the database. See [Model Classes](./model-classes#compound-keys) for a recipe that might work for **compound keys** (multiple fields).
@@ -158,19 +160,19 @@ Works similar to `.get` requests in a Feathers service object. It only returns r
 
 > Tip: use `getFromStore` and enjoy [Automatic Instance Hydration](#automatic-instance-hydration)
 
+## Actions
+
 ### `addToStore(data)`
 
-Adds the data as a Model instance to the store.
+Adds the data as a Model instance / multiple instances to the store.
 
-### `removeFromStore(id, params)`
+### `removeFromStore(data)`
 
-Removes the matching record from the store.
-
-## Actions
+Removes the matching record(s) from the store.
 
 ### `find(params)`
 
-Uses the Feathers Client to retrieve records from the API server.
+Uses the Feathers Client to retrieve records from the API server. On an SSR server, find data will be marked as `ssr: true`, which allows extra queries to be skipped on the client.
 
 ```vue
 <script setup>
@@ -199,6 +201,14 @@ const todoStore = useTodos()
 todoStore.get(1).then(/* ... */)
 </script>
 ```
+
+### `update(id, data, params)`
+
+Uses the Feathers Client to send an `update` request to the API server.
+
+### `patch(id, data, params)`
+
+Uses the Feathers Client to send an `patch` request to the API server.
 
 ### `remove(id, params)`
 

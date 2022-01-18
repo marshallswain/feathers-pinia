@@ -5,6 +5,7 @@ import { api } from './feathers'
 const pinia = createPinia()
 
 export const { defineStore, BaseModel } = setupFeathersPinia({
+  ssr: true,
   clients: { api },
   idField: '_id',
   whitelist: ['$regex', '$options'],
@@ -34,6 +35,7 @@ describe('Define User Store 1 (from options without options.id)', () => {
   const store = useUsersStore(pinia)
 
   test('can interact with store', async () => {
+    expect(store.isSsr).toBe(true)
     expect(store.$id).toBe('service.users')
     expect(store.servicePath).toBe('users')
     expect(store.firstName).toBe('Bob')
@@ -81,7 +83,11 @@ describe('Define User Store 3 (from id and options without options.id)', () => {
 })
 
 describe('Define User Store 4 (from id and options with options.id)', () => {
-  const useUsersStore = defineStore('users4', { id: 'should-be-overriden', servicePath: 'users', ...storeOptions })
+  const useUsersStore = defineStore('users4', {
+    id: 'should-be-overriden',
+    servicePath: 'users',
+    ...storeOptions,
+  })
   const store = useUsersStore(pinia)
 
   test('can interact with store', async () => {

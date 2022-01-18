@@ -35,6 +35,8 @@ describe('useGet', () => {
     expect(data.isPending.value).toBe(true)
     expect(data.item.value).toBe(null)
     expect(data.servicePath.value).toBe('messages')
+    expect(data.isSsr.value).toBe(false)
+    expect((data.request.value as any).then)
   })
 
   test('item is returned', async () => {

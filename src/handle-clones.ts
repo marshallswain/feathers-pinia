@@ -62,7 +62,11 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
           }
           const id = getAnyId(item.value)
           const existingClone = store.clonesById[id]
-          if (existingClone && useExisting) {
+          if (
+            existingClone &&
+            useExisting &&
+            existingClone.constructor.name === item.value.constructor.name
+          ) {
             return existingClone
           }
           return item.value.__isClone ? item.value : item.value.clone()
@@ -140,6 +144,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
                 const areEqual = isEqual(originalVal, cloneVal)
 
                 const { commit = true, save = true, saveWith = () => ({}) } = opts
+
                 commit && clone.value.commit()
 
                 if ((!areEqual && save) || hasOwn(clone.value, '__tempId')) {

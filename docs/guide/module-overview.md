@@ -11,7 +11,7 @@ export { makeServiceStore, BaseModel } from './service-store/index'
 
 // Global Reference Objects
 export { clients } from './clients'
-export { models } from './models'
+export { models, registerClient } from './models'
 
 // Common Tools
 export { useFind } from './use-find'
@@ -47,6 +47,7 @@ export { clearStorage } from './clear-storage'
   ```
 
   - If you call your default client `api`, you won't have to provide a custom `clientAlias` option to the `defineStore` function. Learn about setting up FeathersClient instances in [Setup](./setup).
+- **`registerClient`** adds a client by name to the `clients` object.  `registerClient('api', feathersClientInstance)`.
 
 - **`models`** stores a reference to every custom model provided to `defineStore`.
 

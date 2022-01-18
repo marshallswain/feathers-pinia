@@ -5,7 +5,7 @@ import { Id } from '@feathersjs/feathers'
 
 interface UseGetOptions {
   model: any
-  id: Ref<Id | null> | null
+  id: Ref<Id | null> | ComputedRef<Id | null> | null
   params?: Ref<Params>
   queryWhen?: Ref<boolean>
   local?: boolean
@@ -17,11 +17,13 @@ interface UseGetState {
   hasLoaded: boolean
   error: null | Error
   isLocal: boolean
+  request: Promise<any> | null
 }
 
 interface UseGetComputed {
   item: ComputedRef<any>
   servicePath: ComputedRef<string>
+  isSsr: ComputedRef<boolean>
 }
 
 export function useGet<M extends Model = Model>({
@@ -51,11 +53,13 @@ export function useGet<M extends Model = Model>({
     hasLoaded: false,
     error: null,
     isLocal: local,
+    request: null,
   })
 
   const computes: UseGetComputed = {
     item: computed(() => model.getFromStore(getId(), getParams()) || null),
     servicePath: computed(() => model.servicePath),
+    isSsr: computed(() => model.store.isSsr),
   }
 
   function get(id: Id | null, params?: Params): Promise<M | undefined | any> {
@@ -66,9 +70,10 @@ export function useGet<M extends Model = Model>({
       state.isPending = true
       state.hasBeenRequested = true
 
-      const promise = paramsToUse != null ? model.get(idToUse, paramsToUse) : model.get(idToUse)
+      const request = paramsToUse != null ? model.get(idToUse, paramsToUse) : model.get(idToUse)
+      state.request = request
 
-      return promise
+      return request
         .then((response: any) => {
           state.isPending = false
           state.hasLoaded = true
