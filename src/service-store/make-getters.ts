@@ -131,7 +131,11 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         id = unref(id)
         params = fastCopy(unref(params) || {})
 
-        let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
+        let item
+        if (params.clones) {
+          item = this.clonesById[id] && select(params, this.idField)(this.clonesById[id])
+        }
+        if (!item) item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
         if (!item) item = this.tempsById[id] && select(params, '__tempId')(this.tempsById[id])
 
         // Make sure item is an instance
