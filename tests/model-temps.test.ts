@@ -57,7 +57,7 @@ describe('Temporary Records (Local-Only)', () => {
     expect(data.length).toBe(1)
   })
 
-  test('find getter does not returns temps when params.temps is falsy', async () => {
+  test('find getter does not return temps when params.temps is falsy', async () => {
     messagesService.addToStore({ text: 'this is a test' })
     const data = messagesService.findInStore({ query: {} }).data
     expect(data.length).toBe(0)
