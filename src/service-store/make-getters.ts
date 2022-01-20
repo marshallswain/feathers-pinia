@@ -31,19 +31,19 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return !!ssr
     },
     itemIds() {
-      return Object.keys(this.itemsById)
+      return this.items.map((item: any) => item[this.idField])
     },
     items() {
       return Object.values(this.itemsById)
     },
     tempIds() {
-      return Object.keys(this.tempsById)
+      return this.temps.map((temp: any) => temp.__tempId)
     },
     temps() {
       return Object.values(this.tempsById)
     },
     cloneIds() {
-      return Object.keys(this.clonesById)
+      return this.clones.map((clone: any) => clone[this.idField])
     },
     clones() {
       return Object.values(this.clonesById)
