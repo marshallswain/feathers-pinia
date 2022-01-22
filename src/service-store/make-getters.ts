@@ -7,7 +7,7 @@ import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
-import { getAnyId, getId } from '../utils'
+import { getId } from '../utils'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
@@ -67,28 +67,28 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
                item;
       })
     },
+    operators() {
+      return additionalOperators
+        .concat(this.whitelist)
+        .concat(this.service.options?.allow || this.service.options?.whitelist || [])
+    },
     findInStore() {
       return (params: Params) => {
         params = { ...unref(params) } || {}
 
-        const { paramsForServer, whitelist } = this
-        const q = _.omit(params.query || {}, paramsForServer)
+        const q = _.omit(params.query || {}, this.paramsForServer)
 
-        const { query, filters } = filterQuery(q, {
-          operators: additionalOperators
-            .concat(whitelist)
-            .concat(this.service.options?.allow || this.service.options?.whitelist || []),
-        })
-        let values: any[] = this.items.slice()
+        const { query, filters } = filterQuery(q, { operators: this.operators })
 
-        if (params.temps) {
-          values.push(...this.temps)
-        }
-
-        if (params.clones) {
-          const { clonesById } = this;
-
-          values = values.map(item => clonesById[getAnyId(item, this.idField)] || item)
+        let values: any[]
+        if (!params.temps && !params.clones) {
+          values = this.items
+        } else if (params.temps && !params.clones) {
+          values = this.itemsAndTemps
+        } else if (!params.temps && params.clones) {
+          values = this.itemsAndClones
+        } else {
+          values = this.itemsTempsAndClones
         }
 
         values = values.filter(sift(query))
@@ -112,7 +112,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         // otherwise the picked Values would go through `addOrUpdate` every time
         let pickedValues: any[] | undefined = undefined;
         if (filters.$select) {
-          pickedValues = values.map((value) => _.pick(value, ...filters.$select.slice()))
+          pickedValues = values.map((value) => _.pick(value, ...filters.$select))
         }
 
         // Make sure items are instances
