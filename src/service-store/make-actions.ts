@@ -311,19 +311,16 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     clone(item: any, data = {}) {
-      const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
-      const id = getAnyId(item, this.idField)
-      const originalItem = this[placeToStore][id]
-      const existing = this.clonesById[getAnyId(item, this.idFIeld)]
-      if (existing && existing.constructor.name === originalItem.constructor.name) {
-        const readyToReset = Object.assign(existing, originalItem, data)
-        Object.keys(readyToReset).forEach((key) => {
-          if (!hasOwn(originalItem, key)) {
-            delete readyToReset[key]
-          }
-        })
-        return readyToReset
+      // reset existing clone
+      const resetted = this.resetClone(item, data);
+      if (resetted) {
+        return resetted;
       } else {
+        // clone not existing
+        const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
+        const id = getAnyId(item, this.idField)
+        const originalItem = this[placeToStore][id]
+
         const clone = fastCopy(originalItem)
         Object.defineProperty(clone, '__isClone', {
           value: true,
@@ -335,13 +332,34 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         return this.clonesById[id] // Must return the item from the store
       }
     },
+
     commit(item: any) {
       const id = getAnyId(item, this.idField)
       if (id != null) {
         const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
         this[placeToStore][id] = fastCopy(this.clonesById[id])
-        return this.itemsById[id]
+        return this[placeToStore][id]
       }
+    },
+
+    resetClone(item: any, data = {}) {
+      const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
+      const id = getAnyId(item, this.idField)
+      const originalItem = this[placeToStore][id]
+      const existing = this.clonesById[getAnyId(item, this.idFIeld)]
+
+      if (!existing || existing.constructor.name !== originalItem.constructor.name) {
+        return; 
+      }
+
+      const readyToReset = Object.assign(existing, originalItem, data)
+      Object.keys(readyToReset).forEach((key) => {
+        if (!hasOwn(originalItem, key)) {
+          delete readyToReset[key]
+        }
+      })
+
+      return readyToReset
     },
 
     /**

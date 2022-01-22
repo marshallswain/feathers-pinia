@@ -22,6 +22,7 @@ export class BaseModel {
     Object.assign(this, instanceDefaults(data, { models, store }))
     Object.assign(this, setupInstance(data, { models, store }))
     this.__isClone = !!options.clone
+    
     return this
   }
 
@@ -131,7 +132,7 @@ export class BaseModel {
   public reset(): this {
     const { store } = this.constructor as typeof BaseModel
 
-    return (store as any).resetCopy(this)
+    return (store as any).resetClone(this)
   }
 
   /**

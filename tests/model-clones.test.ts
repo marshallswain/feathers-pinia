@@ -28,6 +28,21 @@ describe('Model Clones', () => {
     expect(message === clone).toBe(false)
     expect(clone).toHaveProperty('additionalData')
     expect(clone.additionalData).toBe('a boolean is fine')
+    expect(clone.constructor).toBe(message.constructor);
+  })
+
+  test('can clone temp', async () => {
+    const message = messagesService.addToStore({
+      text: 'Quick, what is the number to 911?',
+    })
+    expect(message).toHaveProperty('__tempId')
+    const clone = message.clone({ additionalData: 'a boolean is fine' })
+    expect(clone).toHaveProperty('__isClone')
+    expect(clone.__isClone).toBe(true)
+    expect(message === clone).toBe(false)
+    expect(clone).toHaveProperty('additionalData')
+    expect(clone.additionalData).toBe('a boolean is fine')
+    expect(clone.constructor).toBe(message.constructor);
   })
 
   test('can commit', async () => {
@@ -42,7 +57,20 @@ describe('Model Clones', () => {
     expect(committed.__isClone).toBeUndefined()
   })
 
-  test('can reset', async () => {
+  test('can commit temp', async () => {
+    const message = messagesService.addToStore({
+      text: 'Quick, what is the number to 911?',
+    })
+    expect(message).toHaveProperty('__tempId')
+    const clone = message.clone()
+    clone.foo = 'bar'
+    const committed = clone.commit()
+
+    expect(committed.foo).toBe('bar')
+    expect(committed.__isClone).toBeUndefined()
+  })
+
+  test('can reset via clone-method', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
@@ -50,6 +78,43 @@ describe('Model Clones', () => {
     const reset = clone.clone()
 
     expect(reset.foo).toBeUndefined()
+    expect(reset.__isClone).toBe(false)
+    expect(clone === reset).toBeTruthy()
+  })
+
+  test('can reset temp via clone-method', async () => {
+    const message = await messagesService.addToStore({
+      text: 'Quick, what is the number to 911?',
+    })
+    const clone = message.clone({ foo: 'bar' })
+    const reset = clone.clone()
+
+    expect(reset.foo).toBeUndefined()
+    expect(reset.__isClone).toBe(false)
+    expect(clone === reset).toBeTruthy()
+  })
+
+  test('can reset via reset-method', async () => {
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
+    const clone = message.clone({ foo: 'bar' })
+    const reset = clone.reset()
+
+    expect(reset.foo).toBeUndefined()
+    expect(reset.__isClone).toBe(false)
+    expect(clone === reset).toBeTruthy()
+  })
+
+  test('can reset temp via reset-method', async () => {
+    const message = await messagesService.addToStore({
+      text: 'Quick, what is the number to 911?',
+    })
+    const clone = message.clone({ foo: 'bar' })
+    const reset = clone.reset()
+
+    expect(reset.foo).toBeUndefined()
+    expect(reset.__isClone).toBe(false)
     expect(clone === reset).toBeTruthy()
   })
 
