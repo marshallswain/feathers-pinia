@@ -7,7 +7,7 @@ import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
-import { getId } from '../utils'
+import { getAnyId, getId, getTempId } from '../utils'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
@@ -32,19 +32,19 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return !!ssr
     },
     itemIds() {
-      return Object.keys(this.itemsById)
+      return this.items.map((item: any) => getId(item, this.idField))
     },
     items() {
       return Object.values(this.itemsById)
     },
     tempIds() {
-      return Object.keys(this.tempsById)
+      return this.temps.map((temp: any) => getTempId(temp))
     },
     temps() {
       return Object.values(this.tempsById)
     },
     cloneIds() {
-      return Object.keys(this.clonesById)
+      return this.clones.map((clone: any) => getAnyId(clone, this.idField))
     },
     clones() {
       return Object.values(this.clonesById)

@@ -278,6 +278,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       })
 
       // Move items with both __tempId and idField from tempsById to itemsById
+      // Move clones with both __tempId and idField in clonesById
       const withBoth = items.filter((i: any) => getId(i) != null && getTempId(i) != null)
       withBoth.forEach((item: any) => {
         const id = getId(item)
@@ -288,6 +289,20 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           delete this.tempsById[item.__tempId]
           delete this.itemsById[id].__tempId
         }
+
+        const existingClone = this.clonesById[item.__tempId]
+        if (existingClone) {
+          //assign id
+          const { idField } = this;
+          existingClone[idField] = id;
+
+          //move
+          delete this.clonesById[item.__tempId]
+          this.clonesById[id] = existingClone
+
+          delete this.clonesById[id].__tempId
+        }
+
         delete item.__tempId
       })
 

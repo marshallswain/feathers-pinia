@@ -5,7 +5,7 @@ import { resetStores } from './test-utils'
 
 const pinia = createPinia()
 
-const { defineStore } = setupFeathersPinia({ clients: { api } })
+const { defineStore } = setupFeathersPinia({ clients: { api }, idField: 'id' })
 
 const servicePath = 'messages'
 const useMessagesService = defineStore({ servicePath })
@@ -116,6 +116,24 @@ describe('Model Clones', () => {
     expect(reset.foo).toBeUndefined()
     expect(reset.__isClone).toBe(false)
     expect(clone === reset).toBeTruthy()
+  })
+
+  test('saving a cloned temp moves it in clonesById', async () => {
+    const message = await messagesService.addToStore({
+      text: 'Quick, what is the number to 911?',
+    })
+    const clone = message.clone({ foo: 'bar' });
+    const tempId = clone.__tempId;
+    expect(messagesService.clonesById).toHaveProperty(tempId);
+    const savedClone = await clone.save();
+    const { idField } = messagesService;
+    const id = savedClone[messagesService.idField];
+
+    expect(savedClone).not.toHaveProperty("__tempId")
+    expect(savedClone).toHaveProperty(idField)
+
+    expect(messagesService.clonesById).not.toHaveProperty(tempId)
+    expect(messagesService.clonesById).toHaveProperty(id.toString());
   })
 
   test('find getter returns clones when params.clones === true', async () => {
