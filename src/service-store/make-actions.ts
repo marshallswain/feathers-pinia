@@ -165,9 +165,9 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
       
       return this.service
-        .create(cleanData(data), params)
+        .create(cleanData(data, this.tempIdField), params)
         .then((response: any) => {
-          return this.addOrUpdate(restoreTempIds(data, response))
+          return this.addOrUpdate(restoreTempIds(data, response, this.tempIdField))
         })
         .catch((error: Error) => {
           // commit('setError', { method: 'create', error })
@@ -185,7 +185,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.setPendingById(id, 'update', true)
 
       return this.service
-        .update(id, cleanData(data), params)
+        .update(id, cleanData(data, this.tempIdField), params)
         .then((data: any) => {
           return this.addOrUpdate(data)
         })
@@ -206,7 +206,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       this.setPendingById(id, 'patch', true)
 
       return this.service
-        .patch(id, cleanData(data), params)
+        .patch(id, cleanData(data, this.tempIdField), params)
         .then((data: any) => {
           return this.addOrUpdate(data)
         })
@@ -247,7 +247,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     removeFromStore(data: AnyDataOrArray) {
       const { items } = getArray(data)
       const idsToRemove = items
-        .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item)))
+        .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item, this.tempIdField)))
         .filter((id: any) => id != null)
 
       this.itemsById = _.omit(this.itemsById, ...idsToRemove)
@@ -278,18 +278,22 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         }
       })
 
-      // Move items with both __tempId and idField from tempsById to itemsById
-      const withBoth = items.filter((i: any) => getId(i) != null && getTempId(i) != null)
+      const { tempIdField } = this;
+
+      // Move items with both tempIdField and idField from tempsById to itemsById
+      const withBoth = items.filter((i: any) => 
+        getId(i) != null && getTempId(i, tempIdField) != null)
       withBoth.forEach((item: any) => {
         const id = getId(item)
-        const existingTemp = this.tempsById[item.__tempId]
+        const tempId = getTempId(item, tempIdField)
+        const existingTemp = this.tempsById[tempId]
         if (existingTemp) {
           this.itemsById[id] = existingTemp
           Object.assign(this.itemsById[id], item)
-          delete this.tempsById[item.__tempId]
-          delete this.itemsById[id].__tempId
+          delete this.tempsById[tempId]
+          delete this.itemsById[id][tempId]
         }
-        delete item.__tempId
+        delete item[tempIdField]
       })
 
       // Save items that have ids
@@ -298,8 +302,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       Object.assign(this.itemsById, itemsById)
 
       // Save temp items
-      const temps = items.filter((i: any) => getId(i) == null).map((i: any) => assignTempId(i))
-      const tempsById = keyBy(temps, (i: any) => i.__tempId)
+      const temps = items
+        .filter((i: any) => getId(i) == null)
+        .map((i: any) => assignTempId(i, tempIdField))
+      const tempsById = keyBy(temps, (i: any) => i[tempIdField])
       Object.assign(this.tempsById, tempsById)
 
       return isArray ? items : items[0]
@@ -312,10 +318,11 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     clone(item: any, data = {}) {
-      const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
-      const id = getAnyId(item)
+      const tempId = getTempId(item, this.tempIdField)
+      const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
+      const id = getAnyId(item, this.tempIdField)
       const originalItem = this[placeToStore][id]
-      const existing = this.clonesById[getAnyId(item)]
+      const existing = this.clonesById[id]
       if (existing && existing.constructor.name === originalItem.constructor.name) {
         const readyToReset = Object.assign(existing, originalItem, data)
         Object.keys(readyToReset).forEach((key) => {
@@ -337,9 +344,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       }
     },
     commit(item: any) {
-      const id = getAnyId(item)
+      const id = getAnyId(item, this.tempIdField)
       if (id != null) {
-        const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
+        const tempId = getTempId(item, this.tempIdField)
+        const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
         this[placeToStore][id] = fastCopy(this.clonesById[id])
         return this.itemsById[id]
       }

@@ -9,6 +9,7 @@ interface SetupOptions {
   ssr?: boolean | Ref<boolean>
   clients: { [alias: string]: any }
   idField?: string
+  tempIdField?: string
   handleEvents?: HandleEvents
   enableEvents?: boolean
   debounceEventsTime?: number

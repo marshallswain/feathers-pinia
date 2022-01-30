@@ -115,6 +115,7 @@ export interface ServiceOptions {
   id: string
   clientAlias?: string
   idField?: string
+  tempIdField?: string
   servicePath: string
   Model: any
   state?: AnyData

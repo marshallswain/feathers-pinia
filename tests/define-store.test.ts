@@ -36,6 +36,8 @@ describe('Define User Store 1 (from options without options.id)', () => {
 
   test('can interact with store', async () => {
     expect(store.isSsr).toBe(true)
+    expect(store.idField).toBe('_id')
+    expect(store.tempIdField).toBe('__tempId')
     expect(store.$id).toBe('service.users')
     expect(store.servicePath).toBe('users')
     expect(store.firstName).toBe('Bob')

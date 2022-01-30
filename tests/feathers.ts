@@ -30,4 +30,13 @@ api.use(
     whitelist: ['$options'],
   }),
 )
+
+api.use(
+  'todos',
+  memory({
+    paginate: { default: 10, max: 100 },
+    whitelist: ['$options']
+  })
+)
+
 api.use('users', memory())

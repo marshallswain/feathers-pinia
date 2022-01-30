@@ -37,7 +37,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return Object.values(this.itemsById)
     },
     tempIds() {
-      return this.temps.map((temp: any) => temp.__tempId)
+      return this.temps.map((temp: any) => temp[this.tempIdField])
     },
     temps() {
       return Object.values(this.tempsById)
@@ -121,7 +121,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         params = fastCopy(unref(params) || {})
 
         let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
-        if (!item) item = this.tempsById[id] && select(params, '__tempId')(this.tempsById[id])
+        if (!item) item = this.tempsById[id] && select(params, this.tempIdField)(this.tempsById[id])
 
         // Make sure item is an instance
         if (item && !item.constructor.modelName) {

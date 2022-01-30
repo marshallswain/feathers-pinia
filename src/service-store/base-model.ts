@@ -14,6 +14,7 @@ export class BaseModel {
   static pinia = null
   static servicePath = null
   static idField = ''
+  static tempIdField = ''
 
   public __isClone!: boolean
 

@@ -4,6 +4,7 @@ interface MakeStateOptions {
   servicePath: string
   clientAlias?: string
   idField?: string
+  tempIdField?: string
   state?: { [key: string]: any }
   whitelist?: string[]
 }
@@ -13,6 +14,7 @@ export function makeState(options: MakeStateOptions) {
     clientAlias: options?.clientAlias || 'api',
     servicePath: options?.servicePath || '',
     idField: options?.idField || 'id',
+    tempIdField: options?.tempIdField || '__tempId',
     itemsById: {},
     tempsById: {},
     clonesById: {},
