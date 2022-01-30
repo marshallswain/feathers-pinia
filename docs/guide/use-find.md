@@ -13,7 +13,7 @@ The goal with the examples is to focus as much as possible on functionality and 
 ```vue
 <template>
   <ul>
-    <li v-for="tutorial in tutorials" :key="tutorial._id">
+    <li v-for="tutorial in tutorials" :key="tutorial.id">
       {{ tutorial.name }}
     </li>
   </ul>
@@ -257,7 +257,7 @@ Pay special attention to the properties of type `Ref`, in the TypeScript interfa
   <div>
     <li
       v-for="tutorial in tutorials"
-      :key="tutorial._id"
+      :key="tutorial.id"
     >
       {{ tutorial.name }}
     </li>

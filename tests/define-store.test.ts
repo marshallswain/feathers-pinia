@@ -7,7 +7,7 @@ const pinia = createPinia()
 export const { defineStore, BaseModel } = setupFeathersPinia({
   ssr: true,
   clients: { api },
-  idField: '_id',
+  idField: 'id',
   whitelist: ['$regex', '$options'],
 })
 
