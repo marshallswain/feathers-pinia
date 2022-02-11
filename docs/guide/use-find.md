@@ -171,6 +171,8 @@ export interface QueryWhenContext {
 
 The `qidData`, `queryData`, and `pageData` properties all come from the service store's `pagination` object, which contains useful information for every query.  Let's review the `pagination` object before we see how to use the `context` object.
 
+BE CAREFUL when using `queryWhen` as a computed function because it can cause infinite loops when the return value is truthy.  The computed value reruns whenever the data in the `QueryWhenContext` changes.  The general way to avoid recomputes is to make sure you toggle the value to false after the response comes back.  Leaving it truthy will likely cause the infinite looping behavior.
+
 #### Pagination State <Badge text="0.25.0+" />
 
 The `qid`, `queryId`, and `pageId` in the below structure are all determined by the attributes in the params.
