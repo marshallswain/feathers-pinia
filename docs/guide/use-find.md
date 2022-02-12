@@ -34,6 +34,7 @@ const tutorialsParams = computed(() => {
 })
 // 3. Provide the Model class and params in the options
 const tutorialsData = useFind({ model: tutorialStore.Model, params: tutorialsParams })
+const tutorials = tutorialsData.items;
 </script>
 ```
 
