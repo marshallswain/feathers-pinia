@@ -208,7 +208,7 @@ export interface Model extends AnyData {
   update(params?: Params): Promise<this>
   /**
    * The save method is a convenience wrapper for the create/patch
-   * methods, by default. If the records has no _id, the
+   * methods, by default. If the records has no id, the
    * instance.create() method will be used.
    * @param params Params passed to the Feathers client request
    */
