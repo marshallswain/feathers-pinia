@@ -7,7 +7,7 @@ const pinia = createPinia()
 export const { defineStore, BaseModel } = setupFeathersPinia({
   ssr: true,
   clients: { api },
-  idField: '_id',
+  idField: 'id',
   whitelist: ['$regex', '$options'],
 })
 
@@ -36,7 +36,7 @@ describe('Define User Store 1 (from options without options.id)', () => {
 
   test('can interact with store', async () => {
     expect(store.isSsr).toBe(true)
-    expect(store.idField).toBe('_id')
+    expect(store.idField).toBe('id')
     expect(store.tempIdField).toBe('__tempId')
     expect(store.$id).toBe('service.users')
     expect(store.servicePath).toBe('users')

@@ -11,7 +11,7 @@ export interface DefineStoreOptions {
   ssr?: boolean
   servicePath: string
   Model?: any
-  idField?: '_id' | string
+  idField?: 'id' | '_id' | string
   tempIdField?: '__tempId' | string
   id?: string
   clientAlias?: 'api' | string
@@ -32,7 +32,7 @@ export function defineStore(_options: DefineStoreOptions) {
     clients: {},
     clientAlias: 'api',
     servicePath: '',
-    idField: '_id',
+    idField: 'id',
     tempIdField: '__tempId',
     enableEvents: true,
     debounceEventsTime: 20,

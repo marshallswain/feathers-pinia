@@ -3,6 +3,7 @@ import rest from '@feathersjs/rest-client'
 import auth from '@feathersjs/authentication-client'
 import memory from 'feathers-memory'
 import axios from 'axios'
+import { timeout } from './test-utils'
 
 const restClient = rest()
 
@@ -39,4 +40,13 @@ api.use(
   })
 )
 
+api.service('messages').hooks({
+  before: {
+    find: [
+      async () => {
+        await timeout(180)
+      },
+    ],
+  },
+})
 api.use('users', memory())

@@ -15,7 +15,7 @@ interface DefineStoreOptions {
   ssr?: boolean // New in 0.24.0
   servicePath: string
   Model?: any
-  idField?: '_id' | string
+  idField?: 'id' | '_id' | string
   tempIdField?: '__tempId' | string
   id?: string
   clientAlias?: 'api' | string

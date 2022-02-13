@@ -1,6 +1,6 @@
 {
   "name": "feathers-pinia",
-  "version": "0.29.5",
+  "version": "0.29.6",
   "files": [
     "dist",
     "src"
@@ -85,7 +85,7 @@
     "vue-tsc": "^0.29.7"
   },
   "peerDependencies": {
-    "pinia": "^2.0.0-rc.11",
+    "pinia": "^2.0.0",
     "@vue/composition-api": "^1.0.0-rc.1",
     "vue": "^2.0.0 || >=3.0.0"
   },
