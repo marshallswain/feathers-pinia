@@ -1,104 +1,68 @@
 import { makeServiceStore, BaseModel } from './service-store/index'
-import { defineStore as definePiniaStore, Pinia, Store } from 'pinia'
+import { defineStore as definePiniaStore, Pinia, StateTree, _GettersTree } from 'pinia'
 import { registerModel } from './models'
 import { registerClient, clients } from './clients'
 import { enableServiceEvents } from './service-store/events'
 
-import { Application as FeathersClient } from '@feathersjs/feathers'
-import { HandleEvents } from './types'
+import { DefineFeathersStoreOptions, ServiceStoreDefinition } from './types'
+import { ServiceStoreSharedStateDefineOptions } from './service-store/types'
 
-export interface DefineStoreOptions {
-  ssr?: boolean
-  servicePath: string
-  Model?: any
-  idField?: '_id' | string
-  id?: string
-  clientAlias?: 'api' | string
-  clients?: { [alias: string]: FeathersClient }
-  enableEvents?: boolean
-  handleEvents?: HandleEvents
-  debounceEventsTime?: number
-  debounceEventsMaxWait?: number
-  whitelist?: string[]
-  state?: () => { [k: string]: any }
-  getters?: { [k: string]: (state: any) => any }
-  actions?: { [k: string]: Function }
+export const defaultSharedState: ServiceStoreSharedStateDefineOptions = {
+  clientAlias: 'api',
+  servicePath: '',
+  idField: 'id',
+  paramsForServer: [],
+  whitelist: [],
+  skipRequestIfExists: false
 }
 
-export function defineStore(options: DefineStoreOptions) {
-  const defaults = {
-    ssr: false,
-    clients: {},
-    clientAlias: 'api',
-    servicePath: '',
-    idField: '_id',
-    enableEvents: true,
-    debounceEventsTime: 20,
-    debounceEventsMaxWait: 1000,
-    whitelist: [],
-    state: () => ({}),
-    getters: {},
-    actions: {},
-  }
-  options = Object.assign({}, defaults, options)
-  const actions: any = options.actions
-  const clientAlias = options.clientAlias || 'api'
+export function defineStore<
+  Id extends string,
+  M extends BaseModel = BaseModel,
+  S extends StateTree = StateTree, 
+  G extends _GettersTree<S> = {}, 
+  A = {}>(
+  _options: DefineFeathersStoreOptions<Id, M, S, G, A>
+): (pinia?: Pinia) => ServiceStoreDefinition<Id, M, S, G, A> {
+  const options = makeOptions<Id, M, S, G, A>(_options);
+
   const {
-    ssr,
     servicePath,
     idField,
-    enableEvents,
+    handleEvents,
     debounceEventsTime,
     debounceEventsMaxWait,
-    whitelist,
-    state,
-    getters,
+    clientAlias,
+    Model,
   } = options
-  let { handleEvents = {} } = options
   let isInitialized = false
 
   Object.keys(options.clients || {}).forEach((name) => {
     registerClient(name, clients[name])
   })
 
-  // Setup the event handlers. By default they just return the value of `options.enableEvents`
-  const defaultHandleEvents = {
-    created: () => enableEvents,
-    patched: () => enableEvents,
-    updated: () => enableEvents,
-    removed: () => enableEvents,
-  }
-
-  handleEvents = Object.assign({}, defaultHandleEvents, handleEvents)
-
-  // If no Model class is provided, create a dynamic one.
-  if (!options.Model) {
-    class DynamicBaseModel extends BaseModel {
-      static modelName = servicePath
-    }
-    options.Model = DynamicBaseModel
-  }
-  if (!options.Model.modelName) {
-    options.Model.modelName = options.Model.name
-  }
-
   // Create and initialize the Pinia store.
-  const storeOptions: any = makeServiceStore({
-    ssr,
-    id: options.id || `service.${options.servicePath}`,
-    idField: options.idField || idField || 'id',
-    clientAlias,
-    servicePath,
-    clients,
+  const storeOptions = makeServiceStore({
+    ssr: options.ssr,
+    id: options.id,
+    idField: options.idField,
+    clientAlias: options.clientAlias,
+    servicePath: options.servicePath,
+    clients: options.clients,
     Model: options.Model,
-    state,
-    getters,
-    actions,
-    whitelist,
+    state: options.state,
+    getters: options.getters,
+    actions: options.actions,
+    whitelist: options.whitelist,
+    paramsForServer: options.paramsForServer,
+    skipRequestIfExists: options.skipRequestIfExists
   })
-  function useStore(pinia?: Pinia): any {
+
+  function useStore(pinia?: Pinia) {
     const useStoreDefinition = definePiniaStore(storeOptions)
-    const initializedStore: Store = useStoreDefinition(pinia)
+    const initializedStore = useStoreDefinition(pinia)
+
+    initializedStore.isSsr
 
     if (!isInitialized) {
       isInitialized = true
@@ -107,14 +71,8 @@ export function defineStore(options: DefineStoreOptions) {
         store: initializedStore,
         pinia,
         servicePath: options.servicePath,
-        idField: options.idField || idField,
-        clients,
-        // Bind `this` in custom actions to the store.
-        ...Object.keys(actions).reduce((boundActions: any, key: string) => {
-          const fn = (actions as any)[key]
-          boundActions[key] = fn.bind(initializedStore)
-          return boundActions
-        }, {}),
+        idField: options.idField,
+        clients
       })
 
       const client = clients[clientAlias]
@@ -126,10 +84,11 @@ export function defineStore(options: DefineStoreOptions) {
       const service = client.service(servicePath)
 
       const opts = { idField, debounceEventsTime, debounceEventsMaxWait, handleEvents }
-      registerModel(options.Model, initializedStore as any)
-      enableServiceEvents({
+      registerModel(options.Model, initializedStore)
+      enableServiceEvents<M>({
         service,
-        Model: options.Model,
+        // @ts-ignore
+        Model,
         store: initializedStore,
         options: opts,
       })
@@ -138,4 +97,57 @@ export function defineStore(options: DefineStoreOptions) {
   }
 
   return useStore
+}
+
+function makeOptions<
+  Id extends string,
+  M extends BaseModel = BaseModel,
+  S extends StateTree = StateTree, 
+  G extends _GettersTree<S> = {}, 
+  A = {}>(
+  _options: DefineFeathersStoreOptions<Id, M, S, G, A>
+): Required<DefineFeathersStoreOptions<Id, M, S, G, A>> {
+  const defaults = Object.assign(
+    {},
+    defaultSharedState,
+    {
+      id: `service.${_options.servicePath}`,
+      ssr: false,
+      clients: {},
+      enableEvents: true,
+      handleEvents: {},
+      debounceEventsTime: 20,
+      debounceEventsMaxWait: 1000,
+      state: () => ({}),
+      getters: {},
+      actions: {},
+    }
+  )
+
+  _options.clientAlias
+
+  let Model: M
+
+  // If no Model class is provided, create a dynamic one.
+  if (!_options.Model) {
+    Model = class DynamicBaseModel extends BaseModel {
+      static modelName = _options.servicePath
+    }
+  } else {
+    Model = _options.Model
+  }
+
+  if (!Model.modelName) {
+    Model.modelName = Model.name
+  }
+
+
+  const options = Object.assign(defaults, { Model }, _options);
+
+  options.handleEvents.created ||= () => options.enableEvents
+  options.handleEvents.patched ||= () => options.enableEvents
+  options.handleEvents.updated ||= () => options.enableEvents
+  options.handleEvents.removed ||= () => options.enableEvents
+
+  return options;
 }

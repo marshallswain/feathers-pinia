@@ -1,4 +1,4 @@
-import { ServiceOptions, ServiceGetters } from './types'
+import { MakeServiceGettersOptions, ServiceStoreDefaultGetters, ServiceStoreDefaultState } from './types'
 import { Params } from '../types'
 import { Id } from '@feathersjs/feathers'
 
@@ -7,15 +7,29 @@ import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
+import { StateTree, _GettersTree } from 'pinia'
+import { BaseModel } from './base-model'
+import { TypedGetters } from '../utility-types'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
 
-export function makeGetters(options: ServiceOptions): ServiceGetters {
-  return {
+type ServiceStoreTypedGetters<M extends BaseModel = BaseModel> = TypedGetters<
+  ServiceStoreDefaultState<M>,
+  ServiceStoreDefaultGetters<M>
+>
+
+export function makeGetters<
+  M extends BaseModel = BaseModel,
+  S extends StateTree = StateTree,
+  G extends _GettersTree<S> = {}
+>(
+  options: MakeServiceGettersOptions<M, S, G>
+): ServiceStoreDefaultGetters<M> & G {
+  const defaultGetters: ServiceStoreTypedGetters<M> = {
     // Returns the Feathers service currently assigned to this store.
     service() {
-      const client = options.clients[this.clientAlias || options.clientAlias]
+      const client = options.clients[this.clientAlias]
       if (!client) {
         throw new Error(
           `There is no registered FeathersClient named '${this.clientAlias}'. You need to provide one in the 'defineStore' options.`,
@@ -34,30 +48,30 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return this.items.map((item: any) => item[this.idField])
     },
     items() {
-      return Object.values(this.itemsById)
+      return Object.values(this.itemsById) as M[]
     },
     tempIds() {
       return this.temps.map((temp: any) => temp.__tempId)
     },
     temps() {
-      return Object.values(this.tempsById)
+      return Object.values(this.tempsById) as M[]
     },
     cloneIds() {
       return this.clones.map((clone: any) => clone[this.idField])
     },
     clones() {
-      return Object.values(this.clonesById)
+      return Object.values(this.clonesById) as M[]
     },
     findInStore() {
       return (params: Params) => {
         params = { ...unref(params) } || {}
 
         const { paramsForServer, whitelist, itemsById } = this
-        const q = _.omit(params.query || {}, paramsForServer)
+        const q = _.omit(params.query || {}, ...paramsForServer)
 
         const { query, filters } = filterQuery(q, {
           operators: additionalOperators
-            .concat(whitelist)
+            .concat(whitelist || [])
             .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
         let values = _.values(itemsById)
@@ -89,6 +103,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         // Make sure items are instances
         values = values.map((item) => {
           if (item && !item.constructor.modelName) {
+            // @ts-expect-error access action in getter is not intended
             item = this.addOrUpdate(item)
           }
           return item
@@ -125,6 +140,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
 
         // Make sure item is an instance
         if (item && !item.constructor.modelName) {
+          // @ts-expect-error access action in getter is not intended
           item = this.addOrUpdate(item)
         }
         return item
@@ -141,9 +157,10 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
     },
     isRemovePending() {
       return makePending('remove', this)
-    },
-    ...options.getters,
+    }
   }
+
+  return Object.assign(defaultGetters, options.getters);
 }
 
 function makePending(method: string, store: any): boolean {

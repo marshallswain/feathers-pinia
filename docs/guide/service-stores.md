@@ -24,6 +24,7 @@ interface DefineStoreOptions {
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   whitelist?: string[]
+  paramsForServer?: string[]
   state?: () => { [k: string]: any }
   getters?: { [k: string]: (state: any) => any }
   actions?: { [k: string]: Function }
@@ -49,7 +50,8 @@ Here are a few more details about each option:
 - **`handleEvents {Object}`** is an object that lets you customize how realtime events are handled. Each key is a name of a realtime event handler function: `created`, `patched`, `updated`, or `removed`. By default, each handler returns the value of `enableEvents`, which is why setting `enableEvents` to false will disable all handlers. You can provide your own handler to customize and override individual events.
 - **`debounceEventsTime {Number}`** determines how long to wait until flushing a batch of events. Defaults to `20`. If no events have been received in a 20 millisecond period, all gathered events will be processed.
 - **`debounceEventsMaxWait {Number}`** allows forcing events to be flushed after a certain number of milliseconds. Defaults to `1000`.
-- **`whitelist`** is an array of keys to allow in the params object for the `findInStore` getter's `params.query` object.
+- **`whitelist`** is an array of keys to allow in the `findInStore` getter's `params.query` object.
+- **`paramsForServer`** is an array of keys to allow in the params object for the `find` actions's `params.query` object but to omit on the `findInStore` getter's `params.query` object.
 - **`state`** is a function that returns an object of custom state to customize the store.
 - **`getters`** is an object of custom getters to customize the store.
 - **`actions`** is an object of custom actions to customize the store.

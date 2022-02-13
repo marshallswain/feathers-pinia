@@ -46,7 +46,8 @@
     "just-debounce": "^1.1.0",
     "lodash": "^4.17.21",
     "lz-string": "^1.4.4",
-    "sift": "^15.0.0"
+    "sift": "^15.0.0",
+    "type-fest": "^2.11.1"
   },
   "devDependencies": {
     "@cspell/dict-fr-fr": "^2.0.1",
@@ -85,8 +86,8 @@
     "vue-tsc": "^0.29.7"
   },
   "peerDependencies": {
-    "pinia": "^2.0.0-rc.11",
     "@vue/composition-api": "^1.0.0-rc.1",
+    "pinia": "^2.0.0-rc.11",
     "vue": "^2.0.0 || >=3.0.0"
   },
   "peerDependenciesMeta": {

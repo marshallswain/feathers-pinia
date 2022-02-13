@@ -3,17 +3,19 @@ import { AnyData, AnyDataOrArray, ModelInstanceOptions } from './types'
 import { Id, NullableId, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 import { EventEmitter } from 'events'
+import { Store as _Store } from 'pinia'
 
-interface InstanceModifierOptions {
+export interface InstanceModifierOptions {
   models: { [id: string]: any }
   store: any
 }
 
 export class BaseModel {
-  static store = null
+  static readonly store: _Store = null as any as _Store
   static pinia = null
   static servicePath = null
   static idField = ''
+  static modelName = ''
 
   public __isClone!: boolean
 
@@ -36,7 +38,7 @@ export class BaseModel {
   }
 
   public static find(params?: Params) {
-    return (this.store as any).find(params)
+    return this.store.find(params)
   }
   public static findInStore(params?: Params) {
     return (this.store as any).findInStore(params)

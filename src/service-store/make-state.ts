@@ -1,18 +1,18 @@
-import { ServiceState } from './types'
+import { MakeStateOptions, ServiceStoreDefaultState } from './types'
+import { StateTree } from 'pinia'
+import { defaultSharedState } from '../define-store'
+import { BaseModel } from './base-model'
 
-interface MakeStateOptions {
-  servicePath: string
-  clientAlias?: string
-  idField?: string
-  state?: { [key: string]: any }
-  whitelist?: string[]
-}
-
-export function makeState(options: MakeStateOptions) {
-  return (): ServiceState => ({
-    clientAlias: options?.clientAlias || 'api',
-    servicePath: options?.servicePath || '',
-    idField: options?.idField || 'id',
+export function makeState<
+  M extends BaseModel = BaseModel,
+  S extends StateTree = {}
+>(
+  options?: MakeStateOptions<M, S>
+): () => ServiceStoreDefaultState & S {
+  const defaultState: ServiceStoreDefaultState<M> = {
+    clientAlias: options?.clientAlias || defaultSharedState.clientAlias,
+    servicePath: options?.servicePath || defaultSharedState.servicePath,
+    idField: options?.idField || defaultSharedState.idField,
     itemsById: {},
     tempsById: {},
     clonesById: {},
@@ -20,7 +20,7 @@ export function makeState(options: MakeStateOptions) {
       Model: {
         find: false,
         count: false,
-        get: false,
+        get: false
       },
     },
     eventLocksById: {
@@ -30,7 +30,10 @@ export function makeState(options: MakeStateOptions) {
       removed: {},
     },
     pagination: {},
-    whitelist: options?.whitelist || [],
-    ...(typeof options.state === 'function' ? options.state() : options?.state),
-  })
+    whitelist: options?.whitelist || defaultSharedState.whitelist,
+    paramsForServer: options?.paramsForServer || defaultSharedState.paramsForServer,
+    skipRequestIfExists: options?.skipRequestIfExists || defaultSharedState.skipRequestIfExists
+  }
+  const state = options?.state?.()
+  return () => Object.assign(defaultState, state)
 }
