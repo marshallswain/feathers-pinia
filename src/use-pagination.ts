@@ -2,6 +2,18 @@ import { computed, watch, Ref, unref } from 'vue-demi'
 
 export function usePagination(pagination: any, latestQuery: Ref) {
   /**
+   * The number of items returned in the latestQuery prop.
+   */
+   const itemsCount = computed(() => {
+    const q = unref(latestQuery)
+    if (q && q.response) {
+      return q.response.total
+    } else {
+      return 0
+    }
+  })
+
+  /**
    * The number of pages available based on the results returned in the latestQuery prop.
    */
   const pageCount = computed(() => {
@@ -80,6 +92,7 @@ export function usePagination(pagination: any, latestQuery: Ref) {
   }
 
   return {
+    itemsCount,
     pageCount,
     currentPage,
     canPrev,
