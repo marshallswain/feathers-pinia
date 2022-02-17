@@ -56,6 +56,7 @@ const {
   canNext,
   canPrev,
   currentPage,
+  itemsCount,
   pageCount,
   toPage,
   toStart,
@@ -72,6 +73,7 @@ The return value from `usePagination` is an object containing these 9 utilities:
 - `canNext {Computed<Boolean>}` will be `true` if there is a next page. If it's false, you can style a "Next Page" button to let the user know the that the functionality is not available.
 - `canPrev {Computed<Boolean>}` will be `true if there is a previous page. If it's false, you can style a "Previous Page" button to let the user know that the functionality is not available.
 - `currentPage {Computed<Number>}` is the current page number in the overall set of results.
+- `itemsCount {Computed<Number>}` is the total number of items in the overall set of results.
 - `pageCount {Computed<Number>}` is the total number of pages that are available in the set of results.
 - `toPage(pageNumber) {Function}` navigates to the page number provided as the first argument.
 - `toStart() {Function}` goes to the first page.
