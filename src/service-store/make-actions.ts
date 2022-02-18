@@ -273,12 +273,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       // Assure each item is an instance
       items.forEach((item: any, index: number) => {
         if (this.isSsr || !(item instanceof options.Model)) {
-          const classes = { [this.servicePath]: options.Model }
-          items[index] = new classes[this.servicePath](item)
+          items[index] = new options.Model(item)
         }
       })
 
       // Move items with both __tempId and idField from tempsById to itemsById
+      // Move clones with both __tempId and idField in clonesById
       const withBoth = items.filter((i: any) => getId(i) != null && getTempId(i) != null)
       withBoth.forEach((item: any) => {
         const id = getId(item)
@@ -289,6 +289,20 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           delete this.tempsById[item.__tempId]
           delete this.itemsById[id].__tempId
         }
+
+        const existingClone = this.clonesById[item.__tempId]
+        if (existingClone) {
+          //assign id
+          const { idField } = this;
+          existingClone[idField] = id;
+
+          //move
+          delete this.clonesById[item.__tempId]
+          this.clonesById[id] = existingClone
+
+          delete this.clonesById[id].__tempId
+        }
+
         delete item.__tempId
       })
 
@@ -312,19 +326,16 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     },
 
     clone(item: any, data = {}) {
-      const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
-      const id = getAnyId(item)
-      const originalItem = this[placeToStore][id]
-      const existing = this.clonesById[getAnyId(item)]
-      if (existing && existing.constructor.name === originalItem.constructor.name) {
-        const readyToReset = Object.assign(existing, originalItem, data)
-        Object.keys(readyToReset).forEach((key) => {
-          if (!hasOwn(originalItem, key)) {
-            delete readyToReset[key]
-          }
-        })
-        return readyToReset
+      // reset existing clone
+      const resetted = this.resetClone(item, data);
+      if (resetted) {
+        return resetted;
       } else {
+        // clone not existing
+        const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
+        const id = getAnyId(item, this.idField)
+        const originalItem = this[placeToStore][id]
+
         const clone = fastCopy(originalItem)
         Object.defineProperty(clone, '__isClone', {
           value: true,
@@ -336,13 +347,34 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         return this.clonesById[id] // Must return the item from the store
       }
     },
+
     commit(item: any) {
-      const id = getAnyId(item)
+      const id = getAnyId(item, this.idField)
       if (id != null) {
         const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
         this[placeToStore][id] = fastCopy(this.clonesById[id])
-        return this.itemsById[id]
+        return this[placeToStore][id]
       }
+    },
+
+    resetClone(item: any, data = {}) {
+      const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
+      const id = getAnyId(item, this.idField)
+      const originalItem = this[placeToStore][id]
+      const existing = this.clonesById[getAnyId(item, this.idFIeld)]
+
+      if (!existing || existing.constructor.name !== originalItem.constructor.name) {
+        return; 
+      }
+
+      const readyToReset = Object.assign(existing, originalItem, data)
+      Object.keys(readyToReset).forEach((key) => {
+        if (!hasOwn(originalItem, key)) {
+          delete readyToReset[key]
+        }
+      })
+
+      return readyToReset
     },
 
     /**

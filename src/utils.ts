@@ -38,8 +38,9 @@ export function getTempId(item: any) {
     return stringifyIfObject(item.__tempId)
   }
 }
-export function getAnyId(item: any) {
-  return getId(item) != undefined ? getId(item) : getTempId(item)
+export function getAnyId(item: any, idField?: string) {
+  const id = getId(item, idField);
+  return (id != undefined) ? id : getTempId(item);
 }
 
 export function getQueryInfo(

@@ -7,6 +7,7 @@ import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
+import { getAnyId, getId, getTempId } from '../utils'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
@@ -31,39 +32,63 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
       return !!ssr
     },
     itemIds() {
-      return this.items.map((item: any) => item[this.idField])
+      return this.items.map((item: any) => getId(item, this.idField))
     },
     items() {
       return Object.values(this.itemsById)
     },
     tempIds() {
-      return this.temps.map((temp: any) => temp.__tempId)
+      return this.temps.map((temp: any) => getTempId(temp))
     },
     temps() {
       return Object.values(this.tempsById)
     },
     cloneIds() {
-      return this.clones.map((clone: any) => clone[this.idField])
+      return this.clones.map((clone: any) => getAnyId(clone, this.idField))
     },
     clones() {
       return Object.values(this.clonesById)
+    },
+    itemsAndTemps() {
+      return this.items.concat(this.temps);
+    },
+    itemsAndClones() {
+      return this.items.map((item: any) => {
+        const id = getId(item, this.idField)
+        return this.clonesById[id] || item
+      });
+    },
+    itemsTempsAndClones() {
+      return this.itemsAndTemps.map((item: any) => {
+        const id = getId(item, this.idField)
+
+        return (id != null && this.clonesById[id]) || 
+               (item.__tempId != null && this.clonesById[item.__tempId]) ||
+               item;
+      })
+    },
+    operators() {
+      return additionalOperators
+        .concat(this.whitelist)
+        .concat(this.service.options?.allow || this.service.options?.whitelist || [])
     },
     findInStore() {
       return (params: Params) => {
         params = { ...unref(params) } || {}
 
-        const { paramsForServer, whitelist, itemsById } = this
-        const q = _.omit(params.query || {}, paramsForServer)
+        const q = _.omit(params.query || {}, this.paramsForServer)
 
-        const { query, filters } = filterQuery(q, {
-          operators: additionalOperators
-            .concat(whitelist)
-            .concat(this.service.options?.allow || this.service.options?.whitelist || []),
-        })
-        let values = _.values(itemsById)
+        const { query, filters } = filterQuery(q, { operators: this.operators })
 
-        if (params.temps) {
-          values.push(..._.values(this.tempsById))
+        let values: any[]
+        if (!params.temps && !params.clones) {
+          values = this.items
+        } else if (params.temps && !params.clones) {
+          values = this.itemsAndTemps
+        } else if (!params.temps && params.clones) {
+          values = this.itemsAndClones
+        } else {
+          values = this.itemsTempsAndClones
         }
 
         values = values.filter(sift(query))
@@ -82,8 +107,12 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
           values = values.slice(0, filters.$limit)
         }
 
+        // keep transformed items by $select separately
+        // so `addOrUpdate` can transform the original item to an instance
+        // otherwise the picked Values would go through `addOrUpdate` every time
+        let pickedValues: any[] | undefined = undefined;
         if (filters.$select) {
-          values = values.map((value) => _.pick(value, ...filters.$select.slice()))
+          pickedValues = values.map((value) => _.pick(value, ...filters.$select))
         }
 
         // Make sure items are instances
@@ -98,7 +127,7 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
           total,
           limit: filters.$limit || 0,
           skip: filters.$skip || 0,
-          data: values,
+          data: pickedValues || values,
         }
       }
     },
@@ -120,7 +149,11 @@ export function makeGetters(options: ServiceOptions): ServiceGetters {
         id = unref(id)
         params = fastCopy(unref(params) || {})
 
-        let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
+        let item
+        if (params.clones) {
+          item = this.clonesById[id] && select(params, this.idField)(this.clonesById[id])
+        }
+        if (!item) item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
         if (!item) item = this.tempsById[id] && select(params, '__tempId')(this.tempsById[id])
 
         // Make sure item is an instance
