@@ -42,7 +42,7 @@ export function defineStore<
   })
 
   // Create and initialize the Pinia store.
-  const storeOptions = makeServiceStore({
+  const storeOptions = makeServiceStore<Id, M, S, G, A>({
     ssr: options.ssr,
     id: options.id,
     idField: options.idField,
@@ -59,7 +59,7 @@ export function defineStore<
   })
 
   function useStore(pinia?: Pinia) {
-    const useStoreDefinition = definePiniaStore(storeOptions)
+    const useStoreDefinition = definePiniaStore<Id, S, G, A>(storeOptions)
     const initializedStore = useStoreDefinition(pinia)
 
     initializedStore.isSsr

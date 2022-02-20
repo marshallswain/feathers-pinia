@@ -1,7 +1,7 @@
 import { DefineStoreOptionsBase, StateTree, Store, StoreDefinition, _GettersTree } from 'pinia';
-import { AnyData, DefaultServiceStore, ServiceStoreDefaultActions, ServiceStoreDefaultGetters, ServiceStoreDefaultState, ServiceStoreSharedStateDefineOptions } from './service-store/types'
+import { AnyData, ServiceStoreDefaultActions, ServiceStoreDefaultGetters, ServiceStoreDefaultState, ServiceStoreSharedStateDefineOptions } from './service-store/types'
 import { Application as FeathersClient } from '@feathersjs/feathers'
-import { BaseModel, InstanceModifierOptions } from './service-store/base-model';
+import { BaseModel } from './service-store/base-model';
 import { TypedActions, TypedGetters } from './utility-types';
 import { Class, SetOptional } from 'type-fest';
 
