@@ -88,11 +88,12 @@ describe('usePagination', () => {
 
     await timeout(200)
 
-    const { currentPage, pageCount, next, canNext, canPrev } = usePagination(
+    const { currentPage, itemsCount, pageCount, next, canNext, canPrev } = usePagination(
       pagination,
       latestQuery,
     )
     expect(currentPage.value).toBe(1)
+    expect(itemsCount.value).toBe(totalItems)
     expect(pageCount.value).toBe(Math.ceil(totalItems / pageLimit))
     expect(canNext.value).toBeTruthy()
     expect(canPrev.value).toBeFalsy()

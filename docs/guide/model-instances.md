@@ -47,7 +47,7 @@ So let's dive into the common interface. Here's the instance API.
 
 ### `instance.save(params)`
 
-The `save` method is a convenience wrapper for the `create/patch` methods, by default. If the records has no `_id` or `id`, the `instance.create()`method will be used. The`params` argument will be used in the Feathers client request. See the [Feathers Service](https://docs.feathersjs.com/guides/basics/services.html#service-methods) docs, for reference on where params are used in each method.
+The `save` method is a convenience wrapper for the `create/patch` methods, by default. If the records has no `id` or `_id`, the `instance.create()`method will be used. The`params` argument will be used in the Feathers client request. See the [Feathers Service](https://docs.feathersjs.com/guides/basics/services.html#service-methods) docs, for reference on where params are used in each method.
 
 ```ts
 import { Todo } from '../stores/todos'

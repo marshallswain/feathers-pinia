@@ -187,9 +187,10 @@ export function useFind<M extends Model = Model>({
   })
 
   watch(
-    () => wrappedQueryWhen.value,
-    (val) => {
-      if (val) {
+    () => [getParamsForFetch(), wrappedQueryWhen.value],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ([params, queryWhen]: (boolean | Params | null)[]) => {
+      if (queryWhen) {
         findProxy()
       }
     },
