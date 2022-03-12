@@ -70,6 +70,11 @@ export class BaseModel {
     return (this.store as any).removeFromStore(data)
   }
 
+  get __isTemp() {
+    const { idField } = this.constructor as typeof BaseModel
+    return getId(this, idField) != null
+  }
+
   get isSavePending() {
     const { store } = this.constructor as typeof BaseModel
     const pending = (store as any).pendingById[getId(this)]
