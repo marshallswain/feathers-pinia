@@ -33,6 +33,11 @@ const todo = new models.api.Todo({ name: 'do something' })
 todo.addToStore()
 ```
 
+### Calling .clone() on a clone is allowed
+
+In Feathers-Vuex you couldn't call `.clone()` on a clone. Now, calling `.clone()` will do the same as
+calling `.reset()`.
+
 ### Store Structure Changes
 
 Since `state`, `getters`, and `actions` all live inside the same Pinia store object, the getters have been renamed to avoid colliding with action names.
@@ -69,4 +74,5 @@ Since `state`, `getters`, and `actions` all live inside the same Pinia store obj
 - **`clearAll`**
 - **`clone`**
 - **`commit`**
+- **`resetCopy`**
 - **`hydrateAll`** might be deprecated. Hydration with Pinia is as simple as `Object.assign(store, data)`.

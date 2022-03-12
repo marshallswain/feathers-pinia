@@ -40,7 +40,7 @@ describe('Clone & commit', () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
-    const clone = message.clone({ foo: 'bar' })
+    const clone = message.reset({ foo: 'bar' })
     const reset = clone.clone()
 
     expect(reset.foo).toBeUndefined()

@@ -58,10 +58,10 @@ export class BaseModel {
     return (this.store as any).addToStore(data)
   }
   public static update(id: Id, data: AnyData, params?: Params) {
-    return (this.store as any).update(id, data, params);
+    return (this.store as any).update(id, data, params)
   }
   public static patch(id: NullableId, data: AnyData, params?: Params) {
-    return (this.store as any).patch(id, data, params);
+    return (this.store as any).patch(id, data, params)
   }
   public static remove(id: NullableId, params?: Params) {
     return (this.store as any).remove(id, params)
@@ -127,12 +127,11 @@ export class BaseModel {
   }
 
   /**
-   * Update a store instance to match a clone.
+   * Update a clone to match a store instance.
    */
-  public reset(): this {
+  public reset(data: AnyData = {}): this {
     const { store } = this.constructor as typeof BaseModel
-
-    return (store as any).resetCopy(this)
+    return (store as any).clone(this, data)
   }
 
   /**

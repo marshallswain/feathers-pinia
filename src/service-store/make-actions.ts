@@ -3,7 +3,7 @@ import {
   ServiceActions,
   UpdatePaginationForQueryOptions,
   RequestType,
-  AnyDataOrArray
+  AnyDataOrArray,
 } from './types'
 import { Params } from '../types'
 import { Id, NullableId } from '@feathersjs/feathers'
@@ -163,7 +163,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (!Array.isArray(data)) {
         this.setPendingById(getId(data) || data[tempIdField], 'create', true)
       }
-      
+
       return this.service
         .create(cleanData(data, this.tempIdField), params)
         .then((response: any) => {
@@ -278,11 +278,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         }
       })
 
-      const { tempIdField } = this;
+      const { tempIdField } = this
 
       // Move items with both tempIdField and idField from tempsById to itemsById
-      const withBoth = items.filter((i: any) => 
-        getId(i) != null && getTempId(i, tempIdField) != null)
+      const withBoth = items.filter(
+        (i: any) => getId(i) != null && getTempId(i, tempIdField) != null,
+      )
       withBoth.forEach((item: any) => {
         const id = getId(item)
         const tempId = getTempId(item, tempIdField)
