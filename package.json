@@ -46,7 +46,8 @@
     "just-debounce": "^1.1.0",
     "lodash": "^4.17.21",
     "lz-string": "^1.4.4",
-    "sift": "^15.0.0"
+    "sift": "^15.0.0",
+    "vue-demi": "latest"
   },
   "devDependencies": {
     "@cspell/dict-fr-fr": "^2.0.1",
@@ -81,7 +82,6 @@
     "vite": "^2.6.14",
     "vitepress": "^0.20.1",
     "vue": "^3.2.6",
-    "vue-demi": "latest",
     "vue-tsc": "^0.29.7"
   },
   "peerDependencies": {
