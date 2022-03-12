@@ -12,6 +12,7 @@ export interface DefineStoreOptions {
   servicePath: string
   Model?: any
   idField?: 'id' | '_id' | string
+  tempIdField?: '__tempId' | string
   id?: string
   clientAlias?: 'api' | string
   clients?: { [alias: string]: FeathersClient }
@@ -25,13 +26,14 @@ export interface DefineStoreOptions {
   actions?: { [k: string]: Function }
 }
 
-export function defineStore(options: DefineStoreOptions) {
-  const defaults = {
+export function defineStore(_options: DefineStoreOptions) {
+  const defaults: Omit<Required<DefineStoreOptions>, 'Model' | 'handleEvents' | 'id'> = {
     ssr: false,
     clients: {},
     clientAlias: 'api',
     servicePath: '',
     idField: 'id',
+    tempIdField: '__tempId',
     enableEvents: true,
     debounceEventsTime: 20,
     debounceEventsMaxWait: 1000,
@@ -40,13 +42,14 @@ export function defineStore(options: DefineStoreOptions) {
     getters: {},
     actions: {},
   }
-  options = Object.assign({}, defaults, options)
+  const options = Object.assign({}, defaults, _options)
   const actions: any = options.actions
   const clientAlias = options.clientAlias || 'api'
   const {
     ssr,
     servicePath,
     idField,
+    tempIdField,
     enableEvents,
     debounceEventsTime,
     debounceEventsMaxWait,
@@ -86,7 +89,8 @@ export function defineStore(options: DefineStoreOptions) {
   const storeOptions: any = makeServiceStore({
     ssr,
     id: options.id || `service.${options.servicePath}`,
-    idField: options.idField || idField || 'id',
+    idField,
+    tempIdField,
     clientAlias,
     servicePath,
     clients,
@@ -107,7 +111,8 @@ export function defineStore(options: DefineStoreOptions) {
         store: initializedStore,
         pinia,
         servicePath: options.servicePath,
-        idField: options.idField || idField,
+        idField,
+        tempIdField,
         clients,
         // Bind `this` in custom actions to the store.
         ...Object.keys(actions).reduce((boundActions: any, key: string) => {

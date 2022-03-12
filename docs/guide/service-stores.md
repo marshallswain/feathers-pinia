@@ -16,6 +16,7 @@ interface DefineStoreOptions {
   servicePath: string
   Model?: any
   idField?: 'id' | '_id' | string
+  tempIdField?: '__tempId' | string
   id?: string
   clientAlias?: 'api' | string
   clients?: { [alias: string]: FeathersClient }
@@ -42,6 +43,7 @@ Here are a few more details about each option:
 - **`servicePath {String}`** is the same as the Feathers service path. **_required_**
 - **`Model {ModelClass}`** is the class to use for each instance. If you don't provide one, a generic class extending `BaseModel` will be created and used. For any record-level logic, you'll need t create a custom class extending BaseModel. See [Model Classes](./model-classes)
 - **`idField {String}`** is the attribute on the record that will serve as the unique identifier or "primary key" in the database. See [Model Classes](./model-classes#compound-keys) for a recipe that might work for **compound keys** (multiple fields).
+- **`tempIdField {String}`** is the attribute on the record that will serve as the unique identifier for items that are temporarily created in the store but not send to the server yet
 - **`id {String}`** is the identifier of the Pinia store.
 - **`clientAlias {String}`** is the name of the FeathersClient instance to use for this service. See [State](#state). It must match a value in the `clients` option. Defaults to `api`
 - **`clients {Object}`** is an object whose keys are `clientAlias` strings with their corresponding `FeathersClient` values. The default `api` key must be provided. Additional keys can represent clients to other API servers.
@@ -66,6 +68,7 @@ export interface ServiceState<M extends Model = Model> {
     [k: string]: any
   }
   idField: string
+  tempIdField: string
   itemsById: {
     [k: string]: M
     [k: number]: M
@@ -98,6 +101,7 @@ Let's go over each part of the state in more detail:
 - **`servicePath`** is the same as the `servicePath` option that was provided during setup. See the `service` getter.
 - **`pagination`** keeps track of the latest pagination data for each paginated request to the server. You generally won't manually modify this.
 - **`idField`** is the same as the `idField` option that was provided during setup. It specifies which field is the "primary key" identifier in the database.
+- **`tempIdField`** is the same as the `tempIdField` option that was provided during setup. It specifies which field is the temporary identifier.
 - **`itemsById`** generally contains records retrieved from the API server.
 - **`tempsById`** holds records that don't have an `idField` assigned from the API server. They only exist on the client.
 - **`clonesById`** all clones, keyed by id. See [Model Instances](./model-instances).

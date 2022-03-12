@@ -29,6 +29,7 @@ The following static attributes exist directly on the Model class:
 - `pinia` - the `pinia` instance
 - `servicePath` - the path where the Feathers service is registered.
 - `idField` - the field that contains the unique identifier for this service.
+- `tempIdField` - the field that contains a temporary id
 
 There are also a few computed ES5 getters for tracking pending request status. These are only accurate when you use methods from the store or Model class. If you use the Feathers client, directly, it circumvents the actions that update these values.
 

@@ -38,7 +38,8 @@ describe('Lists', () => {
   })
 
   test('tempIds getter returns temp ids in tempsById', async () => {
-    const tempIds = messagesService.temps.map((temp: any) => temp.__tempId);
+    const {tempIdField} = messagesService
+    const tempIds = messagesService.temps.map((temp: any) => temp[tempIdField]);
     expect(messagesService.tempIds).toStrictEqual(tempIds)
   });
 
