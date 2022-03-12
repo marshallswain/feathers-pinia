@@ -109,6 +109,10 @@ describe('useFind', () => {
         expect(context.qidData)
         expect(context.queryData)
         expect(context.pageData)
+        expect(context.isPending)
+        expect(context.haveBeenRequested)
+        expect(context.haveLoaded)
+        expect(context.error).toBeNull
         return isReady.value
       })
       const queryWhen: QueryWhenFunction = computed(() => queryWhenFunction)

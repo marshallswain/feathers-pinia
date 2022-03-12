@@ -3,6 +3,7 @@ import debounce from 'just-debounce'
 import { Params, Paginated } from './types'
 import { getQueryInfo, getItemsFromQueryInfo } from './utils'
 import { AnyData, Model, QueryWhenFunction } from './service-store/types'
+import { stat } from 'fs'
 
 interface UseFindOptions {
   model: any
@@ -122,6 +123,10 @@ export function useFind<M extends Model = Model>({
         qidData,
         queryData,
         pageData,
+        isPending: computed(() => state.isPending),
+        haveBeenRequested: computed(() => state.haveBeenRequested),
+        haveLoaded: computed(() => state.haveLoaded),
+        error: computed(() => state.error),
       }
       return val(context)
     }

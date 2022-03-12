@@ -333,17 +333,13 @@ export interface ModelStatic extends EventEmitter {
    * Add a item to the pinia store
    * @param data item to add to store
    */
-  addToStore<M extends Model = Model>(
-    data: AnyData
-  ): M
+  addToStore<M extends Model = Model>(data: AnyData): M
 
   /**
    * Add multiple items to the pinia store
    * @param data items to add to store
    */
-  addToStore<M extends Model = Model>(
-    data: AnyData[]
-  ): M[]
+  addToStore<M extends Model = Model>(data: AnyData[]): M[]
 
   /**
    * A proxy for the `update` action
@@ -372,7 +368,7 @@ export interface ModelStatic extends EventEmitter {
    * A proxy for the `removeFromStore` action
    * @param data data to remove from store
    */
-   remove<T extends AnyDataOrArray = AnyDataOrArray>(data: T): T
+  remove<T extends AnyDataOrArray = AnyDataOrArray>(data: T): T
 }
 
 export interface UpdatePaginationForQueryOptions {
@@ -398,5 +394,9 @@ export interface QueryWhenContext {
   qidData: PaginationStateQid
   queryData: PaginationStateQuery
   pageData: PaginationStatePage
+  isPending: ComputedRef<Boolean>
+  haveBeenRequested: ComputedRef<Boolean>
+  haveLoaded: ComputedRef<Boolean>
+  error: any
 }
 export type QueryWhenFunction = ComputedRef<(context: QueryWhenContext) => boolean>
