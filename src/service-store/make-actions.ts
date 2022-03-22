@@ -21,7 +21,7 @@ import {
   getArray,
   hasOwn,
 } from '../utils'
-import { unref } from 'vue-demi'
+import { unref, set } from 'vue-demi'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PaginationOptions {
@@ -250,11 +250,11 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item, this.tempIdField)))
         .filter((id: any) => id != null)
 
-      this.itemsById = _.omit(this.itemsById, ...idsToRemove)
+      set(this, 'itemsById', _.omit(this.itemsById, ...idsToRemove))
 
-      this.clonesById = _.omit(this.clonesById, ...idsToRemove)
-      this.pendingById = _.omit(this.pendingById, ...idsToRemove)
-      this.tempsById = _.omit(this.tempsById, ...idsToRemove)
+      set(this, 'clonesById', _.omit(this.clonesById, ...idsToRemove))
+      set(this, 'pendingById', _.omit(this.pendingById, ...idsToRemove))
+      set(this, 'tempsById', _.omit(this.tempsById, ...idsToRemove))
 
       return data
     },
@@ -274,7 +274,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       items.forEach((item: any, index: number) => {
         if (this.isSsr || !(item instanceof options.Model)) {
           const classes = { [this.servicePath]: options.Model }
-          items[index] = new classes[this.servicePath](item)
+          set(items, index, new classes[this.servicePath](item))
         }
       })
 
@@ -289,8 +289,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         const tempId = getTempId(item, tempIdField)
         const existingTemp = this.tempsById[tempId]
         if (existingTemp) {
-          this.itemsById[id] = existingTemp
-          Object.assign(this.itemsById[id], item)
+          set(this.itemsById, id, existingTemp)
+          set(this.itemsById, id, Object.assign({}, this.itemsById[id], item))
           delete this.tempsById[tempId]
           delete this.itemsById[id][tempId]
         }
@@ -300,22 +300,22 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       // Save items that have ids
       const withId = items.filter((i: any) => getId(i) != null)
       const itemsById = keyBy(withId)
-      Object.assign(this.itemsById, itemsById)
+      set(this, 'itemsById', Object.assign({}, this.itemsById, itemsById))
 
       // Save temp items
       const temps = items
         .filter((i: any) => getId(i) == null)
         .map((i: any) => assignTempId(i, tempIdField))
       const tempsById = keyBy(temps, (i: any) => i[tempIdField])
-      Object.assign(this.tempsById, tempsById)
+      set(this, 'tempsById', Object.assign({}, this.tempsById, tempsById))
 
       return isArray ? items : items[0]
     },
 
     clearAll() {
-      this.itemsById = {}
-      this.tempsById = {}
-      this.clonesById = {}
+      set(this, 'itemsById', {})
+      set(this, 'tempsById', {})
+      set(this, 'clonesById', {})
     },
 
     clone(item: any, data = {}) {
@@ -340,7 +340,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
         Object.assign(clone, data)
 
-        this.clonesById[id] = clone
+        set(this.clonesById, id, clone)
         return this.clonesById[id] // Must return the item from the store
       }
     },
@@ -349,7 +349,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       if (id != null) {
         const tempId = getTempId(item, this.tempIdField)
         const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
-        this[placeToStore][id] = fastCopy(this.clonesById[id])
+        set(this[placeToStore], id, fastCopy(this.clonesById[id]))
         return this.itemsById[id]
       }
     },
@@ -371,14 +371,14 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const { queryId, queryParams, pageId, pageParams } = getQueryInfo({ qid, query }, response)
 
       if (!this.pagination[qid]) {
-        this.pagination[qid] = {}
+        set(this.pagination, qid, {})
       }
 
       if (!hasOwn(query, '$limit') && hasOwn(response, 'limit')) {
-        this.pagination.defaultLimit = response.limit
+        set(this.pagination, 'defaultLimit', response.limit)
       }
       if (!hasOwn(query, '$skip') && hasOwn(response, 'skip')) {
-        this.pagination.defaultSkip = response.skip
+        set(this.pagination, 'defaultSkip', response.skip)
       }
 
       const mostRecent = {
@@ -395,12 +395,12 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       const qidData = this.pagination[qid] || {}
       Object.assign(qidData, { mostRecent })
-      qidData[queryId] = qidData[queryId] || {}
+      set(qidData, queryId, qidData[queryId] || {})
       const queryData = {
         total,
         queryParams,
       }
-      Object.assign(qidData[queryId], queryData)
+      set(qidData, queryId, Object.assign({}, qidData[queryId], queryData))
 
       const ssr = preserveSsr ? existingPageData?.ssr : unref(options.ssr)
 
@@ -411,13 +411,13 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       const newState = Object.assign({}, this.pagination[qid], qidData)
 
-      this.pagination[qid] = newState
+      set(this.pagination, qid, newState)
     },
 
     setPendingById(id: string | number, method: RequestType, val: boolean) {
       const updatePendingState = (id: string | number, method: RequestType) => {
-        this.pendingById[id] = this.pendingById[id] || ({ [method]: val } as any)
-        this.pendingById[id][method] = val
+        set(this.pendingById, id, this.pendingById[id] || ({ [method]: val } as any))
+        set(this.pendingById[id], method, val)
       }
       if (id != null) {
         updatePendingState(id, method)
@@ -446,7 +446,7 @@ function setEventLockState(data: any, event: string, val: boolean, store: any) {
     if (currentLock) {
       delete store.eventLocksById[event][id]
     } else {
-      store.eventLocksById[event][id] = true
+      set(store.eventLocksById[event], id, true)
     }
   })
 }
