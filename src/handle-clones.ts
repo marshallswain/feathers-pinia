@@ -1,4 +1,4 @@
-import { computed, reactive, watch } from 'vue-demi'
+import { computed, reactive, watch, set } from 'vue-demi'
 import { isEqual, omit } from 'lodash'
 import { _ } from '@feathersjs/commons'
 import { getId, getAnyId, hasOwn } from './utils'
@@ -77,7 +77,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
           (id) => {
             // Update the clones and handlers
             if (!clones[key] || id !== getAnyId(clones[key].value, store.tempIdField)) {
-              clones[key] = clone
+              set(clones, key, clone)
               /**
                * Each save_handler has the same name as the prop, prepended with `save_`.
                * An `environment` prop would have a `save_environment` handler, and
