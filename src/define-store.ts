@@ -59,6 +59,7 @@ export function defineStore<
   })
 
   function useStore(pinia?: Pinia) {
+    // @ts-expect-error todo
     const useStoreDefinition = definePiniaStore<Id, S, G, A>(storeOptions)
     const initializedStore = useStoreDefinition(pinia)
 
@@ -84,11 +85,12 @@ export function defineStore<
       const service = client.service(servicePath)
 
       const opts = { idField, debounceEventsTime, debounceEventsMaxWait, handleEvents }
+      // @ts-expect-error todo
       registerModel(options.Model, initializedStore)
       enableServiceEvents<M>({
         service,
-        // @ts-ignore
         Model,
+        // @ts-expect-error todo
         store: initializedStore,
         options: opts,
       })
@@ -96,6 +98,7 @@ export function defineStore<
     return initializedStore
   }
 
+  // @ts-expect-error todo
   return useStore
 }
 
@@ -130,6 +133,7 @@ function makeOptions<
 
   // If no Model class is provided, create a dynamic one.
   if (!_options.Model) {
+    // @ts-expect-error todo
     Model = class DynamicBaseModel extends BaseModel {
       static modelName = _options.servicePath
     }
@@ -137,7 +141,9 @@ function makeOptions<
     Model = _options.Model
   }
 
+  // @ts-expect-error todo
   if (!Model.modelName) {
+    // @ts-expect-error todo
     Model.modelName = Model.name
   }
 

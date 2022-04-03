@@ -4,6 +4,7 @@ import { models } from '../models'
 import { DefineFeathersStoreOptions, HandledEvents } from '../types'
 import { DefaultServiceStore } from './types'
 import { BaseModel } from '.'
+// @ts-expect-error todo
 import { Class } from 'type-fest'
 import { EventEmitter } from 'stream'
 
@@ -64,12 +65,12 @@ export function enableServiceEvents<
     flushAddOrUpdateQueue: _debounce(
       async function () {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         const values = Object.values(this.addOrUpdateById)
         if (values.length === 0) return
         await store.addOrUpdate(values)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         this.addOrUpdateById = {}
       },
       options.debounceEventsTime || 20,
@@ -78,12 +79,12 @@ export function enableServiceEvents<
     flushRemoveItemQueue: _debounce(
       function () {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         const values = Object.values(this.removeItemById)
         if (values.length === 0) return
         store.removeFromStore(values)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         this.removeItemById = {}
       },
       options.debounceEventsTime || 20,

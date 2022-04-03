@@ -1,17 +1,16 @@
 import { getId } from '../utils'
-import { AnyData, AnyDataOrArray, ModelInstanceOptions } from './types'
+import { AnyData, AnyDataOrArray, Model, ModelInstanceOptions, ServiceStoreDefault } from './types'
 import { Id, NullableId, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 import { EventEmitter } from 'events'
-import { Store as _Store } from 'pinia'
 
 export interface InstanceModifierOptions {
   models: { [id: string]: any }
   store: any
 }
 
-export class BaseModel {
-  static readonly store: _Store = null as any as _Store
+export class BaseModel implements Model, AnyData {
+  static readonly store: ServiceStoreDefault
   static pinia = null
   static servicePath = null
   static idField = ''
@@ -40,62 +39,62 @@ export class BaseModel {
   public static find(params?: Params) {
     return this.store.find(params)
   }
-  public static findInStore(params?: Params) {
-    return (this.store as any).findInStore(params)
+  public static findInStore(params: Params) {
+    return this.store.findInStore(params)
   }
   public static get(id: Id, params?: Params) {
-    return (this.store as any).get(id, params)
+    return this.store.get(id, params)
   }
   public static getFromStore(id: Id, params?: Params) {
-    return (this.store as any).getFromStore(id, params)
+    return this.store.getFromStore(id, params)
   }
   public static count(params?: Params) {
-    return (this.store as any).count(params)
+    return this.store.count(params)
   }
-  public static countInStore(params?: Params) {
-    return (this.store as any).countInStore(params)
+  public static countInStore(params: Params) {
+    return this.store.countInStore(params)
   }
-  public static addToStore(data?: AnyDataOrArray) {
-    return (this.store as any).addToStore(data)
+  public static addToStore(data: AnyDataOrArray) {
+    return this.store.addToStore(data)
   }
   public static update(id: Id, data: AnyData, params?: Params) {
-    return (this.store as any).update(id, data, params);
+    return this.store.update(id, data, params);
   }
   public static patch(id: NullableId, data: AnyData, params?: Params) {
-    return (this.store as any).patch(id, data, params);
+    return this.store.patch(id, data, params);
   }
   public static remove(id: NullableId, params?: Params) {
-    return (this.store as any).remove(id, params)
+    return this.store.remove(id, params)
   }
   public static removeFromStore(data: AnyDataOrArray) {
-    return (this.store as any).removeFromStore(data)
+    return this.store.removeFromStore(data)
   }
 
-  get isSavePending() {
+  get isSavePending(): boolean {
     const { store } = this.constructor as typeof BaseModel
-    const pending = (store as any).pendingById[getId(this)]
+    const pending = store.pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
   }
-  get isCreatePending() {
+  get isCreatePending(): boolean {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.create || false
+    return store.pendingById[getId(this)]?.create || false
   }
-  get isPatchPending() {
+  get isPatchPending(): boolean {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.patch || false
+    return store.pendingById[getId(this)]?.patch || false
   }
-  get isUpdatePending() {
+  get isUpdatePending(): boolean {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.update || false
+    return store.pendingById[getId(this)]?.update || false
   }
-  get isRemovePending() {
+  get isRemovePending(): boolean {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.remove || false
+    return store.pendingById[getId(this)]?.remove || false
   }
 
-  get isPending() {
+  get isPending(): boolean {
     const { store } = this.constructor as typeof BaseModel
-    const pending = (store as any).pendingById[getId(this)]
+    const pending = store.pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || pending?.remove || false
   }
 
@@ -103,16 +102,17 @@ export class BaseModel {
    * Add the current record to the store
    */
   public addToStore() {
-    const { store }: { store: any } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as typeof BaseModel
     return store.addToStore(this)
   }
 
   /**
-   * clone the current record using the `createCopy` mutation
+   * clone the current record using the `clone` action
    */
-  public clone(data: AnyData = {}): this {
+  public clone(data?: Partial<this>): this {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).clone(this, data)
+    // @ts-expect-error todo
+    return store.clone(this, data)
   }
 
   /**
@@ -121,7 +121,8 @@ export class BaseModel {
   public commit(): this {
     const { store } = this.constructor as typeof BaseModel
     if (this.__isClone) {
-      return (store as any).commit(this)
+      // @ts-expect-error todo
+      return store.commit(this)
     } else {
       throw new Error('You cannot call commit on a non-copy')
     }
@@ -133,7 +134,8 @@ export class BaseModel {
   public reset(): this {
     const { store } = this.constructor as typeof BaseModel
 
-    return (store as any).resetCopy(this)
+    // @ts-expect-error todo
+    return store.resetCopy(this)
   }
 
   /**
@@ -160,7 +162,7 @@ export class BaseModel {
     if (data[idField] === null) {
       delete data[idField]
     }
-    return (store as any).create(data, params)
+    return store.create(data, params) as Promise<this>
   }
 
   /**
@@ -177,7 +179,7 @@ export class BaseModel {
       )
       return Promise.reject(error)
     }
-    return (store as any).patch(id, this, params)
+    return store.patch(id, this, params) as Promise<this>
   }
 
   /**
@@ -194,7 +196,7 @@ export class BaseModel {
       )
       return Promise.reject(error)
     }
-    return (store as any).update(id, this, params)
+    return store.update(id, this, params) as Promise<this>
   }
 
   /**
@@ -205,14 +207,14 @@ export class BaseModel {
     checkThis(this)
     const { idField, store } = this.constructor as typeof BaseModel
     const id: Id = getId(this, idField)
-    return (store as any).remove(id, params)
+    return store.remove(id, params)
   }
   /**
    * Removes the instance from the store
    */
   public removeFromStore(): this {
     const { store } = this.constructor as typeof BaseModel
-    return (store as any).removeFromStore(this)
+    return store.removeFromStore(this)
   }
 }
 

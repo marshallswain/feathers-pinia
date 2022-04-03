@@ -7,8 +7,7 @@ import { timeout } from './test-utils'
 
 const restClient = rest()
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error todo
 export const api: any = feathers().configure(restClient.axios(axios)).configure(auth())
 
 api.authentication.service.hooks({

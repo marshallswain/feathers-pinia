@@ -3,6 +3,7 @@ import { AnyData, ServiceStoreDefaultActions, ServiceStoreDefaultGetters, Servic
 import { Application as FeathersClient } from '@feathersjs/feathers'
 import { BaseModel } from './service-store/base-model';
 import { TypedActions, TypedGetters } from './utility-types';
+// @ts-expect-error todo
 import { Class, SetOptional } from 'type-fest';
 
 export interface Filters {
@@ -36,6 +37,7 @@ export interface Paginated<T> {
   limit: number
   skip: number
   data: T[]
+  fromSsr?: true
 }
 
 export interface QueryInfo {
@@ -84,25 +86,23 @@ export interface DefineStoreOptionsWithDefaults<
 }
 
 export type DefineFeathersStoreOptions<
-  Id extends string = any,
-  M extends BaseModel = BaseModel,
+  Id extends string = string,
   S extends StateTree = {}, 
   G extends _GettersTree<S> = {}, 
   A = {}
-> = SetOptional<ServiceStoreSharedStateDefineOptions, 
-  'idField' | 
-  'clientAlias' | 
-  'paramsForServer' |
-  'whitelist' | 
-  'skipRequestIfExists'
-> & {
+> = {
+  clientAlias?: string
+  idField?: string
+  whitelist?: string[]
+  paramsForServer?: string[]
+  skipRequestIfExists?: boolean
   ssr?: boolean
   servicePath: string
   Model?: typeof BaseModel
   id?: Id
   clients?: { [alias: string]: FeathersClient }
   enableEvents?: boolean
-  handleEvents?: HandleEvents<M>
+  handleEvents?: HandleEvents<BaseModel>
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   state?: () => S
@@ -111,13 +111,12 @@ export type DefineFeathersStoreOptions<
 }
 
 export type DefineFeathersStoreDefaultOptions<
-  Id extends string = any,
-  M extends BaseModel = BaseModel,
+  Id extends string = string,
   S extends StateTree = {}, 
   G extends _GettersTree<S> = {}, 
   A = {}
 > =
-  Omit<Required<DefineFeathersStoreOptions<Id, M, S, G, A>>, 'id' | 'Model'>
+  Omit<Required<DefineFeathersStoreOptions<Id, S, G, A>>, 'id' | 'Model'>
 
 export type ServiceStoreDefinition<
   Id extends string,

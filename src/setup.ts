@@ -1,4 +1,4 @@
-import { BaseModel } from './service-store/index'
+import { BaseModel } from './service-store/base-model'
 import { registerClient } from './clients'
 import { defineStore } from './define-store'
 import { Ref } from 'vue-demi'
@@ -20,16 +20,6 @@ interface SetupOptions {
   actions?: { [k: string]: Function }
 }
 
-type DefineStoreWrapperArgs<
-  Id extends string,
-  M extends BaseModel = BaseModel,
-  S extends StateTree = StateTree, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
-> = 
-[DefineFeathersStoreOptions<Id, M, S, G, A>] | 
-[Id, DefineFeathersStoreOptions<Id, M, S, G, A>]
-
 export function setupFeathersPinia(globalOptions: SetupOptions) {
   const { clients } = globalOptions
   Object.keys(clients).forEach((name) => {
@@ -42,28 +32,14 @@ export function setupFeathersPinia(globalOptions: SetupOptions) {
     S extends StateTree = StateTree, 
     G extends _GettersTree<S> = {}, 
     A = {}
-  >(options: DefineFeathersStoreOptions<Id, M, S, G, A>): ServiceStoreDefinition<Id, M, S, G, A>
-  function defineStoreWrapper<
-    Id extends string,
-    M extends BaseModel = BaseModel,
-    S extends StateTree = StateTree, 
-    G extends _GettersTree<S> = {}, 
-    A = {}
-  >(
-    id: Id, 
-    options: DefineFeathersStoreOptions<Id, M, S, G, A>
-  ): ServiceStoreDefinition<Id, M, S, G, A>
-  function defineStoreWrapper<
-    Id extends string,
-    M extends BaseModel = BaseModel,
-    S extends StateTree = StateTree, 
-    G extends _GettersTree<S> = {}, 
-    A = {}
-  >(...args: DefineStoreWrapperArgs<Id, M, S, G, A>): ServiceStoreDefinition<Id, M, S, G, A> {
+  >(...args: [DefineFeathersStoreOptions<Id, S, G, A>] | 
+    [Id, Omit<DefineFeathersStoreOptions<Id, S, G, A>, 'id'>]
+  ): ServiceStoreDefinition<Id, M, S, G, A> {
     const id = args.length === 2 ? args[0] : args[0].id
     const options = args.length === 2 ? args[1] : args[0]
+    // @ts-expect-error todo
     options.id = id || `service.${options.servicePath}`
-    // @ts-ignore
+    // @ts-expect-error todo
     return defineStore<Id, M, S, G, A>(Object.assign({}, globalOptions, options))
   }
 

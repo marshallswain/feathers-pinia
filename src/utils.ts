@@ -1,4 +1,4 @@
-import { Params, Paginated, QueryInfo, MaybeRef } from './types'
+import { Params, Paginated, QueryInfo } from './types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'bson-objectid'
@@ -6,6 +6,7 @@ import { Id } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
 import { AnyData, AnyDataOrArray } from './service-store/types'
 import { unref } from 'vue-demi'
+import { MaybeRef } from './utility-types'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {

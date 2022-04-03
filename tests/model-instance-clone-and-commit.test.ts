@@ -4,10 +4,14 @@ import { api } from './feathers'
 
 const pinia = createPinia()
 
-const { defineStore } = setupFeathersPinia({ clients: { api } })
+const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
+
+class UserModel extends BaseModel {
+  additionalData: any
+}
 
 const servicePath = 'messages'
-const useMessagesService = defineStore({ servicePath })
+const useMessagesService = defineStore({ servicePath, Model: UserModel })
 
 const messagesService = useMessagesService(pinia)
 

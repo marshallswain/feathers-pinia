@@ -62,7 +62,7 @@ export function makeActions<
 
       const info = getQueryInfo(params, {})
       const qidData = this.pagination[info.qid]
-      // @ts-ignore
+      // @ts-expect-error todo
       const queryData = qidData?.[info.queryId]
       const pageData = queryData?.[info.pageId as string]
 
@@ -173,7 +173,7 @@ export function makeActions<
     create(data: AnyDataOrArray, _params?: MaybeRef<Params>) {
       const params = getSaveParams(_params)
 
-      // @ts-ignore
+      // @ts-expect-error todo
       const { tempIdField } = this
       
       if (!Array.isArray(data)) {
@@ -303,7 +303,7 @@ export function makeActions<
           this.itemsById[id] = existingTemp
           Object.assign(this.itemsById[id], item)
           delete this.tempsById[item.__tempId]
-          // @ts-ignore
+          // @ts-expect-error todo
           delete this.itemsById[id].__tempId
         }
         delete item.__tempId
@@ -329,7 +329,7 @@ export function makeActions<
     },
 
     clone(item: M, data = {}): M {
-      // @ts-ignore
+      // @ts-expect-error todo
       const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
       const id = getAnyId(item)
       const originalItem = this[placeToStore][id]
@@ -341,7 +341,7 @@ export function makeActions<
             delete readyToReset[key]
           }
         })
-        // @ts-ignore
+        // @ts-expect-error todo
         return readyToReset
       } else {
         const clone = fastCopy(originalItem)
@@ -352,17 +352,17 @@ export function makeActions<
         Object.assign(clone, data)
 
         this.clonesById[id] = clone
-        // @ts-ignore
+        // @ts-expect-error todo
         return this.clonesById[id] // Must return the item from the store
       }
     },
     commit(item: M): M | undefined {
       const id = getAnyId(item)
       if (id != null) {
-        // @ts-ignore
+        // @ts-expect-error todo
         const placeToStore = item.__tempId != null ? 'tempsById' : 'itemsById'
         this[placeToStore][id] = fastCopy(this.clonesById[id])
-        // @ts-ignore
+        // @ts-expect-error todo
         return this.itemsById[id]
       }
     },
@@ -404,18 +404,18 @@ export function makeActions<
         total,
       }
 
-      // @ts-ignore
+      // @ts-expect-error todo
       const existingPageData = this.pagination[qid]?.[queryId]?.[pageId as string]
 
       const qidData = this.pagination[qid] || {}
       Object.assign(qidData, { mostRecent })
-      // @ts-ignore
+      // @ts-expect-error todo
       qidData[queryId] = qidData[queryId] || {}
       const queryData = {
         total,
         queryParams,
       }
-      // @ts-ignore
+      // @ts-expect-error todo
       Object.assign(qidData[queryId], queryData)
 
       const ssr = preserveSsr ? existingPageData?.ssr : unref(options.ssr)
@@ -423,7 +423,7 @@ export function makeActions<
       const pageData = {
         [pageId as string]: { pageParams, ids, queriedAt, ssr: !!ssr },
       }
-      // @ts-ignore
+      // @ts-expect-error todo
       Object.assign(qidData[queryId], pageData)
 
       const newState = Object.assign({}, this.pagination[qid], qidData)
@@ -431,12 +431,12 @@ export function makeActions<
       this.pagination[qid] = newState
     },
 
-    setPendingById(id: Id, method: RequestType, val: boolean) {
+    setPendingById(id: NullableId, method: RequestType, val: boolean) {
       if (id == null) return;
 
-      // @ts-ignore
+      // @ts-expect-error todo
       this.pendingById[id] = this.pendingById[id] || { [method]: val }
-      // @ts-ignore
+      // @ts-expect-error todo
       this.pendingById[id][method] = val
     },
     hydrateAll() {
@@ -448,7 +448,7 @@ export function makeActions<
     unflagSsr(params: Params) {
       const queryInfo = getQueryInfo(params, {})
       const { qid, queryId, pageId } = queryInfo
-      // @ts-ignore
+      // @ts-expect-error todo
       const pageData = this.pagination[qid]?.[queryId]?.[pageId as string]
       pageData.ssr = false
     }

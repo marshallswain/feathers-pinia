@@ -37,8 +37,6 @@ describe('Custom Actions', () => {
     const messagesService: any = useMessagesService(pinia)
 
     const params = computed(() => ({ query: { text: 'this is a test' }, temps: true }))
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const data = messagesService.findMessages(params)
 
     expect(data.items.value).toHaveLength(0)

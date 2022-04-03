@@ -2,7 +2,7 @@ import { Ref, ComputedRef } from 'vue-demi'
 import { Params, Paginated, QueryInfo, DefineFeathersStoreOptions } from '../types'
 import { EventEmitter } from 'events'
 import { Id, Query, NullableId } from '@feathersjs/feathers'
-import { StateTree, Store, _GettersTree } from 'pinia'
+import { StateTree, Store as _Store, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
 import { MaybeArray, MaybeRef } from '../utility-types'
 
@@ -87,6 +87,13 @@ export type ServiceStoreSharedStateDefineOptions = {
   skipRequestIfExists: boolean
 }
 
+export type ServiceStoreDefault = _Store<
+  string,
+  ServiceStoreDefaultState,
+  ServiceStoreDefaultGetters,
+  ServiceStoreDefaultActions
+>
+
 export type ServiceStoreDefaultState<
   M extends BaseModel = BaseModel
 > = ServiceStoreSharedStateDefineOptions & {
@@ -97,6 +104,7 @@ export type ServiceStoreDefaultState<
   tempsById: ModelsById<M>
   clonesById: ModelsById<M>
   pendingById: {
+    Model: PendingByModel
     [id: string]: PendingById | PendingByModel
     [id: number]: PendingById
   }
@@ -135,7 +143,7 @@ export type HandleFindErrorOptions = { params: Params, error: any }
 export interface ServiceStoreDefaultActions<
   M extends BaseModel = BaseModel
 > {
-  find: (params: MaybeRef<Params>) => Promise<M[] | Paginated<M>>
+  find: (params?: MaybeRef<Params>) => Promise<M[] | Paginated<M>>
   handleFindResponse: (findResponse: HandleFindResponseOptions) => Promise<any>
   afterFind: <T = M[] | Paginated<M>>(response: T) => Promise<T>
   handleFindError({ params, error }: HandleFindErrorOptions): Promise<any>
@@ -157,7 +165,7 @@ export interface ServiceStoreDefaultActions<
   commit: (item: M) => M | undefined
   updatePaginationForQuery: (options: UpdatePaginationForQueryOptions) => void
   setPendingById(id: 'Model', method: RequestTypeModel, val: boolean): void
-  setPendingById(id: Id, method: RequestTypeById, val: boolean): void
+  setPendingById(id: NullableId, method: RequestTypeById, val: boolean): void
   hydrateAll: () => void
   toggleEventLock: (idOrIds: MaybeArray<Id>, event: string) => void
   unflagSsr: (params: Params) => void
@@ -494,7 +502,7 @@ export type DefaultServiceStore<
   Id extends string = string,
   S extends StateTree = {},
   G extends _GettersTree<S> = {},
-  A = {}> = Store<
+  A = {}> = _Store<
   Id, 
   ServiceStoreDefaultState & S, 
   ServiceStoreDefaultGetters & G, 

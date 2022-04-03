@@ -2,8 +2,9 @@ import { ref, reactive } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
-import { Params, QueryInfo } from '../src/types'
+import { Paginated, Params, QueryInfo } from '../src/types'
 import { getQueryInfo } from '../src/utils'
+import { BaseModel as _BaseModel } from '../src/service-store/base-model'
 
 const resetStore = () => (api.service('messages').store = {})
 
@@ -46,7 +47,7 @@ describe('server side rendering', () => {
       query: pagination,
       paginate: true,
     }
-    const ssrResult = await Message.find(params)
+    const ssrResult = await Message.find(params) as Paginated<_BaseModel>
     const queryInfo = getQueryInfo(params, ssrResult)
     const { qid, queryId, pageId } = queryInfo
     const pageData = messagesService.pagination[qid][queryId][pageId as string]
@@ -55,7 +56,7 @@ describe('server side rendering', () => {
 
     isSsr.value = false
 
-    const clientResult = await Message.find(params)
+    const clientResult = await Message.find(params) as Paginated<_BaseModel>
 
     expect(clientResult.fromSsr).toBeTruthy()
     expect(clientResult.total).toBe(totalItems)
@@ -100,7 +101,7 @@ describe('server side rendering', () => {
       query: pagination,
       paginate: true,
     }
-    const ssrResult = await Message.find(params)
+    const ssrResult = await Message.find(params) as Paginated<_BaseModel>
     const queryInfo: QueryInfo = getQueryInfo(params, ssrResult)
     const { qid, queryId, pageId } = queryInfo
     const pageData = messagesService.pagination[qid][queryId][pageId as string]
@@ -110,13 +111,13 @@ describe('server side rendering', () => {
     isSsr.value = false
 
     params.preserveSsr = true
-    const clientResult1 = await Message.find(params)
+    const clientResult1 = await Message.find(params) as Paginated<_BaseModel>
     expect(pageData.ssr).toBeTruthy()
     expect(clientResult1.data.length).toBe(2)
     expect(clientResult1.fromSsr).toBeTruthy()
 
     params.preserveSsr = false
-    const clientResult2 = await Message.find(params)
+    const clientResult2 = await Message.find(params) as Paginated<_BaseModel>
     const pageData2 = messagesService.pagination[qid][queryId][pageId as string]
     expect(pageData2.ssr).toBeFalsy()
     expect(clientResult2.data.length).toBe(2)
