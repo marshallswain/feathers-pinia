@@ -57,6 +57,7 @@
     "@feathersjs/rest-client": "5.0.0-pre.9",
     "@types/lodash": "^4.14.177",
     "@types/node": "^16.11.10",
+    "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vitejs/plugin-vue": "^1.10.1",
