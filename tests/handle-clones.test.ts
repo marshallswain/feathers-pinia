@@ -3,6 +3,7 @@ import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { handleClones } from '../src/handle-clones'
 import { resetStores } from './test-utils'
+import { vi } from 'vitest'
 
 const pinia = createPinia()
 
@@ -65,7 +66,7 @@ describe('Handle clones test', () => {
 
   describe('save_handlers work with params', () => {
     test('save_handlers allow passing params for create', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -87,7 +88,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handlers allow passing params for patch', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -112,7 +113,7 @@ describe('Handle clones test', () => {
 
   describe('save_handlers with temp records', () => {
     test('temp record: save_handler with no arguments calls create when value is unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -131,7 +132,7 @@ describe('Handle clones test', () => {
     })
 
     test('temp record: save_handler with string calls create when value is unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -150,7 +151,7 @@ describe('Handle clones test', () => {
     })
 
     test('temp record: save_handler with string calls create after value change', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -170,7 +171,7 @@ describe('Handle clones test', () => {
     })
 
     test('temp record: save_handler with array calls create when value is unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -190,7 +191,7 @@ describe('Handle clones test', () => {
     })
 
     test('temp record: save_handler with array calls create after value change', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -212,7 +213,7 @@ describe('Handle clones test', () => {
     })
 
     test('temp record: save_handler with object calls create when value is unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -232,7 +233,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with array calls create after value change', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           create: [hook],
@@ -257,7 +258,7 @@ describe('Handle clones test', () => {
 
   describe('save_handlers with non-temp records', () => {
     test('save_handler with no arguments does not call patch when value is unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -278,7 +279,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with no arguments calls patch when value changed', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -307,7 +308,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with no arguments calls patch when value changed, can disable diff', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -343,7 +344,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with string does not call patch when value unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -362,7 +363,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with string calls patch after value change', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -382,7 +383,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with array does not call patch when value is unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -402,7 +403,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with array calls patch after value change', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -424,7 +425,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with object does not call patch when value is unchanged', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
@@ -444,7 +445,7 @@ describe('Handle clones test', () => {
     })
 
     test('save_handler with object calls patch after value change', async () => {
-      const hook = jest.fn()
+      const hook = vi.fn()
       api.service(servicePath).hooks({
         before: {
           patch: [hook],
