@@ -92,6 +92,7 @@ export type DefineFeathersStoreOptions<
 > = {
   clientAlias?: string
   idField?: string
+  tempIdField?: string
   whitelist?: string[]
   paramsForServer?: string[]
   skipRequestIfExists?: boolean

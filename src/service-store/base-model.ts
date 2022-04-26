@@ -15,6 +15,7 @@ export class BaseModel implements AnyData {
   static servicePath = ''
   static idField = ''
   static modelName = ''
+  static tempIdField = ''
 
   public __isClone!: boolean
 
@@ -217,7 +218,12 @@ export class BaseModel implements AnyData {
     return this.store.removeFromStore(data)
   }
 
-  get isSavePending(): boolean {
+  get __isTemp() {
+    const { idField } = this.constructor as ModelStatic<BaseModel>
+    return getId(this, idField) != null
+  }
+
+  get isSavePending() {
     const { store } = this.constructor as ModelStatic<BaseModel>
     const pending = store.pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
@@ -277,13 +283,12 @@ export class BaseModel implements AnyData {
   }
 
   /**
-   * Update a store instance to match a clone.
+   * Update a clone to match a store instance.
    */
-  public reset(): this {
+  public reset(data: AnyData = {}): this {
     const { store } = this.constructor as ModelStatic<BaseModel>
 
-    // @ts-expect-error todo
-    return store.resetCopy(this)
+    return store.clone(this, data) as this
   }
 
   /**

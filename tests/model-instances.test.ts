@@ -42,4 +42,12 @@ describe('Model Instances', () => {
     expect(messagesStore.itemsById[0]).toBeUndefined()
     expect(Object.keys(messagesStore.tempsById)).toHaveLength(1)
   })
+
+  test('new instances have truthy __isTemp', () => {
+    const message = new Message({ text: 'this is a test' })
+
+    expect(message.__isTemp).toBeTruthy
+    message.addToStore()
+    expect(message.__isTemp).toBeFalsy
+  })
 })

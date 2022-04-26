@@ -30,12 +30,13 @@ describe('Storage Sync', () => {
 
   test('writes to storage', async () => {
     const msg = messagesService.addToStore({ test: true })
+    const { tempIdField } = messagesService
     await timeout(600)
     expect(localStorageMock.setItem).toHaveBeenCalled()
     const [key, value] = (localStorageMock.setItem as any).mock.calls[0]
     expect(key).toBe('service.messages')
     const val = JSON.parse(value)
-    expect(val.tempsById[msg.__tempId]).toBeTruthy()
+    expect(val.tempsById[msg[tempIdField]]).toBeTruthy()
   })
 
   test('reads from storage', async () => {

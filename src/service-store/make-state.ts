@@ -13,6 +13,7 @@ export function makeState<
     clientAlias: options?.clientAlias || defaultSharedState.clientAlias,
     servicePath: options?.servicePath || defaultSharedState.servicePath,
     idField: options?.idField || defaultSharedState.idField,
+    tempIdField: options?.tempIdField || defaultSharedState.tempIdField,
     itemsById: {},
     tempsById: {},
     clonesById: {},

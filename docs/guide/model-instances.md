@@ -154,14 +154,14 @@ console.log(todoCopy.description) // --> 'Do something else!'
 
 ## Reset an Instance
 
-To reset an instance, call `.clone()` on it again.
+To reset an instance, call `.reset()`.
 
 ```js
 import { Todo } from '../stores/todos'
 const todo = new Todo({ id: 1, description: 'Do something!' })
 const todoCopy = todo.clone()
 todoCopy.description = 'Do something else!'
-todoCopy.clone() // --> Resets the record to match the one in the store.
+todoCopy.reset() // --> Resets the record to match the one in the store.
 console.log(todo.description) // --> 'Do something!'
 console.log(todoCopy.description) // --> 'Do something!'
 ```

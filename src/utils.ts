@@ -35,13 +35,13 @@ export function getId(item: any, idField?: string) {
     return stringifyIfObject(item._id)
   }
 }
-export function getTempId(item: any) {
-  if (item?.__tempId != undefined) {
-    return stringifyIfObject(item.__tempId)
+export function getTempId(item: any, tempIdField: string) {
+  if (item?.[tempIdField] != undefined) {
+    return stringifyIfObject(item[tempIdField])
   }
 }
-export function getAnyId(item: any) {
-  return getId(item) != undefined ? getId(item) : getTempId(item)
+export function getAnyId(item: any, tempIdField: string) {
+  return getId(item) != undefined ? getId(item) : getTempId(item, tempIdField)
 }
 
 export function getQueryInfo(
@@ -96,9 +96,9 @@ export function keyBy(items: any, fn: Function = (i: any) => getId(i)) {
  * @param state
  * @param item
  */
-export function assignTempId(item: any) {
+export function assignTempId(item: any, tempIdField: string) {
   const newId = new ObjectID().toHexString()
-  item.__tempId = newId
+  item[tempIdField] = newId
   return item
 }
 
@@ -107,9 +107,9 @@ export function assignTempId(item: any) {
  * @param data item or array of items
  * @returns items without private attributes like __isClone and __tempId
  */
-export function cleanData<T = AnyDataOrArray>(data: T): T {
+export function cleanData<T = AnyDataOrArray>(data: T, tempIdField: string): T {
   const { items, isArray } = getArray(data)
-  const cleaned = items.map(item => _.omit(item, '__isClone', '__tempId'))
+  const cleaned = items.map(item => _.omit(item, '__isClone', tempIdField))
 
   return isArray ? cleaned : cleaned[0]
 }
@@ -126,14 +126,14 @@ export function cleanData<T = AnyDataOrArray>(data: T): T {
  * @param data item(s) before being passed to the server
  * @param responseData items(s) returned from the server
  */
-export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray) {
+export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray, tempIdField: string) {
   const { items: sourceItems, isArray } = getArray(data)
   const { items: responseItems } = getArray(resData)
 
   responseItems.forEach((item: any, index: number) => {
-    const tempId = sourceItems[index].__tempId
+    const tempId = sourceItems[index][tempIdField]
     if (tempId) {
-      item.__tempId = tempId
+      item[tempIdField] = tempId
     }
   })
 

@@ -124,6 +124,10 @@ export function useFind<M extends BaseModel = BaseModel>({
         qidData,
         queryData,
         pageData,
+        isPending: computed(() => state.isPending),
+        haveBeenRequested: computed(() => state.haveBeenRequested),
+        haveLoaded: computed(() => state.haveLoaded),
+        error: computed(() => state.error),
       }
       return val(context)
     }

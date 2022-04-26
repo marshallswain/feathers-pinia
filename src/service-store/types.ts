@@ -81,6 +81,7 @@ export type ServiceStoreSharedStateDefineOptions = {
   clientAlias: string
   servicePath: string
   idField: string
+  tempIdField: string
   whitelist: string[]
   paramsForServer: string[]
   skipRequestIfExists: boolean
@@ -182,6 +183,7 @@ export type ServiceOptions<
   'id' |
   'clientAlias' |
   'idField' |
+  'tempIdField' |
   'servicePath' |
   'Model' |
   'state' |
@@ -198,7 +200,8 @@ export type MakeStateOptions<
 > = Pick<ServiceOptions<any, M, S>, 
   'servicePath' | 
   'clientAlias' | 
-  'idField' | 
+  'idField' |
+  'tempIdField' |
   'state' | 
   'whitelist' |
   'paramsForServer' |
@@ -499,6 +502,10 @@ export interface QueryWhenContext {
   qidData: PaginationStateQid
   queryData: PaginationStateQuery
   pageData: PaginationStatePage
+  isPending: ComputedRef<Boolean>
+  haveBeenRequested: ComputedRef<Boolean>
+  haveLoaded: ComputedRef<Boolean>
+  error: any
 }
 
 export type QueryWhenFunction = ComputedRef<(context: QueryWhenContext) => boolean>
