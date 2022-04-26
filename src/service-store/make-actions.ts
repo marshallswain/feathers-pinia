@@ -45,7 +45,7 @@ export function makeActions<
   A = {}
 >(
   options: MakeServiceActionsOptions<M, S, G, A>
-): ServiceStoreDefaultActions<M> {
+): ServiceStoreDefaultActions<M> & A {
   const defaultActions: ServiceStoreTypedActions<M> = {
     find(_params?: MaybeRef<Params>) {
       const params = getSaveParams(_params)

@@ -104,7 +104,7 @@ describe('server side rendering', () => {
     const ssrResult = await Message.find(params) as Paginated<_BaseModel>
     const queryInfo: QueryInfo = getQueryInfo(params, ssrResult)
     const { qid, queryId, pageId } = queryInfo
-    const pageData = messagesService.pagination[qid][queryId][pageId as string]
+    const pageData = messagesService.pagination[qid][queryId][pageId]
 
     expect(pageData.ssr).toBeTruthy()
 
@@ -118,7 +118,7 @@ describe('server side rendering', () => {
 
     params.preserveSsr = false
     const clientResult2 = await Message.find(params) as Paginated<_BaseModel>
-    const pageData2 = messagesService.pagination[qid][queryId][pageId as string]
+    const pageData2 = messagesService.pagination[qid][queryId][pageId]
     expect(pageData2.ssr).toBeFalsy()
     expect(clientResult2.data.length).toBe(2)
   })

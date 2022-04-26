@@ -5,7 +5,7 @@ import { registerClient, clients } from './clients'
 import { enableServiceEvents } from './service-store/events'
 
 import { DefineFeathersStoreOptions, ServiceStoreDefinition } from './types'
-import { ServiceStoreSharedStateDefineOptions } from './service-store/types'
+import { ServiceStore, ServiceStoreSharedStateDefineOptions } from './service-store/types'
 
 export const defaultSharedState: ServiceStoreSharedStateDefineOptions = {
   clientAlias: 'api',
@@ -21,9 +21,10 @@ export function defineStore<
   M extends BaseModel = BaseModel,
   S extends StateTree = StateTree, 
   G extends _GettersTree<S> = {}, 
-  A = {}>(
+  A = {}
+>(
   _options: DefineFeathersStoreOptions<Id, M, S, G, A>
-): (pinia?: Pinia) => ServiceStoreDefinition<Id, M, S, G, A> {
+): (pinia?: Pinia) => ServiceStore<Id, M, S, G, A> {
   const options = makeOptions<Id, M, S, G, A>(_options);
 
   const {
@@ -59,9 +60,10 @@ export function defineStore<
   })
 
   function useStore(pinia?: Pinia) {
-    // @ts-expect-error todo
-    const useStoreDefinition = definePiniaStore<Id, S, G, A>(storeOptions)
-    const initializedStore = useStoreDefinition(pinia)
+    const useStoreDefinition = definePiniaStore<Id, S, G, A>(
+      storeOptions
+    ) as unknown as ServiceStoreDefinition<Id, M, S, G, A>
+    const initializedStore = useStoreDefinition(pinia) as ServiceStore<Id, M, S, G, A>
 
     initializedStore.isSsr
 
@@ -85,12 +87,11 @@ export function defineStore<
       const service = client.service(servicePath)
 
       const opts = { idField, debounceEventsTime, debounceEventsMaxWait, handleEvents }
-      // @ts-expect-error todo
+
       registerModel(options.Model, initializedStore)
-      enableServiceEvents<M>({
+      enableServiceEvents({
         service,
         Model,
-        // @ts-expect-error todo
         store: initializedStore,
         options: opts,
       })
@@ -98,7 +99,6 @@ export function defineStore<
     return initializedStore
   }
 
-  // @ts-expect-error todo
   return useStore
 }
 
@@ -129,11 +129,10 @@ function makeOptions<
 
   _options.clientAlias
 
-  let Model: M
+  let Model;
 
   // If no Model class is provided, create a dynamic one.
   if (!_options.Model) {
-    // @ts-expect-error todo
     Model = class DynamicBaseModel extends BaseModel {
       static modelName = _options.servicePath
     }
@@ -141,9 +140,7 @@ function makeOptions<
     Model = _options.Model
   }
 
-  // @ts-expect-error todo
   if (!Model.modelName) {
-    // @ts-expect-error todo
     Model.modelName = Model.name
   }
 

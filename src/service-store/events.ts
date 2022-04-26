@@ -2,11 +2,9 @@ import { getId, hasOwn } from '../utils'
 import _debounce from 'lodash/debounce'
 import { models } from '../models'
 import { DefineFeathersStoreOptions, HandledEvents } from '../types'
-import { DefaultServiceStore } from './types'
+import { ServiceStore, ModelStatic } from './types'
 import { BaseModel } from '.'
-// @ts-expect-error todo
-import { Class } from 'type-fest'
-import { EventEmitter } from 'stream'
+import { StateTree, _GettersTree } from 'pinia'
 
 export interface ServiceEventsDebouncedQueue {
   addOrUpdateById: any
@@ -18,16 +16,25 @@ export interface ServiceEventsDebouncedQueue {
 }
 
 interface EnableServiceEventsOptions<
+  Id extends string = string,
   M extends BaseModel = BaseModel,
-  Store extends DefaultServiceStore = DefaultServiceStore
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
 > {
   service: any
-  Model: Class<M> & typeof BaseModel & EventEmitter
-  store: Store
-  options: EnableServiceEventsOptionsOptions
+  Model: ModelStatic<M>
+  store: ServiceStore<Id, M, S, G, A>,
+  options: EnableServiceEventsOptionsOptions<Id, M, S, G, A>
 }
 
-type EnableServiceEventsOptionsOptions = Required<Pick<DefineFeathersStoreOptions, 
+type EnableServiceEventsOptionsOptions<
+  Id extends string = string,
+  M extends BaseModel = BaseModel,
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
+> = Required<Pick<DefineFeathersStoreOptions<Id, M, S, G, A>, 
   'idField' |
   'handleEvents' |
   'debounceEventsMaxWait' | 
@@ -35,14 +42,17 @@ type EnableServiceEventsOptionsOptions = Required<Pick<DefineFeathersStoreOption
 >>
 
 export function enableServiceEvents<
+  Id extends string = string,
   M extends BaseModel = BaseModel,
-  Store extends DefaultServiceStore = DefaultServiceStore
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
 >({
   service,
   Model,
   store,
   options,
-}: EnableServiceEventsOptions<M, Store>): ServiceEventsDebouncedQueue {
+}: EnableServiceEventsOptions<Id, M, S, G, A>): ServiceEventsDebouncedQueue {
   const debouncedQueue: ServiceEventsDebouncedQueue = {
     addOrUpdateById: {},
     removeItemById: {},

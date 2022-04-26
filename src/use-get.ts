@@ -1,10 +1,11 @@
 import { reactive, computed, toRefs, unref, watch, Ref, ComputedRef } from 'vue-demi'
 import { Params } from './types'
-import { Model } from './service-store/types'
+import { ModelStatic } from './service-store/types'
 import { Id } from '@feathersjs/feathers'
+import { BaseModel } from './service-store'
 
-interface UseGetOptions {
-  model: any
+interface UseGetOptions<M extends BaseModel> {
+  model: ModelStatic<M>
   id: Ref<Id | null> | ComputedRef<Id | null> | null
   params?: Ref<Params>
   queryWhen?: Ref<boolean>
@@ -26,14 +27,14 @@ interface UseGetComputed {
   isSsr: ComputedRef<boolean>
 }
 
-export function useGet<M extends Model = Model>({
+export function useGet<M extends BaseModel = BaseModel>({
   model,
   id,
   params = computed(() => ({})),
   queryWhen = computed((): boolean => true),
   local = false,
   immediate = true,
-}: UseGetOptions) {
+}: UseGetOptions<M>) {
   if (!model) {
     throw new Error(
       `No model provided for useGet(). Did you define and register it with FeathersPinia?`,
@@ -57,12 +58,18 @@ export function useGet<M extends Model = Model>({
   })
 
   const computes: UseGetComputed = {
-    item: computed(() => model.getFromStore(getId(), getParams()) || null),
+    item: computed(() => {
+      const unrefId = getId();
+      if (unrefId === null) {
+        return null;
+      }
+      return model.getFromStore(unrefId, getParams()) || null;
+    }),
     servicePath: computed(() => model.servicePath),
     isSsr: computed(() => model.store.isSsr),
   }
 
-  function get(id: Id | null, params?: Params): Promise<M | undefined | any> {
+  async function get(id: Id | null, params?: Params): Promise<M | undefined | any> {
     const idToUse = unref(id)
     const paramsToUse = unref(params)
 
@@ -73,17 +80,16 @@ export function useGet<M extends Model = Model>({
       const request = paramsToUse != null ? model.get(idToUse, paramsToUse) : model.get(idToUse)
       state.request = request
 
-      return request
-        .then((response: any) => {
-          state.isPending = false
-          state.hasLoaded = true
-          return response
-        })
-        .catch((error: any) => {
-          state.isPending = false
-          state.error = error
-          return error
-        })
+      try {
+        const response = await request
+        state.isPending = false
+        state.hasLoaded = true
+        return response
+      } catch (error: any) {
+        state.isPending = false
+        state.error = error
+        return error
+      }
     } else {
       return Promise.resolve(undefined)
     }

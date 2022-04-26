@@ -1,10 +1,8 @@
 import { DefineStoreOptionsBase, StateTree, Store, StoreDefinition, _GettersTree } from 'pinia';
-import { AnyData, ServiceStoreDefaultActions, ServiceStoreDefaultGetters, ServiceStoreDefaultState, ServiceStoreSharedStateDefineOptions } from './service-store/types'
+import { AnyData, ModelStatic, ServiceStoreDefaultActions, ServiceStoreDefaultGetters, ServiceStoreDefaultState } from './service-store/types'
 import { Application as FeathersClient } from '@feathersjs/feathers'
 import { BaseModel } from './service-store/base-model';
 import { TypedActions, TypedGetters } from './utility-types';
-// @ts-expect-error todo
-import { Class, SetOptional } from 'type-fest';
 
 export interface Filters {
   $sort?: { [prop: string]: -1 | 1 }
@@ -54,7 +52,7 @@ export interface QueryInfo {
 export type HandledEvents = 'created' | 'patched' | 'updated' | 'removed'
 export type HandleEventsFunction<
   M extends BaseModel = BaseModel
->  = (item: any, ctx: { model: Class<M>, models: any }) => any
+>  = (item: any, ctx: { model: ModelStatic<M>, models: any }) => any
 
 export type HandleEvents<
   M extends BaseModel = BaseModel
@@ -87,6 +85,7 @@ export interface DefineStoreOptionsWithDefaults<
 
 export type DefineFeathersStoreOptions<
   Id extends string = string,
+  M extends BaseModel = BaseModel,
   S extends StateTree = {}, 
   G extends _GettersTree<S> = {}, 
   A = {}
@@ -98,11 +97,11 @@ export type DefineFeathersStoreOptions<
   skipRequestIfExists?: boolean
   ssr?: boolean
   servicePath: string
-  Model?: typeof BaseModel
+  Model?: ModelStatic<M>
   id?: Id
   clients?: { [alias: string]: FeathersClient }
   enableEvents?: boolean
-  handleEvents?: HandleEvents<BaseModel>
+  handleEvents?: HandleEvents<M>
   debounceEventsTime?: number
   debounceEventsMaxWait?: number
   state?: () => S
@@ -110,20 +109,12 @@ export type DefineFeathersStoreOptions<
   actions?: A
 }
 
-export type DefineFeathersStoreDefaultOptions<
-  Id extends string = string,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
-> =
-  Omit<Required<DefineFeathersStoreOptions<Id, S, G, A>>, 'id' | 'Model'>
-
 export type ServiceStoreDefinition<
   Id extends string,
   M extends BaseModel,
-  S, 
-  G, 
-  A
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
 > = StoreDefinition<
   Id, 
   ServiceStoreDefaultState<M> & S, 

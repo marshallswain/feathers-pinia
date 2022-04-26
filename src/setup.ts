@@ -3,8 +3,9 @@ import { registerClient } from './clients'
 import { defineStore } from './define-store'
 import { Ref } from 'vue-demi'
 
-import { DefineFeathersStoreOptions, HandleEvents, ServiceStoreDefinition } from './types'
-import { StateTree, _GettersTree } from 'pinia'
+import { DefineFeathersStoreOptions, HandleEvents } from './types'
+import { Pinia, StateTree, _GettersTree } from 'pinia'
+import { ServiceStore } from './service-store/types'
 
 interface SetupOptions {
   ssr?: boolean | Ref<boolean>
@@ -32,14 +33,14 @@ export function setupFeathersPinia(globalOptions: SetupOptions) {
     S extends StateTree = StateTree, 
     G extends _GettersTree<S> = {}, 
     A = {}
-  >(...args: [DefineFeathersStoreOptions<Id, S, G, A>] | 
-    [Id, Omit<DefineFeathersStoreOptions<Id, S, G, A>, 'id'>]
-  ): ServiceStoreDefinition<Id, M, S, G, A> {
+  >(...args: [DefineFeathersStoreOptions<Id, M, S, G, A>] | 
+    [Id, Omit<DefineFeathersStoreOptions<Id, M, S, G, A>, 'id'>]
+  ): (pinia?: Pinia) => ServiceStore<Id, M, S, G, A> {
     const id = args.length === 2 ? args[0] : args[0].id
-    const options = args.length === 2 ? args[1] : args[0]
+    const options= args.length === 2 ? args[1] : args[0]
     // @ts-expect-error todo
     options.id = id || `service.${options.servicePath}`
-    // @ts-expect-error todo
+
     return defineStore<Id, M, S, G, A>(Object.assign({}, globalOptions, options))
   }
 

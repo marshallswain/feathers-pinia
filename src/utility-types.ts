@@ -1,4 +1,4 @@
-import { PiniaCustomProperties, _GettersTree, _StoreWithGetters, _StoreWithState } from "pinia";
+import { _GettersTree, _StoreWithGetters, _StoreWithState } from "pinia";
 import { Ref, UnwrapRef } from "vue-demi";
 
 export type MaybeRef<T> = T | Ref<T>
