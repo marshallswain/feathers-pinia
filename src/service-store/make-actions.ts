@@ -82,7 +82,7 @@ export function makeActions<
         }
       }
 
-      return (ssrPromise || this.service.find(params as any))
+      return (ssrPromise || this.service.find(params))
         .then((response: any) => this.handleFindResponse({ params, response }))
         .catch((error: any) => this.handleFindError({ params, error }))
         .finally(() => {
@@ -134,7 +134,7 @@ export function makeActions<
 
       this.setPendingById('Model', 'count', true)
 
-      return this.service.find(params as any).finally(() => {
+      return this.service.find(params).finally(() => {
         this.setPendingById('Model', 'count', false)
       })
     },
@@ -358,7 +358,7 @@ export function makeActions<
         Object.assign(clone, data)
 
         set(this.clonesById, id, clone)
-        return this.clonesById[id] // Must return the item from the store
+        return this.clonesById[id] as M // Must return the item from the store
       }
     },
 
@@ -369,7 +369,7 @@ export function makeActions<
         const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
         set(this[placeToStore], id, fastCopy(this.clonesById[id]))
 
-        return this.itemsById[id]
+        return this.itemsById[id] as M
       }
     },
 
@@ -440,7 +440,7 @@ export function makeActions<
     setPendingById(id: NullableId, method: RequestType, val: boolean) {
       if (id == null) return;
 
-      set(this.pendingById, id, this.pendingById[id] || ({ [method]: val } as any))
+      set(this.pendingById, id, this.pendingById[id] || ({ [method]: val }))
       set(this.pendingById[id], method, val)
     },
     hydrateAll() {

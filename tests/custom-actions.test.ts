@@ -59,8 +59,7 @@ describe('Custom Actions', () => {
       Model: Message,
       actions: {
         test() {
-          // eslint-disable-next-line @typescript-eslint/no-extra-semi
-          ;(this as any).idField = 'moose'
+          this.idField = 'moose'
         },
       },
     })

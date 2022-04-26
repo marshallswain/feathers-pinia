@@ -36,7 +36,7 @@ describe('useGet', () => {
     expect(data.item.value).toBe(null)
     expect(data.servicePath.value).toBe('messages')
     expect(data.isSsr.value).toBe(false)
-    expect((data.request.value as any).then)
+    expect(data.request.value.then)
   })
 
   test('item is returned', async () => {

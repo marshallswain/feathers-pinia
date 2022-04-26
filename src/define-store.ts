@@ -11,7 +11,7 @@ export const defaultSharedState: ServiceStoreSharedStateDefineOptions = {
   clientAlias: 'api',
   servicePath: '',
   idField: 'id',
-  tempIdField?: '__tempId',
+  tempIdField: '__tempId',
   paramsForServer: [],
   whitelist: [],
   skipRequestIfExists: false
@@ -46,7 +46,8 @@ export function defineStore<
 
   // Create and initialize the Pinia store.
   const storeOptions = makeServiceStore<Id, M, S, G, A>({
-    ssr,
+    ssr: options.ssr,
+    // @ts-expect-error todo
     id: options.id || `service.${options.servicePath}`,
     idField,
     tempIdField,
@@ -81,8 +82,8 @@ export function defineStore<
         tempIdField,
         clients,
         // Bind `this` in custom actions to the store.
-        ...Object.keys(actions).reduce((boundActions: any, key: string) => {
-          const fn = (actions as any)[key]
+        ...Object.keys(options.actions).reduce((boundActions: any, key: string) => {
+          const fn = (options.actions as any)[key]
           boundActions[key] = fn.bind(initializedStore)
           return boundActions
         }, {}),
