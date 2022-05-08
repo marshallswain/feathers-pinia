@@ -62,7 +62,8 @@ export class BaseModel implements AnyData {
     eventName: string | symbol,
     listener: (...args: any[]) => void
   ) {
-    return this.emitter.addListener(eventName, listener)
+    this.emitter.addListener(eventName, listener)
+    return this;
   }
 
   public static emit<M extends BaseModel>(
@@ -104,7 +105,8 @@ export class BaseModel implements AnyData {
     eventName: string | symbol,
     listener: (...args: any[]) => void
   ) {
-    return this.emitter.off(eventName, listener)
+    this.emitter.off(eventName, listener)
+    return this;
   }
 
   public static on<M extends BaseModel>(
@@ -112,7 +114,8 @@ export class BaseModel implements AnyData {
     eventName: string | symbol,
     listener: (...args: any[]) => void
   ) {
-    return this.emitter.on(eventName, listener)
+    this.emitter.on(eventName, listener)
+    return this;
   }
 
   public static once<M extends BaseModel>(
@@ -120,7 +123,8 @@ export class BaseModel implements AnyData {
     eventName: string | symbol,
     listener: (...args: any[]) => void
   ) {
-    return this.emitter.once(eventName, listener)
+    this.emitter.once(eventName, listener)
+    return this;
   }
 
   public static prependListener<M extends BaseModel>(
@@ -128,7 +132,8 @@ export class BaseModel implements AnyData {
     eventName: string | symbol,
     listener: (...args: any[]) => void
   ) {
-    return this.emitter.prependListener(eventName, listener)
+    this.emitter.prependListener(eventName, listener)
+    return this;
   }
 
   public static prependOnceListener<M extends BaseModel>(
@@ -136,7 +141,8 @@ export class BaseModel implements AnyData {
     eventName: string | symbol,
     listener: (...args: any[]) => void
   ) {
-    return this.emitter.prependOnceListener(eventName, listener)
+    this.emitter.prependOnceListener(eventName, listener)
+    return this;
   }
 
   public static rawListeners<M extends BaseModel>(
@@ -150,7 +156,8 @@ export class BaseModel implements AnyData {
     this: ModelStatic<M>,
     eventName?: string | symbol
     ) {
-    return this.emitter.removeAllListeners(eventName)
+    this.emitter.removeAllListeners(eventName)
+    return this;
   }
 
   public static removeListener<M extends BaseModel>(
@@ -158,14 +165,16 @@ export class BaseModel implements AnyData {
     eventName: string | symbol, 
     listener: (...args: any[]) => void
   ) {
-    return this.emitter.removeListener(eventName, listener)
+    this.emitter.removeListener(eventName, listener)
+    return this;
   }
 
   public static setMaxListeners<M extends BaseModel>(
     this: ModelStatic<M>,
     n: number
   ) {
-    return this.emitter.setMaxListeners(n)
+    this.emitter.setMaxListeners(n)
+    return this;
   }
 
   //#endregion
