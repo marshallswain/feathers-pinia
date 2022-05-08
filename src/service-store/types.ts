@@ -1,7 +1,7 @@
 import { ComputedRef } from 'vue-demi'
-import { Params, Paginated, QueryInfo, DefineFeathersStoreOptions } from '../types'
-import { Id, Query, NullableId } from '@feathersjs/feathers'
-import { StateTree, Store as _Store, _GettersTree } from 'pinia'
+import { Params, Paginated, QueryInfo, HandleEvents } from '../types'
+import { Id, Query, NullableId , Application as FeathersClient } from '@feathersjs/feathers'
+import { StateTree, Store as _Store, StoreDefinition, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
 import { MaybeArray, MaybeRef } from '../utility-types'
 
@@ -521,3 +521,43 @@ export type ServiceStore<
   ServiceStoreDefaultGetters<M> & G, 
   ServiceStoreDefaultActions<M> & A
 >
+
+export type ServiceStoreDefinition<
+  Id extends string,
+  M extends BaseModel,
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
+> = StoreDefinition<
+  Id, 
+  ServiceStoreDefaultState<M> & S, 
+  ServiceStoreDefaultGetters<M> & G, 
+  ServiceStoreDefaultActions<M> & A
+>
+
+export type DefineFeathersStoreOptions<
+  Id extends string = string,
+  M extends BaseModel = BaseModel,
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
+> = {
+  clientAlias?: string
+  idField?: string
+  tempIdField?: string
+  whitelist?: string[]
+  paramsForServer?: string[]
+  skipRequestIfExists?: boolean
+  ssr?: boolean
+  servicePath: string
+  Model?: ModelStatic<M>
+  id?: Id
+  clients?: { [alias: string]: FeathersClient }
+  enableEvents?: boolean
+  handleEvents?: HandleEvents<M>
+  debounceEventsTime?: number
+  debounceEventsMaxWait?: number
+  state?: () => S
+  getters?: G
+  actions?: A
+}

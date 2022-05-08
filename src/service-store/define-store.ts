@@ -1,11 +1,10 @@
-import { makeServiceStore, BaseModel } from './service-store/index'
+import { makeServiceStore, BaseModel } from './index'
 import { defineStore as definePiniaStore, Pinia, StateTree, _GettersTree } from 'pinia'
-import { registerModel } from './models'
-import { registerClient, clients } from './clients'
-import { enableServiceEvents } from './service-store/events'
+import { registerModel } from '../models'
+import { registerClient, clients } from '../clients'
+import { enableServiceEvents } from './events'
 
-import { DefineFeathersStoreOptions, ServiceStoreDefinition } from './types'
-import { ServiceStore, ServiceStoreSharedStateDefineOptions } from './service-store/types'
+import { DefineFeathersStoreOptions, ServiceStore, ServiceStoreSharedStateDefineOptions, ServiceStoreDefinition } from './types'
 
 export const defaultSharedState: ServiceStoreSharedStateDefineOptions = {
   clientAlias: 'api',

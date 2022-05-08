@@ -1,11 +1,11 @@
 import { BaseModel } from './service-store/base-model'
 import { registerClient } from './clients'
-import { defineStore } from './define-store'
+import { defineStore } from './service-store/define-store'
 import { Ref } from 'vue-demi'
 
-import { DefineFeathersStoreOptions, HandleEvents } from './types'
+import { HandleEvents } from './types'
 import { Pinia, StateTree, _GettersTree } from 'pinia'
-import { ServiceStore } from './service-store/types'
+import { ServiceStore, DefineFeathersStoreOptions } from './service-store/types'
 
 interface SetupOptions {
   ssr?: boolean | Ref<boolean>

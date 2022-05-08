@@ -1,6 +1,6 @@
 import { MakeStateOptions, ServiceStoreDefaultState } from './types'
 import { StateTree } from 'pinia'
-import { defaultSharedState } from '../define-store'
+import { defaultSharedState } from './define-store'
 import { BaseModel } from './base-model'
 
 export function makeState<

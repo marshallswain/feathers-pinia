@@ -1,6 +1,5 @@
-import { DefineStoreOptionsBase, StateTree, Store, StoreDefinition, _GettersTree } from 'pinia';
-import { AnyData, ModelStatic, ServiceStoreDefaultActions, ServiceStoreDefaultGetters, ServiceStoreDefaultState } from './service-store/types'
-import { Application as FeathersClient } from '@feathersjs/feathers'
+import { DefineStoreOptionsBase, StateTree, Store } from 'pinia';
+import { AnyData, ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model';
 import { TypedActions, TypedGetters } from './utility-types';
 
@@ -83,42 +82,3 @@ export interface DefineStoreOptionsWithDefaults<
   >
 }
 
-export type DefineFeathersStoreOptions<
-  Id extends string = string,
-  M extends BaseModel = BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
-> = {
-  clientAlias?: string
-  idField?: string
-  tempIdField?: string
-  whitelist?: string[]
-  paramsForServer?: string[]
-  skipRequestIfExists?: boolean
-  ssr?: boolean
-  servicePath: string
-  Model?: ModelStatic<M>
-  id?: Id
-  clients?: { [alias: string]: FeathersClient }
-  enableEvents?: boolean
-  handleEvents?: HandleEvents<M>
-  debounceEventsTime?: number
-  debounceEventsMaxWait?: number
-  state?: () => S
-  getters?: G
-  actions?: A
-}
-
-export type ServiceStoreDefinition<
-  Id extends string,
-  M extends BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
-> = StoreDefinition<
-  Id, 
-  ServiceStoreDefaultState<M> & S, 
-  ServiceStoreDefaultGetters<M> & G, 
-  ServiceStoreDefaultActions<M> & A
->
