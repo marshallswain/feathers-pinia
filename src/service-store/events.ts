@@ -1,8 +1,8 @@
 import { getId, hasOwn } from '../utils'
 import _debounce from 'lodash/debounce'
 import { models } from '../models'
-import { DefineFeathersStoreOptions, HandledEvents } from '../types'
-import { ServiceStore, ModelStatic } from './types'
+import { HandledEvents } from '../types'
+import { DefineFeathersStoreOptions, ServiceStore, ModelStatic } from './types'
 import { BaseModel } from '.'
 import { StateTree, _GettersTree } from 'pinia'
 
