@@ -1,10 +1,11 @@
 import { createPinia } from 'pinia'
+import { vi } from 'vitest'
 import { defineAuthStore } from '../src/index'
 import { api } from './feathers'
 
 const pinia = createPinia()
-const handleResponse = jest.fn()
-const handleError = jest.fn()
+const handleResponse = vi.fn()
+const handleError = vi.fn()
 
 const useAuth = defineAuthStore({
   id: 'my-auth',

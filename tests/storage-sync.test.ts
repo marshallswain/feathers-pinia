@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
+import { vi } from 'vitest'
 
 const pinia = createPinia()
 
@@ -12,12 +13,12 @@ class Message extends BaseModel {}
 const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
 const messagesService = useMessagesService(pinia)
 const localStorageMock: Storage = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
   length: 0,
-  key: jest.fn(),
+  key: vi.fn(),
 }
 syncWithStorage(messagesService, ['tempsById'], localStorageMock)
 
