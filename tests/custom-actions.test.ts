@@ -4,12 +4,13 @@ import { setupFeathersPinia, defineStore } from '../src/index'
 import { api } from './feathers'
 import { timeout } from './test-utils'
 import { useFind } from '../src/use-find'
+import { vi } from 'vitest'
 
 describe('Custom Actions', () => {
   test('adds custom actions to the store', async () => {
     const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
     const pinia = createPinia()
-    const test = jest.fn()
+    const test = vi.fn()
     class Message extends BaseModel {}
     const useMessagesService = defineStore({
       servicePath: 'messages',

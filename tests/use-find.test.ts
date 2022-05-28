@@ -4,6 +4,7 @@ import { setupFeathersPinia, useFind } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
 import { QueryWhenContext, QueryWhenFunction } from '../src/service-store/types'
+import { vi } from 'vitest'
 
 function createTestContext() {
   const pinia = createPinia()
@@ -103,7 +104,7 @@ describe('useFind', () => {
       await messagesService.create({ text: 'yo!' })
       const params = computed(() => ({ query: { $limit: 10, $skip: 0 } }))
       const isReady = ref(false)
-      const queryWhenFunction = jest.fn((context: QueryWhenContext) => {
+      const queryWhenFunction = vi.fn((context: QueryWhenContext) => {
         expect(context.items.value)
         expect(context.queryInfo)
         expect(context.qidData)

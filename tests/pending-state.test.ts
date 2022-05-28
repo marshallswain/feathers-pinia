@@ -4,6 +4,7 @@ import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
 import { RequestTypeById } from '../src/service-store/types'
+import { vi } from 'vitest'
 
 const pinia = createPinia()
 
@@ -30,7 +31,7 @@ describe('Pending State', () => {
 
     test('pending state for find success', async () => {
       // setup the watcher with a mock function
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => messagesService.pendingById.Model.find, handler)
 
       // Trigger the watcher with a request.
@@ -43,7 +44,7 @@ describe('Pending State', () => {
     })
 
     test('pending state for find error', async () => {
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => messagesService.pendingById.Model.find, handler)
 
       try {
@@ -57,7 +58,7 @@ describe('Pending State', () => {
 
     test('pending state for count success', async () => {
       // setup the watcher with a mock function
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => messagesService.pendingById.Model.count, handler)
 
       // Trigger the watcher with a request.
@@ -70,7 +71,7 @@ describe('Pending State', () => {
     })
 
     test('pending state for count error', async () => {
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => messagesService.pendingById.Model.count, handler)
 
       try {
@@ -83,7 +84,7 @@ describe('Pending State', () => {
     })
 
     test('pending state for get success', async () => {
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => messagesService.pendingById.Model.get, handler)
 
       await messagesService.get(0)
@@ -93,7 +94,7 @@ describe('Pending State', () => {
     })
 
     test('pending state for get error', async () => {
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => messagesService.pendingById.Model.get, handler)
 
       try {
@@ -117,7 +118,7 @@ describe('Pending State', () => {
 
     test('pending state for model.create', async () => {
       const createState = computed(() => messagesService.pendingById[1]?.create)
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => createState.value, handler, { immediate: true })
 
       const msg = await new Message({ text: 'some new message' }).create()
@@ -134,7 +135,7 @@ describe('Pending State', () => {
       const message = computed(() => messagesService.itemsById[0])
 
       const patchState = computed(() => messagesService.pendingById[0]?.patch)
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => patchState.value, handler, { immediate: true })
 
       const data = { test: true }
@@ -150,7 +151,7 @@ describe('Pending State', () => {
 
     test('pending state for model.update', async () => {
       const updateState = computed(() => messagesService.pendingById[0]?.update)
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => updateState.value, handler, { immediate: true })
 
       await message.value.update()
@@ -164,7 +165,7 @@ describe('Pending State', () => {
 
     test('pending state for model.remove', async () => {
       const removeState = computed(() => messagesService.pendingById[0]?.remove)
-      const handler = jest.fn()
+      const handler = vi.fn()
       watch(() => removeState.value, handler, { immediate: true })
 
       await message.value.remove()
