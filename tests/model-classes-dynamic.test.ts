@@ -11,7 +11,9 @@ const useMessagesService = defineStore({ servicePath })
 
 const messagesService = useMessagesService(pinia)
 
-const resetStore = () => (api.service('messages').store = {})
+const resetStore = () => {
+  api.service('messages').store = {}
+}
 beforeAll(() => resetStore())
 afterAll(() => resetStore())
 
@@ -20,7 +22,7 @@ describe('DynamicBaseModel', () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
-    expect(message.constructor.name).toBe('DynamicBaseModel')
+    expect((message.constructor as any).dynamicBaseModel).toBeTruthy()
   })
 
   test('registering a model adds it to the models object', () => {

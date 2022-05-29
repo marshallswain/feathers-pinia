@@ -11,7 +11,9 @@ const useMessagesService = defineStore({ servicePath })
 
 const messagesService = useMessagesService(pinia)
 
-const resetStore = () => (api.service('messages').store = {})
+const resetStore = () => {
+  api.service('messages').store = {}
+}
 
 describe('Model Instance Methods', () => {
   beforeAll(() => resetStore())

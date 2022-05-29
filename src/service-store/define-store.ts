@@ -19,8 +19,8 @@ export const defaultSharedState: ServiceStoreSharedStateDefineOptions = {
 export function defineStore<
   Id extends string,
   M extends BaseModel = BaseModel,
-  S extends StateTree = StateTree, 
-  G extends _GettersTree<S> = {}, 
+  S extends StateTree = StateTree,
+  G extends _GettersTree<S> = {},
   A = {}
 >(
   _options: DefineFeathersStoreOptions<Id, M, S, G, A>
@@ -115,8 +115,8 @@ export function defineStore<
 function makeOptions<
   Id extends string,
   M extends BaseModel = BaseModel,
-  S extends StateTree = StateTree, 
-  G extends _GettersTree<S> = {}, 
+  S extends StateTree = StateTree,
+  G extends _GettersTree<S> = {},
   A = {}>(
   _options: DefineFeathersStoreOptions<Id, M, S, G, A>
 ): Required<DefineFeathersStoreOptions<Id, M, S, G, A>> {
@@ -144,6 +144,7 @@ function makeOptions<
   // If no Model class is provided, create a dynamic one.
   if (!_options.Model) {
     Model = class DynamicBaseModel extends BaseModel {
+      static dynamicBaseModel = true
       static modelName = _options.servicePath
     }
   } else {
