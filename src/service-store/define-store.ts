@@ -144,6 +144,7 @@ function makeOptions<
   // If no Model class is provided, create a dynamic one.
   if (!_options.Model) {
     Model = class DynamicBaseModel extends BaseModel {
+      static dynamicBaseModel = true
       static modelName = _options.servicePath
     }
   } else {
