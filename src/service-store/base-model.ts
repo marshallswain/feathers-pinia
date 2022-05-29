@@ -1,105 +1,262 @@
 import { getId } from '../utils'
-import { AnyData, AnyDataOrArray, ModelInstanceOptions } from './types'
+import { AnyData, AnyDataOrArray, ModelInstanceOptions, ModelStatic, ServiceStoreDefault } from './types'
 import { Id, NullableId, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 import { EventEmitter } from 'events'
 
-interface InstanceModifierOptions {
+export interface InstanceModifierOptions {
   models: { [id: string]: any }
   store: any
 }
 
-export class BaseModel {
-  static store = null
+export class BaseModel implements AnyData {
+  static readonly store: ServiceStoreDefault<BaseModel>
   static pinia = null
-  static servicePath = null
+  static servicePath = ''
   static idField = ''
+  static modelName = ''
   static tempIdField = ''
 
   public __isClone!: boolean
 
   constructor(data: AnyData, options: ModelInstanceOptions = {}) {
-    const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
-    Object.assign(this, instanceDefaults(data, { models, store }))
-    Object.assign(this, setupInstance(data, { models, store }))
+    const ctor = this.constructor as ModelStatic<BaseModel>
+    const { store, instanceDefaults, setupInstance } = ctor;
+    Object.assign(this, instanceDefaults.call(ctor, data, { models, store }))
+    Object.assign(this, setupInstance.call(ctor, data, { models, store }))
     this.__isClone = !!options.clone
+
     return this
   }
 
-  public static instanceDefaults(data: AnyData, options?: InstanceModifierOptions): AnyData
-  public static instanceDefaults(data: AnyData) {
+  public static instanceDefaults<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    data: AnyData, 
+    options?: InstanceModifierOptions
+  ): AnyData
+  public static instanceDefaults<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    data: AnyData
+  ): AnyData {
     return data
   }
 
-  public static setupInstance(data: AnyData, options?: InstanceModifierOptions): AnyData
-  public static setupInstance(data: AnyData) {
+  public static setupInstance<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    data: AnyData, 
+    options?: InstanceModifierOptions
+  ): AnyData
+  public static setupInstance<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    data: AnyData
+  ): AnyData {
     return data
   }
 
-  public static find(params?: Params) {
-    return (this.store as any).find(params)
+  //#region EventEmitter
+
+  static emitter = new EventEmitter()
+
+  public static addEventListener<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol,
+    listener: (...args: any[]) => void
+  ) {
+    this.emitter.addListener(eventName, listener)
+    return this;
   }
-  public static findInStore(params?: Params) {
-    return (this.store as any).findInStore(params)
+
+  public static emit<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    eventName: string | symbol,
+    ...args: any[]
+  ) {
+    return this.emitter.emit(eventName, ...args)
   }
-  public static get(id: Id, params?: Params) {
-    return (this.store as any).get(id, params)
+
+  public static eventNames<M extends BaseModel>(
+    this: ModelStatic<M>
+  ) {
+    return this.emitter.eventNames()
   }
-  public static getFromStore(id: Id, params?: Params) {
-    return (this.store as any).getFromStore(id, params)
+
+  public static getMaxListeners<M extends BaseModel>(
+    this: ModelStatic<M>
+  ) {
+    return this.emitter.getMaxListeners()
   }
-  public static count(params?: Params) {
-    return (this.store as any).count(params)
+
+  public static listenerCount<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    eventName: string | symbol
+  ) {
+    return this.emitter.listenerCount(eventName);
   }
-  public static countInStore(params?: Params) {
-    return (this.store as any).countInStore(params)
+
+  public static listeners<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    eventName: string | symbol
+  ) {
+    return this.emitter.listeners(eventName)
   }
-  public static addToStore(data?: AnyDataOrArray) {
-    return (this.store as any).addToStore(data)
+
+  public static off<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol,
+    listener: (...args: any[]) => void
+  ) {
+    this.emitter.off(eventName, listener)
+    return this;
   }
-  public static update(id: Id, data: AnyData, params?: Params) {
-    return (this.store as any).update(id, data, params)
+
+  public static on<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol,
+    listener: (...args: any[]) => void
+  ) {
+    this.emitter.on(eventName, listener)
+    return this;
   }
-  public static patch(id: NullableId, data: AnyData, params?: Params) {
-    return (this.store as any).patch(id, data, params)
+
+  public static once<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol,
+    listener: (...args: any[]) => void
+  ) {
+    this.emitter.once(eventName, listener)
+    return this;
   }
-  public static remove(id: NullableId, params?: Params) {
-    return (this.store as any).remove(id, params)
+
+  public static prependListener<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol,
+    listener: (...args: any[]) => void
+  ) {
+    this.emitter.prependListener(eventName, listener)
+    return this;
   }
-  public static removeFromStore(data: AnyDataOrArray) {
-    return (this.store as any).removeFromStore(data)
+
+  public static prependOnceListener<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol,
+    listener: (...args: any[]) => void
+  ) {
+    this.emitter.prependOnceListener(eventName, listener)
+    return this;
+  }
+
+  public static rawListeners<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol
+    ) {
+    return this.emitter.rawListeners(eventName)
+  }
+
+  public static removeAllListeners<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName?: string | symbol
+    ) {
+    this.emitter.removeAllListeners(eventName)
+    return this;
+  }
+
+  public static removeListener<M extends BaseModel>(
+    this: ModelStatic<M>,
+    eventName: string | symbol, 
+    listener: (...args: any[]) => void
+  ) {
+    this.emitter.removeListener(eventName, listener)
+    return this;
+  }
+
+  public static setMaxListeners<M extends BaseModel>(
+    this: ModelStatic<M>,
+    n: number
+  ) {
+    this.emitter.setMaxListeners(n)
+    return this;
+  }
+
+  //#endregion
+
+  public static find<M extends BaseModel>(this: ModelStatic<M>, params?: Params) {
+    return this.store.find(params)
+  }
+  public static findInStore<M extends BaseModel>(this: ModelStatic<M>, params: Params) {
+    return this.store.findInStore(params)
+  }
+  public static get<M extends BaseModel>(this: ModelStatic<M>, id: Id, params?: Params) {
+    return this.store.get(id, params)
+  }
+  public static getFromStore<M extends BaseModel>(this: ModelStatic<M>, id: Id, params?: Params) {
+    return this.store.getFromStore(id, params)
+  }
+  public static count<M extends BaseModel>(this: ModelStatic<M>, params?: Params) {
+    return this.store.count(params)
+  }
+  public static countInStore<M extends BaseModel>(this: ModelStatic<M>, params: Params) {
+    return this.store.countInStore(params)
+  }
+  public static addToStore<M extends BaseModel>(this: ModelStatic<M>, data: AnyDataOrArray) {
+    return this.store.addToStore(data)
+  }
+  public static update<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    id: Id, 
+    data: AnyData, 
+    params?: Params
+  ) {
+    return this.store.update(id, data, params);
+  }
+  public static patch<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    id: NullableId, 
+    data: AnyData, 
+    params?: Params
+  ) {
+    return this.store.patch(id, data, params);
+  }
+  public static remove<M extends BaseModel>(
+    this: ModelStatic<M>, 
+    id: NullableId, 
+    params?: Params
+  ) {
+    return this.store.remove(id, params)
+  }
+  public static removeFromStore<M extends BaseModel>(this: ModelStatic<M>, data: AnyDataOrArray) {
+    return this.store.removeFromStore(data)
   }
 
   get __isTemp() {
-    const { idField } = this.constructor as typeof BaseModel
+    const { idField } = this.constructor as ModelStatic<BaseModel>
     return getId(this, idField) != null
   }
 
   get isSavePending() {
-    const { store } = this.constructor as typeof BaseModel
-    const pending = (store as any).pendingById[getId(this)]
+    const { store } = this.constructor as ModelStatic<BaseModel>
+    const pending = store.pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
   }
-  get isCreatePending() {
-    const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.create || false
+  get isCreatePending(): boolean {
+    const { store } = this.constructor as ModelStatic<BaseModel>
+    return store.pendingById[getId(this)]?.create || false
   }
-  get isPatchPending() {
-    const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.patch || false
+  get isPatchPending(): boolean {
+    const { store } = this.constructor as ModelStatic<BaseModel>
+    return store.pendingById[getId(this)]?.patch || false
   }
-  get isUpdatePending() {
-    const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.update || false
+  get isUpdatePending(): boolean {
+    const { store } = this.constructor as ModelStatic<BaseModel>
+    return store.pendingById[getId(this)]?.update || false
   }
-  get isRemovePending() {
-    const { store } = this.constructor as typeof BaseModel
-    return (store as any).pendingById[getId(this)]?.remove || false
+  get isRemovePending(): boolean {
+    const { store } = this.constructor as ModelStatic<BaseModel>
+    return store.pendingById[getId(this)]?.remove || false
   }
 
-  get isPending() {
-    const { store } = this.constructor as typeof BaseModel
-    const pending = (store as any).pendingById[getId(this)]
+  get isPending(): boolean {
+    const { store } = this.constructor as ModelStatic<BaseModel>
+    const pending = store.pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || pending?.remove || false
   }
 
@@ -107,25 +264,28 @@ export class BaseModel {
    * Add the current record to the store
    */
   public addToStore() {
-    const { store }: { store: any } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as ModelStatic<BaseModel>
     return store.addToStore(this)
   }
 
   /**
-   * clone the current record using the `createCopy` mutation
+   * clone the current record using the `clone` action
    */
-  public clone(data: AnyData = {}): this {
-    const { store } = this.constructor as typeof BaseModel
-    return (store as any).clone(this, data)
+  public clone(data?: AnyData): this {
+    const { store } = this.constructor as ModelStatic<BaseModel>
+
+    // @ts-expect-error todo
+    return store.clone(this, data)
   }
 
   /**
    * Update a store instance to match a clone.
    */
   public commit(): this {
-    const { store } = this.constructor as typeof BaseModel
+    const { store } = this.constructor as ModelStatic<BaseModel>
     if (this.__isClone) {
-      return (store as any).commit(this)
+      // @ts-expect-error todo
+      return store.commit(this)
     } else {
       throw new Error('You cannot call commit on a non-copy')
     }
@@ -135,8 +295,9 @@ export class BaseModel {
    * Update a clone to match a store instance.
    */
   public reset(data: AnyData = {}): this {
-    const { store } = this.constructor as typeof BaseModel
-    return (store as any).clone(this, data)
+    const { store } = this.constructor as ModelStatic<BaseModel>
+
+    return store.clone(this, data) as this
   }
 
   /**
@@ -144,7 +305,7 @@ export class BaseModel {
    * @param params
    */
   public save(params?: any): Promise<this> {
-    const { idField } = this.constructor as typeof BaseModel
+    const { idField } = this.constructor as ModelStatic<BaseModel>
     const id = getId(this, idField)
     if (id != null) {
       return this.patch(params)
@@ -158,12 +319,12 @@ export class BaseModel {
    * @param params
    */
   public create(params?: any): Promise<this> {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { idField, store } = this.constructor as ModelStatic<BaseModel>
     const data: any = Object.assign({}, this)
     if (data[idField] === null) {
       delete data[idField]
     }
-    return (store as any).create(data, params)
+    return store.create(data, params) as Promise<this>
   }
 
   /**
@@ -171,7 +332,7 @@ export class BaseModel {
    * @param params
    */
   public patch(params?: any): Promise<this> {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { idField, store } = this.constructor as ModelStatic<BaseModel>
     const id = getId(this, idField)
 
     if (id == null) {
@@ -180,7 +341,7 @@ export class BaseModel {
       )
       return Promise.reject(error)
     }
-    return (store as any).patch(id, this, params)
+    return store.patch(id, this, params) as Promise<this>
   }
 
   /**
@@ -188,7 +349,7 @@ export class BaseModel {
    * @param params
    */
   public update(params?: any): Promise<this> {
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { idField, store } = this.constructor as ModelStatic<BaseModel>
     const id = getId(this, idField)
 
     if (id == null) {
@@ -197,7 +358,7 @@ export class BaseModel {
       )
       return Promise.reject(error)
     }
-    return (store as any).update(id, this, params)
+    return store.update(id, this, params) as Promise<this>
   }
 
   /**
@@ -206,16 +367,16 @@ export class BaseModel {
    */
   public remove(params?: Params): Promise<this> {
     checkThis(this)
-    const { idField, store } = this.constructor as typeof BaseModel
+    const { idField, store } = this.constructor as ModelStatic<BaseModel>
     const id: Id = getId(this, idField)
-    return (store as any).remove(id, params)
+    return store.remove(id, params)
   }
   /**
    * Removes the instance from the store
    */
   public removeFromStore(): this {
-    const { store } = this.constructor as typeof BaseModel
-    return (store as any).removeFromStore(this)
+    const { store } = this.constructor as ModelStatic<BaseModel>
+    return store.removeFromStore(this)
   }
 }
 
@@ -225,9 +386,4 @@ function checkThis(context: any) {
       `Instance methods must be called with the dot operator. If you are referencing one in an event, use '@click="() => instance.remove()"' so that the correct 'this' context is applied. Using '@click="instance.remove"' will call the remove function with "this" set to 'undefined' because the function is called directly instead of as a method.`,
     )
   }
-}
-
-for (const n in EventEmitter.prototype) {
-  // eslint-disable-next-line @typescript-eslint/no-extra-semi
-  ;(BaseModel as any)[n] = (EventEmitter.prototype as any)[n]
 }

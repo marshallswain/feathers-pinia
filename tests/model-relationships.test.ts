@@ -32,7 +32,7 @@ class User extends BaseModel {
   set messages(messages) {
     const messagesService = useMessagesService()
     messages.forEach((message: any) => {
-      message.userId = (this as any).id
+      message.userId = this.id
       messagesService.addOrUpdate(message)
     })
   }

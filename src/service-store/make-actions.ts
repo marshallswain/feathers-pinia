@@ -1,9 +1,14 @@
 import {
-  ServiceOptions,
-  ServiceActions,
+  ServiceStoreDefaultActions,
   UpdatePaginationForQueryOptions,
   RequestType,
   AnyDataOrArray,
+  ServiceStoreDefaultGetters,
+  ServiceStoreDefaultState,
+  HandleFindResponseOptions,
+  HandleFindErrorOptions,
+  AnyData,
+  MakeServiceActionsOptions
 } from './types'
 import { Params } from '../types'
 import { Id, NullableId } from '@feathersjs/feathers'
@@ -20,21 +25,31 @@ import {
   restoreTempIds,
   getArray,
   hasOwn,
+  getSaveParams,
 } from '../utils'
 import { unref, set } from 'vue-demi'
+import { StateTree, _GettersTree } from 'pinia'
+import { BaseModel } from './base-model'
+import { MaybeArray, MaybeRef, TypedActions } from '../utility-types'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface PaginationOptions {
-  default: number
-  max: number
-}
+type ServiceStoreTypedActions<M extends BaseModel = BaseModel> = TypedActions<
+  ServiceStoreDefaultState<M>,
+  ServiceStoreDefaultGetters<M>,
+  ServiceStoreDefaultActions<M>
+>
 
-export function makeActions(options: ServiceOptions): ServiceActions {
-  return {
-    find(requestParams: Params) {
-      let params: any = unref(requestParams || {})
-      params = fastCopy(params)
-      const { query } = params
+export function makeActions<
+  M extends BaseModel = BaseModel,
+  S extends StateTree = StateTree,
+  G extends _GettersTree<S> = {},
+  A = {}
+>(
+  options: MakeServiceActionsOptions<M, S, G, A>
+): ServiceStoreDefaultActions<M> & A {
+  const defaultActions: ServiceStoreTypedActions<M> = {
+    find(_params?: MaybeRef<Params>) {
+      const params = getSaveParams(_params)
+      const { query = {} } = params
       const isPaginated =
         params.paginate === true || hasOwn(query, '$limit') || hasOwn(query, '$skip')
 
@@ -47,6 +62,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
 
       const info = getQueryInfo(params, {})
       const qidData = this.pagination[info.qid]
+      // @ts-expect-error todo
       const queryData = qidData?.[info.queryId]
       const pageData = queryData?.[info.pageId as string]
 
@@ -66,7 +82,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         }
       }
 
-      return (ssrPromise || this.service.find(params as any))
+      return (ssrPromise || this.service.find(params))
         .then((response: any) => this.handleFindResponse({ params, response }))
         .catch((error: any) => this.handleFindError({ params, error }))
         .finally(() => {
@@ -81,8 +97,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      *         Feathers client.  The client modifies the params object.
      *   @param response
      */
-    async handleFindResponse({ params, response }: { params: Params; response: any }) {
-      const { qid = 'default', query, preserveSsr } = params
+    async handleFindResponse({ params, response }: HandleFindResponseOptions) {
+      const { qid = 'default', query, preserveSsr = false } = params
 
       this.addOrUpdate(response.data || response)
 
@@ -103,24 +119,22 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     async afterFind(response: any) {
       return response
     },
-    handleFindError({ error }: { params: Params; error: any }) {
+    handleFindError({ error }: HandleFindErrorOptions) {
       //  commit('setError', { method: 'find', params, error })
       return Promise.reject(error)
     },
 
-    count(params: Params) {
-      params = params || {}
-      params = fastCopy(params)
+    count(_params?: MaybeRef<Params>) {
+      const params = getSaveParams(_params)
+      const { query = {} } = params
 
-      if (!params.query) {
-        throw 'params must contain a `query` object'
-      }
+      query.$limit = 0
 
-      params.query.$limit = 0
+      Object.assign(params, { query })
 
       this.setPendingById('Model', 'count', true)
 
-      return this.service.find(params as any).finally(() => {
+      return this.service.find(params).finally(() => {
         this.setPendingById('Model', 'count', false)
       })
     },
@@ -128,8 +142,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
     // Supports passing params the feathers way: `get(id, params)`
     // Does NOT support the old array syntax:
     // `get([null, params])` which was only needed for Vuex
-    get(id: Id, params: Params = {}) {
-      params = fastCopy(unref(params))
+    get(id: Id, _params?: MaybeRef<Params>) {
+      const params = getSaveParams(_params)
 
       const skipRequestIfExists = params.skipRequestIfExists || this.skipRequestIfExists
       delete params.skipRequestIfExists
@@ -156,10 +170,11 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         })
     },
 
-    create(data: AnyDataOrArray, params: Params) {
-      const { tempIdField } = this
-      params = fastCopy(unref(params || {}))
+    create(data: AnyDataOrArray, _params?: MaybeRef<Params>) {
+      const params = getSaveParams(_params)
 
+      const { tempIdField } = this
+      
       if (!Array.isArray(data)) {
         this.setPendingById(getId(data) || data[tempIdField], 'create', true)
       }
@@ -179,8 +194,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           }
         })
     },
-    update(id: Id, data: any, params: Params) {
-      params = fastCopy(unref(params || {}))
+    update(id: Id, data: AnyData, _params?: MaybeRef<Params>) {
+      const params = getSaveParams(_params)
 
       this.setPendingById(id, 'update', true)
 
@@ -197,8 +212,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           this.setPendingById(id, 'update', false)
         })
     },
-    patch(id: NullableId, data: any, params: Params) {
-      params = fastCopy(unref(params || {}))
+    patch(id: NullableId, data: any, _params?: MaybeRef<Params>) {
+      const params = getSaveParams(_params);
 
       if (params && params.data) {
         data = params.data
@@ -226,8 +241,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @param params
      * @returns
      */
-    remove(id: NullableId, params: Params = {}) {
-      params = fastCopy(unref(params || {}))
+    remove(id: NullableId, _params?: MaybeRef<Params>) {
+      const params = getSaveParams(_params)
 
       this.setPendingById(id, 'remove', true)
 
@@ -244,7 +259,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           return Promise.reject(error)
         })
     },
-    removeFromStore(data: AnyDataOrArray) {
+    removeFromStore<T>(data: T): T {
       const { items } = getArray(data)
       const idsToRemove = items
         .map((item: any) => (getId(item) != null ? getId(item) : getTempId(item, this.tempIdField)))
@@ -264,10 +279,10 @@ export function makeActions(options: ServiceOptions): ServiceActions {
      * @returns data added or modified in the store.
      *  If you pass an array, you get an array back.
      */
-    addToStore(data: AnyDataOrArray) {
+    addToStore(data: AnyDataOrArray): MaybeArray<any> {
       return this.addOrUpdate(data)
     },
-    addOrUpdate(data: AnyDataOrArray) {
+    addOrUpdate(data: AnyDataOrArray): MaybeArray<any> {
       const { items, isArray } = getArray(data)
 
       // Assure each item is an instance
@@ -292,7 +307,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
           set(this.itemsById, id, existingTemp)
           set(this.itemsById, id, Object.assign({}, this.itemsById[id], item))
           delete this.tempsById[tempId]
-          delete this.itemsById[id][tempId]
+          // @ts-expect-error todo
+          delete this.itemsById[id][tempIdField]
         }
         delete item[tempIdField]
       })
@@ -318,7 +334,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       set(this, 'clonesById', {})
     },
 
-    clone(item: any, data = {}) {
+    clone(item: M, data = {}): M {
       const tempId = getTempId(item, this.tempIdField)
       const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
       const id = getAnyId(item, this.tempIdField)
@@ -331,7 +347,8 @@ export function makeActions(options: ServiceOptions): ServiceActions {
             delete readyToReset[key]
           }
         })
-        return readyToReset
+        
+        return readyToReset as M
       } else {
         const clone = fastCopy(originalItem)
         Object.defineProperty(clone, '__isClone', {
@@ -341,16 +358,18 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         Object.assign(clone, data)
 
         set(this.clonesById, id, clone)
-        return this.clonesById[id] // Must return the item from the store
+        return this.clonesById[id] as M // Must return the item from the store
       }
     },
-    commit(item: any) {
+
+    commit(item: M): M | undefined {
       const id = getAnyId(item, this.tempIdField)
       if (id != null) {
         const tempId = getTempId(item, this.tempIdField)
         const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
         set(this[placeToStore], id, fastCopy(this.clonesById[id]))
-        return this.itemsById[id]
+
+        return this.itemsById[id] as M
       }
     },
 
@@ -391,15 +410,18 @@ export function makeActions(options: ServiceOptions): ServiceActions {
         total,
       }
 
+      // @ts-expect-error todo
       const existingPageData = this.pagination[qid]?.[queryId]?.[pageId as string]
 
       const qidData = this.pagination[qid] || {}
       Object.assign(qidData, { mostRecent })
+      // @ts-expect-error todo
       set(qidData, queryId, qidData[queryId] || {})
       const queryData = {
         total,
         queryParams,
       }
+      // @ts-expect-error todo
       set(qidData, queryId, Object.assign({}, qidData[queryId], queryData))
 
       const ssr = preserveSsr ? existingPageData?.ssr : unref(options.ssr)
@@ -407,6 +429,7 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       const pageData = {
         [pageId as string]: { pageParams, ids, queriedAt, ssr: !!ssr },
       }
+      // @ts-expect-error todo
       Object.assign(qidData[queryId], pageData)
 
       const newState = Object.assign({}, this.pagination[qid], qidData)
@@ -414,34 +437,33 @@ export function makeActions(options: ServiceOptions): ServiceActions {
       set(this.pagination, qid, newState)
     },
 
-    setPendingById(id: string | number, method: RequestType, val: boolean) {
-      const updatePendingState = (id: string | number, method: RequestType) => {
-        set(this.pendingById, id, this.pendingById[id] || ({ [method]: val } as any))
-        set(this.pendingById[id], method, val)
-      }
-      if (id != null) {
-        updatePendingState(id, method)
-      }
+    setPendingById(id: NullableId, method: RequestType, val: boolean) {
+      if (id == null) return;
+
+      set(this.pendingById, id, this.pendingById[id] || ({ [method]: val }))
+      set(this.pendingById[id], method, val)
     },
     hydrateAll() {
       this.addToStore(this.items)
     },
-    toggleEventLock(idOrIds: any, event: string) {
+    toggleEventLock(idOrIds: MaybeArray<Id>, event: string) {
       setEventLockState(idOrIds, event, true, this)
     },
     unflagSsr(params: Params) {
       const queryInfo = getQueryInfo(params, {})
       const { qid, queryId, pageId } = queryInfo
+      // @ts-expect-error todo
       const pageData = this.pagination[qid]?.[queryId]?.[pageId as string]
       pageData.ssr = false
-    },
-    ...options.actions,
+    }
   }
+
+  return Object.assign(defaultActions, options.actions)
 }
 
-function setEventLockState(data: any, event: string, val: boolean, store: any) {
+function setEventLockState(data: MaybeArray<Id>, event: string, val: boolean, store: any) {
   const { items: ids } = getArray(data)
-  ids.forEach((id: Id) => {
+  ids.forEach((id) => {
     const currentLock = store.eventLocksById[event][id]
     if (currentLock) {
       delete store.eventLocksById[event][id]

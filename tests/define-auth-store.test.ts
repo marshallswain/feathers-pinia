@@ -68,7 +68,7 @@ describe('Define Auth Store 3 (from id and options without options.id)', () => {
 })
 
 describe('Define Auth Store 4 (from id and options with options.id)', () => {
-  const useAuth = defineAuthStore('auth4', { id: 'should-be-overriden', feathersClient: api })
+  const useAuth = defineAuthStore('auth4', { feathersClient: api })
   const store = useAuth(pinia)
   test('can authenticate', async () => {
     const response = await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })

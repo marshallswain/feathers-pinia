@@ -55,7 +55,7 @@ describe('useFind', () => {
       expect(data.qid.value).toBe('default')
       expect(data.servicePath.value).toBe('messages')
       expect(data.isSsr.value).toBe(false)
-      expect((data.request.value as any).then)
+      expect(data.request.value.then)
     })
 
     test('reactive data works correctly', async () => {

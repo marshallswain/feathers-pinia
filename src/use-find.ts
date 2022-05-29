@@ -1,12 +1,12 @@
-import { computed, reactive, Ref, ComputedRef, unref, toRefs, watch, toRaw } from 'vue-demi'
+import { computed, reactive, Ref, ComputedRef, unref, toRefs, watch } from 'vue-demi'
 import debounce from 'just-debounce'
 import { Params, Paginated } from './types'
 import { getQueryInfo, getItemsFromQueryInfo } from './utils'
-import { AnyData, Model, QueryWhenFunction } from './service-store/types'
-import { stat } from 'fs'
+import { AnyData, ModelStatic, QueryWhenFunction } from './service-store/types'
+import { BaseModel } from './service-store'
 
-interface UseFindOptions {
-  model: any
+interface UseFindOptions<M extends BaseModel> {
+  model: ModelStatic<M>
   params: Params | ComputedRef<Params | null>
   fetchParams?: ComputedRef<Params | null | undefined>
   queryWhen?: ComputedRef<boolean> | QueryWhenFunction
@@ -32,15 +32,15 @@ interface UseFindComputed<M> {
   isSsr: ComputedRef<boolean>
 }
 
-export function useFind<M extends Model = Model>({
-  model = null,
+export function useFind<M extends BaseModel = BaseModel>({
+  model,
   params = computed(() => null),
   fetchParams = computed(() => undefined),
   qid = 'default',
   queryWhen = computed(() => true),
   local = false,
   immediate = true,
-}: UseFindOptions) {
+}: UseFindOptions<M>) {
   if (!model) {
     throw new Error(
       `No model provided for useFind(). Did you define and register it with FeathersPinia?`,
@@ -115,6 +115,7 @@ export function useFind<M extends Model = Model>({
     if (typeof val === 'function') {
       const info = getQueryInfo(params, {})
       const qidData = model.store.pagination[info.qid]
+      // @ts-expect-error fix me ts(7053)
       const queryData = qidData?.[info.queryId]
       const pageData = queryData?.[info.pageId as string]
       const context = {

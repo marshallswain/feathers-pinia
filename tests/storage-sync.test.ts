@@ -10,7 +10,7 @@ const pinia = createPinia()
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {}
-const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
+const useMessagesService = defineStore<'', Message>({ servicePath: 'messages', Model: Message })
 const messagesService = useMessagesService(pinia)
 const localStorageMock: Storage = {
   getItem: vi.fn(),

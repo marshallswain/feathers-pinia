@@ -1,4 +1,7 @@
-import { AnyData } from './service-store/types'
+import { DefineStoreOptionsBase, StateTree, Store } from 'pinia';
+import { AnyData, ModelStatic } from './service-store/types'
+import { BaseModel } from './service-store/base-model';
+import { TypedActions, TypedGetters } from './utility-types';
 
 export interface Filters {
   $sort?: { [prop: string]: -1 | 1 }
@@ -9,13 +12,13 @@ export interface Filters {
 export interface Query extends Filters, AnyData {}
 
 export interface PaginationOptions {
-  default: number
-  max: number
+  default?: number | true
+  max?: number
 }
 
 export interface Params extends AnyData {
   query?: Query
-  paginate?: boolean | Pick<PaginationOptions, 'max'>
+  paginate?: boolean | PaginationOptions
   provider?: string
   route?: Record<string, string>
   headers?: Record<string, any>
@@ -31,6 +34,7 @@ export interface Paginated<T> {
   limit: number
   skip: number
   data: T[]
+  fromSsr?: true
 }
 
 export interface QueryInfo {
@@ -44,9 +48,37 @@ export interface QueryInfo {
   isOutdated: boolean | undefined
 }
 
-export interface HandleEvents {
-  created?: Function
-  patched?: Function
-  updated?: Function
-  removed?: Function
+export type HandledEvents = 'created' | 'patched' | 'updated' | 'removed'
+export type HandleEventsFunction<
+  M extends BaseModel = BaseModel
+>  = (item: any, ctx: { model: ModelStatic<M>, models: any }) => any
+
+export type HandleEvents<
+  M extends BaseModel = BaseModel
+> = {
+  [event in HandledEvents]: HandleEventsFunction<M>
 }
+
+export interface DefineStoreOptionsWithDefaults<
+  Id extends string,
+  S extends StateTree,
+  G /* extends GettersTree<S> */,
+  A /* extends Record<string, StoreAction> */,
+  DefaultS,
+  DefaultG,
+  DefaultA
+> extends DefineStoreOptionsBase<S, Store<Id, S, G, A>> {
+  state?: () => S
+
+  getters?: TypedGetters<S, G, DefaultS, DefaultG>
+ 
+  actions?: TypedActions<
+    S, 
+    G, 
+    A,
+    DefaultS,
+    DefaultG,
+    DefaultA
+  >
+}
+

@@ -1,6 +1,10 @@
 import { getId, hasOwn } from '../utils'
 import _debounce from 'lodash/debounce'
 import { models } from '../models'
+import { HandledEvents } from '../types'
+import { DefineFeathersStoreOptions, ServiceStore, ModelStatic } from './types'
+import { BaseModel } from '.'
+import { StateTree, _GettersTree } from 'pinia'
 
 export interface ServiceEventsDebouncedQueue {
   addOrUpdateById: any
@@ -11,19 +15,44 @@ export interface ServiceEventsDebouncedQueue {
   flushRemoveItemQueue(): void
 }
 
-interface EnableServiceEventsOptions {
+interface EnableServiceEventsOptions<
+  Id extends string = string,
+  M extends BaseModel = BaseModel,
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
+> {
   service: any
-  Model: any
-  store: any
-  options: any
+  Model: ModelStatic<M>
+  store: ServiceStore<Id, M, S, G, A>,
+  options: EnableServiceEventsOptionsOptions<Id, M, S, G, A>
 }
 
-export function enableServiceEvents({
+type EnableServiceEventsOptionsOptions<
+  Id extends string = string,
+  M extends BaseModel = BaseModel,
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
+> = Required<Pick<DefineFeathersStoreOptions<Id, M, S, G, A>, 
+  'idField' |
+  'handleEvents' |
+  'debounceEventsMaxWait' | 
+  'debounceEventsTime'
+>>
+
+export function enableServiceEvents<
+  Id extends string = string,
+  M extends BaseModel = BaseModel,
+  S extends StateTree = {}, 
+  G extends _GettersTree<S> = {}, 
+  A = {}
+>({
   service,
   Model,
   store,
   options,
-}: EnableServiceEventsOptions): ServiceEventsDebouncedQueue {
+}: EnableServiceEventsOptions<Id, M, S, G, A>): ServiceEventsDebouncedQueue {
   const debouncedQueue: ServiceEventsDebouncedQueue = {
     addOrUpdateById: {},
     removeItemById: {},
@@ -46,12 +75,12 @@ export function enableServiceEvents({
     flushAddOrUpdateQueue: _debounce(
       async function () {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         const values = Object.values(this.addOrUpdateById)
         if (values.length === 0) return
         await store.addOrUpdate(values)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         this.addOrUpdateById = {}
       },
       options.debounceEventsTime || 20,
@@ -60,12 +89,12 @@ export function enableServiceEvents({
     flushRemoveItemQueue: _debounce(
       function () {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         const values = Object.values(this.removeItemById)
         if (values.length === 0) return
         store.removeFromStore(values)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error todo
         this.removeItemById = {}
       },
       options.debounceEventsTime || 20,
@@ -73,7 +102,7 @@ export function enableServiceEvents({
     ),
   }
 
-  const handleEvent = (eventName: string, item: any, mutationName: string): void => {
+  const handleEvent = (eventName: HandledEvents, item: any): void => {
     const handler = options.handleEvents[eventName]
     const confirmOrArray = handler(item, { model: Model, models })
     const [affectsStore, modified = item] = Array.isArray(confirmOrArray)
@@ -81,7 +110,9 @@ export function enableServiceEvents({
       : [confirmOrArray]
     if (affectsStore) {
       if (!options.debounceEventsTime) {
-        eventName === 'removed' ? store.removeFromStore(modified) : store[mutationName](modified)
+        eventName === 'removed' 
+          ? store.removeFromStore(modified) 
+          : store.addOrUpdate(modified)
       } else {
         eventName === 'removed'
           ? debouncedQueue.enqueueRemoval(item)
@@ -92,19 +123,19 @@ export function enableServiceEvents({
 
   // Listen to socket events when available.
   service.on('created', (item: any) => {
-    handleEvent('created', item, 'addOrUpdate')
+    handleEvent('created', item)
     Model.emit && Model.emit('created', item)
   })
   service.on('updated', (item: any) => {
-    handleEvent('updated', item, 'addOrUpdate')
+    handleEvent('updated', item)
     Model.emit && Model.emit('updated', item)
   })
   service.on('patched', (item: any) => {
-    handleEvent('patched', item, 'addOrUpdate')
+    handleEvent('patched', item)
     Model.emit && Model.emit('patched', item)
   })
   service.on('removed', (item: any) => {
-    handleEvent('removed', item, 'removeFromStore')
+    handleEvent('removed', item)
     Model.emit && Model.emit('removed', item)
   })
 

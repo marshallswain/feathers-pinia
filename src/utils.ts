@@ -5,6 +5,8 @@ import ObjectID from 'bson-objectid'
 import { Id } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
 import { AnyData, AnyDataOrArray } from './service-store/types'
+import { unref } from 'vue-demi'
+import { MaybeRef } from './utility-types'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -163,3 +165,8 @@ export function getArray<T>(data: T | T[]) {
 
 export const hasOwn = (obj: AnyData, prop: string) =>
   Object.prototype.hasOwnProperty.call(obj, prop)
+
+export function getSaveParams(params?: MaybeRef<Params>): Params {
+  if (!params) { return {} }
+  return fastCopy(unref(params));
+}

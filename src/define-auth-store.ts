@@ -1,27 +1,80 @@
-import { defineStore } from 'pinia'
+import { defineStore, StateTree, StoreDefinition, _GettersTree } from 'pinia'
+import { DefineStoreOptionsWithDefaults } from './types';
+import { TypedActions, TypedGetters } from './utility-types';
 
-interface SetupAuthOptions {
+type DefineAuthStoreOptions<
+  Id extends string,
+  S,
+  G,
+  A
+> = DefineStoreOptionsWithDefaults<
+  Id, 
+  S, 
+  G, 
+  A, 
+  AuthStoreDefaultState, 
+  AuthStoreDefaultGetters, 
+  AuthStoreDefaultActions
+> & {
   feathersClient: any
   id?: string
-  state?: Function
-  getters?: { [k: string]: any }
-  actions?: { [k: string]: any }
 }
 
-export function defineAuthStore(...args: [SetupAuthOptions] | [string, SetupAuthOptions]): any {
+type AuthStoreDefinition<Id extends string, S, G, A> = StoreDefinition<
+  Id, 
+  AuthStoreDefaultState & S, 
+  AuthStoreDefaultGetters & G, 
+  AuthStoreDefaultActions & A
+>
+
+type AuthStoreTypedGetters = TypedGetters<AuthStoreDefaultState, AuthStoreDefaultGetters>
+type AuthStoreTypedActions = TypedActions<
+  AuthStoreDefaultState, 
+  AuthStoreDefaultGetters, 
+  AuthStoreDefaultActions
+>
+
+interface AuthStoreDefaultState {
+  isLoading: boolean,
+  isAuthenticated: boolean,
+  accessToken: string | null, // The auth0 and API accessToken
+  payload: any, // accessToken payload
+  error: any,
+}
+
+interface AuthStoreDefaultGetters extends _GettersTree<AuthStoreDefaultState> {
+  feathersClient: () => any
+}
+
+interface AuthStoreDefaultActions {
+  authenticate: (authData: any) => Promise<any>
+  handleResponse: (response: any) => any
+  handleError: (err: Error) => any
+  setLoaded: (val: boolean) => void
+}
+
+export function defineAuthStore<
+  Id extends string,
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  // cannot extends ActionsTree because we loose the typings
+  A /* extends ActionsTree */ = {}
+>(
+  ...args: [DefineAuthStoreOptions<Id, S, G, A>] | [Id, Omit<DefineAuthStoreOptions<Id, S, G, A>, 'id'>]
+): AuthStoreDefinition<Id, S, G, A> {
   const id = args.length === 2 ? args[0] : args[0].id || 'auth'
   const options = args.length === 2 ? args[1] : args[0]
   const {
     feathersClient,
-    state = () => ({}),
-    getters = {},
-    actions = {},
+    state = () => ({}) as S,
+    getters = {} as G,
+    actions = {} as A,
   } = options
 
   /**
    * Default State
    */
-  const defaultState = {
+  const defaultState: AuthStoreDefaultState = {
     isLoading: true,
     isAuthenticated: false,
     accessToken: null, // The auth0 and API accessToken
@@ -29,7 +82,10 @@ export function defineAuthStore(...args: [SetupAuthOptions] | [string, SetupAuth
     error: null,
   }
 
-  const defaultGetters = {
+  /**
+   * Default Getters
+   */
+  const defaultGetters: AuthStoreTypedGetters = {
     feathersClient() {
       return feathersClient
     },
@@ -38,15 +94,14 @@ export function defineAuthStore(...args: [SetupAuthOptions] | [string, SetupAuth
   /**
    * Default Actions
    */
-  const defaultActions = {
+  const defaultActions: AuthStoreTypedActions = {
     async authenticate(authData: any) {
       try {
         const response = await feathersClient.authenticate(authData)
         Object.assign(this, { ...response, isAuthenticated: true })
         return this.handleResponse(response) || response
       } catch (error) {
-        // eslint-disable-next-line @typescript-eslint/no-extra-semi
-        ;(this as any).error = error
+        this.error = error
         return this.handleError(error as Error)
       }
     },
@@ -68,16 +123,16 @@ export function defineAuthStore(...args: [SetupAuthOptions] | [string, SetupAuth
      * For tracking first-load state. Used by the watcher, below.
      */
     setLoaded() {
-      // eslint-disable-next-line @typescript-eslint/no-extra-semi
-      ;(this as any).isLoading = false
+      this.isLoading = false
     },
   }
 
   const useAuth = defineStore({
-    id,
-    state: () => Object.assign(defaultState, state()),
-    getters: Object.assign(defaultGetters, getters),
-    actions: Object.assign(defaultActions, actions),
+    id: id as Id,
+    state: () => Object.assign(defaultState, state()) as AuthStoreDefaultState & S,
+    getters: Object.assign(defaultGetters, getters) as AuthStoreDefaultGetters & G,
+    actions: Object.assign(defaultActions, actions) as AuthStoreDefaultActions & A,
   })
+
   return useAuth
 }

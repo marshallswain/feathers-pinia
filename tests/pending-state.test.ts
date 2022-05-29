@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
+import { RequestTypeById } from '../src/service-store/types'
 import { vi } from 'vitest'
 
 const pinia = createPinia()
@@ -181,14 +182,14 @@ describe('Pending State', () => {
   })
 
   describe('Model getters for instance state', () => {
-    const config = {
+    const config: Record<string, RequestTypeById> = {
       isCreatePending: 'create',
       isPatchPending: 'patch',
       isUpdatePending: 'update',
       isRemovePending: 'remove',
     }
     Object.entries(config).forEach(([title, method]) => {
-      test(title, () => {
+      test(title, () => { 
         messagesService.setPendingById('foo', method, true)
         expect(messagesService[title]).toBeTruthy()
         messagesService.setPendingById('foo', method, false)
