@@ -10,6 +10,7 @@ class Message extends BaseModel {
   // This doesn't work as a default value.
   // It will overwrite all passed-in values and always be this value.
   text = 'The text in the model always wins. You can only overwrite it after instantiation'
+  otherText: string
 
   static instanceDefaults() {
     return {
