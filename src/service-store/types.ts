@@ -1,6 +1,6 @@
 import { ComputedRef } from 'vue-demi'
 import { Params, Paginated, QueryInfo, HandleEvents } from '../types'
-import { Id, Query, NullableId , Application as FeathersClient } from '@feathersjs/feathers'
+import { Id, Query, NullableId, Application as FeathersClient } from '@feathersjs/feathers'
 import { StateTree, Store as _Store, StoreDefinition, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
 import { MaybeArray, MaybeRef } from '../utility-types'
@@ -94,31 +94,28 @@ export type ServiceStoreDefault<M extends BaseModel> = _Store<
   ServiceStoreDefaultActions<M>
 >
 
-export type ServiceStoreDefaultState<
-  M extends BaseModel = BaseModel
-> = ServiceStoreSharedStateDefineOptions & {
-  pagination: {
-    [qid: string]: PaginationStateQid
+export type ServiceStoreDefaultState<M extends BaseModel = BaseModel> =
+  ServiceStoreSharedStateDefineOptions & {
+    pagination: {
+      [qid: string]: PaginationStateQid
+    }
+    itemsById: ModelsById<M>
+    tempsById: ModelsById<M>
+    clonesById: ModelsById<M>
+    pendingById: {
+      Model: PendingByModel
+      [id: string]: PendingById | PendingByModel
+      [id: number]: PendingById
+    }
+    eventLocksById: {
+      created: ModelsById<M>
+      patched: ModelsById<M>
+      updated: ModelsById<M>
+      removed: ModelsById<M>
+    }
   }
-  itemsById: ModelsById<M>
-  tempsById: ModelsById<M>
-  clonesById: ModelsById<M>
-  pendingById: {
-    Model: PendingByModel
-    [id: string]: PendingById | PendingByModel
-    [id: number]: PendingById
-  }
-  eventLocksById: {
-    created: ModelsById<M>
-    patched: ModelsById<M>
-    updated: ModelsById<M>
-    removed: ModelsById<M>
-  }
-}
 
-export interface ServiceStoreDefaultGetters<
-  M extends BaseModel = BaseModel
-> {
+export interface ServiceStoreDefaultGetters<M extends BaseModel = BaseModel> {
   service: () => any
   Model: () => ModelStatic<M>
   isSsr: () => boolean
@@ -137,12 +134,10 @@ export interface ServiceStoreDefaultGetters<
   isRemovePending: () => boolean
 }
 
-export type HandleFindResponseOptions = { params: Params, response: any }
-export type HandleFindErrorOptions = { params: Params, error: any }
+export type HandleFindResponseOptions = { params: Params; response: any }
+export type HandleFindErrorOptions = { params: Params; error: any }
 
-export interface ServiceStoreDefaultActions<
-  M extends BaseModel = BaseModel
-> {
+export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   find: (params?: MaybeRef<Params>) => Promise<M[] | Paginated<M>>
   handleFindResponse: (findResponse: HandleFindResponseOptions) => Promise<any>
   afterFind: <T = M[] | Paginated<M>>(response: T) => Promise<T>
@@ -172,55 +167,55 @@ export interface ServiceStoreDefaultActions<
 }
 
 export type ServiceOptions<
-  Id extends string = any, 
+  Id extends string = any,
   M extends BaseModel = BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
-> = Required<Pick<DefineFeathersStoreOptions<Id, M, S, G, A>, 
-  'ssr' |
-  'clients' |
-  'id' |
-  'clientAlias' |
-  'idField' |
-  'tempIdField' |
-  'servicePath' |
-  'Model' |
-  'state' |
-  'getters' |
-  'actions' |
-  'whitelist' |
-  'paramsForServer' |
-  'skipRequestIfExists'
->>
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  A = {},
+> = Required<
+  Pick<
+    DefineFeathersStoreOptions<Id, M, S, G, A>,
+    | 'ssr'
+    | 'clients'
+    | 'id'
+    | 'clientAlias'
+    | 'idField'
+    | 'tempIdField'
+    | 'servicePath'
+    | 'Model'
+    | 'state'
+    | 'getters'
+    | 'actions'
+    | 'whitelist'
+    | 'paramsForServer'
+    | 'skipRequestIfExists'
+  >
+>
 
-export type MakeStateOptions<
-  M extends BaseModel = BaseModel,
-  S extends StateTree = {}
-> = Pick<ServiceOptions<any, M, S>, 
-  'servicePath' | 
-  'clientAlias' | 
-  'idField' |
-  'tempIdField' |
-  'state' | 
-  'whitelist' |
-  'paramsForServer' |
-  'skipRequestIfExists'
+export type MakeStateOptions<M extends BaseModel = BaseModel, S extends StateTree = {}> = Pick<
+  ServiceOptions<any, M, S>,
+  | 'servicePath'
+  | 'clientAlias'
+  | 'idField'
+  | 'tempIdField'
+  | 'state'
+  | 'whitelist'
+  | 'paramsForServer'
+  | 'skipRequestIfExists'
 >
 
 export type MakeServiceGettersOptions<
   M extends BaseModel = BaseModel,
   S extends StateTree = {},
-  G extends _GettersTree<S> = {}
+  G extends _GettersTree<S> = {},
 > = Pick<ServiceOptions<any, M, S, G>, 'Model' | 'getters' | 'clients' | 'ssr'>
 
 export type MakeServiceActionsOptions<
   M extends BaseModel = BaseModel,
   S extends StateTree = {},
   G extends _GettersTree<S> = {},
-  A = {}
+  A = {},
 > = Pick<ServiceOptions<any, M, S, G, A>, 'Model' | 'getters' | 'clients' | 'ssr' | 'actions'>
-
 
 export interface PatchParams<D extends AnyData> extends Params {
   data?: Partial<D>
@@ -324,11 +319,12 @@ export interface PatchParams<D extends AnyData> extends Params {
 //   reset(): this
 // }
 
-type NonConstructorKeys<T> = ({[P in keyof T]: T[P] extends new () => any ? never : P })[keyof T];
-type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>;
+type NonConstructorKeys<T> = { [P in keyof T]: T[P] extends new () => any ? never : P }[keyof T]
+type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>
 
-export type ModelStatic<M extends BaseModel = BaseModel> = 
-  NonConstructor<typeof BaseModel> & { new(...args: any[]): M };
+export type ModelStatic<M extends BaseModel = BaseModel> = NonConstructor<typeof BaseModel> & {
+  new (...args: any[]): M
+}
 
 /** Static Model interface */
 // export interface ModelStatic extends EventEmitter {
@@ -515,32 +511,33 @@ export type ServiceStore<
   M extends BaseModel = BaseModel,
   S extends StateTree = {},
   G extends _GettersTree<S> = {},
-  A = {}> = _Store<
-  Id, 
-  ServiceStoreDefaultState<M> & S, 
-  ServiceStoreDefaultGetters<M> & G, 
+  A = {},
+> = _Store<
+  Id,
+  ServiceStoreDefaultState<M> & S,
+  ServiceStoreDefaultGetters<M> & G,
   ServiceStoreDefaultActions<M> & A
 >
 
 export type ServiceStoreDefinition<
   Id extends string,
   M extends BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  A = {},
 > = StoreDefinition<
-  Id, 
-  ServiceStoreDefaultState<M> & S, 
-  ServiceStoreDefaultGetters<M> & G, 
+  Id,
+  ServiceStoreDefaultState<M> & S,
+  ServiceStoreDefaultGetters<M> & G,
   ServiceStoreDefaultActions<M> & A
 >
 
 export type DefineFeathersStoreOptions<
   Id extends string = string,
   M extends BaseModel = BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  A = {},
 > = {
   clientAlias?: string
   idField?: string
