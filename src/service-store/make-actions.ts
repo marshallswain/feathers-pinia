@@ -8,7 +8,7 @@ import {
   HandleFindResponseOptions,
   HandleFindErrorOptions,
   AnyData,
-  MakeServiceActionsOptions
+  MakeServiceActionsOptions,
 } from './types'
 import { Params } from '../types'
 import { Id, NullableId } from '@feathersjs/feathers'
@@ -42,10 +42,8 @@ export function makeActions<
   M extends BaseModel = BaseModel,
   S extends StateTree = StateTree,
   G extends _GettersTree<S> = {},
-  A = {}
->(
-  options: MakeServiceActionsOptions<M, S, G, A>
-): ServiceStoreDefaultActions<M> & A {
+  A = {},
+>(options: MakeServiceActionsOptions<M, S, G, A>): ServiceStoreDefaultActions<M> & A {
   const defaultActions: ServiceStoreTypedActions<M> = {
     find(_params?: MaybeRef<Params>) {
       const params = getSaveParams(_params)
@@ -174,7 +172,7 @@ export function makeActions<
       const params = getSaveParams(_params)
 
       const { tempIdField } = this
-      
+
       if (!Array.isArray(data)) {
         this.setPendingById(getId(data) || data[tempIdField], 'create', true)
       }
@@ -213,7 +211,7 @@ export function makeActions<
         })
     },
     patch(id: NullableId, data: any, _params?: MaybeRef<Params>) {
-      const params = getSaveParams(_params);
+      const params = getSaveParams(_params)
 
       if (params && params.data) {
         data = params.data
@@ -347,7 +345,7 @@ export function makeActions<
             delete readyToReset[key]
           }
         })
-        
+
         return readyToReset as M
       } else {
         const clone = fastCopy(originalItem)
@@ -438,9 +436,9 @@ export function makeActions<
     },
 
     setPendingById(id: NullableId, method: RequestType, val: boolean) {
-      if (id == null) return;
+      if (id == null) return
 
-      set(this.pendingById, id, this.pendingById[id] || ({ [method]: val }))
+      set(this.pendingById, id, this.pendingById[id] || { [method]: val })
       set(this.pendingById[id], method, val)
     },
     hydrateAll() {
@@ -455,7 +453,7 @@ export function makeActions<
       // @ts-expect-error todo
       const pageData = this.pagination[qid]?.[queryId]?.[pageId as string]
       pageData.ssr = false
-    }
+    },
   }
 
   return Object.assign(defaultActions, options.actions)
