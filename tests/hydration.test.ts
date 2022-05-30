@@ -20,6 +20,7 @@ describe('Hydration', () => {
     // Manually load a few plain js objects into the store.
     '......'.split('.').forEach((empty: string, id: number) => {
       const message = { id, text: 'hydrate me' }
+      //@ts-expect-error simulating ssr data
       messagesService.itemsById[id] = message
     })
   })

@@ -19,7 +19,6 @@ import {
   getTempId,
   getAnyId,
   getQueryInfo,
-  keyBy,
   assignTempId,
   cleanData,
   restoreTempIds,
@@ -281,49 +280,34 @@ export function makeActions<
       return this.addOrUpdate(data)
     },
     addOrUpdate(data: AnyDataOrArray): MaybeArray<any> {
+      const { tempIdField } = this
       const { items, isArray } = getArray(data)
 
-      // Assure each item is an instance
-      items.forEach((item: any, index: number) => {
-        if (this.isSsr || !(item instanceof options.Model)) {
-          const classes = { [this.servicePath]: options.Model }
-          set(items, index, new classes[this.servicePath](item))
+      const _items = items.map((item: AnyData) => {
+        if (getId(item) != null && getTempId(item, tempIdField) != null) {
+          return this.moveTempToItems(item)
+        } else {
+          return addOrMergeToStore(item, this, options)
         }
       })
 
+      return isArray ? _items : _items[0]
+    },
+
+    moveTempToItems(data: AnyData) {
       const { tempIdField } = this
-
-      // Move items with both tempIdField and idField from tempsById to itemsById
-      const withBoth = items.filter(
-        (i: any) => getId(i) != null && getTempId(i, tempIdField) != null,
-      )
-      withBoth.forEach((item: any) => {
-        const id = getId(item)
-        const tempId = getTempId(item, tempIdField)
-        const existingTemp = this.tempsById[tempId]
-        if (existingTemp) {
-          set(this.itemsById, id, existingTemp)
-          set(this.itemsById, id, Object.assign({}, this.itemsById[id], item))
-          delete this.tempsById[tempId]
-          // @ts-expect-error todo
-          delete this.itemsById[id][tempIdField]
-        }
-        delete item[tempIdField]
-      })
-
-      // Save items that have ids
-      const withId = items.filter((i: any) => getId(i) != null)
-      const itemsById = keyBy(withId)
-      set(this, 'itemsById', Object.assign({}, this.itemsById, itemsById))
-
-      // Save temp items
-      const temps = items
-        .filter((i: any) => getId(i) == null)
-        .map((i: any) => assignTempId(i, tempIdField))
-      const tempsById = keyBy(temps, (i: any) => i[tempIdField])
-      set(this, 'tempsById', Object.assign({}, this.tempsById, tempsById))
-
-      return isArray ? items : items[0]
+      const id = getId(data)
+      const tempId = getTempId(data, tempIdField)
+      const existingTemp = this.tempsById[tempId]
+      if (existingTemp) {
+        set(this.itemsById, id, existingTemp)
+        set(this.itemsById, id, Object.assign({}, this.itemsById[id], data))
+        delete this.tempsById[tempId]
+        // @ts-expect-error todo
+        delete this.itemsById[id][tempIdField]
+      }
+      delete data[tempIdField]
+      return this.itemsById[id]
     },
 
     clearAll() {
@@ -469,4 +453,22 @@ function setEventLockState(data: MaybeArray<Id>, event: string, val: boolean, st
       set(store.eventLocksById[event], id, true)
     }
   })
+}
+
+function addOrMergeToStore(item: AnyData, store: any, opts: any) {
+  const key = getId(item) != null ? 'itemsById' : 'tempsById'
+
+  if (key === 'tempsById' && !item[store.tempIdField]) assignTempId(item, store.tempIdField)
+
+  const id = getAnyId(item, store.tempIdField)
+  const existing = store[key][id]
+  if (existing) Object.assign(existing, item)
+  else store[key][id] = new opts.Model(item)
+
+  if (store.isSsr || !(item instanceof opts.Model)) {
+    const classes = { [store.servicePath]: opts.Model }
+    store[key][id] = new classes[store.servicePath](item)
+  }
+
+  return store[key][id]
 }

@@ -155,6 +155,7 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   addToStore(data: AnyData[]): M[]
   addOrUpdate(data: AnyData): M
   addOrUpdate(data: AnyData[]): M[]
+  moveTempToItems(data: AnyData): M
   clearAll: () => void
   clone: (item: M, data: AnyData) => M
   commit: (item: M) => M | undefined
