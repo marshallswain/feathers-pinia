@@ -20,7 +20,7 @@ const messagesStore = useMessages(pinia)
 
 const reset = () => resetStores(api.service('messages'), messagesStore)
 
-describe('Model Instances', () => {
+describe('Store Actions', () => {
   beforeEach(() => reset())
   afterEach(() => reset())
 
