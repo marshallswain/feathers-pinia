@@ -284,3 +284,27 @@ Pay special attention to the properties of type `Ref`, in the TypeScript interfa
   const incompleteTodos = computed(() => todos.value.filter((todo) => !todo.isComplete))
 </script>
 ```
+
+## Troubleshooting Missing Paginated Data
+
+One problem that can occur when you have reactive params.query is it's possible to modify the params in a hook. The most common problems happen with hooks that modify the query, like `paramsFromServer` from either `feathers-hooks-common` or `feathers-graph-populate`.  If you are using any hook that modifies `params.query`, you need to make a shallow clone of the object to prevent the reactive one you provide to `useFind` from getting modified.  `useFind` uses the original query object to process the incoming paginated data.  So if the original query gets changed by downstream hooks, no data will show up, and no errors will show, either.
+
+Steps to troubleshoot missing data:
+
+1. Make sure you see your data arriving in the Chrome Dev Tools Network tab.
+1. Turn off (comment out) any hooks on outbound requests and see if your data shows up again.
+1. If you can't turn off hooks, try adding a global hook that creates a shallow copy of the params:
+
+```js
+app.hooks({
+  before: {
+    all: [
+      // Replace context.params with a shallow clone to prevent future hooks from messing with the reactive query object.
+      context => {
+        const query = { ...context.params.query }
+        context.params = { ...context.params, query }
+      }
+    ]
+  }
+})
+```
