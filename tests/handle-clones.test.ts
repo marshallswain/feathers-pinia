@@ -1,7 +1,7 @@
 import { createPinia } from 'pinia'
-import { setupFeathersPinia } from '../src/index'
+import { setupFeathersPinia, handleClones } from '../src/index'
 import { api } from './feathers'
-import { handleClones } from '../src/handle-clones'
+import { useClones } from '../src/use-clones'
 import { resetStores } from './test-utils'
 import { vi } from 'vitest'
 
@@ -23,7 +23,7 @@ const reset = () => resetStores(api.service('messages'), messagesService)
 describe('Handle clones test', () => {
   beforeEach(() => reset())
 
-  test('it returns a clone', async () => {
+  test('has deprecated "handleClones" export', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
@@ -34,12 +34,23 @@ describe('Handle clones test', () => {
     expect(message === clones.message).toBe(false)
   })
 
+  test('it returns a clone', async () => {
+    const message = await messagesService.create({
+      text: 'Quick, what is the number to 911?',
+    })
+    const props = { message }
+    const { clones } = useClones(props)
+    expect(clones.message).toHaveProperty('__isClone')
+    expect(clones.message.__isClone).toBe(true)
+    expect(message === clones.message).toBe(false)
+  })
+
   test('can update via save handler', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
     const props = { message }
-    const { saveHandlers, clones } = handleClones(props)
+    const { saveHandlers, clones } = useClones(props)
     const { save_message } = saveHandlers
     clones.message.text = 'Doh! it is 911!'
     const { item } = await save_message(['text'])
@@ -52,7 +63,7 @@ describe('Handle clones test', () => {
     })
     const booleanField = true
     const props = { message, booleanField }
-    const { clones } = handleClones(props)
+    const { clones } = useClones(props)
     expect(clones.booleanField).toBeUndefined()
   })
 
@@ -60,7 +71,7 @@ describe('Handle clones test', () => {
     const message = new Message({ text: 'I will soon go to the store.' })
     expect(messagesService.tempIds).toHaveLength(0)
     const props = { message }
-    handleClones(props)
+    useClones(props)
     expect(messagesService.tempIds).toHaveLength(1)
   })
 
@@ -74,7 +85,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message(undefined, {
         $populateParams: { name: 'withRelatedData' },
@@ -96,7 +107,7 @@ describe('Handle clones test', () => {
       })
       const message = await new Message({ text: 'about to save with string' }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { clones, saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       clones.message.text = 'change it up'
       const { areEqual, wasDataSaved, item } = await save_message(undefined, {
@@ -121,7 +132,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message()
 
@@ -140,7 +151,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message('text')
 
@@ -159,7 +170,7 @@ describe('Handle clones test', () => {
       })
       const message = new Message({ text: 'about to save with string' })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { clones, saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       clones.message.text = 'hi'
       const { areEqual, wasDataSaved, item } = await save_message('text')
@@ -180,7 +191,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = new Message({ text })
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message(['text'])
 
@@ -201,7 +212,7 @@ describe('Handle clones test', () => {
         text: 'about to save with an array of attribute names',
       })
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { clones, saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       clones.message.text = 'hi'
       const { areEqual, wasDataSaved, item } = await save_message(['text'])
@@ -222,7 +233,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = new Message({ text })
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message({ text })
 
@@ -243,7 +254,7 @@ describe('Handle clones test', () => {
         text: 'about to save with an array of attribute names',
       })
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message({
         text: 'save this text',
@@ -268,7 +279,7 @@ describe('Handle clones test', () => {
         text: 'about to save with no arguments',
       }).save()
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message()
 
@@ -291,7 +302,7 @@ describe('Handle clones test', () => {
         changedProp: false,
       }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { clones, saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       Object.assign(clones.message, {
         text: 'foo',
@@ -320,7 +331,7 @@ describe('Handle clones test', () => {
         changedProp: false,
       }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { clones, saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       Object.assign(clones.message, {
         text: 'foo',
@@ -352,7 +363,7 @@ describe('Handle clones test', () => {
       })
       const message = await new Message({ text: 'about to save with string' }).save()
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message('text')
 
@@ -371,7 +382,7 @@ describe('Handle clones test', () => {
       })
       const message = await new Message({ text: 'about to save with string' }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { clones, saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       clones.message.text = 'hi'
       const { areEqual, wasDataSaved, item } = await save_message('text')
@@ -392,7 +403,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = new Message({ text })
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message(['text'])
 
@@ -413,7 +424,7 @@ describe('Handle clones test', () => {
         text: 'about to save with an array of attribute names',
       }).save()
       const props = { message }
-      const { clones, saveHandlers } = handleClones(props)
+      const { clones, saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       clones.message.text = 'hi'
       const { areEqual, wasDataSaved, item } = await save_message(['text'])
@@ -434,7 +445,7 @@ describe('Handle clones test', () => {
       const text = 'about to save with an array of attribute names'
       const message = await new Message({ text }).save()
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message({ text })
 
@@ -455,7 +466,7 @@ describe('Handle clones test', () => {
         text: 'about to save with an array of attribute names',
       }).save()
       const props = { message }
-      const { saveHandlers } = handleClones(props)
+      const { saveHandlers } = useClones(props)
       const { save_message } = saveHandlers
       const { areEqual, wasDataSaved, item } = await save_message({
         text: 'save this text',

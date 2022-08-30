@@ -7,7 +7,7 @@ import { Params } from '@feathersjs/feathers'
 interface AnyObj {
   [key: string]: any
 }
-interface HandleClonesOptions {
+interface UseClonesOptions {
   debug?: boolean
   useExisting?: boolean
   watchProps?: Array<any>
@@ -24,7 +24,7 @@ interface SaveHandlerOpts extends Params {
  * with ref clones at `_key`.
  * @param {*} props can be a component's `props` object OR a plain object full of refs.
  */
-export function handleClones(props: any, options: HandleClonesOptions = {}) {
+export function useClones(props: any, options: UseClonesOptions = {}) {
   const { useExisting = true, watchProps = [] } = options
   const clones: any = reactive({})
   const saveHandlers: any = {}
@@ -51,7 +51,7 @@ export function handleClones(props: any, options: HandleClonesOptions = {}) {
 
         /**
          * Create a new clone or return an existing one if options.useExisting is true.
-         * This prevents infinite loops when the handle-clones utility is used more than
+         * This prevents infinite loops when the use-clones utility is used more than
          * once in the same view on the same record.  If you get errors about an infinite
          * loop in a watcher related to "clone.value.id", set useExisting to true on all
          * instances except one.
