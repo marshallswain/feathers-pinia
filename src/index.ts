@@ -9,9 +9,12 @@ export { clients, registerClient } from './clients'
 
 export { useFind } from './use-find'
 export { useGet } from './use-get'
-export { useClones } from './use-clones'
-export { useClones as handleClones } from './use-clones'
 export { usePagination } from './use-pagination'
+export { useClones } from './use-clones'
+/**
+ * @deprecated `handleClones` has been renamed to `useClones`.
+ */
+export { useClones as handleClones } from './use-clones'
 
 export { syncWithStorage } from './storage-sync'
 export { syncWithStorageCompressed } from './storage-sync-compressed'
