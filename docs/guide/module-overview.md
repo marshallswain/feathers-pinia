@@ -20,7 +20,7 @@ export { models, registerClient } from './models'
 // Common Tools
 export { useFind } from './use-find'
 export { useGet } from './use-get'
-export { handleClones } from './handle-clones'
+export { useClones } from './use-clones'
 export { usePagination } from './use-pagination'
 
 // Storage Utilities
@@ -60,7 +60,7 @@ export { clearStorage } from './clear-storage'
 - **`useFind`** gives you reactive data by providing it with a set of `params` like what you would pass to a Feathers service's `find` method. This provides smart SWR (stale while revalidate) functionality, which we generally refer to as a fall-through cache. The cool thing with `useFind` is that since it uses the `findInStore` getter under the hood, it can show records from other queries that match with the current query. Learn more in [useFind](./use-find).
 - **`useGet`** gives you a reactive `get` request. Like `useFind`, it's basically a fall-through cache, only its for individual records. Learn more in [useGet](./use-get).
 - **`usePagination`** is a composition api utility that handles typical pagination logic. See [usePagination](./use-pagination)
-- **`handleClones`** removes boilerplate from the [clone and commit pattern](https://vuex.feathersjs.com/feathers-vuex-forms.html#the-clone-and-commit-pattern). It automatically clones all component props containing a `feathers-pinia` instance and provides a handy `save` function for each one. The `save` function performs automatic diffing to only patch data that has changed. See [handleClones](./handle-clones)
+- **`useClones`** removes boilerplate from the [clone and commit pattern](https://vuex.feathersjs.com/feathers-vuex-forms.html#the-clone-and-commit-pattern). It automatically clones all component props containing a `feathers-pinia` instance and provides a handy `save` function for each one. The `save` function performs automatic diffing to only patch data that has changed. See [useClones](./use-clones)
 
 ## Storage Sync
 
