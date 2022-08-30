@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Service Stores
 
 ## Setup

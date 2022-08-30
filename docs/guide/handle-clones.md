@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # handleClones
 
 The `handleClones` utility makes working with form data easier. It automatically handles the following features in a fairly smart way:

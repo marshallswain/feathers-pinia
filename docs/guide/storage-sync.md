@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Sync with Storage
 
 Two utilities for syncing with Storage are included with Feathers-Pinia: `syncWithStorage` and `syncWithStorageCompressed`. Both watch for changes in the store and write the changes to localStorage. Other key features include:

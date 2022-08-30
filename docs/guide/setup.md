@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Setup
 
 Pinia's well-designed architecture allows it to be modular while also functioning as a central store. This means that we don't have to register each service's store in a central location. Here's are the recommended steps for setting up Feathers-Pinia:

@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Auth Stores
 
 ## Setup

@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Module Overview
 
 The main module features the following exports:

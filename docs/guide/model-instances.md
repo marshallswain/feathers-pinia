@@ -51,12 +51,15 @@ The `save` method is a convenience wrapper for the `create/patch` methods, by de
 
 ```ts
 import { Todo } from '../stores/todos'
-const todo = new Todo({ description: 'Do something!' })
+
+// Call addToStore to get a reactive Vue object
+const todo = new Todo({ description: 'Do something!' }).addToStore()
+
 
 todo.save() // --> Creates the todo on the server.
 ```
 
-Once the `create` response returns, the record will have an `_id`. If you call `instance.save()` again, it will call `instance.patch()`. The method used depends solely on the data having an id (that matches the `options.idField` for this service).
+Once the `create` response returns, the record will have an `_id`. (Since we called `.addToStore()`, the `todo` instance will be reactive) If you call `instance.save()` again, it will call `instance.patch()`. The method used depends solely on the data having an id (that matches the `options.idField` for this service).
 
 > Note: Feathers-Pinia does not currently support `preferUpdate`, which was available in Feathers-Vuex. You can either call `.update()` instead of `save()` or open an issue stating that you need the feature.
 

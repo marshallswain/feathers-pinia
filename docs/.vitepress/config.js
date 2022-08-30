@@ -3,8 +3,10 @@ module.exports = {
   description: 'Connect Feathers.',
   lang: 'en-US',
   themeConfig: {
+    footer:
+      'MIT Licensed. Many thanks go to the Vue, Vuex, Pinia, and FeathersJS communities for keeping software development FUN!',
     nav: [
-      // { text: "Guide", link: "/", activeMatch: "^/$|^/guide/" },
+      { text: 'Guide', link: '/guide/' },
       // {
       //   text: 'Config Reference',
       //   link: '/config/basics',
@@ -27,22 +29,22 @@ function getGuideSidebar() {
   return [
     {
       text: 'Guide',
-      children: [
+      items: [
         { text: 'Introduction', link: '/guide/' },
-        { text: 'Module Overview', link: '/guide/module-overview' },
         { text: 'Setup', link: '/guide/setup' },
+        { text: 'Module Overview', link: '/guide/module-overview' },
       ],
     },
     {
       text: 'Pinia Stores',
-      children: [
+      items: [
         { text: 'Service Stores', link: '/guide/service-stores' },
         { text: 'Auth Stores', link: '/guide/auth-stores' },
       ],
     },
     {
       text: 'Data Modeling',
-      children: [
+      items: [
         { text: 'Model Classes', link: '/guide/model-classes' },
         { text: 'BaseModel', link: '/guide/base-model' },
         { text: 'Model Instances', link: '/guide/model-instances' },
@@ -50,7 +52,7 @@ function getGuideSidebar() {
     },
     {
       text: 'Common Tools',
-      children: [
+      items: [
         { text: 'useFind', link: '/guide/use-find' },
         { text: 'useGet', link: '/guide/use-get' },
         { text: 'usePagination', link: '/guide/use-pagination' },
@@ -59,7 +61,7 @@ function getGuideSidebar() {
     },
     {
       text: 'Storage Sync',
-      children: [{ text: 'syncWithStorage', link: '/guide/storage-sync' }],
+      items: [{ text: 'syncWithStorage', link: '/guide/storage-sync' }],
     },
   ]
 }
