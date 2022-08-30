@@ -229,15 +229,14 @@ export class BaseModel implements AnyData {
 
   get __isTemp() {
     const { idField } = this.constructor as ModelStatic<BaseModel>
-    return getId(this, idField) != null
+    return getId(this, idField) == null
   }
 
   get isSavePending() {
     const { store } = this.constructor as ModelStatic<BaseModel>
     const pending = store.pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
-  }
-  get isCreatePending(): boolean {
+  }  get isCreatePending(): boolean {
     const { store } = this.constructor as ModelStatic<BaseModel>
     return store.pendingById[getId(this)]?.create || false
   }
