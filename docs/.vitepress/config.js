@@ -3,8 +3,17 @@ module.exports = {
   description: 'Connect Feathers.',
   lang: 'en-US',
   themeConfig: {
-    footer:
-      'MIT Licensed. Many thanks go to the Vue, Vuex, Pinia, and FeathersJS communities for keeping software development FUN!',
+    socialLinks: [
+      {
+        icon: 'github',
+        link: 'https://github.com/bitovi/stateful-mocks',
+      },
+    ],
+    footer: {
+      message:
+        'Many thanks go to the Vue, Vuex, Pinia, and FeathersJS communities for keeping software development FUN!',
+      copyright: 'MIT Licensed',
+    },
     nav: [
       { text: 'Guide', link: '/guide/' },
       // {
@@ -31,7 +40,7 @@ function getGuideSidebar() {
       text: 'Guide',
       items: [
         { text: 'Introduction', link: '/guide/' },
-        { text: 'Setup', link: '/guide/setup' },
+        { text: 'Getting Started', link: '/guide/setup' },
         { text: 'Module Overview', link: '/guide/module-overview' },
       ],
     },
