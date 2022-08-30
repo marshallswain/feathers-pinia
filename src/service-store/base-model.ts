@@ -21,7 +21,7 @@ export class BaseModel implements AnyData {
 
   constructor(data: AnyData, options: ModelInstanceOptions = {}) {
     const ctor = this.constructor as ModelStatic<BaseModel>
-    const { store, instanceDefaults, setupInstance } = ctor;
+    const { store, instanceDefaults, setupInstance } = ctor
     Object.assign(this, instanceDefaults.call(ctor, data, { models, store }))
     Object.assign(this, setupInstance.call(ctor, data, { models, store }))
     this.__isClone = !!options.clone
@@ -30,26 +30,20 @@ export class BaseModel implements AnyData {
   }
 
   public static instanceDefaults<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    data: AnyData, 
-    options?: InstanceModifierOptions
+    this: ModelStatic<M>,
+    data: AnyData,
+    options?: InstanceModifierOptions,
   ): AnyData
-  public static instanceDefaults<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    data: AnyData
-  ): AnyData {
+  public static instanceDefaults<M extends BaseModel>(this: ModelStatic<M>, data: AnyData): AnyData {
     return data
   }
 
   public static setupInstance<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    data: AnyData, 
-    options?: InstanceModifierOptions
+    this: ModelStatic<M>,
+    data: AnyData,
+    options?: InstanceModifierOptions,
   ): AnyData
-  public static setupInstance<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    data: AnyData
-  ): AnyData {
+  public static setupInstance<M extends BaseModel>(this: ModelStatic<M>, data: AnyData): AnyData {
     return data
   }
 
@@ -60,121 +54,98 @@ export class BaseModel implements AnyData {
   public static addEventListener<M extends BaseModel>(
     this: ModelStatic<M>,
     eventName: string | symbol,
-    listener: (...args: any[]) => void
+    listener: (...args: any[]) => void,
   ) {
     this.emitter.addListener(eventName, listener)
-    return this;
+    return this
   }
 
-  public static emit<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    eventName: string | symbol,
-    ...args: any[]
-  ) {
+  public static emit<M extends BaseModel>(this: ModelStatic<M>, eventName: string | symbol, ...args: any[]) {
     return this.emitter.emit(eventName, ...args)
   }
 
-  public static eventNames<M extends BaseModel>(
-    this: ModelStatic<M>
-  ) {
+  public static eventNames<M extends BaseModel>(this: ModelStatic<M>) {
     return this.emitter.eventNames()
   }
 
-  public static getMaxListeners<M extends BaseModel>(
-    this: ModelStatic<M>
-  ) {
+  public static getMaxListeners<M extends BaseModel>(this: ModelStatic<M>) {
     return this.emitter.getMaxListeners()
   }
 
-  public static listenerCount<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    eventName: string | symbol
-  ) {
-    return this.emitter.listenerCount(eventName);
+  public static listenerCount<M extends BaseModel>(this: ModelStatic<M>, eventName: string | symbol) {
+    return this.emitter.listenerCount(eventName)
   }
 
-  public static listeners<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    eventName: string | symbol
-  ) {
+  public static listeners<M extends BaseModel>(this: ModelStatic<M>, eventName: string | symbol) {
     return this.emitter.listeners(eventName)
   }
 
   public static off<M extends BaseModel>(
     this: ModelStatic<M>,
     eventName: string | symbol,
-    listener: (...args: any[]) => void
+    listener: (...args: any[]) => void,
   ) {
     this.emitter.off(eventName, listener)
-    return this;
+    return this
   }
 
   public static on<M extends BaseModel>(
     this: ModelStatic<M>,
     eventName: string | symbol,
-    listener: (...args: any[]) => void
+    listener: (...args: any[]) => void,
   ) {
     this.emitter.on(eventName, listener)
-    return this;
+    return this
   }
 
   public static once<M extends BaseModel>(
     this: ModelStatic<M>,
     eventName: string | symbol,
-    listener: (...args: any[]) => void
+    listener: (...args: any[]) => void,
   ) {
     this.emitter.once(eventName, listener)
-    return this;
+    return this
   }
 
   public static prependListener<M extends BaseModel>(
     this: ModelStatic<M>,
     eventName: string | symbol,
-    listener: (...args: any[]) => void
+    listener: (...args: any[]) => void,
   ) {
     this.emitter.prependListener(eventName, listener)
-    return this;
+    return this
   }
 
   public static prependOnceListener<M extends BaseModel>(
     this: ModelStatic<M>,
     eventName: string | symbol,
-    listener: (...args: any[]) => void
+    listener: (...args: any[]) => void,
   ) {
     this.emitter.prependOnceListener(eventName, listener)
-    return this;
+    return this
   }
 
-  public static rawListeners<M extends BaseModel>(
-    this: ModelStatic<M>,
-    eventName: string | symbol
-    ) {
+  public static rawListeners<M extends BaseModel>(this: ModelStatic<M>, eventName: string | symbol) {
     return this.emitter.rawListeners(eventName)
   }
 
-  public static removeAllListeners<M extends BaseModel>(
-    this: ModelStatic<M>,
-    eventName?: string | symbol
-    ) {
+  public static removeAllListeners<M extends BaseModel>(this: ModelStatic<M>, eventName?: string | symbol) {
     this.emitter.removeAllListeners(eventName)
-    return this;
+    return this
   }
 
   public static removeListener<M extends BaseModel>(
     this: ModelStatic<M>,
-    eventName: string | symbol, 
-    listener: (...args: any[]) => void
+    eventName: string | symbol,
+    listener: (...args: any[]) => void,
   ) {
     this.emitter.removeListener(eventName, listener)
-    return this;
+    return this
   }
 
-  public static setMaxListeners<M extends BaseModel>(
-    this: ModelStatic<M>,
-    n: number
-  ) {
+  public static setMaxListeners<M extends BaseModel>(this: ModelStatic<M>, n: number) {
     this.emitter.setMaxListeners(n)
-    return this;
+    return this
   }
 
   //#endregion
@@ -200,27 +171,13 @@ export class BaseModel implements AnyData {
   public static addToStore<M extends BaseModel>(this: ModelStatic<M>, data: AnyDataOrArray) {
     return this.store.addToStore(data)
   }
-  public static update<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    id: Id, 
-    data: AnyData, 
-    params?: Params
-  ) {
-    return this.store.update(id, data, params);
+  public static update<M extends BaseModel>(this: ModelStatic<M>, id: Id, data: AnyData, params?: Params) {
+    return this.store.update(id, data, params)
   }
-  public static patch<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    id: NullableId, 
-    data: AnyData, 
-    params?: Params
-  ) {
-    return this.store.patch(id, data, params);
+  public static patch<M extends BaseModel>(this: ModelStatic<M>, id: NullableId, data: AnyData, params?: Params) {
+    return this.store.patch(id, data, params)
   }
-  public static remove<M extends BaseModel>(
-    this: ModelStatic<M>, 
-    id: NullableId, 
-    params?: Params
-  ) {
+  public static remove<M extends BaseModel>(this: ModelStatic<M>, id: NullableId, params?: Params) {
     return this.store.remove(id, params)
   }
   public static removeFromStore<M extends BaseModel>(this: ModelStatic<M>, data: AnyDataOrArray) {
@@ -236,7 +193,8 @@ export class BaseModel implements AnyData {
     const { store } = this.constructor as ModelStatic<BaseModel>
     const pending = store.pendingById[getId(this)]
     return pending?.create || pending?.update || pending?.patch || false
-  }  get isCreatePending(): boolean {
+  }
+  get isCreatePending(): boolean {
     const { store } = this.constructor as ModelStatic<BaseModel>
     return store.pendingById[getId(this)]?.create || false
   }
