@@ -4,6 +4,8 @@ outline: deep
 
 # Model Instances
 
+[[toc]]
+
 <script setup>
 import BlockQuote from '../components/BlockQuote.vue'
 </script>

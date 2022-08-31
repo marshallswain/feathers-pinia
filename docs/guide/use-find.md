@@ -8,6 +8,8 @@ import Badge from '../components/Badge.vue'
 
 # useFind
 
+[[toc]]
+
 The `useFind` utility reduces boilerplate for querying with fall-through cache and realtime updates. To get started with it you provide a `model` class and a computed `params` object.
 
 Let's use the example of creating a User Guide, where we need to pull in the various `Tutorial` records from our `tutorials` service. We'll keep it simple in the template and just show a list of the names.

@@ -4,6 +4,8 @@ outline: deep
 
 # Model Classes
 
+[[toc]]
+
 Each Service Store gets its own Model Class. If you don't explicitly create it, one gets created under the hood. There are some benefits to using them:
 
 - Convenient access to Feathers Service methods. Methods directly on the Model will effect the store. You can also directly access the Feathers service at `Model.service`. Using the Feathers Service directly allows you to bypass the store when needed.

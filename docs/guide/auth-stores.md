@@ -4,6 +4,8 @@ outline: deep
 
 # Auth Stores
 
+[[toc]]
+
 ## Setup
 
 Let's start with the most basic example of authentication. We'll use `defineAuthStore` utility and pass our client to the options object. This is the only required option, we'll go through the rest in the later part of the chapter.

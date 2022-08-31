@@ -4,6 +4,8 @@ outline: deep
 
 # Service Stores
 
+[[toc]]
+
 ## Setup
 
 We learned the basics of [how to create service stores](./setup#service-stores) on the setup page. Let's cover the topic in more detail.

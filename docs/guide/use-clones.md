@@ -4,6 +4,8 @@ outline: deep
 
 # useClones
 
+[[toc]]
+
 The `useClones` utility makes working with form data easier. It provides the following features in a fairly smart way:
 
 - [Automatic diffing](#automatic-patch-diffing) for `patch` requests. Only send the data to the server that has actually changed.

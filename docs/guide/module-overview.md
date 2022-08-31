@@ -4,6 +4,8 @@ outline: deep
 
 # Module Overview
 
+[[toc]]
+
 The main module features the following exports:
 
 ```ts

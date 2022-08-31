@@ -1,8 +1,9 @@
 ---
 outline: deep
 ---
-
 # Introduction
+
+[[toc]]
 
 Feathers-Pinia is the next generation of [Feathers-Vuex](https://vuex.feathersjs.com). The difference is that it's built on [Pinia](https://pinia.esm.dev/): a Vue store with an intuitive API.
 

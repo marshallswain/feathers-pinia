@@ -4,6 +4,8 @@ outline: deep
 
 # useGet
 
+[[toc]]
+
 The `useGet` Composition API utility provides the same fall-through cache functionality as `useFind`. It has a slightly simpler API, only requiring a `model` and `id` instead of the `params` object. Still, the `params` object can be used to send along additional query parameters in the request. Below is an example of how you might use the `useGet` utility.
 
 The goal with the examples is to focus as much as possible on functionality and not boilerplate. As such, all examples use [auto-import](https://github.com/antfu/unplugin-auto-import) for Vue APIs like `computed` and `ref`. They also use Vue's `script setup` feature. Both features come preinstalled with the [Vitesse Template for Vue](https://github.com/antfu/vitesse) and the [Vitesse-Feathers-Pinia Demo](https://github.com/marshallswain/vitesse-feathers-pinia).
