@@ -36,9 +36,7 @@ export function useGet<M extends BaseModel = BaseModel>({
   immediate = true,
 }: UseGetOptions<M>) {
   if (!model) {
-    throw new Error(
-      `No model provided for useGet(). Did you define and register it with FeathersPinia?`,
-    )
+    throw new Error(`No model provided for useGet(). Did you define and register it with FeathersPinia?`)
   }
 
   function getId() {
@@ -59,11 +57,11 @@ export function useGet<M extends BaseModel = BaseModel>({
 
   const computes: UseGetComputed = {
     item: computed(() => {
-      const unrefId = getId();
+      const unrefId = getId()
       if (unrefId === null) {
-        return null;
+        return null
       }
-      return model.getFromStore(unrefId, getParams()) || null;
+      return model.getFromStore(unrefId, getParams()) || null
     }),
     servicePath: computed(() => model.servicePath),
     isSsr: computed(() => model.store.isSsr),
@@ -75,6 +73,7 @@ export function useGet<M extends BaseModel = BaseModel>({
 
     if (idToUse != null && queryWhen.value && !state.isLocal) {
       state.isPending = true
+      state.error = null
       state.hasBeenRequested = true
 
       const request = paramsToUse != null ? model.get(idToUse, paramsToUse) : model.get(idToUse)
@@ -101,6 +100,16 @@ export function useGet<M extends BaseModel = BaseModel>({
       get(id as Id | null, params as Params)
     },
     { immediate },
+  )
+
+  // Clear error when an item is found
+  watch(
+    () => computes.item.value,
+    (item) => {
+      if (item) {
+        state.error = null
+      }
+    },
   )
 
   return {
