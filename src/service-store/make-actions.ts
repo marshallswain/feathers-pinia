@@ -25,6 +25,7 @@ import {
   getArray,
   hasOwn,
   getSaveParams,
+  markAsClone,
 } from '../utils'
 import { unref, set } from 'vue-demi'
 import { StateTree, _GettersTree } from 'pinia'
@@ -47,8 +48,7 @@ export function makeActions<
     find(_params?: MaybeRef<Params>) {
       const params = getSaveParams(_params)
       const { query = {} } = params
-      const isPaginated =
-        params.paginate === true || hasOwn(query, '$limit') || hasOwn(query, '$skip')
+      const isPaginated = params.paginate === true || hasOwn(query, '$limit') || hasOwn(query, '$skip')
 
       // For client-side services, like feathers-memory, paginate.default must be truthy.
       if (isPaginated) {
@@ -300,11 +300,9 @@ export function makeActions<
       const tempId = getTempId(data, tempIdField)
       const existingTemp = this.tempsById[tempId]
       if (existingTemp) {
-        set(this.itemsById, id, existingTemp)
-        set(this.itemsById, id, Object.assign({}, this.itemsById[id], data))
+        set(this.itemsById, id, Object.assign(existingTemp, data))
         delete this.tempsById[tempId]
-        // @ts-expect-error todo
-        delete this.itemsById[id][tempIdField]
+        delete (this.itemsById[id] as any)[tempIdField]
       }
       delete data[tempIdField]
       return this.itemsById[id]
@@ -322,21 +320,23 @@ export function makeActions<
       const id = getAnyId(item, this.tempIdField)
       const originalItem = this[placeToStore][id]
       const existing = this.clonesById[id]
+
+      // Maintain reactivity for existing clones
       if (existing && existing.constructor.name === originalItem.constructor.name) {
-        const readyToReset = Object.assign(existing, originalItem, data)
-        Object.keys(readyToReset).forEach((key) => {
+        const cloneReset: M = Object.assign(existing, originalItem, data)
+
+        // Remove properties that may have been added to the clone but are not in the original
+        Object.keys(cloneReset).forEach((key) => {
           if (!hasOwn(originalItem, key)) {
-            delete readyToReset[key]
+            delete (cloneReset as any)[key]
           }
         })
+        markAsClone(cloneReset)
 
-        return readyToReset as M
+        return cloneReset
       } else {
         const clone = fastCopy(originalItem)
-        Object.defineProperty(clone, '__isClone', {
-          value: true,
-          enumerable: false,
-        })
+        markAsClone(clone)
         Object.assign(clone, data)
 
         set(this.clonesById, id, clone)
@@ -359,12 +359,7 @@ export function makeActions<
      * Stores pagination data on state.pagination based on the query identifier
      * (qid) The qid must be manually assigned to `params.qid`
      */
-    updatePaginationForQuery({
-      qid,
-      response,
-      query = {},
-      preserveSsr = false,
-    }: UpdatePaginationForQueryOptions) {
+    updatePaginationForQuery({ qid, response, query = {}, preserveSsr = false }: UpdatePaginationForQueryOptions) {
       const { data, total } = response
       const { idField } = this
       const ids = data.map((i: any) => getId(i, idField))
@@ -467,8 +462,9 @@ function addOrMergeToStore(item: AnyData, store: any, opts: any) {
 
   if (store.isSsr || !(item instanceof opts.Model)) {
     const classes = { [store.servicePath]: opts.Model }
-    store[key][id] = new classes[store.servicePath](item)
+    store[key][id] = new classes[store.servicePath](existing ? Object.assign(existing, item) : item)
   }
 
-  return store[key][id]
+  const stored = store[key][id]
+  return stored
 }
