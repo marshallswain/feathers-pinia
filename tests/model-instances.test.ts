@@ -7,7 +7,9 @@ const pinia = createPinia()
 
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
-class Message extends BaseModel {}
+class Message extends BaseModel {
+  id: number
+}
 const servicePath = 'messages'
 const useMessages = defineStore({ servicePath, Model: Message })
 
@@ -49,5 +51,13 @@ describe('Model Instances', () => {
     expect(message.__isTemp).toBeTruthy
     message.addToStore()
     expect(message.__isTemp).toBeFalsy
+  })
+
+  describe('id after create', () => {
+    test('non-reactive records have id after save', async () => {
+      const message = new Message({ text: 'this is a test' })
+      await message.save()
+      expect(message.id).toBeDefined()
+    })
   })
 })
