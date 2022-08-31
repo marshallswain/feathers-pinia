@@ -3,7 +3,7 @@ layout: home
 hero:
   name: Feathers-Pinia
   text:  Build Lightweight, Real-Time Vue Apps
-  tagline: Connect your Feathers app to the new generation Vue store.
+  tagline: Connect your Feathers app to the new-generation Vue store.
   image:
     src: ./feathers-pinia.png
     alt: Feathers-Pinia Logo
