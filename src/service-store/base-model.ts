@@ -279,6 +279,10 @@ export class BaseModel implements AnyData {
     }
     const { __isClone } = this
     const saved = (await store.create(data, params)) as this
+
+    // For non-reactive instances, update the instance with created data.
+    Object.assign(this, saved)
+
     return __isClone ? saved.clone() : saved
   }
 

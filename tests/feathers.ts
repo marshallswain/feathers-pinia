@@ -23,21 +23,10 @@ api.authentication.service.hooks({
   },
 })
 
-api.use(
-  'messages',
-  memory({
-    paginate: { default: 10, max: 100 },
-    whitelist: ['$options'],
-  }),
-)
+api.use('messages', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
+api.use('alt-ids', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'], id: '_id' }))
 
-api.use(
-  'todos',
-  memory({
-    paginate: { default: 10, max: 100 },
-    whitelist: ['$options']
-  })
-)
+api.use('todos', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 
 api.service('messages').hooks({
   before: {
