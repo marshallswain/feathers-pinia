@@ -264,31 +264,29 @@ export class BaseModel implements AnyData {
   public save(params?: any): Promise<this> {
     const { idField } = this.constructor as ModelStatic<BaseModel>
     const id = getId(this, idField)
-    if (id != null) {
-      return this.patch(params)
-    } else {
-      return this.create(params)
-    }
+    return id != null ? this.patch(params) : this.create(params)
   }
 
   /**
    * Calls service create with the current instance data
    * @param params
    */
-  public create(params?: any): Promise<this> {
+  public async create(params?: any): Promise<this> {
     const { idField, store } = this.constructor as ModelStatic<BaseModel>
     const data: any = Object.assign({}, this)
     if (data[idField] === null) {
       delete data[idField]
     }
-    return store.create(data, params) as Promise<this>
+    const { __isClone } = this
+    const saved = (await store.create(data, params)) as this
+    return __isClone ? saved.clone() : saved
   }
 
   /**
    * Calls service patch with the current instance data
    * @param params
    */
-  public patch(params?: any): Promise<this> {
+  public async patch(params?: any): Promise<this> {
     const { idField, store } = this.constructor as ModelStatic<BaseModel>
     const id = getId(this, idField)
 
@@ -298,14 +296,16 @@ export class BaseModel implements AnyData {
       )
       return Promise.reject(error)
     }
-    return store.patch(id, this, params) as Promise<this>
+    const { __isClone } = this
+    const saved = (await store.patch(id, this, params)) as this
+    return __isClone ? saved.clone() : saved
   }
 
   /**
    * Calls service update with the current instance data
    * @param params
    */
-  public update(params?: any): Promise<this> {
+  public async update(params?: any): Promise<this> {
     const { idField, store } = this.constructor as ModelStatic<BaseModel>
     const id = getId(this, idField)
 
@@ -315,7 +315,9 @@ export class BaseModel implements AnyData {
       )
       return Promise.reject(error)
     }
-    return store.update(id, this, params) as Promise<this>
+    const { __isClone } = this
+    const saved = (await store.update(id, this, params)) as this
+    return __isClone ? saved.clone() : saved
   }
 
   /**
