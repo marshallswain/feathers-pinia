@@ -6,7 +6,7 @@ module.exports = {
     socialLinks: [
       {
         icon: 'github',
-        link: 'https://github.com/bitovi/stateful-mocks',
+        link: 'https://github.com/marshallswain/feathers-pinia',
       },
     ],
     footer: {
