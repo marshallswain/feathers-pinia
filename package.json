@@ -6,14 +6,13 @@
     "src"
   ],
   "main": "./dist/feathers-pinia.umd.js",
-  "module": "./dist/feathers-pinia.es.js",
+  "module": "./dist/feathers-pinia.mjs",
   "exports": {
     ".": {
-      "import": "./dist/feathers-pinia.es.js",
+      "import": "./dist/feathers-pinia.mjs",
       "require": "./dist/feathers-pinia.umd.js"
     }
   },
-  "types": "src/",
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs; npm run docs:copy-assets",
@@ -81,6 +80,7 @@
     "tailwindcss": "^3.1.8",
     "typescript": "4.7.4",
     "vite": "^3.0.9",
+    "vite-plugin-dts": "^1.4.1",
     "vitepress": "^1.0.0-alpha.13",
     "vitest": "^0.22.1",
     "vue": "^3.2.37",
