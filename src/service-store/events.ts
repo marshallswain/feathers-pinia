@@ -1,5 +1,5 @@
 import { getId, hasOwn } from '../utils'
-import _debounce from 'lodash/debounce'
+import _debounce from 'just-debounce'
 import { models } from '../models'
 import { HandledEvents } from '../types'
 import { DefineFeathersStoreOptions, ServiceStore, ModelStatic } from './types'
@@ -18,41 +18,36 @@ export interface ServiceEventsDebouncedQueue {
 interface EnableServiceEventsOptions<
   Id extends string = string,
   M extends BaseModel = BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  A = {},
 > {
   service: any
   Model: ModelStatic<M>
-  store: ServiceStore<Id, M, S, G, A>,
+  store: ServiceStore<Id, M, S, G, A>
   options: EnableServiceEventsOptionsOptions<Id, M, S, G, A>
 }
 
 type EnableServiceEventsOptionsOptions<
   Id extends string = string,
   M extends BaseModel = BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
-> = Required<Pick<DefineFeathersStoreOptions<Id, M, S, G, A>, 
-  'idField' |
-  'handleEvents' |
-  'debounceEventsMaxWait' | 
-  'debounceEventsTime'
->>
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  A = {},
+> = Required<
+  Pick<
+    DefineFeathersStoreOptions<Id, M, S, G, A>,
+    'idField' | 'handleEvents' | 'debounceEventsGuarantee' | 'debounceEventsTime'
+  >
+>
 
 export function enableServiceEvents<
   Id extends string = string,
   M extends BaseModel = BaseModel,
-  S extends StateTree = {}, 
-  G extends _GettersTree<S> = {}, 
-  A = {}
->({
-  service,
-  Model,
-  store,
-  options,
-}: EnableServiceEventsOptions<Id, M, S, G, A>): ServiceEventsDebouncedQueue {
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  A = {},
+>({ service, Model, store, options }: EnableServiceEventsOptions<Id, M, S, G, A>): ServiceEventsDebouncedQueue {
   const debouncedQueue: ServiceEventsDebouncedQueue = {
     addOrUpdateById: {},
     removeItemById: {},
@@ -84,7 +79,8 @@ export function enableServiceEvents<
         this.addOrUpdateById = {}
       },
       options.debounceEventsTime || 20,
-      { maxWait: options.debounceEventsMaxWait },
+      undefined,
+      options.debounceEventsGuarantee,
     ),
     flushRemoveItemQueue: _debounce(
       function () {
@@ -98,25 +94,20 @@ export function enableServiceEvents<
         this.removeItemById = {}
       },
       options.debounceEventsTime || 20,
-      { maxWait: options.debounceEventsMaxWait },
+      undefined,
+      options.debounceEventsGuarantee,
     ),
   }
 
   const handleEvent = (eventName: HandledEvents, item: any): void => {
     const handler = options.handleEvents[eventName]
     const confirmOrArray = handler(item, { model: Model, models })
-    const [affectsStore, modified = item] = Array.isArray(confirmOrArray)
-      ? confirmOrArray
-      : [confirmOrArray]
+    const [affectsStore, modified = item] = Array.isArray(confirmOrArray) ? confirmOrArray : [confirmOrArray]
     if (affectsStore) {
       if (!options.debounceEventsTime) {
-        eventName === 'removed' 
-          ? store.removeFromStore(modified) 
-          : store.addOrUpdate(modified)
+        eventName === 'removed' ? store.removeFromStore(modified) : store.addOrUpdate(modified)
       } else {
-        eventName === 'removed'
-          ? debouncedQueue.enqueueRemoval(item)
-          : debouncedQueue.enqueueAddOrUpdate(item)
+        eventName === 'removed' ? debouncedQueue.enqueueRemoval(item) : debouncedQueue.enqueueAddOrUpdate(item)
       }
     }
   }

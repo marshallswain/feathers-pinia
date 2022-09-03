@@ -1,5 +1,5 @@
 import { computed, reactive, watch, set } from 'vue-demi'
-import { isEqual, omit } from 'lodash'
+import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
 import { getId, getAnyId, hasOwn } from './utils'
 import { Params } from '@feathersjs/feathers'
@@ -62,11 +62,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
           }
           const id = getAnyId(item.value, store.tempIdField)
           const existingClone = store.clonesById[id]
-          if (
-            existingClone &&
-            useExisting &&
-            existingClone.constructor.name === item.value.constructor.name
-          ) {
+          if (existingClone && useExisting && existingClone.constructor.name === item.value.constructor.name) {
             return existingClone
           }
           return item.value.__isClone ? item.value : item.value.clone()
@@ -100,10 +96,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
                *        should be an object. The returned object will be merged into the patch data.
                * @
                */
-              saveHandlers[`save_${key}`] = function saveHandler(
-                propOrCollection: any,
-                opts: SaveHandlerOpts = {},
-              ) {
+              saveHandlers[`save_${key}`] = function saveHandler(propOrCollection: any, opts: SaveHandlerOpts = {}) {
                 const original = store.getFromStore(getAnyId(item.value, store.tempIdField))
                 const isArray = Array.isArray(propOrCollection)
                 const isString = typeof propOrCollection === 'string'
@@ -176,10 +169,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
                       pick: _.pick,
                     }) || {}
                   const data = Object.assign(changedData, saveWithData)
-                  const params = Object.assign(
-                    { data },
-                    omit(opts, ['diff', 'commit', 'save', 'saveWith']),
-                  )
+                  const params = Object.assign({ data }, _.omit(opts, ...['diff', 'commit', 'save', 'saveWith']))
 
                   return clone.value
                     .save(params)

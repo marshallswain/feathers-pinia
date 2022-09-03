@@ -1,4 +1,4 @@
-import { syncWithStorageCompressed } from '../src/storage-sync-compressed'
+import { syncWithStorageCompressed } from './storage-sync-compressed'
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'

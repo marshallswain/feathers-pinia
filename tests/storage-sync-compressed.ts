@@ -1,4 +1,4 @@
-import { debounce } from 'lodash'
+import debounce from 'just-debounce'
 import { _ } from '@feathersjs/commons'
 import { computed, watch } from 'vue-demi'
 import lz from 'lz-string'

@@ -15,7 +15,7 @@ interface SetupOptions {
   handleEvents?: HandleEvents
   enableEvents?: boolean
   debounceEventsTime?: number
-  debounceEventsMaxWait?: number
+  debounceEventsGuarantee?: boolean
   whitelist?: string[]
   state?: () => { [k: string]: any }
   getters?: { [k: string]: (state: any) => any }
@@ -31,14 +31,14 @@ export function setupFeathersPinia(globalOptions: SetupOptions) {
   function defineStoreWrapper<
     Id extends string,
     M extends BaseModel = BaseModel,
-    S extends StateTree = StateTree, 
-    G extends _GettersTree<S> = {}, 
-    A = {}
-  >(...args: [DefineFeathersStoreOptions<Id, M, S, G, A>] | 
-    [Id, Omit<DefineFeathersStoreOptions<Id, M, S, G, A>, 'id'>]
+    S extends StateTree = StateTree,
+    G extends _GettersTree<S> = {},
+    A = {},
+  >(
+    ...args: [DefineFeathersStoreOptions<Id, M, S, G, A>] | [Id, Omit<DefineFeathersStoreOptions<Id, M, S, G, A>, 'id'>]
   ): (pinia?: Pinia) => ServiceStore<Id, M, S, G, A> {
     const id = args.length === 2 ? args[0] : args[0].id
-    const options= args.length === 2 ? args[1] : args[0]
+    const options = args.length === 2 ? args[1] : args[0]
     // @ts-expect-error todo
     options.id = id || `service.${options.servicePath}`
 

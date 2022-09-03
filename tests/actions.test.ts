@@ -27,7 +27,7 @@ describe('Store Actions', () => {
   test('addToStore incrementally updates item in tempsById', () => {
     const message = new Message({ text: 'this is a test' })
     const itemInStore = messagesStore.addToStore(message)
-    const tempId = itemInStore.__tempId
+    const tempId: any = itemInStore.__tempId
 
     expect(itemInStore).toBe(messagesStore.tempsById[tempId])
     expect(itemInStore.id).toBeUndefined()

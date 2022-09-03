@@ -1,7 +1,7 @@
 import { Params, Paginated, QueryInfo } from './types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
-import ObjectID from 'bson-objectid'
+import ObjectID from 'isomorphic-mongo-objectid'
 import { Id } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
 import { AnyData, AnyDataOrArray } from './service-store/types'
@@ -97,7 +97,7 @@ export function keyBy(items: any, fn: Function = (i: any) => getId(i)) {
  * @param item
  */
 export function assignTempId(item: any, tempIdField: string) {
-  const newId = new ObjectID().toHexString()
+  const newId = new ObjectID().toString()
   item[tempIdField] = newId
   return item
 }
