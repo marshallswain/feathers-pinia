@@ -23,12 +23,12 @@ api.authentication.service.hooks({
   },
 })
 
+api.use('users', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 api.use('messages', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 api.use('alt-ids', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'], id: '_id' }))
-
 api.use('todos', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 
-api.service('messages').hooks({
+const hooks = {
   before: {
     find: [
       async () => {
@@ -36,5 +36,6 @@ api.service('messages').hooks({
       },
     ],
   },
-})
-api.use('users', memory())
+}
+api.service('users').hooks(hooks)
+api.service('messages').hooks(hooks)
