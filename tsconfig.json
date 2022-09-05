@@ -14,5 +14,5 @@
     "declaration": true
   },
   "strictPropertyInitialization": false,
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "tests/storage-sync-compressed.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }
