@@ -1,6 +1,3 @@
 {
-  "editor.rulers": [100],
-  "html.format.wrapLineLength": 100,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "vitest.enable": true
+  "editor.rulers": [120],
 }
