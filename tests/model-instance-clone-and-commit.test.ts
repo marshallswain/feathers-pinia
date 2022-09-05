@@ -17,7 +17,7 @@ const useMessagesService = defineStore({ servicePath, Model: Message })
 
 const messagesService = useMessagesService(pinia)
 
-describe('Clone & commit', () => {
+describe('Clone & Commit', () => {
   test('can clone ', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
