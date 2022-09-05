@@ -4,7 +4,12 @@ import { registerModel } from '../models'
 import { registerClient, clients } from '../clients'
 import { enableServiceEvents } from './events'
 
-import { DefineFeathersStoreOptions, ServiceStore, ServiceStoreSharedStateDefineOptions, ServiceStoreDefinition } from './types'
+import {
+  DefineFeathersStoreOptions,
+  ServiceStore,
+  ServiceStoreSharedStateDefineOptions,
+  ServiceStoreDefinition,
+} from './types'
 
 export const defaultSharedState: ServiceStoreSharedStateDefineOptions = {
   clientAlias: 'api',
@@ -21,11 +26,9 @@ export function defineStore<
   M extends BaseModel = BaseModel,
   S extends StateTree = StateTree,
   G extends _GettersTree<S> = {},
-  A = {}
->(
-  _options: DefineFeathersStoreOptions<Id, M, S, G, A>
-): (pinia?: Pinia) => ServiceStore<Id, M, S, G, A> {
-  const options = makeOptions<Id, M, S, G, A>(_options);
+  A = {},
+>(_options: DefineFeathersStoreOptions<Id, M, S, G, A>): (pinia?: Pinia) => ServiceStore<Id, M, S, G, A> {
+  const options = makeOptions<Id, M, S, G, A>(_options)
 
   const {
     servicePath,
@@ -59,13 +62,17 @@ export function defineStore<
     actions: options.actions,
     whitelist: options.whitelist,
     paramsForServer: options.paramsForServer,
-    skipRequestIfExists: options.skipRequestIfExists
+    skipRequestIfExists: options.skipRequestIfExists,
   })
 
   function useStore(pinia?: Pinia) {
-    const useStoreDefinition = definePiniaStore<Id, S, G, A>(
-      storeOptions
-    ) as unknown as ServiceStoreDefinition<Id, M, S, G, A>
+    const useStoreDefinition = definePiniaStore<Id, S, G, A>(storeOptions) as unknown as ServiceStoreDefinition<
+      Id,
+      M,
+      S,
+      G,
+      A
+    >
     const initializedStore = useStoreDefinition(pinia) as ServiceStore<Id, M, S, G, A>
 
     initializedStore.isSsr
@@ -81,8 +88,8 @@ export function defineStore<
         tempIdField,
         clients,
         // Bind `this` in custom actions to the store.
-        ...Object.keys(options.actions).reduce((boundActions: any, key: string) => {
-          const fn = (options.actions as any)[key]
+        ...Object.keys(options.actions as Record<string, any>).reduce((boundActions: any, key: string) => {
+          const fn = (options.actions as Record<string, any>)[key]
           boundActions[key] = fn.bind(initializedStore)
           return boundActions
         }, {}),
@@ -117,29 +124,24 @@ function makeOptions<
   M extends BaseModel = BaseModel,
   S extends StateTree = StateTree,
   G extends _GettersTree<S> = {},
-  A = {}>(
-  _options: DefineFeathersStoreOptions<Id, M, S, G, A>
-): Required<DefineFeathersStoreOptions<Id, M, S, G, A>> {
-  const defaults = Object.assign(
-    {},
-    defaultSharedState,
-    {
-      id: `service.${_options.servicePath}`,
-      ssr: false,
-      clients: {},
-      enableEvents: true,
-      handleEvents: {},
-      debounceEventsTime: 20,
-      debounceEventsMaxWait: 1000,
-      state: () => ({}),
-      getters: {},
-      actions: {},
-    }
-  )
+  A = {},
+>(_options: DefineFeathersStoreOptions<Id, M, S, G, A>): Required<DefineFeathersStoreOptions<Id, M, S, G, A>> {
+  const defaults = Object.assign({}, defaultSharedState, {
+    id: `service.${_options.servicePath}`,
+    ssr: false,
+    clients: {},
+    enableEvents: true,
+    handleEvents: {},
+    debounceEventsTime: 20,
+    debounceEventsGuarantee: false,
+    state: () => ({}),
+    getters: {},
+    actions: {},
+  })
 
   _options.clientAlias
 
-  let Model;
+  let Model
 
   // If no Model class is provided, create a dynamic one.
   if (!_options.Model) {
@@ -155,13 +157,12 @@ function makeOptions<
     Model.modelName = Model.name
   }
 
-
-  const options = Object.assign(defaults, { Model }, _options);
+  const options = Object.assign(defaults, { Model }, _options)
 
   options.handleEvents.created ||= () => options.enableEvents
   options.handleEvents.patched ||= () => options.enableEvents
   options.handleEvents.updated ||= () => options.enableEvents
   options.handleEvents.removed ||= () => options.enableEvents
 
-  return options;
+  return options
 }

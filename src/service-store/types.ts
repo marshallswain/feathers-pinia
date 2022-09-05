@@ -94,26 +94,25 @@ export type ServiceStoreDefault<M extends BaseModel> = _Store<
   ServiceStoreDefaultActions<M>
 >
 
-export type ServiceStoreDefaultState<M extends BaseModel = BaseModel> =
-  ServiceStoreSharedStateDefineOptions & {
-    pagination: {
-      [qid: string]: PaginationStateQid
-    }
-    itemsById: ModelsById<M>
-    tempsById: ModelsById<M>
-    clonesById: ModelsById<M>
-    pendingById: {
-      Model: PendingByModel
-      [id: string]: PendingById | PendingByModel
-      [id: number]: PendingById
-    }
-    eventLocksById: {
-      created: ModelsById<M>
-      patched: ModelsById<M>
-      updated: ModelsById<M>
-      removed: ModelsById<M>
-    }
+export type ServiceStoreDefaultState<M extends BaseModel = BaseModel> = ServiceStoreSharedStateDefineOptions & {
+  pagination: {
+    [qid: string]: PaginationStateQid
   }
+  itemsById: ModelsById<M>
+  tempsById: ModelsById<M>
+  clonesById: ModelsById<M>
+  pendingById: {
+    Model: PendingByModel
+    [id: string]: PendingById | PendingByModel
+    [id: number]: PendingById
+  }
+  eventLocksById: {
+    created: ModelsById<M>
+    patched: ModelsById<M>
+    updated: ModelsById<M>
+    removed: ModelsById<M>
+  }
+}
 
 export interface ServiceStoreDefaultGetters<M extends BaseModel = BaseModel> {
   service: () => any
@@ -170,9 +169,9 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
 export type ServiceOptions<
   Id extends string = any,
   M extends BaseModel = BaseModel,
-  S extends StateTree = {},
-  G extends _GettersTree<S> = {},
-  A = {},
+  S extends StateTree = Record<string, any>,
+  G extends _GettersTree<S> = Record<string, any>,
+  A = Record<string, any>,
 > = Required<
   Pick<
     DefineFeathersStoreOptions<Id, M, S, G, A>,
@@ -340,6 +339,11 @@ export type ModelStatic<M extends BaseModel = BaseModel> = NonConstructor<typeof
 //   readonly store: any
 
 //   /**
+//    * The global models object
+//    */
+//   readonly object: Record<string, ModelStatic<BaseModel>>
+
+//   /**
 //    * The field in each record that will contain the ID
 //    */
 //   idField: string
@@ -490,6 +494,11 @@ export interface ModelInstanceOptions {
   clone?: boolean
 }
 
+export interface BaseModelModifierOptions {
+  models: Record<string, any>
+  store: any
+}
+
 export interface QueryWhenContext {
   items: ComputedRef<AnyData[]>
   queryInfo: QueryInfo
@@ -513,12 +522,7 @@ export type ServiceStore<
   S extends StateTree = {},
   G extends _GettersTree<S> = {},
   A = {},
-> = _Store<
-  Id,
-  ServiceStoreDefaultState<M> & S,
-  ServiceStoreDefaultGetters<M> & G,
-  ServiceStoreDefaultActions<M> & A
->
+> = _Store<Id, ServiceStoreDefaultState<M> & S, ServiceStoreDefaultGetters<M> & G, ServiceStoreDefaultActions<M> & A>
 
 export type ServiceStoreDefinition<
   Id extends string,
@@ -536,9 +540,9 @@ export type ServiceStoreDefinition<
 export type DefineFeathersStoreOptions<
   Id extends string = string,
   M extends BaseModel = BaseModel,
-  S extends StateTree = {},
-  G extends _GettersTree<S> = {},
-  A = {},
+  S extends StateTree = Record<string, any>,
+  G extends _GettersTree<S> = Record<string, any>,
+  A = Record<string, any>,
 > = {
   clientAlias?: string
   idField?: string

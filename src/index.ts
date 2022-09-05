@@ -17,7 +17,6 @@ export { useClones } from './use-clones'
 export { useClones as handleClones } from './use-clones'
 
 export { syncWithStorage } from './storage-sync'
-export { syncWithStorageCompressed } from './storage-sync-compressed'
 export { clearStorage } from './clear-storage'
 
 export * from './types'

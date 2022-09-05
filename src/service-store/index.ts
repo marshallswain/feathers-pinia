@@ -12,10 +12,8 @@ export function makeServiceStore<
   M extends BaseModel = BaseModel,
   S extends StateTree = StateTree,
   G extends _GettersTree<S> = {},
-  A = {}
->(
-  options: ServiceOptions<Id, M, S, G, A>
-) {
+  A = {},
+>(options: ServiceOptions<Id, M, S, G, A>) {
   return {
     id: options.id,
     state: makeState(options),

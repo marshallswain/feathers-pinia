@@ -1,19 +1,14 @@
 import { defineStore, StateTree, StoreDefinition, _GettersTree } from 'pinia'
-import { DefineStoreOptionsWithDefaults } from './types';
-import { TypedActions, TypedGetters } from './utility-types';
+import { DefineStoreOptionsWithDefaults } from './types'
+import { TypedActions, TypedGetters } from './utility-types'
 
-type DefineAuthStoreOptions<
-  Id extends string,
+type DefineAuthStoreOptions<Id extends string, S extends StateTree, G, A> = DefineStoreOptionsWithDefaults<
+  Id,
   S,
   G,
-  A
-> = DefineStoreOptionsWithDefaults<
-  Id, 
-  S, 
-  G, 
-  A, 
-  AuthStoreDefaultState, 
-  AuthStoreDefaultGetters, 
+  A,
+  AuthStoreDefaultState,
+  AuthStoreDefaultGetters,
   AuthStoreDefaultActions
 > & {
   feathersClient: any
@@ -21,25 +16,21 @@ type DefineAuthStoreOptions<
 }
 
 type AuthStoreDefinition<Id extends string, S, G, A> = StoreDefinition<
-  Id, 
-  AuthStoreDefaultState & S, 
-  AuthStoreDefaultGetters & G, 
+  Id,
+  AuthStoreDefaultState & S,
+  AuthStoreDefaultGetters & G,
   AuthStoreDefaultActions & A
 >
 
 type AuthStoreTypedGetters = TypedGetters<AuthStoreDefaultState, AuthStoreDefaultGetters>
-type AuthStoreTypedActions = TypedActions<
-  AuthStoreDefaultState, 
-  AuthStoreDefaultGetters, 
-  AuthStoreDefaultActions
->
+type AuthStoreTypedActions = TypedActions<AuthStoreDefaultState, AuthStoreDefaultGetters, AuthStoreDefaultActions>
 
 interface AuthStoreDefaultState {
-  isLoading: boolean,
-  isAuthenticated: boolean,
-  accessToken: string | null, // The auth0 and API accessToken
-  payload: any, // accessToken payload
-  error: any,
+  isLoading: boolean
+  isAuthenticated: boolean
+  accessToken: string | null // The auth0 and API accessToken
+  payload: any // accessToken payload
+  error: any
 }
 
 interface AuthStoreDefaultGetters extends _GettersTree<AuthStoreDefaultState> {
@@ -58,18 +49,13 @@ export function defineAuthStore<
   S extends StateTree = {},
   G extends _GettersTree<S> = {},
   // cannot extends ActionsTree because we loose the typings
-  A /* extends ActionsTree */ = {}
+  A /* extends ActionsTree */ = {},
 >(
   ...args: [DefineAuthStoreOptions<Id, S, G, A>] | [Id, Omit<DefineAuthStoreOptions<Id, S, G, A>, 'id'>]
 ): AuthStoreDefinition<Id, S, G, A> {
   const id = args.length === 2 ? args[0] : args[0].id || 'auth'
   const options = args.length === 2 ? args[1] : args[0]
-  const {
-    feathersClient,
-    state = () => ({}) as S,
-    getters = {} as G,
-    actions = {} as A,
-  } = options
+  const { feathersClient, state = () => ({} as S), getters = {} as G, actions = {} as A } = options
 
   /**
    * Default State
