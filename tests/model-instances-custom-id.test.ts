@@ -19,7 +19,10 @@ class CustomId extends BaseModel {
 const useCustomIds = defineStore({ servicePath: 'custom-ids', Model: CustomId, idField: 'my-id' })
 const customIdStore = useCustomIds(pinia)
 
-const reset = () => resetStores(api.service('messages'), altIdStore)
+const reset = () => {
+  resetStores(api.service('alt-ids'), altIdStore)
+  resetStores(api.service('custom-ids'), customIdStore)
+}
 
 describe('Works with _id', () => {
   // Clear the store before and after each test.
