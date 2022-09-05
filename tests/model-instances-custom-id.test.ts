@@ -7,28 +7,43 @@ const pinia = createPinia()
 
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
-class Message extends BaseModel {
+class AltId extends BaseModel {
   _id: number
 }
-const servicePath = 'alt-ids'
-const useMessages = defineStore({ servicePath, Model: Message, idField: '_id' })
-const altIdStore = useMessages(pinia)
+const useAltIds = defineStore({ servicePath: 'alt-ids', Model: AltId, idField: '_id' })
+const altIdStore = useAltIds(pinia)
+
+class CustomId extends BaseModel {
+  'my-id': number
+}
+const useCustomIds = defineStore({ servicePath: 'custom-ids', Model: CustomId, idField: 'my-id' })
+const customIdStore = useCustomIds(pinia)
 
 const reset = () => resetStores(api.service('messages'), altIdStore)
 
-describe('Model Instances', () => {
-  beforeEach(() => reset())
+describe('Works with _id', () => {
+  // Clear the store before and after each test.
+  beforeEach(() => {
+    reset()
+    // Populate some data with `_id` attributes.
+    api.service('alt-ids').store = {
+      1: { _id: 1, text: 'Hey' },
+      2: { _id: 2, text: 'Hey' },
+      3: { _id: 3, text: 'Hey what?' },
+      4: { _id: 4, text: 'You said hey first' },
+    }
+  })
   afterEach(() => reset())
 
   test('creating an instance does NOT add it to the altIdStore', () => {
-    new Message({ _id: 0, text: 'this is a test' })
+    new AltId({ _id: 0, text: 'this is a test' })
 
     expect(altIdStore.itemsById[0]).toBeUndefined()
     expect(altIdStore.tempsById[0]).toBeUndefined()
   })
 
   test('calling instance.addToStore() adds it to itemsById when the data contains an id', () => {
-    const message = new Message({ _id: 0, text: 'this is a test' })
+    const message = new AltId({ _id: 0, text: 'this is a test' })
 
     message.addToStore()
 
@@ -36,7 +51,7 @@ describe('Model Instances', () => {
   })
 
   test('calling instance.addToStore() adds it to tempsById when the record contains no id', () => {
-    const message = new Message({ text: 'this is a test' })
+    const message = new AltId({ text: 'this is a test' })
 
     message.addToStore()
 
@@ -45,18 +60,83 @@ describe('Model Instances', () => {
   })
 
   test('new instances have truthy __isTemp', () => {
-    const message = new Message({ text: 'this is a test' })
+    const message = new AltId({ text: 'this is a test' })
 
     expect(message.__isTemp).toBeTruthy
     message.addToStore()
     expect(message.__isTemp).toBeFalsy
   })
 
+  test('fetching data from the server populates the items into the store', async () => {
+    await altIdStore.find({ query: {} })
+    expect(altIdStore.items.length).toBe(4)
+  })
+
   describe('_id after create', () => {
     test('non-reactive records have id after save', async () => {
-      const message = new Message({ text: 'this is a test' })
+      const message = new AltId({ text: 'this is a test' })
       await message.save()
       expect(message._id).toBeDefined()
+    })
+  })
+})
+
+describe('Works with Custom ID', () => {
+  // Clear the store before and after each test.
+  beforeEach(() => {
+    reset()
+    // Populate some data with custom `my-id` attributes.
+    api.service('custom-ids').store = {
+      1: { 'my-id': 1, text: 'Hey' },
+      2: { 'my-id': 2, text: 'Hey' },
+      3: { 'my-id': 3, text: 'Hey what?' },
+      4: { 'my-id': 4, text: 'You said hey first' },
+    }
+  })
+  afterEach(() => reset())
+
+  test('creating an instance does NOT add it to the customIdStore', () => {
+    new CustomId({ 'my-id': 0, text: 'this is a test' })
+
+    expect(customIdStore.itemsById[0]).toBeUndefined()
+    expect(customIdStore.tempsById[0]).toBeUndefined()
+  })
+
+  test('calling instance.addToStore() adds it to itemsById when the data contains an id', () => {
+    const message = new CustomId({ 'my-id': 0, text: 'this is a test' })
+
+    message.addToStore()
+
+    expect(customIdStore.itemsById[0]).toEqual(message)
+  })
+
+  test('calling instance.addToStore() adds it to tempsById when the record contains no id', () => {
+    const message = new CustomId({ text: 'this is a test' })
+
+    message.addToStore()
+
+    expect(customIdStore.itemsById[0]).toBeUndefined()
+    expect(Object.keys(customIdStore.tempsById)).toHaveLength(1)
+  })
+
+  test('new instances have truthy __isTemp', () => {
+    const message = new CustomId({ text: 'this is a test' })
+
+    expect(message.__isTemp).toBeTruthy
+    message.addToStore()
+    expect(message.__isTemp).toBeFalsy
+  })
+
+  test('fetching data from the server populates the items into the store', async () => {
+    await customIdStore.find({ query: {} })
+    expect(customIdStore.items.length).toBe(4)
+  })
+
+  describe('my-id after create', () => {
+    test('non-reactive records have id after save', async () => {
+      const message = new CustomId({ text: 'this is a test' })
+      await message.save()
+      expect(message['my-id']).toBeDefined()
     })
   })
 })

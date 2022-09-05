@@ -60,7 +60,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
           if (item.value == null) {
             return null
           }
-          const id = getAnyId(item.value, store.tempIdField)
+          const id = getAnyId(item.value, store.tempIdField, store.idField)
           const existingClone = store.clonesById[id]
           if (existingClone && useExisting && existingClone.constructor.name === item.value.constructor.name) {
             return existingClone
@@ -69,10 +69,10 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
         })
         watch(
           // Since `item` can change, watch the reactive `item` instead of non-reactive `item`
-          () => item.value && getAnyId(item.value, store.tempIdField),
+          () => item.value && getAnyId(item.value, store.tempIdField, store.idField),
           (id) => {
             // Update the clones and handlers
-            if (!clones[key] || id !== getAnyId(clones[key].value, store.tempIdField)) {
+            if (!clones[key] || id !== getAnyId(clones[key].value, store.tempIdField, store.idField)) {
               set(clones, key, clone)
               /**
                * Each save_handler has the same name as the prop, prepended with `save_`.
@@ -97,7 +97,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
                * @
                */
               saveHandlers[`save_${key}`] = function saveHandler(propOrCollection: any, opts: SaveHandlerOpts = {}) {
-                const original = store.getFromStore(getAnyId(item.value, store.tempIdField))
+                const original = store.getFromStore(getAnyId(item.value, store.tempIdField, store.idField))
                 const isArray = Array.isArray(propOrCollection)
                 const isString = typeof propOrCollection === 'string'
                 const isObject = !isArray && !isString && propOrCollection != null
@@ -141,7 +141,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
                 commit && clone.value.commit()
 
                 if ((!areEqual && save) || hasOwn(clone.value, store.tempIdField)) {
-                  const cloneHasId = getId(cloneVal) != null
+                  const cloneHasId = getId(cloneVal, store.idField) != null
                   // Only diff for patch/update as long as no first argument is provided and diff is not explicitly disabled
                   // Or in any other case when opts.diff is true.
                   const diffedCloneVal =

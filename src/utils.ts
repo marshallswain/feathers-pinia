@@ -23,7 +23,7 @@ function stringifyIfObject(val: any): string | any {
  * @param item
  * @param idField
  */
-export function getId(item: any, idField?: string) {
+export function getId(item: any, idField: string) {
   if (!item) return
   if (idField && item[idField] != undefined) {
     return stringifyIfObject(item[idField as string])
@@ -40,8 +40,8 @@ export function getTempId(item: any, tempIdField: string) {
     return stringifyIfObject(item[tempIdField])
   }
 }
-export function getAnyId(item: any, tempIdField: string) {
-  return getId(item) != undefined ? getId(item) : getTempId(item, tempIdField)
+export function getAnyId(item: any, tempIdField: string, idField: string) {
+  return getId(item, idField) != undefined ? getId(item, idField) : getTempId(item, tempIdField)
 }
 
 export function getQueryInfo(
@@ -101,7 +101,7 @@ export function assignTempId(item: any, tempIdField: string) {
  */
 export function cleanData<T = AnyDataOrArray>(data: T, tempIdField: string): T {
   const { items, isArray } = getArray(data)
-  const cleaned = items.map((item) => _.omit(item, '__isClone', tempIdField))
+  const cleaned = items.map((item) => _.omit(item, tempIdField))
 
   return isArray ? cleaned : cleaned[0]
 }

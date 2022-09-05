@@ -1,16 +1,20 @@
-import { getId } from '../utils'
-import { AnyData, AnyDataOrArray, ModelInstanceOptions, ModelStatic, ServiceStoreDefault } from './types'
+import { getId, getTempId, getAnyId } from '../utils'
+import {
+  AnyData,
+  AnyDataOrArray,
+  ModelInstanceOptions,
+  ModelStatic,
+  ServiceStoreDefault,
+  BaseModelModifierOptions,
+  BaseModelAssociations,
+} from './types'
 import { Id, NullableId, Params } from '@feathersjs/feathers'
 import { models } from '../models'
 import { EventEmitter } from 'events'
 
-export interface InstanceModifierOptions {
-  models: { [id: string]: any }
-  store: any
-}
-
 export class BaseModel implements AnyData {
   static readonly store: ServiceStoreDefault<BaseModel>
+  static readonly models = models
   static pinia = null
   static servicePath = ''
   static idField = ''
@@ -32,7 +36,7 @@ export class BaseModel implements AnyData {
   public static instanceDefaults<M extends BaseModel>(
     this: ModelStatic<M>,
     data: AnyData,
-    options?: InstanceModifierOptions,
+    options?: BaseModelModifierOptions,
   ): AnyData
   public static instanceDefaults<M extends BaseModel>(this: ModelStatic<M>, data: AnyData): AnyData {
     return data
@@ -41,7 +45,7 @@ export class BaseModel implements AnyData {
   public static setupInstance<M extends BaseModel>(
     this: ModelStatic<M>,
     data: AnyData,
-    options?: InstanceModifierOptions,
+    options?: BaseModelModifierOptions,
   ): AnyData
   public static setupInstance<M extends BaseModel>(this: ModelStatic<M>, data: AnyData): AnyData {
     return data
@@ -184,36 +188,40 @@ export class BaseModel implements AnyData {
     return this.store.removeFromStore(data)
   }
 
+  get Model() {
+    return this.constructor as ModelStatic<BaseModel>
+  }
+
   get __isTemp() {
-    const { idField } = this.constructor as ModelStatic<BaseModel>
+    const { idField } = this.Model
     return getId(this, idField) == null
   }
 
   get isSavePending() {
-    const { store } = this.constructor as ModelStatic<BaseModel>
-    const pending = store.pendingById[getId(this)]
+    const { store, idField } = this.Model
+    const pending = store.pendingById[getId(this, idField)]
     return pending?.create || pending?.update || pending?.patch || false
   }
   get isCreatePending(): boolean {
-    const { store } = this.constructor as ModelStatic<BaseModel>
-    return store.pendingById[getId(this)]?.create || false
+    const { store, idField } = this.Model
+    return store.pendingById[getId(this, idField)]?.create || false
   }
   get isPatchPending(): boolean {
-    const { store } = this.constructor as ModelStatic<BaseModel>
-    return store.pendingById[getId(this)]?.patch || false
+    const { store, idField } = this.Model
+    return store.pendingById[getId(this, idField)]?.patch || false
   }
   get isUpdatePending(): boolean {
-    const { store } = this.constructor as ModelStatic<BaseModel>
-    return store.pendingById[getId(this)]?.update || false
+    const { store, idField } = this.Model
+    return store.pendingById[getId(this, idField)]?.update || false
   }
   get isRemovePending(): boolean {
-    const { store } = this.constructor as ModelStatic<BaseModel>
-    return store.pendingById[getId(this)]?.remove || false
+    const { store, idField } = this.Model
+    return store.pendingById[getId(this, idField)]?.remove || false
   }
 
   get isPending(): boolean {
-    const { store } = this.constructor as ModelStatic<BaseModel>
-    const pending = store.pendingById[getId(this)]
+    const { store, idField } = this.Model
+    const pending = store.pendingById[getId(this, idField)]
     return pending?.create || pending?.update || pending?.patch || pending?.remove || false
   }
 
@@ -221,7 +229,7 @@ export class BaseModel implements AnyData {
    * Add the current record to the store
    */
   public addToStore() {
-    const { store } = this.constructor as ModelStatic<BaseModel>
+    const { store } = this.Model
     return store.addToStore(this)
   }
 
@@ -229,7 +237,7 @@ export class BaseModel implements AnyData {
    * clone the current record using the `clone` action
    */
   public clone(data?: AnyData): this {
-    const { store } = this.constructor as ModelStatic<BaseModel>
+    const { store } = this.Model
 
     // @ts-expect-error todo
     return store.clone(this, data)
@@ -239,7 +247,7 @@ export class BaseModel implements AnyData {
    * Update a store instance to match a clone.
    */
   public commit(): this {
-    const { store } = this.constructor as ModelStatic<BaseModel>
+    const { store } = this.Model
     if (this.__isClone) {
       // @ts-expect-error todo
       return store.commit(this)
@@ -252,7 +260,7 @@ export class BaseModel implements AnyData {
    * Update a clone to match a store instance.
    */
   public reset(data: AnyData = {}): this {
-    const { store } = this.constructor as ModelStatic<BaseModel>
+    const { store } = this.Model
 
     return store.clone(this, data) as this
   }
@@ -262,7 +270,7 @@ export class BaseModel implements AnyData {
    * @param params
    */
   public save(params?: any): Promise<this> {
-    const { idField } = this.constructor as ModelStatic<BaseModel>
+    const { idField } = this.Model
     const id = getId(this, idField)
     return id != null ? this.patch(params) : this.create(params)
   }
@@ -272,7 +280,7 @@ export class BaseModel implements AnyData {
    * @param params
    */
   public async create(params?: any): Promise<this> {
-    const { idField, store } = this.constructor as ModelStatic<BaseModel>
+    const { idField, store } = this.Model
     const data: any = Object.assign({}, this)
     if (data[idField] === null) {
       delete data[idField]
@@ -291,7 +299,7 @@ export class BaseModel implements AnyData {
    * @param params
    */
   public async patch(params?: any): Promise<this> {
-    const { idField, store } = this.constructor as ModelStatic<BaseModel>
+    const { idField, store } = this.Model
     const id = getId(this, idField)
 
     if (id == null) {
@@ -310,7 +318,7 @@ export class BaseModel implements AnyData {
    * @param params
    */
   public async update(params?: any): Promise<this> {
-    const { idField, store } = this.constructor as ModelStatic<BaseModel>
+    const { idField, store } = this.Model
     const id = getId(this, idField)
 
     if (id == null) {
@@ -330,7 +338,7 @@ export class BaseModel implements AnyData {
    */
   public remove(params?: Params): Promise<this> {
     checkThis(this)
-    const { idField, store } = this.constructor as ModelStatic<BaseModel>
+    const { idField, store } = this.Model
     const id: Id = getId(this, idField)
     return store.remove(id, params)
   }
@@ -338,7 +346,7 @@ export class BaseModel implements AnyData {
    * Removes the instance from the store
    */
   public removeFromStore(): this {
-    const { store } = this.constructor as ModelStatic<BaseModel>
+    const { store } = this.Model
     return store.removeFromStore(this)
   }
 }
