@@ -83,14 +83,6 @@ export function getItemsFromQueryInfo(pagination: any, queryInfo: any, keyedById
   }
 }
 
-export function keyBy(items: any, fn: Function = (i: any) => getId(i)) {
-  return items.reduce((all: any, current: any) => {
-    const id = fn(current)
-    all[id] = current
-    return all
-  }, {})
-}
-
 /**
  * Generate a new tempId and mark the record as a temp
  * @param state
