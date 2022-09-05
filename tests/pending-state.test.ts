@@ -182,19 +182,16 @@ describe('Pending State', () => {
   })
 
   describe('Model getters for instance state', () => {
-    const config: Record<string, RequestTypeById> = {
-      isCreatePending: 'create',
-      isPatchPending: 'patch',
-      isUpdatePending: 'update',
-      isRemovePending: 'remove',
-    }
-    Object.entries(config).forEach(([title, method]) => {
-      test(title, () => { 
-        messagesService.setPendingById('foo', method, true)
-        expect(messagesService[title]).toBeTruthy()
-        messagesService.setPendingById('foo', method, false)
-        expect(messagesService[title]).toBeFalsy()
-      })
+    test.each([
+      ['isCreatePending', 'create'],
+      ['isPatchPending', 'patch'],
+      ['isUpdatePending', 'update'],
+      ['isRemovePending', 'remove'],
+    ])('add(%i, %i) -> %i', (title, method) => {
+      messagesService.setPendingById('foo', method as RequestTypeById, true)
+      expect(messagesService[title]).toBeTruthy()
+      messagesService.setPendingById('foo', method as RequestTypeById, false)
+      expect(messagesService[title]).toBeFalsy()
     })
   })
 })
