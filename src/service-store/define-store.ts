@@ -36,7 +36,7 @@ export function defineStore<
     tempIdField,
     handleEvents,
     debounceEventsTime,
-    debounceEventsMaxWait,
+    debounceEventsGuarantee,
     clientAlias,
     Model,
   } = options
@@ -103,7 +103,7 @@ export function defineStore<
       }
       const service = client.service(servicePath)
 
-      const opts = { idField, debounceEventsTime, debounceEventsMaxWait, handleEvents }
+      const opts = { idField, debounceEventsTime, debounceEventsGuarantee, handleEvents }
 
       registerModel(options.Model, initializedStore)
       enableServiceEvents({

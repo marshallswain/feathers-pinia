@@ -558,7 +558,7 @@ export type DefineFeathersStoreOptions<
   enableEvents?: boolean
   handleEvents?: HandleEvents<M>
   debounceEventsTime?: number
-  debounceEventsMaxWait?: number
+  debounceEventsGuarantee?: boolean
   state?: () => S
   getters?: G
   actions?: A
