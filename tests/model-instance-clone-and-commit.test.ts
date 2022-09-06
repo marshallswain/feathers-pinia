@@ -10,6 +10,10 @@ class Message extends BaseModel {
   id: string
   foo: any
   additionalData: any
+
+  get baz() {
+    return 'baz'
+  }
 }
 
 const servicePath = 'messages'
@@ -18,6 +22,7 @@ const useMessagesService = defineStore({ servicePath, Model: Message })
 const messagesService = useMessagesService(pinia)
 
 describe('Clone & Commit', () => {
+  //
   test('can clone ', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
@@ -27,6 +32,7 @@ describe('Clone & Commit', () => {
     expect(clone.__isClone).toBe(true)
     expect(message === clone).toBe(false)
     expect(clone).toHaveProperty('additionalData')
+    expect(clone.baz).toBe('baz')
     expect(clone.additionalData).toBe('a boolean is fine')
   })
 
@@ -39,6 +45,7 @@ describe('Clone & Commit', () => {
     const committed = clone.commit()
 
     expect(committed.foo).toBe('bar')
+    expect(committed.baz).toBe('baz')
     expect(committed.__isClone).toBeUndefined()
   })
 
