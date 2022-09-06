@@ -363,6 +363,8 @@ export function makeActions<
       const id = getAnyId(item, this.Model.tempIdField, this.Model.idField)
       const originalItem = this[placeToStore][id]
       const existingClone = this.clonesById[id]
+      if (!existingClone) return this.clone(item, data)
+
       const cloneReset: M = Object.assign(existingClone, originalItem, data)
 
       // Remove properties that may have been added to the clone but are not in the original

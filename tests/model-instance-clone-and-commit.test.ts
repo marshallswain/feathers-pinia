@@ -49,15 +49,14 @@ describe('Clone & Commit', () => {
     expect(committed.__isClone).toBeUndefined()
   })
 
-  test('can reset', async () => {
+  test('resetting an original gives you a clone', async () => {
     const message = await messagesService.create({
       text: 'Quick, what is the number to 911?',
     })
     const clone = message.reset({ foo: 'bar' })
-    const reset = clone.clone()
 
-    expect(reset.foo).toBeUndefined()
-    expect(clone === reset).toBeTruthy()
+    expect(clone.foo).toBe('bar')
+    expect(clone.__isClone).toBeTruthy()
   })
 
   test('items and clones point to values in store', async () => {
