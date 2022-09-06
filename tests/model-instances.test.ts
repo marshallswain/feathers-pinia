@@ -60,4 +60,52 @@ describe('Model Instances', () => {
       expect(message.id).toBeDefined()
     })
   })
+
+  describe('Saved Attributes', async () => {
+    test('__isClone is not included when serializing for the API', async () => {
+      let had__isClone = false
+      const message = new Message({ text: 'this is a test' }).addToStore() as Message
+
+      const hook = (context) => {
+        if (Object.prototype.hasOwnProperty.call(context.data, '__isClone')) {
+          had__isClone = true
+        }
+        return context
+      }
+      api.service('messages').hooks({ before: { create: [hook] } })
+      await message.save()
+      expect(had__isClone).toBeFalsy()
+    })
+
+    test('__isTemp is not included when serializing for the API', async () => {
+      let had__isTemp = false
+      const message = new Message({ text: 'this is a test' }).addToStore() as Message
+
+      const hook = (context) => {
+        if (Object.prototype.hasOwnProperty.call(context.data, '__isTemp')) {
+          had__isTemp = true
+        }
+        return context
+      }
+      api.service('messages').hooks({ before: { create: [hook] } })
+
+      await message.save()
+      expect(had__isTemp).toBeFalsy()
+    })
+
+    test('the tempIdField is removed by the cleanData util when serializing for the API', async () => {
+      let hadTempIdField = false
+      const message = new Message({ text: 'this is a test' }).addToStore() as Message
+
+      const hook = (context) => {
+        if (Object.prototype.hasOwnProperty.call(context.data, message.Model.tempIdField)) {
+          hadTempIdField = true
+        }
+        return context
+      }
+      api.service('messages').hooks({ before: { create: [hook] } })
+      await message.save()
+      expect(hadTempIdField).toBeFalsy()
+    })
+  })
 })
