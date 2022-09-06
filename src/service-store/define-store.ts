@@ -18,7 +18,7 @@ export const defaultSharedState: ServiceStoreSharedStateDefineOptions = {
   tempIdField: '__tempId',
   paramsForServer: [],
   whitelist: [],
-  skipRequestIfExists: false
+  skipRequestIfExists: false,
 }
 
 export function defineStore<
