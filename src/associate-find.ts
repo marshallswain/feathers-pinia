@@ -1,7 +1,7 @@
-import type { Association, BaseModelAssociations, ModelStatic } from './service-store/types'
+import type { ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model'
 import { Params } from './types'
-import { getAnyId } from './utils'
+import { getParams, setupAssociation } from './associate-utils'
 
 interface AssociateFindOptions<M extends BaseModel> {
   Model: ModelStatic<BaseModel>
@@ -16,22 +16,7 @@ export function associateFind<M extends BaseModel>(
   // Cache the initial data in a variable
   const initialData = (instance as any)[prop]
 
-  // Define the association
-  const def: Association = {
-    name: prop,
-    Model,
-    type: 'find',
-  }
-
-  function defaultHandleSetInstance(associatedRecord: M) {
-    return associatedRecord
-  }
-  const _handleSetInstance = handleSetInstance || defaultHandleSetInstance
-
-  // Register the association on the instance.Model
-  if (!instance.Model.associations[prop]) {
-    (instance.Model.associations as BaseModelAssociations)[prop] = def
-  }
+  const { _handleSetInstance, propUtilName } = setupAssociation(instance, handleSetInstance, prop, Model, 'find')
 
   Object.defineProperty(instance, prop, {
     // Define the key as non-enumerable so it won't get cloned
@@ -56,11 +41,8 @@ export function associateFind<M extends BaseModel>(
     },
   })
 
-  // name the utility to be able to query more data. eg. user.findMessages
-  const findPropUtilName = `find${prop.slice(0, 1).toUpperCase()}${prop.slice(1)}`
-
   // Create the `findProp` utility on instance.Model
-  Object.defineProperty(instance, findPropUtilName, {
+  Object.defineProperty(instance, propUtilName, {
     value: () => {
       const params = getParams(instance, makeParams)
       return Model.find(params)
@@ -71,14 +53,4 @@ export function associateFind<M extends BaseModel>(
   if (initialData) {
     (instance as any)[prop] = initialData
   }
-}
-
-function getParams(instance: any, makeParams: any) {
-  const { tempIdField, idField } = instance.Model
-  const id = getAnyId(instance, tempIdField, idField)
-  // I don't know if reactivity works from inside the instance, so I'm getting it from the store just in case.
-  const itemInStore = instance.Model.getFromStore(id)
-  // If the record wasn't added to the store, use the original, non-reactive one.
-  const params = makeParams(itemInStore || instance)
-  return params
 }

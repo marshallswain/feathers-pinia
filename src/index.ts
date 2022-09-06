@@ -3,6 +3,7 @@ export { defineStore } from './service-store/define-store'
 export { defineAuthStore } from './define-auth-store'
 export { makeServiceStore, BaseModel } from './service-store/index'
 export { associateFind } from './associate-find'
+export { associateGet } from './associate-get'
 export { makeState } from './service-store/make-state'
 
 export { models } from './models'
