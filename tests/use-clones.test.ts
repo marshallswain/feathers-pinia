@@ -6,10 +6,18 @@ import { resetStores } from './test-utils'
 import { vi } from 'vitest'
 
 const pinia = createPinia()
-
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
+  text: string
+  unchangedProp?: boolean
+  changedProp?: boolean
+
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
+
   static instanceDefaults() {
     return { text: '' }
   }

@@ -23,13 +23,13 @@ export class BaseModel implements AnyData {
 
   public __isClone!: boolean
 
-  constructor(data: AnyData, options: ModelInstanceOptions = {}) {
-    const ctor = this.constructor as ModelStatic<BaseModel>
-    const { store, instanceDefaults, setupInstance } = ctor
-    Object.assign(this, instanceDefaults.call(ctor, data, { models, store }))
-    Object.assign(this, setupInstance.call(ctor, data, { models, store }))
-    this.__isClone = !!options.clone
+  constructor(data: Record<string, any> = {}, options: ModelInstanceOptions = {}) {
+    const { store, instanceDefaults } = this.Model
+    Object.assign(this, instanceDefaults.call(this.Model, data, { models, store }))
 
+    Object.defineProperty(this, '__isClone', {
+      value: !!options.clone,
+    })
     return this
   }
 
@@ -38,16 +38,7 @@ export class BaseModel implements AnyData {
     data: AnyData,
     options?: BaseModelModifierOptions,
   ): AnyData
-  public static instanceDefaults<M extends BaseModel>(this: ModelStatic<M>, data: AnyData): AnyData {
-    return data
-  }
-
-  public static setupInstance<M extends BaseModel>(
-    this: ModelStatic<M>,
-    data: AnyData,
-    options?: BaseModelModifierOptions,
-  ): AnyData
-  public static setupInstance<M extends BaseModel>(this: ModelStatic<M>, data: AnyData): AnyData {
+  static instanceDefaults<M extends BaseModel>(this: ModelStatic<M>, data: AnyData): AnyData {
     return data
   }
 
@@ -192,6 +183,18 @@ export class BaseModel implements AnyData {
     return this.constructor as ModelStatic<BaseModel>
   }
 
+  /**
+   * Call `this.init` in a Class's constructor to run `instanceDefaults` and `setupInstance` properly.
+   * This allows default values to be specified directly in the Class's interface.
+   * @param data
+   */
+  public init(data: Record<string, any>) {
+    const { instanceDefaults, setupInstance } = this.Model as any
+
+    // If you call these here, you can use default values in the Model interface.
+    if (instanceDefaults) Object.assign(this, instanceDefaults.call(this.Model, data), data)
+    if (setupInstance) setupInstance.call(this.Model, this)
+  }
   get __isTemp() {
     const { idField } = this.Model
     return getId(this, idField) == null

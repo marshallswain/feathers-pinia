@@ -3,6 +3,9 @@ import { setupFeathersPinia, BaseModel } from '../src/index' // from 'feathers-p
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 
+const pinia = createPinia()
+const { defineStore } = setupFeathersPinia({ clients: { api } })
+
 export class User extends BaseModel {
   _id: number
   name: string
@@ -10,41 +13,41 @@ export class User extends BaseModel {
   messages?: Partial<Message>[]
 }
 
-// With TypeScript, only define the interface directly on the Model, without defaults
+/**
+ * Below is an example of a Model class in a TypeScript-based app.
+ */
+
+// Define the interface and defaults directly on the Model instead of `instanceDefaults`.
 export class Message extends BaseModel {
   _id: number
-  text = '' // text will always be empty string, even if you provide a value, which sucks for boilerplate elimination.
+  text = 'foo'
   text2: string
   userId: null | number
   createdAt: Date | null
 
-  // Values added in `setupInstance` should be declared without a default value, like this:
+  // Values added in the constructor can be added to the interface for type friendliness.
   user?: Partial<User>
-
-  // Don't provide default values in the Model. They overwrite any passed-in, instanceDefaults, or setupInstance keys that match.
   user2?: Partial<User> = { name: 'Larry' }
 
-  static instanceDefaults(data) {
-    return {
-      text2: '',
-    }
+  // The constructor takes the place of `setupInstance`.
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+
+    // access to `store` and `models`
+    const { store, models } = this.Model
+
+    this.user2 = { name: 'Marshall' }
   }
 
-  static setupInstance(instance: Message) {
+  // You can still use, `setupInstance` if you prefer.
+  static setupInstance(message: Partial<Message>) {
+    // access to `store` and `models` is from `this`.
     const { store, models } = this
-
-    // This will get overwritten by the default `user2` value in the Class definition
-    instance.user2 = { name: 'Marshall' }
-
-    return instance
   }
 }
 
-const pinia = createPinia()
-const { defineStore } = setupFeathersPinia({ clients: { api } })
-
-const servicePath = 'messages'
-const useMessagesService = defineStore({ servicePath, Model: Message })
+const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
 const messagesService = useMessagesService(pinia)
 
 describe('Model Classes Using TypeScript', () => {
@@ -54,31 +57,29 @@ describe('Model Classes Using TypeScript', () => {
   beforeAll(() => resetStore())
   afterAll(() => resetStore())
 
-  test('class defaults even overwrite passed-in values, which sucks for boilerplate elimination', async () => {
-    const message = new Message({ text: 'Here I am!' })
-    message.userId = 0
-    expect(message.text).toBe('')
+  test('passed-in values overwrite all defaults', async () => {
+    const message = new Message({ text: 'Here I am!' }).addToStore() as Message
+    expect(message.text).toBe('Here I am!')
   })
 
-  test('instanceDefaults are great for boilerplate elimination, they are overwritten by passed data', async () => {
-    const message = new Message({ text2: 'Here I am!' })
-    message.userId = 0
-    expect(message.text2).toBe('Here I am!')
-  })
-
-  test('default values kick in if nothing was passed', async () => {
-    const message = new Message()
-    message.userId = 0
-    expect(message.text).toBe('')
+  test('Model interface defaults are used when no value is provided', async () => {
+    const message = new Message({}).addToStore() as Message
+    expect(message.text).toBe('foo')
   })
 
   test("message.user has no default value because it is in the Model's TypeScript interface", async () => {
-    const message = await messagesService.create({})
+    const message = new Message({}).addToStore() as Message
     expect(message.user).toBe(undefined)
   })
 
-  test('class defaults overwrite setupInstance', async () => {
-    const message = await messagesService.create({})
-    expect(message.user2?.name).toBe('Larry')
+  test('setupInstance values overwrite class defaults', async () => {
+    const message = new Message({}).addToStore() as Message
+    expect(message.user2?.name).toBe('Marshall')
+  })
+
+  test('setupInstance runs after save', async () => {
+    const message = new Message({}).addToStore() as Message
+    await message.save()
+    expect(message.user2?.name).toBe('Marshall')
   })
 })
