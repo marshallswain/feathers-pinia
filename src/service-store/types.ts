@@ -158,6 +158,7 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   clearAll: () => void
   clone: (item: M, data: AnyData) => M
   commit: (item: M) => M | undefined
+  reset: (item: M, data: AnyData) => M | undefined
   updatePaginationForQuery: (options: UpdatePaginationForQueryOptions) => void
   setPendingById(id: 'Model', method: RequestTypeModel, val: boolean): void
   setPendingById(id: NullableId, method: RequestTypeById, val: boolean): void
@@ -220,6 +221,13 @@ export type MakeServiceActionsOptions<
 export interface PatchParams<D extends AnyData> extends Params {
   data?: Partial<D>
 }
+
+export interface Association {
+  name: string
+  Model: ModelStatic<BaseModel>
+  type: 'find' | 'get'
+}
+export type BaseModelAssociations = Record<string, Association>
 
 /** Model instance interface */
 // export interface Model {

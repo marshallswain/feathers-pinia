@@ -26,6 +26,7 @@ import {
   hasOwn,
   getSaveParams,
   markAsClone,
+  copyAssociations,
 } from '../utils'
 import { unref, set } from 'vue-demi'
 import { StateTree, _GettersTree } from 'pinia'
@@ -325,22 +326,17 @@ export function makeActions<
 
       // Maintain reactivity for existing clones
       if (existing && existing.constructor.name === originalItem.constructor.name) {
-        const cloneReset: M = Object.assign(existing, originalItem, data)
-
-        // Remove properties that may have been added to the clone but are not in the original
-        Object.keys(cloneReset).forEach((key) => {
-          if (!hasOwn(originalItem, key)) {
-            delete (cloneReset as any)[key]
-          }
-        })
-        markAsClone(cloneReset)
-
-        return cloneReset
+        return this.reset(item, data) as M
       } else {
+        // Create the clone with any applicable associations
         const clone = fastCopy(originalItem)
         markAsClone(clone)
+        copyAssociations(originalItem, clone, clone.Model.associations)
+
+        // Copy over any provided data
         Object.assign(clone, data)
 
+        // Store and return the clone
         set(this.clonesById, id, clone)
         return this.clonesById[id] as M // Must return the item from the store
       }
@@ -351,10 +347,32 @@ export function makeActions<
       if (id != null) {
         const tempId = getTempId(item, this.Model.tempIdField)
         const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
-        set(this[placeToStore], id, fastCopy(this.clonesById[id]))
+        const clone = this.clonesById[id]
+        const newOriginal = fastCopy(clone)
+        copyAssociations(clone, newOriginal, clone.Model.associations)
 
-        return this.itemsById[id] as M
+        set(this[placeToStore], id, newOriginal)
+
+        return this[placeToStore][id] as M
       }
+    },
+
+    reset(item: M, data = {}): M {
+      const tempId = getTempId(item, this.Model.tempIdField)
+      const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
+      const id = getAnyId(item, this.Model.tempIdField, this.Model.idField)
+      const originalItem = this[placeToStore][id]
+      const existingClone = this.clonesById[id]
+      const cloneReset: M = Object.assign(existingClone, originalItem, data)
+
+      // Remove properties that may have been added to the clone but are not in the original
+      Object.keys(cloneReset).forEach((key) => {
+        if (!hasOwn(originalItem, key)) {
+          delete (cloneReset as any)[key]
+        }
+      })
+      markAsClone(cloneReset)
+      return cloneReset
     },
 
     /**

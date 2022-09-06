@@ -2,6 +2,7 @@ export { setupFeathersPinia } from './setup'
 export { defineStore } from './service-store/define-store'
 export { defineAuthStore } from './define-auth-store'
 export { makeServiceStore, BaseModel } from './service-store/index'
+export { associateFind } from './associate-find'
 export { makeState } from './service-store/make-state'
 
 export { models } from './models'

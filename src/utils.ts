@@ -4,7 +4,7 @@ import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'isomorphic-mongo-objectid'
 import { Id } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
-import { AnyData, AnyDataOrArray } from './service-store/types'
+import { AnyData, AnyDataOrArray, BaseModelAssociations } from './service-store/types'
 import { unref } from 'vue-demi'
 import { MaybeRef } from './utility-types'
 
@@ -169,4 +169,18 @@ export function markAsClone<T>(item: T) {
     enumerable: false,
   })
   return item
+}
+
+/**
+ * Copies the property definitions for the model associations from src to dest.
+ *
+ * @param src source instance
+ * @param dest destination instance
+ * @param associations {BaseModelAssociations} from Model.associations
+ */
+export function copyAssociations<M>(src: M, dest: M, associations: BaseModelAssociations) {
+  Object.keys(associations).forEach((key: string) => {
+    const desc = Object.getOwnPropertyDescriptor(src, key)
+    Object.defineProperty(dest, key, desc as PropertyDescriptor)
+  })
 }

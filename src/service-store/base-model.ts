@@ -20,6 +20,7 @@ export class BaseModel implements AnyData {
   static idField = ''
   static modelName = ''
   static tempIdField = ''
+  static associations: BaseModelAssociations = {}
 
   public __isClone!: boolean
 
@@ -195,6 +196,19 @@ export class BaseModel implements AnyData {
     if (instanceDefaults) Object.assign(this, instanceDefaults.call(this.Model, data), data)
     if (setupInstance) setupInstance.call(this.Model, this)
   }
+
+  public getId() {
+    return getId(this, this.Model.idField)
+  }
+  public getTempId() {
+    const { tempIdField } = this.Model
+    return getTempId(this, tempIdField)
+  }
+  public getAnyId() {
+    const { tempIdField, idField } = this.Model
+    return getAnyId(this, tempIdField, idField)
+  }
+
   get __isTemp() {
     const { idField } = this.Model
     return getId(this, idField) == null
@@ -265,7 +279,7 @@ export class BaseModel implements AnyData {
   public reset(data: AnyData = {}): this {
     const { store } = this.Model
 
-    return store.clone(this, data) as this
+    return store.reset(this, data) as this
   }
 
   /**
