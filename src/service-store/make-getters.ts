@@ -22,10 +22,8 @@ type ServiceStoreTypedGetters<M extends BaseModel = BaseModel> = TypedGetters<
 export function makeGetters<
   M extends BaseModel = BaseModel,
   S extends StateTree = StateTree,
-  G extends _GettersTree<S> = {}
->(
-  options: MakeServiceGettersOptions<M, S, G>
-): ServiceStoreDefaultGetters<M> & G {
+  G extends _GettersTree<S> = {},
+>(options: MakeServiceGettersOptions<M, S, G>): ServiceStoreDefaultGetters<M> & G {
   const defaultGetters: ServiceStoreTypedGetters<M> = {
     // Returns the Feathers service currently assigned to this store.
     service() {
@@ -135,8 +133,12 @@ export function makeGetters<
         id = unref(id)
         params = fastCopy(unref(params) || {})
 
-        let item = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
-        if (!item) item = this.tempsById[id] && select(params, this.tempIdField)(this.tempsById[id])
+        let item = null
+        const existingItem = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
+        const tempItem = this.tempsById[id] && select(params, this.tempIdField)(this.tempsById[id])
+
+        if (existingItem) item = existingItem
+        else if (tempItem) item = tempItem
 
         // Make sure item is an instance
         if (item && !item.constructor.modelName) {
@@ -157,10 +159,10 @@ export function makeGetters<
     },
     isRemovePending() {
       return makePending('remove', this)
-    }
+    },
   }
 
-  return Object.assign(defaultGetters, options.getters);
+  return Object.assign(defaultGetters, options.getters)
 }
 
 function makePending(method: string, store: any): boolean {
