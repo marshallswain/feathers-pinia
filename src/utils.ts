@@ -1,12 +1,13 @@
-import { Params, Paginated, QueryInfo } from './types'
+import type { Params, Paginated, QueryInfo } from './types'
+import type { MaybeRef } from './utility-types'
+import type { Id } from '@feathersjs/feathers'
+import type { AnyData, AnyDataOrArray, BaseModelAssociations } from './service-store/types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'isomorphic-mongo-objectid'
-import { Id } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
-import { AnyData, AnyDataOrArray, BaseModelAssociations } from './service-store/types'
 import { unref } from 'vue-demi'
-import { MaybeRef } from './utility-types'
+import { isEqual } from 'lodash'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {

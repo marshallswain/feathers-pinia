@@ -1,12 +1,10 @@
+import type { Params } from '@feathersjs/feathers'
+import type { AnyData } from './service-store/types'
 import { computed, reactive, watch, set } from 'vue-demi'
 import { isEqual } from 'lodash'
 import { _ } from '@feathersjs/commons'
 import { getId, getAnyId, hasOwn } from './utils'
-import { Params } from '@feathersjs/feathers'
 
-interface AnyObj {
-  [key: string]: any
-}
 interface UseClonesOptions {
   debug?: boolean
   useExisting?: boolean
@@ -122,7 +120,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
                   : Object.keys(propOrCollection || clone.value).map(validateProp)
 
                 let originalVal
-                let cloneVal: AnyObj
+                let cloneVal: AnyData
 
                 if (isString) {
                   // Check for equality before commit or the values will be equal.
@@ -146,7 +144,7 @@ export function useClones(props: any, options: UseClonesOptions = {}) {
                   // Or in any other case when opts.diff is true.
                   const diffedCloneVal =
                     cloneHasId && ((!propOrCollection && opts.diff !== false) || opts.diff === true)
-                      ? Object.keys(cloneVal).reduce((diff: AnyObj, key) => {
+                      ? Object.keys(cloneVal).reduce((diff: AnyData, key) => {
                           if (!isEqual(original[key], cloneVal[key])) {
                             diff[key] = cloneVal[key]
                           }
