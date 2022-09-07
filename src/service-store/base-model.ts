@@ -263,11 +263,11 @@ export class BaseModel implements AnyData {
   /**
    * Update a store instance to match a clone.
    */
-  public commit(): this {
+  public commit(data?: any): this {
     const { store } = this.Model
     if (this.__isClone) {
       // @ts-expect-error todo
-      return store.commit(this)
+      return store.commit(this, data)
     } else {
       throw new Error('You cannot call commit on a non-copy')
     }

@@ -342,13 +342,14 @@ export function makeActions<
       }
     },
 
-    commit(item: M): M | undefined {
+    commit(item: M, data = {}): M | undefined {
       const id = getAnyId(item, this.Model.tempIdField, this.Model.idField)
       if (id != null) {
         const tempId = getTempId(item, this.Model.tempIdField)
         const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
         const clone = this.clonesById[id]
         const newOriginal = fastCopy(clone)
+        Object.assign(newOriginal, data)
         copyAssociations(clone, newOriginal, clone.Model.associations)
 
         set(this[placeToStore], id, newOriginal)
