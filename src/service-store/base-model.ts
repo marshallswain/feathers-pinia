@@ -1,4 +1,5 @@
-import { getId, getTempId, getAnyId } from '../utils'
+import { getId, getTempId, getAnyId, diff, pickDiff } from '../utils'
+import fastCopy from 'fast-copy'
 import {
   AnyData,
   AnyDataOrArray,
@@ -315,7 +316,7 @@ export class BaseModel implements AnyData {
    * Calls service patch with the current instance data
    * @param params
    */
-  public async patch(params?: any): Promise<this> {
+  public async patch<M extends BaseModel>(this: M, params: any = {}): Promise<this> {
     const { idField, store } = this.Model
     const id = getId(this, idField)
 
@@ -326,7 +327,40 @@ export class BaseModel implements AnyData {
       return Promise.reject(error)
     }
     const { __isClone } = this
-    const saved = (await store.patch(id, this, params)) as this
+    let saved: any
+
+    // Diff clones
+    if (__isClone && params.diff != false) {
+      const original = this.Model.getFromStore(id) as any
+      const data = diff(original, this, params.diff)
+      const rollbackData = fastCopy(original)
+
+      // Do eager updating.
+      if (params.commit !== false) this.commit(data)
+
+      // Always include matching values from `params.with`.
+      if (params.with) {
+        const dataFromWith = pickDiff(this, params.with)
+        // If params.with was an object, merge the values into dataFromWith
+        if (typeof params.with !== 'string' && !Array.isArray(params.with)) {
+          Object.assign(dataFromWith, params.with)
+        }
+        Object.assign(data, dataFromWith)
+      }
+
+      // If diff is empty, return the clone without making a request.
+      if (Object.keys(data).length === 0) return this as any
+
+      try {
+        saved = (await store.patch(id, data, params)) as this
+      } catch (error: any) {
+        // If saving fails, reverse the eager update
+        this.commit(rollbackData)
+      }
+    } else {
+      saved = (await store.patch(id, this, params)) as this
+    }
+    // Make sure a clone is returned if a clone was saved.
     return __isClone ? saved.clone() : saved
   }
 

@@ -185,3 +185,39 @@ export function copyAssociations<M>(src: M, dest: M, associations: BaseModelAsso
     Object.defineProperty(dest, key, desc as PropertyDescriptor)
   })
 }
+
+type DiffDefinition = undefined | string | string[] | Record<string, any>
+
+export function pickDiff(obj: any, diffDef: DiffDefinition) {
+  // If no diff definition was given, return the entire object.
+  if (!diffDef) return obj
+
+  // Normalize all types into an array and pick the keys
+  const keys = typeof diffDef === 'string' ? [diffDef] : Array.isArray(diffDef) ? diffDef : Object.keys(diffDef || obj)
+  const topLevelKeys = keys.map((key) => key.toString().split('.')[0])
+  return _.pick(obj, ...topLevelKeys)
+}
+
+export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition) {
+  const originalVal = pickDiff(original, diffDef)
+  const cloneVal = pickDiff(clone, diffDef)
+
+  // If diff was an object, merge the values into the cloneVal
+  if (typeof diffDef !== 'string' && !Array.isArray(diffDef)) {
+    Object.assign(cloneVal, diffDef)
+  }
+
+  const areEqual = isEqual(originalVal, cloneVal)
+
+  if (areEqual) return {}
+
+  // Loop through clone, compare original value to clone value, if different add to diff object.
+  const diff = Object.keys(cloneVal).reduce((diff: AnyData, key) => {
+    if (!isEqual(original[key], cloneVal[key])) {
+      diff[key] = cloneVal[key]
+    }
+    return diff
+  }, {})
+
+  return diff
+}
