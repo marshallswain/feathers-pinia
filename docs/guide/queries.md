@@ -26,7 +26,7 @@ export class User extends BaseModel {
   messages?: Partial<Message>[]
   findMessages?: any
 
-  constructor(user?: Partial<User>, options: Record<string, any> = {}) {
+  constructor(user: Partial<User> = {}, options: Record<string, any> = {}) {
     super(user, options)
     this.init(user)
 
@@ -54,7 +54,7 @@ export class Message extends BaseModel {
   user?: Partial<User> | null
   getUser?: any
 
-  constructor(message?: Partial<Message>, options: Record<string, any> = {}) {
+  constructor(message: Partial<Message> = {}, options: Record<string, any> = {}) {
     super(message, options)
     this.init(message)
 
