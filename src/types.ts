@@ -1,7 +1,8 @@
-import { DefineStoreOptionsBase, StateTree, Store } from 'pinia';
+import type { ComputedRef, Ref, UnwrapRef } from 'vue'
+import { DefineStoreOptionsBase, StateTree, Store } from 'pinia'
 import { AnyData, ModelStatic } from './service-store/types'
-import { BaseModel } from './service-store/base-model';
-import { TypedActions, TypedGetters } from './utility-types';
+import { BaseModel } from './service-store/base-model'
+import { TypedActions, TypedGetters } from './utility-types'
 
 export interface Filters {
   $sort?: { [prop: string]: -1 | 1 }
@@ -16,6 +17,10 @@ export interface PaginationOptions {
   max?: number
 }
 
+export type AnyRef<M> = ComputedRef<M | null> | Ref<UnwrapRef<M> | null>
+
+export type DiffDefinition = undefined | string | string[] | Record<string, any> | false
+
 export interface Params extends AnyData {
   query?: Query
   paginate?: boolean | PaginationOptions
@@ -29,6 +34,13 @@ export interface Params extends AnyData {
   data?: any
   preserveSsr?: boolean
 }
+export interface PatchParams extends Params {
+  data?: Partial<AnyData>
+  diff?: DiffDefinition
+  with?: DiffDefinition
+  eager?: boolean
+}
+
 export interface Paginated<T> {
   total: number
   limit: number
@@ -49,13 +61,12 @@ export interface QueryInfo {
 }
 
 export type HandledEvents = 'created' | 'patched' | 'updated' | 'removed'
-export type HandleEventsFunction<
-  M extends BaseModel = BaseModel
->  = (item: any, ctx: { model: ModelStatic<M>, models: any }) => any
+export type HandleEventsFunction<M extends BaseModel = BaseModel> = (
+  item: any,
+  ctx: { model: ModelStatic<M>; models: any },
+) => any
 
-export type HandleEvents<
-  M extends BaseModel = BaseModel
-> = {
+export type HandleEvents<M extends BaseModel = BaseModel> = {
   [event in HandledEvents]: HandleEventsFunction<M>
 }
 
@@ -64,21 +75,13 @@ export interface DefineStoreOptionsWithDefaults<
   S extends StateTree,
   G /* extends GettersTree<S> */,
   A /* extends Record<string, StoreAction> */,
-  DefaultS,
+  DefaultS extends StateTree,
   DefaultG,
-  DefaultA
+  DefaultA,
 > extends DefineStoreOptionsBase<S, Store<Id, S, G, A>> {
   state?: () => S
 
   getters?: TypedGetters<S, G, DefaultS, DefaultG>
- 
-  actions?: TypedActions<
-    S, 
-    G, 
-    A,
-    DefaultS,
-    DefaultG,
-    DefaultA
-  >
-}
 
+  actions?: TypedActions<S, G, A, DefaultS, DefaultG, DefaultA>
+}

@@ -218,10 +218,6 @@ export type MakeServiceActionsOptions<
   A = {},
 > = Pick<ServiceOptions<any, M, S, G, A>, 'Model' | 'getters' | 'clients' | 'ssr' | 'actions'>
 
-export interface PatchParams<D extends AnyData> extends Params {
-  data?: Partial<D>
-}
-
 export interface Association {
   name: string
   Model: ModelStatic<BaseModel>
@@ -509,6 +505,11 @@ export interface BaseModelModifierOptions {
 
 export interface CloneOptions {
   useExisting?: boolean
+}
+
+export interface UseCloneOptions {
+  useExisting?: boolean
+  deep?: boolean
 }
 
 export interface QueryWhenContext {

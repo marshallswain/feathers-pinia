@@ -1,25 +1,19 @@
 import { createPinia } from 'pinia'
-import { setupFeathersPinia, handleClones } from '../src/index'
+import { setupFeathersPinia, useClones } from '../src/index'
 import { api } from './feathers'
-import { useClones } from '../src/use-clones'
 import { resetStores } from './test-utils'
-import { vi } from 'vitest'
+import { reactive } from 'vue'
 
 const pinia = createPinia()
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
-  text: string
-  unchangedProp?: boolean
-  changedProp?: boolean
+  text = ''
+  other?: string
 
   constructor(data: Partial<Message>, options: Record<string, any> = {}) {
     super(data, options)
     this.init(data)
-  }
-
-  static instanceDefaults() {
-    return { text: '' }
   }
 }
 
@@ -28,462 +22,85 @@ const useMessagesService = defineStore({ servicePath, Model: Message })
 const messagesService = useMessagesService(pinia)
 const reset = () => resetStores(api.service('messages'), messagesService)
 
-describe('Handle clones test', () => {
+describe('useClones', () => {
   beforeEach(() => reset())
 
-  test('has deprecated "handleClones" export', async () => {
-    const message = await messagesService.create({
-      text: 'Quick, what is the number to 911?',
+  test('it returns clones', async () => {
+    const props = {
+      message: await messagesService.create({ text: 'hi' }),
+      msg: await messagesService.create({ text: 'hi' }),
+    }
+    const clones = useClones(props)
+
+    Object.keys(props).forEach((prop) => {
+      expect(clones[prop].value.__isClone).toBe(true)
+      expect(props[prop] === clones[prop].value).toBe(false)
     })
-    const props = { message }
-    const { clones } = handleClones(props)
-    expect(clones.message).toHaveProperty('__isClone')
-    expect(clones.message.__isClone).toBe(true)
-    expect(message === clones.message).toBe(false)
   })
 
-  test('it returns a clone', async () => {
-    const message = await messagesService.create({
-      text: 'Quick, what is the number to 911?',
-    })
-    const props = { message }
-    const { clones } = useClones(props)
-    expect(clones.message).toHaveProperty('__isClone')
-    expect(clones.message.__isClone).toBe(true)
-    expect(message === clones.message).toBe(false)
-  })
-
-  test('can update via save handler', async () => {
-    const message = await messagesService.create({
-      text: 'Quick, what is the number to 911?',
-    })
-    const props = { message }
-    const { saveHandlers, clones } = useClones(props)
-    const { save_message } = saveHandlers
-    clones.message.text = 'Doh! it is 911!'
-    const { item } = await save_message(['text'])
-    expect(item.text).toBe('Doh! it is 911!')
-  })
-
-  test('only accepts valid service models', async () => {
-    const message = await messagesService.create({
-      text: 'Quick, what is the number to 911?',
-    })
-    const booleanField = true
-    const props = { message, booleanField }
-    const { clones } = useClones(props)
-    expect(clones.booleanField).toBeUndefined()
+  test('only clones BaseModel instances', async () => {
+    const props = {
+      message: await messagesService.create({ text: 'hi' }),
+      booleanField: true,
+    }
+    const { message, booleanField } = useClones(props)
+    expect(message.value?.text).toBe('hi')
+    expect(booleanField.value).toBeNull()
   })
 
   test('adds new instances to the store', async () => {
     const message = new Message({ text: 'I will soon go to the store.' })
     expect(messagesService.tempIds).toHaveLength(0)
+
     const props = { message }
     useClones(props)
+
     expect(messagesService.tempIds).toHaveLength(1)
   })
 
-  describe('save_handlers work with params', () => {
-    test('save_handlers allow passing params for create', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const message = new Message({ text: 'about to save with string' })
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message(undefined, {
-        $populateParams: { name: 'withRelatedData' },
-      })
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(hook.mock.calls[0][0].params.$populateParams.name).toBe('withRelatedData')
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('about to save with string')
+  test('can use deep:true to re-clone when original properties change', async () => {
+    const props = reactive({
+      message: await messagesService.create({ text: 'howdy' }),
     })
 
-    test('save_handlers allow passing params for patch', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message = await new Message({ text: 'about to save with string' }).save()
-      const props = { message }
-      const { clones, saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      clones.message.text = 'change it up'
-      const { areEqual, wasDataSaved, item } = await save_message(undefined, {
-        $populateParams: { name: 'withRelatedData' },
-      })
+    const { message } = useClones(props, { deep: true })
 
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(hook.mock.calls[0][0].params.$populateParams.name).toBe('withRelatedData')
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('change it up')
+    expect(message.value?.text).toBe('howdy')
+
+    Object.assign(message.value as Message, {
+      text: 'howdy-edited',
+      other: 'edited',
     })
+
+    props.message.text = 'something different'
+
+    // Wait for the watcher to run
+    await setTimeout(Promise.resolve, 20)
+
+    expect(message.value?.text).toBe('something different')
+    expect(message.value?.other).toBeUndefined()
   })
 
-  describe('save_handlers with temp records', () => {
-    test('temp record: save_handler with no arguments calls create when value is unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const message = new Message({ text: 'about to save with string' })
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message()
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('about to save with string')
+  test('can use useExisting:true to re-clone when original properties change', async () => {
+    const props = reactive({
+      message: await messagesService.create({ text: 'howdy' }),
     })
 
-    test('temp record: save_handler with string calls create when value is unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const message = new Message({ text: 'about to save with string' })
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message('text')
+    const { message } = useClones(props, { useExisting: true })
 
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('about to save with string')
+    expect(message.value?.text).toBe('howdy')
+
+    Object.assign(message.value as Message, {
+      text: 'howdy-edited',
+      other: 'edited',
     })
 
-    test('temp record: save_handler with string calls create after value change', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const message = new Message({ text: 'about to save with string' })
-      const props = { message }
-      const { clones, saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      clones.message.text = 'hi'
-      const { areEqual, wasDataSaved, item } = await save_message('text')
+    const { message: message2 } = useClones(props, { useExisting: true })
 
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('hi')
-    })
+    // Wait for the watcher to run
+    await setTimeout(Promise.resolve, 20)
 
-    test('temp record: save_handler with array calls create when value is unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const text = 'about to save with an array of attribute names'
-      const message = new Message({ text })
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message(['text'])
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe(text)
-    })
-
-    test('temp record: save_handler with array calls create after value change', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const message = new Message({
-        text: 'about to save with an array of attribute names',
-      })
-      const props = { message }
-      const { clones, saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      clones.message.text = 'hi'
-      const { areEqual, wasDataSaved, item } = await save_message(['text'])
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('hi')
-    })
-
-    test('temp record: save_handler with object calls create when value is unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const text = 'about to save with an array of attribute names'
-      const message = new Message({ text })
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message({ text })
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe(text)
-    })
-
-    test('save_handler with array calls create after value change', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          create: [hook],
-        },
-      })
-      const message: any = new Message({
-        text: 'about to save with an array of attribute names',
-      })
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message({
-        text: 'save this text',
-      })
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('save this text')
-    })
-  })
-
-  describe('save_handlers with non-temp records', () => {
-    test('save_handler with no arguments does not call patch when value is unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message = await new Message({
-        text: 'about to save with no arguments',
-      }).save()
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message()
-
-      expect(hook).not.toHaveBeenCalled()
-      expect(areEqual).toBe(true)
-      expect(wasDataSaved).toBe(false)
-      expect(item.text).toBe('about to save with no arguments')
-    })
-
-    test('save_handler with no arguments calls patch when value changed', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message = await new Message({
-        text: 'about to save with no arguments',
-        unchangedProp: true,
-        changedProp: false,
-      }).save()
-      const props = { message }
-      const { clones, saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      Object.assign(clones.message, {
-        text: 'foo',
-        changedProp: true,
-      })
-      const { areEqual, wasDataSaved, item } = await save_message()
-      const hookCallArgs = hook.mock.calls[0][0]
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(hookCallArgs.data).toEqual({ text: 'foo', changedProp: true })
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('foo')
-    })
-
-    test('save_handler with no arguments calls patch when value changed, can disable diff', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message = await new Message({
-        text: 'about to save with no arguments',
-        unchangedProp: true,
-        changedProp: false,
-      }).save()
-      const props = { message }
-      const { clones, saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      Object.assign(clones.message, {
-        text: 'foo',
-        changedProp: true,
-      })
-      const { areEqual, wasDataSaved, item } = await save_message(undefined, {
-        diff: false,
-      })
-      const hookCallArgs = hook.mock.calls[0][0]
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(hookCallArgs.data).toEqual({
-        text: 'foo',
-        changedProp: true,
-        id: 0,
-        unchangedProp: true,
-      })
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('foo')
-    })
-
-    test('save_handler with string does not call patch when value unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message = await new Message({ text: 'about to save with string' }).save()
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message('text')
-
-      expect(hook).not.toHaveBeenCalled()
-      expect(areEqual).toBe(true)
-      expect(wasDataSaved).toBe(false)
-      expect(item.text).toBe('about to save with string')
-    })
-
-    test('save_handler with string calls patch after value change', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message = await new Message({ text: 'about to save with string' }).save()
-      const props = { message }
-      const { clones, saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      clones.message.text = 'hi'
-      const { areEqual, wasDataSaved, item } = await save_message('text')
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('hi')
-    })
-
-    test('save_handler with array does not call patch when value is unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const text = 'about to save with an array of attribute names'
-      const message = new Message({ text })
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message(['text'])
-
-      expect(hook).not.toHaveBeenCalled()
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe(text)
-    })
-
-    test('save_handler with array calls patch after value change', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message = await new Message({
-        text: 'about to save with an array of attribute names',
-      }).save()
-      const props = { message }
-      const { clones, saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      clones.message.text = 'hi'
-      const { areEqual, wasDataSaved, item } = await save_message(['text'])
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('hi')
-    })
-
-    test('save_handler with object does not call patch when value is unchanged', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const text = 'about to save with an array of attribute names'
-      const message = await new Message({ text }).save()
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message({ text })
-
-      expect(hook).not.toHaveBeenCalled()
-      expect(areEqual).toBe(true)
-      expect(wasDataSaved).toBe(false)
-      expect(item.text).toBe(text)
-    })
-
-    test('save_handler with object calls patch after value change', async () => {
-      const hook = vi.fn()
-      api.service(servicePath).hooks({
-        before: {
-          patch: [hook],
-        },
-      })
-      const message: any = await new Message({
-        text: 'about to save with an array of attribute names',
-      }).save()
-      const props = { message }
-      const { saveHandlers } = useClones(props)
-      const { save_message } = saveHandlers
-      const { areEqual, wasDataSaved, item } = await save_message({
-        text: 'save this text',
-      })
-
-      expect(hook).toHaveBeenCalledTimes(1)
-      expect(areEqual).toBe(false)
-      expect(wasDataSaved).toBe(true)
-      expect(item.text).toBe('save this text')
-    })
+    expect(message2.value?.text).toBe('howdy-edited')
+    expect(message2.value?.other).toBe('edited')
   })
 })

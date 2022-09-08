@@ -1,4 +1,4 @@
-import type { Params, Paginated, QueryInfo } from './types'
+import type { Params, Paginated, QueryInfo, DiffDefinition } from './types'
 import type { MaybeRef } from './utility-types'
 import type { Id } from '@feathersjs/feathers'
 import type { AnyData, AnyDataOrArray, BaseModelAssociations } from './service-store/types'
@@ -185,8 +185,6 @@ export function copyAssociations<M>(src: M, dest: M, associations: BaseModelAsso
     Object.defineProperty(dest, key, desc as PropertyDescriptor)
   })
 }
-
-type DiffDefinition = undefined | string | string[] | Record<string, any>
 
 export function pickDiff(obj: any, diffDef: DiffDefinition) {
   // If no diff definition was given, return the entire object.
