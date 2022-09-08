@@ -23,7 +23,7 @@ export function useClone<M extends BaseModel>(
     const inStore = instance.Model.getFromStore(anyId)
     if (!inStore) instance.addToStore()
 
-    if (instance) return instance?.clone(undefined, { useExisting })
+    if (instance) return instance?.clone(undefined, { useExisting }) as M
     else return null
   }
 
