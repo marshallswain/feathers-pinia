@@ -1,8 +1,8 @@
 import feathers, { HookContext } from '@feathersjs/feathers'
 import rest from '@feathersjs/rest-client'
-import auth from '@feathersjs/authentication-client'
 import memory from 'feathers-memory'
 import axios from 'axios'
+import auth from '@feathersjs/authentication-client'
 import { timeout } from './test-utils'
 
 const restClient = rest()

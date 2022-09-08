@@ -30,7 +30,7 @@ export class Message extends BaseModel {
   user2?: Partial<User> = { name: 'Larry' }
 
   // The constructor takes the place of `setupInstance`.
-  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+  constructor(data: Partial<Message> = {}, options: Record<string, any> = {}) {
     super(data, options)
     this.init(data)
 
