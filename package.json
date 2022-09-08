@@ -13,6 +13,7 @@
       "require": "./dist/feathers-pinia.umd.js"
     }
   },
+  "types": "src/",
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs; npm run docs:copy-assets",
