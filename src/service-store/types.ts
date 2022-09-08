@@ -1,9 +1,9 @@
-import { ComputedRef } from 'vue-demi'
-import { Params, Paginated, QueryInfo, HandleEvents } from '../types'
-import { Id, Query, NullableId, Application as FeathersClient } from '@feathersjs/feathers'
-import { StateTree, Store as _Store, StoreDefinition, _GettersTree } from 'pinia'
+import type { Params, Paginated, QueryInfo, HandleEvents } from '../types'
+import type { Ref, ComputedRef } from 'vue-demi'
+import type { Id, Query, NullableId, Application as FeathersClient } from '@feathersjs/feathers'
+import type { StateTree, Store as _Store, StoreDefinition, _GettersTree } from 'pinia'
+import type { MaybeArray, MaybeRef } from '../utility-types'
 import { BaseModel } from './base-model'
-import { MaybeArray, MaybeRef } from '../utility-types'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
@@ -165,6 +165,8 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   hydrateAll: () => void
   toggleEventLock: (idOrIds: MaybeArray<Id>, event: string) => void
   unflagSsr: (params: Params) => void
+  useFind: (options: UseFindOptions<M>) => UseFindComputed<M>
+  useGet: (options: UseGetOptions<M>) => UseGetComputed<M>
 }
 
 export type ServiceOptions<
@@ -575,4 +577,57 @@ export type DefineFeathersStoreOptions<
   state?: () => S
   getters?: G
   actions?: A
+}
+
+export interface UseFindOptions<M extends BaseModel> {
+  params: Params | ComputedRef<Params | null>
+  fetchParams?: ComputedRef<Params | null | undefined>
+  queryWhen?: ComputedRef<boolean> | QueryWhenFunction
+  qid?: string
+  local?: boolean
+  immediate?: boolean
+}
+export interface UseFindOptionsStandalone<M extends BaseModel> extends UseFindOptions<M> {
+  model: ModelStatic<M>
+}
+export interface UseFindState {
+  debounceTime: null | number
+  qid: string
+  isPending: boolean
+  haveBeenRequested: boolean
+  haveLoaded: boolean
+  error: null | Error
+  latestQuery: null | object
+  isLocal: boolean
+  request: Promise<any> | null
+}
+export interface UseFindComputed<M> {
+  items: ComputedRef<M[]>
+  servicePath: ComputedRef<string>
+  paginationData: ComputedRef<AnyData>
+  isSsr: ComputedRef<boolean>
+}
+
+export interface UseGetOptions<M extends BaseModel> {
+  id: Ref<Id | null> | ComputedRef<Id | null> | null
+  params?: Ref<Params>
+  queryWhen?: Ref<boolean>
+  local?: boolean
+  immediate?: boolean
+}
+export interface UseGetOptionsStandalone<M extends BaseModel> extends UseGetOptions<M> {
+  model: ModelStatic<M>
+}
+export interface UseGetState {
+  isPending: boolean
+  hasBeenRequested: boolean
+  hasLoaded: boolean
+  error: null | Error
+  isLocal: boolean
+  request: Promise<any> | null
+}
+export interface UseGetComputed<M> {
+  item: ComputedRef<M | null>
+  servicePath: ComputedRef<string>
+  isSsr: ComputedRef<boolean>
 }

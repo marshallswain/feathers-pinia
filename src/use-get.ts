@@ -1,31 +1,8 @@
-import { reactive, computed, toRefs, unref, watch, Ref, ComputedRef } from 'vue-demi'
-import { Params } from './types'
-import { ModelStatic } from './service-store/types'
-import { Id } from '@feathersjs/feathers'
+import type { UseGetComputed, UseGetOptionsStandalone, UseGetState } from './service-store/types'
+import type { Id } from '@feathersjs/feathers'
+import type { Params } from './types'
+import { reactive, computed, toRefs, unref, watch } from 'vue-demi'
 import { BaseModel } from './service-store'
-
-interface UseGetOptions<M extends BaseModel> {
-  model: ModelStatic<M>
-  id: Ref<Id | null> | ComputedRef<Id | null> | null
-  params?: Ref<Params>
-  queryWhen?: Ref<boolean>
-  local?: boolean
-  immediate?: boolean
-}
-interface UseGetState {
-  isPending: boolean
-  hasBeenRequested: boolean
-  hasLoaded: boolean
-  error: null | Error
-  isLocal: boolean
-  request: Promise<any> | null
-}
-
-interface UseGetComputed {
-  item: ComputedRef<any>
-  servicePath: ComputedRef<string>
-  isSsr: ComputedRef<boolean>
-}
 
 export function useGet<M extends BaseModel = BaseModel>({
   model,
@@ -34,7 +11,7 @@ export function useGet<M extends BaseModel = BaseModel>({
   queryWhen = computed((): boolean => true),
   local = false,
   immediate = true,
-}: UseGetOptions<M>) {
+}: UseGetOptionsStandalone<M>) {
   if (!model) {
     throw new Error(`No model provided for useGet(). Did you define and register it with FeathersPinia?`)
   }
@@ -55,13 +32,13 @@ export function useGet<M extends BaseModel = BaseModel>({
     request: null,
   })
 
-  const computes: UseGetComputed = {
+  const computes: UseGetComputed<M> = {
     item: computed(() => {
       const unrefId = getId()
       if (unrefId === null) {
         return null
       }
-      return model.getFromStore(unrefId, getParams()) || null
+      return (model.getFromStore(unrefId, getParams()) as M) || null
     }),
     servicePath: computed(() => model.servicePath),
     isSsr: computed(() => model.store.isSsr),

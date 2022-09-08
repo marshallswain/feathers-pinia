@@ -1,36 +1,9 @@
-import { computed, reactive, Ref, ComputedRef, unref, toRefs, watch } from 'vue-demi'
+import type { UseFindComputed, UseFindOptionsStandalone, UseFindState } from './service-store/types'
+import type { Params, Paginated } from './types'
+import { computed, reactive, Ref, unref, toRefs, watch } from 'vue-demi'
 import debounce from 'just-debounce'
-import { Params, Paginated } from './types'
 import { getQueryInfo, getItemsFromQueryInfo } from './utils'
-import { AnyData, ModelStatic, QueryWhenFunction } from './service-store/types'
 import { BaseModel } from './service-store'
-
-interface UseFindOptions<M extends BaseModel> {
-  model: ModelStatic<M>
-  params: Params | ComputedRef<Params | null>
-  fetchParams?: ComputedRef<Params | null | undefined>
-  queryWhen?: ComputedRef<boolean> | QueryWhenFunction
-  qid?: string
-  local?: boolean
-  immediate?: boolean
-}
-interface UseFindState {
-  debounceTime: null | number
-  qid: string
-  isPending: boolean
-  haveBeenRequested: boolean
-  haveLoaded: boolean
-  error: null | Error
-  latestQuery: null | object
-  isLocal: boolean
-  request: Promise<any> | null
-}
-interface UseFindComputed<M> {
-  items: ComputedRef<M[]>
-  servicePath: ComputedRef<string>
-  paginationData: ComputedRef<AnyData>
-  isSsr: ComputedRef<boolean>
-}
 
 export function useFind<M extends BaseModel = BaseModel>({
   model,
@@ -40,11 +13,9 @@ export function useFind<M extends BaseModel = BaseModel>({
   queryWhen = computed(() => true),
   local = false,
   immediate = true,
-}: UseFindOptions<M>) {
+}: UseFindOptionsStandalone<M>) {
   if (!model) {
-    throw new Error(
-      `No model provided for useFind(). Did you define and register it with FeathersPinia?`,
-    )
+    throw new Error(`No model provided for useFind(). Did you define and register it with FeathersPinia?`)
   }
 
   const getParamsForFetch = (providedParams?: Params | Ref<Params>): Params | null => {
@@ -52,11 +23,7 @@ export function useFind<M extends BaseModel = BaseModel>({
     const forFetch = unref(fetchParams)
 
     const paramsToUse =
-      provided || provided === null
-        ? provided
-        : forFetch || forFetch === null
-        ? forFetch
-        : unref(params)
+      provided || provided === null ? provided : forFetch || forFetch === null ? forFetch : unref(params)
 
     return paramsToUse
   }

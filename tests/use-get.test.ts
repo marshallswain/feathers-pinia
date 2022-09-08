@@ -40,13 +40,22 @@ describe('useGet', () => {
     expect(data.request.value?.then)
   })
 
+  test('can be used directly from the store', async () => {
+    const id = computed(() => 0)
+    const data = messagesService.useGet({ id })
+
+    await messagesService.create({ id: 0, text: 'Test Message' })
+
+    expect(data.item.value?.id).toBe(0)
+  })
+
   test('item is returned', async () => {
     const id = computed(() => 0)
     const data = useGet({ id, model: Message })
 
     await messagesService.create({ id: 0, text: 'Test Message' })
 
-    expect(data.item.value.id).toBe(0)
+    expect(data.item.value?.id).toBe(0)
   })
 
   test('null id with params', async () => {

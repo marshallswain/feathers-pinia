@@ -13,6 +13,7 @@ function createTestContext() {
 
   class Message extends BaseModel {
     static modelName = 'Message'
+    messageTo: string
   }
 
   const servicePath = 'messages'
@@ -36,6 +37,11 @@ describe('useFind', () => {
       reset()
     })
 
+    test('useFind is available on the service store', async () => {
+      const { messagesService } = createTestContext()
+      expect(messagesService.useFind).toBeDefined()
+    })
+
     test('returns correct data', async () => {
       const { Message } = createTestContext()
 
@@ -55,7 +61,19 @@ describe('useFind', () => {
       expect(data.qid.value).toBe('default')
       expect(data.servicePath.value).toBe('messages')
       expect(data.isSsr.value).toBe(false)
-      expect(data.request.value.then)
+      expect(data.request.value?.then)
+    })
+
+    test('can be used directly from the service store', async () => {
+      const { messagesService } = createTestContext()
+      const params = computed(() => ({ query: {} }))
+      const data = messagesService.useFind({ params })
+
+      expect(data.items.value.length).toBe(0)
+
+      await messagesService.create({ text: 'yo!' })
+
+      expect(data.items.value.length).toBe(1)
     })
 
     test('reactive data works correctly', async () => {

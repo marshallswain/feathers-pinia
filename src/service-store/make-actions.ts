@@ -10,6 +10,8 @@ import {
   AnyData,
   MakeServiceActionsOptions,
   CloneOptions,
+  UseFindOptions,
+  UseGetOptions,
 } from './types'
 import { Params } from '../types'
 import { Id, NullableId } from '@feathersjs/feathers'
@@ -33,6 +35,8 @@ import { unref, set } from 'vue-demi'
 import { StateTree, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
 import { MaybeArray, MaybeRef, TypedActions } from '../utility-types'
+import { useFind } from '../use-find'
+import { useGet } from '../use-get'
 
 type ServiceStoreTypedActions<M extends BaseModel = BaseModel> = TypedActions<
   ServiceStoreDefaultState<M>,
@@ -457,6 +461,15 @@ export function makeActions<
       // @ts-expect-error todo
       const pageData = this.pagination[qid]?.[queryId]?.[pageId as string]
       pageData.ssr = false
+    },
+
+    // alias to useFind, doesn't require passing the model
+    useFind<M extends BaseModel>(options: UseFindOptions<M>) {
+      return useFind<M>({ model: this.Model as any, ...options })
+    },
+    // alias to useGet, doesn't require passing the model
+    useGet<M extends BaseModel>(options: UseGetOptions<M>) {
+      return useGet<M>({ model: this.Model as any, ...options })
     },
   }
 
