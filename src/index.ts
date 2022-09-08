@@ -13,10 +13,7 @@ export { useFind } from './use-find'
 export { useGet } from './use-get'
 export { usePagination } from './use-pagination'
 export { useClones } from './use-clones'
-/**
- * @deprecated `handleClones` has been renamed to `useClones`.
- */
-export { useClones as handleClones } from './use-clones'
+export { useClone } from './use-clone'
 
 export { syncWithStorage } from './storage-sync'
 export { clearStorage } from './clear-storage'
