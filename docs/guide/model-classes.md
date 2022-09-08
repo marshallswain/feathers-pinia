@@ -78,6 +78,7 @@ Notice in the above example how even though we've provided `text: 'hello there!'
 ```ts
 import { defineStore, BaseModel } from './store.pinia'
 import { models } from 'feathers-pinia'
+import type { ModelStatic } from 'feathers-pinia'
 
 class Message extends BaseModel {
   // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
@@ -87,11 +88,12 @@ class Message extends BaseModel {
     // You must call `super` very first to instantiate the BaseModel
     super(data, options)
 
-    const { store, instanceDefaults, setupInstance } = this.constructor as typeof BaseModel
+    const constructor = this.constructor as ModelStatic<BaseModel>
+    const { store, instanceDefaults, setupInstance } = constructor
 
     // Assign the default values again, because you can override this class's defaults inside this class's `constructor`.
-    Object.assign(this, instanceDefaults(data, { models, store })) // only needed when this class implements `instanceDefaults`
-    Object.assign(this, setupInstance(data, { models, store })) // only needed when this class implements `setupInstance`
+    Object.assign(this, instanceDefaults.call(constructor, data, { models, store })) // only needed when this class implements `instanceDefaults`
+    setupInstance.call(constructor, this, { models, store }) // only needed when this class implements `setupInstance`
     return this
   }
 

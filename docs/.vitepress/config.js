@@ -39,9 +39,17 @@ function getGuideSidebar() {
     {
       text: 'Guide',
       items: [
+        { text: "What's New", link: '/guide/whats-new' },
         { text: 'Introduction', link: '/guide/' },
         { text: 'Getting Started', link: '/guide/setup' },
         { text: 'Module Overview', link: '/guide/module-overview' },
+      ],
+    },
+    {
+      text: '🚧 Migration Guides 🚧',
+      items: [
+        { text: 'Migrate from Vuex', link: '/guide/from-feathers-vuex' },
+        { text: 'Migrate from 0.x', link: '/guide/from-feathers-vuex' },
       ],
     },
     {

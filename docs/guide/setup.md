@@ -8,9 +8,9 @@ outline: deep
 
 Pinia's well-designed architecture allows it to be modular while also functioning as a central store. This means that we don't have to register each service's store in a central location. Here's are the recommended steps for setting up Feathers-Pinia:
 
-## Install Pinia
+## Install Pinia and Feathers-Pinia
 
-Install these packages using your preferred package manager:
+Install these packages using your preferred package manager.  Until version 1.0.0, it's recommended that you add a `~` in front of the version number for Feathers-Pinia to only get patch releases.
 
 ```
 pinia feathers-pinia
