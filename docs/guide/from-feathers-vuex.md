@@ -158,7 +158,7 @@ This makes it easy to distinguish regular pinia stores from those created with f
 
 ## Steps
 
-**If you haven't completed the initial [setup](/guides/setup), please do so first.**
+**If you haven't completed the initial [setup](./setup), please do so first.**
 
 The following steps outline the specific migration steps to apply to your codebase. The list might not be exhaustive, be sure to apply these concepts to any custom implmentation or variation you might have.
 
@@ -169,8 +169,8 @@ The following steps outline the specific migration steps to apply to your codeba
 
 #### Breaking Changes
 
-- Add model instances to store after intantiation with `instance.addToStore()` (see [here](http://localhost:3000/guide/#new-model-instances-not-added-to-the-store))
-- **Find and replace state, getters and actions** according to [this](http://localhost:3000/guide/#store-structure-changes) list.
+- Add model instances to store after intantiation with `instance.addToStore()` (see [here](./index#new-model-instances-not-added-to-the-store))
+- **Find and replace state, getters and actions** according to [this](./index#store-structure-changes) list.
 
 #### Stores
 
