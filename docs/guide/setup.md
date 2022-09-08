@@ -45,13 +45,12 @@ class UserModel extends BaseModel {
 }
 ```
 
-You can optionally configure TypeScript to not require the `!` on every property in your `tsconfig.json`. The `strictPropertyInitialization` property goes at the top level of the config, and not in the `compilerOptions`:
+You can optionally configure `tsconfig.json` to not require the `!` on every property. Add the `strictPropertyInitialization` property to the `compilerOptions`:
 
 ```json
 {
-  "strictPropertyInitialization": false,
   "compilerOptions": {
-    // not in here
+    "strictPropertyInitialization": false,
   },
 }
 ```
