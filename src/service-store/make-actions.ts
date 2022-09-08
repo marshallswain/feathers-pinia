@@ -9,6 +9,7 @@ import {
   HandleFindErrorOptions,
   AnyData,
   MakeServiceActionsOptions,
+  CloneOptions,
 } from './types'
 import { Params } from '../types'
 import { Id, NullableId } from '@feathersjs/feathers'
@@ -317,7 +318,7 @@ export function makeActions<
       set(this, 'clonesById', {})
     },
 
-    clone(item: M, data = {}): M {
+    clone(item: M, data = {}, options: CloneOptions = {}): M {
       const tempId = getTempId(item, this.Model.tempIdField)
       const placeToStore = tempId != null ? 'tempsById' : 'itemsById'
       const id = getAnyId(item, this.Model.tempIdField, this.Model.idField)
@@ -325,7 +326,8 @@ export function makeActions<
       const existing = this.clonesById[id]
 
       // Maintain reactivity for existing clones
-      if (existing && existing.constructor.name === originalItem.constructor.name) {
+      if (existing) {
+        if (options.useExisting) return existing
         return this.reset(item, data) as M
       } else {
         // Create the clone with any applicable associations

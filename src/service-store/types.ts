@@ -156,7 +156,7 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   addOrUpdate(data: AnyData[]): M[]
   moveTempToItems(data: AnyData): M
   clearAll: () => void
-  clone: (item: M, data: AnyData) => M
+  clone: (item: M, data: AnyData, options?: CloneOptions) => M
   commit: (item: M) => M | undefined
   reset: (item: M, data: AnyData) => M | undefined
   updatePaginationForQuery: (options: UpdatePaginationForQueryOptions) => void
@@ -505,6 +505,10 @@ export interface ModelInstanceOptions {
 export interface BaseModelModifierOptions {
   models: Record<string, any>
   store: any
+}
+
+export interface CloneOptions {
+  useExisting?: boolean
 }
 
 export interface QueryWhenContext {

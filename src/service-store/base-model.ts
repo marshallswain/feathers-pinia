@@ -8,6 +8,7 @@ import {
   ServiceStoreDefault,
   BaseModelModifierOptions,
   BaseModelAssociations,
+  CloneOptions,
 } from './types'
 import { Id, NullableId, Params } from '@feathersjs/feathers'
 import { models } from '../models'
@@ -254,11 +255,11 @@ export class BaseModel implements AnyData {
   /**
    * clone the current record using the `clone` action
    */
-  public clone(data?: AnyData): this {
+  public clone(data?: AnyData, options: CloneOptions = {}): this {
     const { store } = this.Model
 
     // @ts-expect-error todo
-    return store.clone(this, data)
+    return store.clone(this, data, options)
   }
 
   /**
