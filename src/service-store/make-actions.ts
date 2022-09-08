@@ -464,11 +464,11 @@ export function makeActions<
     },
 
     // alias to useFind, doesn't require passing the model
-    useFind<M extends BaseModel>(options: UseFindOptions<M>) {
+    useFind<M extends BaseModel>(options: UseFindOptions) {
       return useFind<M>({ model: this.Model as any, ...options })
     },
     // alias to useGet, doesn't require passing the model
-    useGet<M extends BaseModel>(options: UseGetOptions<M>) {
+    useGet<M extends BaseModel>(options: UseGetOptions) {
       return useGet<M>({ model: this.Model as any, ...options })
     },
   }

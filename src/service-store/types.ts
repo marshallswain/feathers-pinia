@@ -165,8 +165,8 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   hydrateAll: () => void
   toggleEventLock: (idOrIds: MaybeArray<Id>, event: string) => void
   unflagSsr: (params: Params) => void
-  useFind: (options: UseFindOptions<M>) => UseFindComputed<M>
-  useGet: (options: UseGetOptions<M>) => UseGetComputed<M>
+  useFind: (options: UseFindOptions) => UseFindComputed<M>
+  useGet: (options: UseGetOptions) => UseGetComputed<M>
 }
 
 export type ServiceOptions<
@@ -579,7 +579,7 @@ export type DefineFeathersStoreOptions<
   actions?: A
 }
 
-export interface UseFindOptions<M extends BaseModel> {
+export interface UseFindOptions {
   params: Params | ComputedRef<Params | null>
   fetchParams?: ComputedRef<Params | null | undefined>
   queryWhen?: ComputedRef<boolean> | QueryWhenFunction
@@ -587,7 +587,7 @@ export interface UseFindOptions<M extends BaseModel> {
   local?: boolean
   immediate?: boolean
 }
-export interface UseFindOptionsStandalone<M extends BaseModel> extends UseFindOptions<M> {
+export interface UseFindOptionsStandalone<M extends BaseModel> extends UseFindOptions {
   model: ModelStatic<M>
 }
 export interface UseFindState {
@@ -608,14 +608,14 @@ export interface UseFindComputed<M> {
   isSsr: ComputedRef<boolean>
 }
 
-export interface UseGetOptions<M extends BaseModel> {
+export interface UseGetOptions {
   id: Ref<Id | null> | ComputedRef<Id | null> | null
   params?: Ref<Params>
   queryWhen?: Ref<boolean>
   local?: boolean
   immediate?: boolean
 }
-export interface UseGetOptionsStandalone<M extends BaseModel> extends UseGetOptions<M> {
+export interface UseGetOptionsStandalone<M extends BaseModel> extends UseGetOptions {
   model: ModelStatic<M>
 }
 export interface UseGetState {
