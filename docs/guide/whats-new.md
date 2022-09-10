@@ -216,7 +216,7 @@ The overall bundle size has been reduced from around 20kb to 12kb, gzipped.  Thi
 - Replacing hefty dependencies, like lodash's debounce, with smaller equivalents, like [just-debounce](https://npmjs.com/package/just-debounce).
 - Optimizing the Vite build to externalize modules.
 
-All of the modules highlighted, below, were able to be removed from the package, resulting in a much leaner build.  Here is the previous output from `npx vite-bundle-visualizer` to compare:
+Here is the previous output from `npx vite-bundle-visualizer` to compare.  All of the modules highlighted, below, were able to be removed from the package, resulting in a much leaner build:
 
 ![Optimized Vite Build](https://user-images.githubusercontent.com/128857/189497860-ea0b5b39-7484-416b-b411-748994e2fc33.png)
 
