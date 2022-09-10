@@ -9,11 +9,11 @@ hero:
     alt: Feathers-Pinia Logo
   actions:
     - theme: brand
-      text: Get Started
-      link: /guide/setup
-    - theme: alt
       text: What's New
       link: /guide/whats-new
+    - theme: alt
+      text: Get Started
+      link: /guide/setup
 
 features:
   - icon: 🍍
