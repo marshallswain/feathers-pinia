@@ -40,7 +40,7 @@ Here are the technical details of how the new Model behavior works.  For the TLD
 - BaseModel still calls `instanceDefaults` internally, which means it runs twice.  If you are using `instanceDefaults` only for default values, as documented, then the performance impact will be negligible, even when ingesting large amounts of data from the API server.  No complex logic should run in `instanceDefaults`.  It has two purposes. Any use outside of these two purposes should be refactored into `setupInstance`:
    - Allow specifying default values with low boilerplate.
    - Allow conditional defaults values to be assigned based on incoming data.
-- Calling `new User(data)` without a custom BaseModel results in Model interface defaults always overwriting `data`.
+- Calling `new User(data)` without a custom constructor results in Model interface defaults always overwriting `data`.
 - Having a custom constructor allows Model instance default values to initialize as one would expect: not overwriting any other values.
 - Calling `this.init(data)` runs the `instanceDefaults` again and also runs `setupInstance`.
 
