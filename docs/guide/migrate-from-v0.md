@@ -163,9 +163,9 @@ Previously, `useClones` would deep-watch the cloned props, by default. This was 
 
 ## `useClones` `saveWith` Removed
 
-If you were using the `saveWith` option of the `saveHandlers`, they will need to be replaced by the [`with` option](/whats-new#always-save-certain-props) when calling `instance.save()` or `instance.patch()`.
+If you were using the `saveWith` option of the `saveHandlers`, they will need to be replaced by the [`with` option](./whats-new#always-save-certain-props) when calling `instance.save()` or `instance.patch()`.
 
-Read more about the `with` option, [here](/whats-new#always-save-certain-props).
+Read more about the `with` option, [here](./whats-new#always-save-certain-props).
 
 ## `setupInstance` Changes
 
