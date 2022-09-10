@@ -20,7 +20,7 @@ Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benef
 - As from the beginning, you still have full control over adding instances to the store with `new User().addToStore()`.
 - For the features that require objects to be in the store (for example, `handleClones`) feathers-pinia will implicitly add items to the store when needed.
 
-## 🎁 Define Default Values on the Class Definition
+## Define Default Values on the Class Definition 🎁
 
 [Small breaking change] Defaults values can now be specified directly on the Model interface. Custom constructors have been made much cleaner due to the new `instance.init()` BaseModel method.  After calling `super(data, options)` to initialize the BaseModel, the `init` method can be called from `this`:
 
@@ -63,7 +63,7 @@ export class Message extends BaseModel {
 }
 ```
 
-## Built-in Patch Diffing 🎉
+## Built-in Patch Diffing 🎁
 
 <BlockQuote label="PRODUCTIVITY TIP">
 
@@ -126,46 +126,11 @@ await clone.save({ with: ['teamId', 'username'] )
 await clone.save({ with: {teamId: 1, username: 'foo' } )
 ```
 
-## Cleaner TypeScript Models 🎉
-
-With TypeScript-based Models, the `intanceDefaults` static Model property can move into the class's TypeScript interface.
-
-<BlockQuote label="IMPORTANT" type="warning">
-
-For values to initialize correctly, you MUST use a custom constructor, as shown below.
-
-</BlockQuote>
-
-Notice that you can access `models` and `store` directly on `this` in `setupInstance`.
-
-```ts
-export class Message extends BaseModel {
-  _id: number
-  text = 'foo'
-  userId: null | number
-  createdAt: Date | null
-
-  // Values added in `setupInstance` can be added to the interface for type friendliness.
-  user?: Partial<User>
-  user2?: Partial<User> = { name: 'Larry' }
-
-  constructor(data?: Partial<Message>, options: Record<string, any> = {}) {
-    super(data, options)
-    this.init(data)
-  }
-
-  static setupInstance(message: Partial<Message>) {
-    // access to `store` and `models` is from `this`.
-    const { store, models } = this
-  }
-}
-```
-
-## Handle Associations 🎉
+## Handle Associations
 
 Two new utilities make it easier to add relationships between records without depending on associations in-memory.  You can setup associations in both directions between models.
 
-### `associateFind`
+### `associateFind` 🎁
 
 The `associateFind` utility allows you to define one-to-many relationships on your Model classes.
 
@@ -199,7 +164,7 @@ export class User extends BaseModel {
 }
 ```
 
-### `associateGet`
+### `associateGet` 🎁
 
 ## Store API Improvements
 
