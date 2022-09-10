@@ -22,7 +22,16 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['vue-demi', 'vue', 'pinia', 'lodash', 'sift'],
+      external: [
+        'vue-demi',
+        'vue',
+        'pinia',
+        'lodash',
+        'sift',
+        '@feathersjs/commons',
+        '@feathersjs/errors',
+        '@feathersjs/adapter-commons',
+      ],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps

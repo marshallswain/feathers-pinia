@@ -172,7 +172,7 @@ export class User extends BaseModel {
 
 The `useFind` utility -- for implementing fall-through-cached `find` requests -- is now available directly on the store, further reducing boilerplate.
 
-### `store.useFind`
+### `store.useFind` ➕
 
 With the old way, you have to import `useFind` and provide the model to it from the instantiated store. 
 
@@ -201,16 +201,16 @@ const { items: tutorials } = tutorialStore.useFind({ params: tutorialsParams })
 
 Just think of all of the extra time you'll have instead of having to write those 1.5 lines of code over and over again! 😁
 
-### `store.useGet`
+### `store.useGet` ➕
 
 The `useGet` utility -- for implementing fall-through-cached `get` requests -- is now available directly on the store, further reducing boilerplate.
 
-## LocalStorage Plugins 🎉
+## Smaller Package Size 🎉
 
-The new LocalStorage adapter is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering.
+When it comes to npm bundles, smaller package size is a good thing.
 
-### Opt in to Compressed Storage
+### LZW Storage is Out
 
-We've made a separate, localStorage plugin that uses LZW compression. Compressed storage allows you to save twice as much information in the same amount of space.
+Our LocalStorage adapter is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering. Prior to this version, Feathers-Pinia included a localStorage plugin that used LZW compression. It came with the benefit of doubling the amount of data you could put in storage. The downside was that it made the bundle size big, so we removed it.  It will be published as an independent package at a later date.
 
 ## Lots of Little Improvments
