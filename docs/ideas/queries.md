@@ -81,7 +81,26 @@ const messages = [
 
 ```vue
 <script setup lang="ts">
-const user1 = 
+const user1 = { 
+  id: 1, 
+  name: 'Myriah',
+  messages: [
+    { id: 1, text: '🙂', userId: 1 },
+    { id: 3, text: 'Hey', userId: 1 },
+    { id: 5, text: 'Hey what?', userId: 1 },
+    { id: 7, text: '🥐', userId: 1 },
+  ]
+}
+const user1 = { 
+  id: 1, 
+  name: 'Myriah',
+  messages: [
+    { id: 1, text: '🙂', userId: 1 },
+    { id: 3, text: 'Hey', userId: 1 },
+    { id: 5, text: 'Hey what?', userId: 1 },
+    { id: 7, text: '🥐', userId: 1 },
+  ]
+}
 </script>
 
 <template>
