@@ -22,7 +22,9 @@ Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benef
 
 ## Define Default Values on the Class Definition 🎁
 
-[Small breaking change] Defaults values can now be specified directly on the Model interface. Custom constructors have been made much cleaner due to the new `instance.init()` BaseModel method.  After calling `super(data, options)` to initialize the BaseModel, the `init` method can be called from `this`:
+**[Small breaking change]**
+
+Defaults values can now be specified directly on the Model interface. Custom constructors have been made much cleaner due to the new `instance.init()` BaseModel method.  After calling `super(data, options)` to initialize the BaseModel, the `init` method can be called from `this`:
 
 ```ts
 // Minimum required constructor
