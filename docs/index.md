@@ -12,8 +12,8 @@ hero:
       text: Get Started
       link: /guide/setup
     - theme: alt
-      text: Compare
-      link: /guide/
+      text: What's New
+      link: /guide/whats-new
 
 features:
   - icon: 🍍
