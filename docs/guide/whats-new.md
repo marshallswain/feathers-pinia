@@ -172,39 +172,32 @@ The `useFind` utility -- for implementing fall-through-cached `find` requests --
 
 ### `store.useFind`
 
-The Old Way:
+With the old way, you have to import `useFind` and provide the model to it from the instantiated store. 
 
 ```ts
-// 0. Import `useFind`
 import { useFind } from 'feathers-pinia'
 import { useTutorials } from '../store/tutorials'
 
-// 1. Register and use the store
 const tutorialStore = useTutorials()
-
-// 2. Create a computed property for the params
 const tutorialsParams = computed(() => {
   return { query: {}, }
 })
-// 3. Provide the Model class and params in the options
 const { items: tutorials } = useFind({ model: tutorialStore.Model, params: tutorialsParams })
 ```
 
-The new way:
+In the new way, there's no need to import useFind. Call it as a method on the store and don't pass `model`
 
 ```ts
 import { useTutorials } from '../store/tutorials'
 
-// 1. Register and use the store
 const tutorialStore = useTutorials()
-
-// 2. Create a computed property for the params
 const tutorialsParams = computed(() => {
   return { query: {}, }
 })
-// 3. Provide only the params in the options
 const { items: tutorials } = tutorialStore.useFind({ params: tutorialsParams })
 ```
+
+Just think of all of the extra time you'll have instead of having to write those 1.5 lines of code over and over again! 😁
 
 ### `store.useGet`
 
