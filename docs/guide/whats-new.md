@@ -20,6 +20,49 @@ Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benef
 - As from the beginning, you still have full control over adding instances to the store with `new User().addToStore()`.
 - For the features that require objects to be in the store (for example, `handleClones`) feathers-pinia will implicitly add items to the store when needed.
 
+## 🎁 Define Default Values on the Class Definition
+
+[Small breaking change] Defaults values can now be specified directly on the Model interface. Custom constructors have been made much cleaner due to the new `instance.init()` BaseModel method.  After calling `super(data, options)` to initialize the BaseModel, the `init` method can be called from `this`:
+
+```ts
+// Minimum required constructor
+constructor(data: Partial<Message> = {}, options: Record<string, any> = {}) {
+  super(data, options)
+  this.init(data)
+}
+```
+
+Here are the technical details of how the new Model behavior works.  For the TLDR version, just make your Model classes look like next example.
+
+- BaseModel no longer calls `setupInstance`, internally.  If you use a custom constructor together with `instanceDefaults` and `setupInstance`, the two methods are run twice, wasting cycles.
+- BaseModel still calls `instanceDefaults` internally, which means it runs twice.  If you are using `instanceDefaults` only for default values, as documented, then the performance impact will be negligible, even when ingesting large amounts of data from the API server.  No complex logic should run in `instanceDefaults`.  It has two purposes. Any use outside of these two purposes should be refactored into `setupInstance`:
+   - Allow specifying default values with low boilerplate.
+   - Allow conditional defaults values to be assigned based on incoming data.
+- Calling `new User(data)` without a custom BaseModel results in Model interface defaults always overwriting `data`.
+- Having a custom constructor allows Model instance default values to initialize as one would expect: not overwriting any other values.
+- Calling `this.init(data)` runs the `instanceDefaults` again and also runs `setupInstance`.
+
+```ts
+// Define the interface and defaults directly on the Model instead of `instanceDefaults`.
+export class Message extends BaseModel {
+  _id: number
+  text = ''
+  userId: null | number = null
+  createdAt: Date | null = null
+
+  // This is the minimum required constructor
+  constructor(data: Partial<Message> = {}, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
+
+  static setupInstance(message: Partial<Message>) {
+    // access `store` and `models` from this
+    const { store, models } = this
+  }
+}
+```
+
 ## Built-in Patch Diffing 🎉
 
 <BlockQuote label="PRODUCTIVITY TIP">
