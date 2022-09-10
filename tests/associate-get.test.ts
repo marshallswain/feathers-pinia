@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { Ref } from 'vue'
+import type { Ref } from 'vue-demi'
 import type { Id } from '@feathersjs/feathers/lib'
 import { setupFeathersPinia, BaseModel, associateGet, type Params } from '../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'

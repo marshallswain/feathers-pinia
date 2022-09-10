@@ -1,4 +1,4 @@
-import { computed, reactive, ref, toRefs, watchEffect } from 'vue'
+import { computed, reactive, ref, toRefs, watchEffect } from 'vue-demi'
 import { BaseModel } from './service-store'
 import { UseCloneOptions } from './service-store/types'
 import { AnyRef } from './types'

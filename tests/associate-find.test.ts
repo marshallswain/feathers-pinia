@@ -4,7 +4,7 @@ import { setupFeathersPinia, BaseModel, associateFind } from '../src/index' // f
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
-import { ComputedRef, Ref } from 'vue'
+import { ComputedRef, Ref } from 'vue-demi'
 
 interface AssociateFindUtils<M extends BaseModel> {
   params?: Ref<Params> // imperatively modify params?

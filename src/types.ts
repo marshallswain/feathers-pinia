@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref, UnwrapRef } from 'vue'
+import type { ComputedRef, Ref, UnwrapRef } from 'vue-demi'
 import { DefineStoreOptionsBase, StateTree, Store } from 'pinia'
 import { AnyData, ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model'

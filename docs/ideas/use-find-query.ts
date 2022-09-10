@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive } from 'vue-demi'
 import { Params } from './types'
 
 export function useFindQuery(params: Params) {}

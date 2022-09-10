@@ -2,7 +2,7 @@ import { createPinia } from 'pinia'
 import { setupFeathersPinia, useClones } from '../src/index'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
-import { reactive } from 'vue'
+import { reactive } from 'vue-demi'
 
 const pinia = createPinia()
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })

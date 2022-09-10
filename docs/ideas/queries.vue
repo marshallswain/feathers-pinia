@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, computed } from 'vue'
+import { reactive, computed } from 'vue-demi'
 
 const user = {
   id: 1,

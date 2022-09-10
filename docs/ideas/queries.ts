@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { reactive, computed } from 'vue'
+import { reactive, computed } from 'vue-demi'
 
 class Message {
   constructor(data: any = {}) {
