@@ -129,13 +129,13 @@ export function makeGetters<
       }
     },
     getFromStore() {
-      return (id: Id, params: Params = {}) => {
+      return (id: Id | null, params: Params = {}) => {
         id = unref(id)
         params = fastCopy(unref(params) || {})
 
         let item = null
-        const existingItem = this.itemsById[id] && select(params, this.idField)(this.itemsById[id])
-        const tempItem = this.tempsById[id] && select(params, this.tempIdField)(this.tempsById[id])
+        const existingItem = this.itemsById[id as Id] && select(params, this.idField)(this.itemsById[id as Id])
+        const tempItem = this.tempsById[id as Id] && select(params, this.tempIdField)(this.tempsById[id as Id])
 
         if (existingItem) item = existingItem
         else if (tempItem) item = tempItem

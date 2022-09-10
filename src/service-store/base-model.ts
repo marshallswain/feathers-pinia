@@ -157,7 +157,7 @@ export class BaseModel implements AnyData {
   public static get<M extends BaseModel>(this: ModelStatic<M>, id: Id, params?: Params) {
     return this.store.get(id, params)
   }
-  public static getFromStore<M extends BaseModel>(this: ModelStatic<M>, id: Id, params?: Params) {
+  public static getFromStore<M extends BaseModel>(this: ModelStatic<M>, id: Id | null, params?: Params) {
     return this.store.getFromStore(id, params)
   }
   public static count<M extends BaseModel>(this: ModelStatic<M>, params?: Params) {

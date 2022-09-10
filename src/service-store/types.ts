@@ -126,7 +126,7 @@ export interface ServiceStoreDefaultGetters<M extends BaseModel = BaseModel> {
   clones: () => M[]
   findInStore: () => (params: Params) => Paginated<M>
   countInStore: () => (params: Params) => number
-  getFromStore: () => (id: Id, params?: Params) => M | undefined
+  getFromStore: () => (id: Id | null, params?: Params) => M | undefined
   isCreatePending: () => boolean
   isPatchPending: () => boolean
   isUpdatePending: () => boolean
