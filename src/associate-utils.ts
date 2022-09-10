@@ -4,9 +4,6 @@ import { getAnyId } from './utils'
 
 export type HandleSetInstance<M> = (this: M, associatedRecord: M) => void
 
-export const makePropUtilName = (type: 'get' | 'find', prop: string) =>
-  `${type}${prop.slice(0, 1).toUpperCase()}${prop.slice(1)}`
-
 export function getParams(instance: any, makeParams: any) {
   if (!makeParams) return {}
   const { tempIdField, idField } = instance.Model
@@ -27,7 +24,7 @@ export function setupAssociation<M extends BaseModel>(
   handleSetInstance: any,
   prop: string,
   Model: ModelStatic<BaseModel>,
-  type: 'get' | 'find',
+  propUtilsPrefix: string,
 ) {
   // Define the association
   const def: Association = { name: prop, Model, type: 'get' }
@@ -39,8 +36,8 @@ export function setupAssociation<M extends BaseModel>(
     (instance.Model.associations as BaseModelAssociations)[prop] = def
   }
 
-  // name the utility to get the matching record. eg. message.getUser
-  const propUtilName = makePropUtilName(type, prop)
+  // prefix the prop name with the `propUtilsPrefix`, which is `_`, by default.
+  const propUtilName = `${propUtilsPrefix}${prop}`
 
   return { _handleSetInstance, propUtilName }
 }

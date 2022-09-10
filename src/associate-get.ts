@@ -7,19 +7,39 @@ import { getParams, setupAssociation } from './associate-utils'
 
 interface AssociateGetOptions<M extends BaseModel> {
   Model: ModelStatic<BaseModel>
-  getId: (instance: M) => Id
+  getId: (instance: M) => Id | null
   makeParams?: (instance: M) => Params
   handleSetInstance?: HandleSetInstance<M>
+  propUtilsPrefix?: string
 }
 export function associateGet<M extends BaseModel>(
   instance: M,
   prop: string,
-  { Model, getId, makeParams, handleSetInstance }: AssociateGetOptions<M>,
+  { Model, getId, makeParams, handleSetInstance, propUtilsPrefix = '_' }: AssociateGetOptions<M>,
 ) {
   // Cache the initial data in a variable
   const initialData = (instance as any)[prop]
 
-  const { _handleSetInstance, propUtilName } = setupAssociation(instance, handleSetInstance, prop, Model, 'get')
+  const { _handleSetInstance, propUtilName } = setupAssociation(
+    instance,
+    handleSetInstance,
+    prop,
+    Model,
+    propUtilsPrefix,
+  )
+
+  const utils = {
+    get(id?: Id | null, params?: Params) {
+      const _id = getId(instance) || id
+      const _params = getParams(instance, makeParams) || params
+      return Model.get(_id as Id, _params)
+    },
+    getFromStore(id?: Id | null, params?: Params) {
+      const _id = instance.getId() || id
+      const _params = getParams(instance, makeParams) || params
+      return Model.getFromStore(_id, _params)
+    },
+  }
 
   Object.defineProperty(instance, prop, {
     // Define the key as non-enumerable so it won't get cloned
@@ -40,13 +60,11 @@ export function associateGet<M extends BaseModel>(
     },
   })
 
-  // Create the `getProp` utility on instance.Model
-  Object.defineProperty(instance, propUtilName, {
-    value: () => {
-      const id = getId(instance)
-      const params = getParams(instance, makeParams)
-      return Model.get(id, params)
-    },
+  // Create the `_propName` utility object
+  Object.defineProperty(instance.Model.prototype, propUtilName, {
+    configurable: true,
+    enumerable: false,
+    value: utils,
   })
 
   // Write the initial data to the new setter

@@ -1,8 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import type { Params } from '@feathersjs/feathers/lib'
 import { setupFeathersPinia, BaseModel, associateFind } from '../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
+import { ComputedRef, Ref } from 'vue'
+
+interface AssociateFindUtils<M extends BaseModel> {
+  params?: Ref<Params> // imperatively modify params?
+  findInStore: (params?: Params) => any // access other values that don't match the above params.
+  find: (params?: Params) => any // manually re-find with the current params (not watched, by default)
+  lastFindAt: number // timestamp
+
+  // Pagination Utils
+  paginateOn?: Ref<'server' | 'client'>
+  next?: () => void
+  prev?: () => void
+  toPage?: () => void
+  canNext?: ComputedRef<boolean>
+  canPrev?: ComputedRef<boolean>
+  currentPage?: ComputedRef<number>
+  itemsCount?: ComputedRef<number>
+  pageCount?: ComputedRef<number>
+  toStart?: () => void
+  toEnd?: () => void
+}
 
 export class User extends BaseModel {
   id: number
@@ -20,8 +42,10 @@ export class Message extends BaseModel {
   handleSetInstanceRan: boolean
 
   // Properties added by associateFind
-  stargazers?: Partial<User>[]
-  findStargazers: any
+  stargazers: Partial<User>[]
+  _stargazers: AssociateFindUtils<User>
+
+  // findStargazers: any
 
   constructor(data: Partial<Message>, options: Record<string, any> = {}) {
     super(data, options)
@@ -86,6 +110,11 @@ afterAll(() => reset())
 
 describe('Populated Data', () => {
   //
+  test('data is found at [prop].data', async () => {
+    const message = new Message({}).addToStore() as Message
+    expect(message.stargazers).toEqual([])
+  })
+
   test('values added by associatedFind default to an empty array when no related data is present', async () => {
     const message = new Message({}).addToStore() as Message
     expect(message.stargazers).toEqual([])
@@ -108,23 +137,41 @@ describe('Populated Data', () => {
   })
 })
 
+describe('AssociateFind Utils', () => {
+  //
+  test('utils are added at underscored prop, like `_stargazers`', async () => {
+    const message = new Message({}).addToStore() as Message
+    expect(message._stargazers).toBeDefined()
+  })
+
+  test('utils include a `find` method', () => {
+    const message = new Message({}).addToStore() as Message
+    expect(typeof message._stargazers.find).toBe('function')
+  })
+
+  test('utils include a `findInStore` method', () => {
+    const message = new Message({}).addToStore() as Message
+    expect(typeof message._stargazers.findInStore).toBe('function')
+  })
+})
+
 describe('Fetching Associated Data', () => {
   //
   test('instances have a "findItems" method based on the prop name', async () => {
     const message = new Message({}).addToStore() as Message
-    expect(message.findStargazers).toBeDefined()
+    expect(message._stargazers).toBeDefined()
   })
 
   test('can find associated data directly from the instance', async () => {
     const message = new Message({ stargazerIds: [4, 5, 6] }).addToStore() as Message
-    const result = await message.findStargazers()
+    const result = await message._stargazers.find()
     expect(result.data.length).toBe(3)
     expect(result.data.map((i) => i.id)).toEqual([4, 5, 6])
   })
 
   test('returns empty results if there is no data matching the params given to `associateFind`', async () => {
     const message = new Message({}).addToStore() as Message
-    const result = await message.findStargazers()
+    const result = await message._stargazers.find()
     expect(result.data.length).toEqual(0)
     expect(result.data.map((i) => i.id)).toEqual([])
   })
@@ -169,8 +216,8 @@ describe('Saving Instance', () => {
     const message = new Message({ stargazerIds: [4, 5, 6] }).addToStore() as Message
 
     // Populate the stargazers and make sure they show up through the getter.
-    await message.findStargazers()
-    expect(message.stargazers?.length).toBe(3)
+    await message._stargazers.find()
+    expect(message.stargazers.length).toBe(3)
 
     // Use a hook to make sure `stargazers` isn't sent to the API server.
     const hook = (context) => {
@@ -186,8 +233,8 @@ describe('Saving Instance', () => {
 
   test('assocated data must be manually saved', async () => {
     const message = new Message({ stargazerIds: [4, 5, 6] }).addToStore() as Message
-    await message.findStargazers()
-    const results = await message.stargazers?.map((g) => (g as User).save())
+    await message._stargazers.find()
+    const results = await message.stargazers.map((g) => (g as User).save())
     expect(results?.length).toBe(3)
   })
 })
@@ -195,14 +242,14 @@ describe('Saving Instance', () => {
 describe('Cloning Associations', () => {
   test('associated data is still present after clone', async () => {
     const message = new Message({ stargazerIds: [4, 5, 6] }).addToStore() as Message
-    await message.findStargazers()
+    await message._stargazers.find()
     const clone = message.clone()
     expect(message.stargazers?.length).toEqual(clone.stargazers?.length)
   })
 
   test('associated data is still present after clone/commit', async () => {
     const message = new Message({ stargazerIds: [4, 5, 6] }).addToStore() as Message
-    await message.findStargazers()
+    await message._stargazers.find()
     const clone = message.clone()
     const original = clone.commit()
     expect(original.stargazers?.length).toEqual(clone.stargazers?.length)
@@ -210,7 +257,7 @@ describe('Cloning Associations', () => {
 
   test('associated data is still present after clone/re-clone/reset', async () => {
     const message = new Message({ stargazerIds: [4, 5, 6] }).addToStore() as Message
-    await message.findStargazers()
+    await message._stargazers.find()
     const clone = message.clone()
 
     const clone2 = clone.clone()

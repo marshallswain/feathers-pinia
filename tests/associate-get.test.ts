@@ -1,8 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { setupFeathersPinia, BaseModel, associateGet } from '../src/index' // from 'feathers-pinia'
+import type { Ref } from 'vue'
+import type { Id } from '@feathersjs/feathers/lib'
+import { setupFeathersPinia, BaseModel, associateGet, type Params } from '../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
+
+interface AssociateGetUtils<M extends BaseModel> {
+  params?: Ref<Params> // imperatively modify params?
+  getFromStore: (id?: Id, params?: Params) => M | null // access a different record, when needed.
+  get: (id?: Id, params?: Params) => M // manually re-get with the provided id. (not watch, by default)
+  lastGetAt: number // timestamp
+}
 
 export class User extends BaseModel {
   id: number
@@ -16,8 +25,8 @@ export class Message extends BaseModel {
   handleSetInstanceRan = false
 
   // Properties added by associateGet
-  user?: Partial<User>
-  getUser?: any
+  user: Partial<User>
+  _user: AssociateGetUtils<User>
 
   constructor(data: Partial<Message>, options: Record<string, any> = {}) {
     super(data, options)
@@ -94,22 +103,40 @@ describe('Populated Data', () => {
   })
 })
 
+describe('AssociateGet Utils', () => {
+  //
+  test('utils are added at underscored prop, like `_user`', async () => {
+    const message = new Message({}).addToStore() as Message
+    expect(message._user).toBeDefined()
+  })
+
+  test('utils include a `get` method', () => {
+    const message = new Message({}).addToStore() as Message
+    expect(typeof message._user.get).toBe('function')
+  })
+
+  test('utils include a `findInStore` method', () => {
+    const message = new Message({}).addToStore() as Message
+    expect(typeof message._user.getFromStore).toBe('function')
+  })
+})
+
 describe('Fetching Associated Data', () => {
   test('instances have a "getItem" method based on the prop name', async () => {
     const message = new Message({}).addToStore() as Message
-    expect(message.getUser).toBeDefined()
+    expect(typeof message._user.get).toBe('function')
   })
 
   test('can get associated data directly from the instance', async () => {
     const message = new Message({ userId: 4 }).addToStore() as Message
-    const result = await message.getUser()
+    const result = await message._user.get()
     expect(result.id).toBe(4)
   })
 
   test('throws 404 if not found', async () => {
     const message = new Message({}).addToStore() as Message
     try {
-      await message.getUser()
+      await message._user.get()
     } catch (error: any) {
       expect(error.code).toBe(404)
     }
@@ -148,8 +175,8 @@ describe('Saving Instance', () => {
     let hadAssociatedData = false
     const message = new Message({ userId: 4 }).addToStore() as Message
     // Populate the user and make sure it shows up through the getter.
-    await message.getUser()
-    expect(message.user?.id).toBe(4)
+    await message._user.get()
+    expect(message.user.id).toBe(4)
     // Use a hook to make sure `user` isn't sent to the API server.
     const hook = (context) => {
       if (context.data.user) {
@@ -163,7 +190,7 @@ describe('Saving Instance', () => {
 
   test('assocated data must be manually saved', async () => {
     const message = new Message({ userId: 5 }).addToStore() as Message
-    await message.getUser()
+    await message._user.get()
     const result = await (message.user as User)?.save()
     expect(result.id).toBe(5)
   })
@@ -172,14 +199,14 @@ describe('Saving Instance', () => {
 describe('Cloning Associations', () => {
   test('associated data is still present after clone', async () => {
     const message = new Message({ userId: 6 }).addToStore() as Message
-    await message.getUser()
+    await message._user.get()
     const clone = message.clone()
     expect(message.user).toEqual(clone.user)
   })
 
   test('associated data is still present after clone/commit', async () => {
     const message = new Message({ userId: 4 }).addToStore() as Message
-    await message.getUser()
+    await message._user.get()
     const clone = message.clone()
     const original = clone.commit()
     expect(original.user).toEqual(clone.user)
@@ -187,7 +214,7 @@ describe('Cloning Associations', () => {
 
   test('associated data is still present after clone/re-clone/reset', async () => {
     const message = new Message({ userId: 4 }).addToStore() as Message
-    await message.getUser()
+    await message._user.get()
 
     const clone = message.clone()
 
