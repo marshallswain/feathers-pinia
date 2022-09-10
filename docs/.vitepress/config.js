@@ -48,8 +48,8 @@ function getGuideSidebar() {
     {
       text: '🚧 Migration Guides 🚧',
       items: [
-        { text: 'Migrate from Vuex', link: '/guide/from-feathers-vuex' },
-        { text: 'Migrate from 0.x', link: '/guide/from-v0' },
+        { text: 'Migrate from Vuex', link: '/guide/migrate-from-feathers-vuex' },
+        { text: 'Migrate from 0.x', link: '/guide/migrate-from-v0' },
       ],
     },
     {
