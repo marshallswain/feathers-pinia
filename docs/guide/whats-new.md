@@ -16,16 +16,9 @@ Feathers-Pinia 1.0 is a huge update with some great new features.  This page wil
 
 Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benefits from the faster reactive types under the hood of Pinia and Vue 3. But we've gone a step further and fine-tuned and tested Feathers-Pinia to never perform extra work.  Some of the biggest improvements are:
 
-- Full control over adding instances to the store with `new User().addToStore().
-- No extra cycles involving `addOrUpdate` happen under the hood.
-
-## Built-In LocalStorage 🎉
-
-The new LocalStorage adapter is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering.
-
-### Compress LocalStorage
-
-We've made a separate, localStorage plugin that uses LZW compression. Compressed storage allows you to save twice as much information in the same amount of space.
+- No unnecessary stack frames happen under the hood. We've even written tests to assure that Model constructors only run a single time. We stand firmly against wasted CPU cycles!
+- As from the beginning, you still have full control over adding instances to the store with `new User().addToStore()`.
+- For the features that require objects to be in the store (for example, `handleClones`) feathers-pinia will implicitly add items to the store when needed.
 
 ## Built-in Patch Diffing 🎉
 
@@ -164,5 +157,57 @@ export class User extends BaseModel {
 ```
 
 ### `associateGet`
+
+## Store API Improvements
+
+The `useFind` utility -- for implementing fall-through-cached `find` requests -- is now available directly on the store, further reducing boilerplate.
+
+### `store.useFind`
+
+The Old Way:
+
+```ts
+// 0. Import `useFind`
+import { useFind } from 'feathers-pinia'
+import { useTutorials } from '../store/tutorials'
+
+// 1. Register and use the store
+const tutorialStore = useTutorials()
+
+// 2. Create a computed property for the params
+const tutorialsParams = computed(() => {
+  return { query: {}, }
+})
+// 3. Provide the Model class and params in the options
+const { items: tutorials } = useFind({ model: tutorialStore.Model, params: tutorialsParams })
+```
+
+The new way:
+
+```ts
+import { useTutorials } from '../store/tutorials'
+
+// 1. Register and use the store
+const tutorialStore = useTutorials()
+
+// 2. Create a computed property for the params
+const tutorialsParams = computed(() => {
+  return { query: {}, }
+})
+// 3. Provide only the params in the options
+const { items: tutorials } = tutorialStore.useFind({ params: tutorialsParams })
+```
+
+### `store.useGet`
+
+The `useGet` utility -- for implementing fall-through-cached `get` requests -- is now available directly on the store, further reducing boilerplate.
+
+## LocalStorage Plugins 🎉
+
+The new LocalStorage adapter is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering.
+
+### Opt in to Compressed Storage
+
+We've made a separate, localStorage plugin that uses LZW compression. Compressed storage allows you to save twice as much information in the same amount of space.
 
 ## Lots of Little Improvments
