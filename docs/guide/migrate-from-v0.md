@@ -173,7 +173,7 @@ This won't affect most apps, but the first argument to `setupInstance` was previ
 
 ## Don't Worry About `__isClone`
 
-There's no need to manually remove `__isClones` in hooks. It is now added as a non-enumerable value, so it won't show up during instance serializion when prepping to send to the API server.
+There's no need to manually remove `__isClone` in hooks. It is now added as a non-enumerable value, so it won't show up during instance serializion when prepping to send to the API server.
 
 ## No `debounceEventsMaxWait`
 
