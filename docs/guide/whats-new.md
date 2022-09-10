@@ -209,8 +209,21 @@ The `useGet` utility -- for implementing fall-through-cached `get` requests -- i
 
 When it comes to npm bundles, smaller package size is a good thing.
 
-### LZW Storage is Out
+### Optimized Vite Build 💪
 
-Our LocalStorage adapter is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering. Prior to this version, Feathers-Pinia included a localStorage plugin that used LZW compression. It came with the benefit of doubling the amount of data you could put in storage. The downside was that it made the bundle size big, so we removed it.  It will be published as an independent package at a later date.
+The overall bundle size has been reduced from around 20kb to 12kb, gzipped.  This was done through
+
+- Replacing hefty dependencies, like lodash's debounce, with smaller equivalents, like [just-debounce](https://npmjs.com/package/just-debounce).
+- Optimizing the Vite build to externalize modules.
+
+All of the modules highlighted, below, were able to be removed from the package, resulting in a much leaner build.  Here is the previous output from `npx vite-bundle-visualizer` to compare:
+
+![Optimized Vite Build](https://user-images.githubusercontent.com/128857/189497860-ea0b5b39-7484-416b-b411-748994e2fc33.png)
+
+### LZW Storage is Out ➖
+
+Prior to this version, Feathers-Pinia included a localStorage plugin that used LZW compression. It came with the benefit of doubling the amount of data you could put in storage. The downside was that it made the bundle size big, so we removed it.  It will be published as an independent package at a later date.
+
+Our LocalStorage adapter remains part of the package and is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering.  If you haven't tried it, yet, it's easy to setup and it's worth it!
 
 ## Lots of Little Improvments
