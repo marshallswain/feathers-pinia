@@ -4,6 +4,7 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
+import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
 # BaseModel
@@ -51,18 +52,27 @@ There are two unique static methods: `instanceDefaults` and `setupInstance`.
 
 ### `instanceDefaults`
 
-The `instanceDefaults` method's purpose is to normalize default data for new instances created throughout the app. For Vue 2, it's required due to the limitations of Vue 2's reactivity layer. Vue 3's reactivity layer is more flexible, allowing a partial definition, if desired. Depending on the complexity of the service's "business logic", it can save a lot of boilerplate.
+<BlockQuote label="NOTE">
+
+In version <Badge text="1.x"/>, the instanceDefaults method is optional, since you can now define the default values directly on the Model interface. There are two reaons you may want to still use it:
+
+- You've already been using it. It will keep working, so you don't have to refactor.
+- You want to dynamically assign default values based on incoming data. The Model interface won't let you do this, but instanceDefaults will.
+
+</BlockQuote>
+
+The `instanceDefaults` method normalizes default data for new instances created throughout the app. For Vue 2, default properties are required due to the limitations of Vue 2's reactivity layer. Vue 3's reactivity layer is more flexible, allowing a partial definition, if desired. Props can be added and removed freely. Depending on the complexity of the service's "business logic", `instanceDefualts` can save a lot of boilerplate.
 
 ```ts
 public static instanceDefaults(data, { models, store }): AnyInstanceData {}
 ```
 
-- `data {Object}` - The instance data
+- `data {Object}` - The incoming data being used to create the instance.
 - A `utils` object containing these props:
   - `store` - The vuex store
   - `models {Object}` The `globalModels` object, containing the models for all currently-registered services.
 
-As an example, a User model class might have an `instanceDefaults` that looks like this:
+As an example, a User model class might have an `instanceDefaults` that looks like this next examples.  Note that the data is not the actual instance.  The return value will be merged into the the actual instance.
 
 ```js
 instanceDefaults(data, { store, models }) {
@@ -112,9 +122,11 @@ setupInstance(data, { store, models }) {
 
 With the above `setupInstance` method in place, each `User` instance now stores a direct reference to the `Post` records in the posts store
 
-Notice that `instanceDefaults` and `setupInstance` are similar. They have different purposes and are applied at different stages under the hood. The `instanceDefaults` method should ONLY be used to return default values for a new instance. Use`setupInstance`to handle other transformations on the data.
+See more Model methods in the [Model Events](#model-events) section.
 
-See more Model methods in the [Model Events section](#model-events).
+### Separate Concerns
+
+Notice that [`instanceDefaults`](#instancedefaults) and [`setupInstance`](#setupinstance) are similar. They have different purposes and are applied at different stages under the hood. The `instanceDefaults` method should ONLY be used to return default values for a new instance. Use`setupInstance`to handle other transformations on the data.
 
 ## Proxy Static Methods
 
@@ -132,7 +144,7 @@ The majority of BaseModel's static methods are proxy methods to Actions and Gett
 - `remove(id, params)`: same as [store.remove](./service-stores#remove-id-params).
 - `removeFromStore(data)`: same as [store.removeFromStore](./service-stores#removefromstore-data).
 
-## Model Events <Badge text="0.17.0+" />
+## Model Events
 
 Model classes are EventEmitter instances which emit service events when received (technically, EventEmitter methods are mixed onto each Model class). All FeathersJS events are supported. Oh, and one more thing: it works with `feathers-rest` (you won't receive socket events, but you can listen for when instances are created in other parts of the app.) BaseModel contains all EventEmitter.prototype properties and methods. [Read more about the `events` package on npm](https://npmjs.com/package/events).
 

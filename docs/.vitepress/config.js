@@ -65,6 +65,7 @@ function getGuideSidebar() {
         { text: 'Model Classes', link: '/guide/model-classes' },
         { text: 'BaseModel', link: '/guide/base-model' },
         { text: 'Model Instances', link: '/guide/model-instances' },
+        { text: 'Model Associations', link: '/guide/model-associations' },
       ],
     },
     {

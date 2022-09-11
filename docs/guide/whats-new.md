@@ -22,7 +22,7 @@ Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benef
 
 ## Support SQL `$like` Operators 🎁
 
-The most-requested feature has finally landed: built-in support for SQL `LIKE`. This means the queries made to the store will **finally** automatically match the queries made to your SQL-backed API. 
+The most-requested feature has finally landed: built-in support for SQL `LIKE`. This means the queries made to the store will **finally** automatically match the queries made to your SQL-backed API.
 
 These are the supported operators:
 
@@ -79,7 +79,7 @@ expect($notILike.map((m) => m.id)).toEqual([3, 4])
 
 These new operators support queries made with SQL-backed adapters like the official, core SQL service adapter in Feathers v5 Dove:
 
-- [@feathersjs/knex](https://dove.feathersjs.com/api/databases/knex.html) 
+- [@feathersjs/knex](https://dove.feathersjs.com/api/databases/knex.html)
 
 These adapters for are also supported:
 
@@ -107,8 +107,8 @@ Here are the technical details of how the new Model behavior works.  For the TLD
 
 - BaseModel no longer calls `setupInstance`, internally.  If you use a custom constructor together with `instanceDefaults` and `setupInstance`, the two methods are run twice, wasting cycles.
 - BaseModel still calls `instanceDefaults` internally, which means it runs twice.  If you are using `instanceDefaults` only for default values, as documented, then the performance impact will be negligible, even when ingesting large amounts of data from the API server.  No complex logic should run in `instanceDefaults`.  It has two purposes. Any use outside of these two purposes should be refactored into `setupInstance`:
-   - Allow specifying default values with low boilerplate.
-   - Allow conditional defaults values to be assigned based on incoming data.
+  - Allow specifying default values with low boilerplate.
+  - Allow conditional defaults values to be assigned based on incoming data.
 - Calling `new User(data)` without a custom constructor results in Model interface defaults always overwriting `data`.
 - Having a custom constructor allows Model instance default values to initialize as one would expect: not overwriting any other values.
 - Calling `this.init(data)` runs the `instanceDefaults` again and also runs `setupInstance`.
@@ -206,6 +206,7 @@ Two new utilities make it easier to add relationships between records without de
 The `associateFind` utility allows you to define one-to-many relationships on your Model classes.
 
 ```ts
+import { BaseModel, associateFind } from 'feathers-pinia'
 
 export class User extends BaseModel {
   _id: string
@@ -243,7 +244,7 @@ The `useFind` utility -- for implementing fall-through-cached `find` requests --
 
 ### `store.useFind` ➕
 
-With the old way, you have to import `useFind` and provide the model to it from the instantiated store. 
+With the old way, you have to import `useFind` and provide the model to it from the instantiated store.
 
 ```ts
 import { useFind } from 'feathers-pinia'
