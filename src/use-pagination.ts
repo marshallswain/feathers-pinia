@@ -11,14 +11,13 @@ export function usePagination(pagination: MaybeRef<Pagination>, latestQuery: Ref
   const set = (pagination: any, key: string, val: number) => {
     (pagination.value || pagination)[key] = val
   }
-  const $limit = computed({
-    set: (val) => set(pagination, '$limit', val),
-    get: () => unref(pagination).$limit,
-  })
-  const $skip = computed({
-    set: (val) => set(pagination, '$skip', val),
-    get: () => unref(pagination).$skip,
-  })
+  const makeComputed = (key: '$limit' | '$skip') =>
+    computed({
+      set: (val) => set(pagination, key, val),
+      get: () => unref(pagination)[key],
+    })
+  const $limit = makeComputed('$limit')
+  const $skip = makeComputed('$skip')
   const total = computed(() => latestQuery.value.response.total)
   const { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev } = usePageData(
     $limit,
