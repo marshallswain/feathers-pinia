@@ -2,7 +2,7 @@ import type { UseFindComputed, UseFindOptionsStandalone, UseFindState } from './
 import type { Params, Paginated } from './types'
 import { computed, reactive, Ref, unref, toRefs, watch } from 'vue-demi'
 import debounce from 'just-debounce'
-import { getQueryInfo, getItemsFromQueryInfo } from './utils'
+import { getQueryInfo, getItemsFromQueryInfo, makeUseFind } from './utils'
 import { BaseModel } from './service-store'
 
 export function useFind<M extends BaseModel = BaseModel>({
@@ -42,27 +42,7 @@ export function useFind<M extends BaseModel = BaseModel>({
 
   const computes: UseFindComputed<M> = {
     // The find getter
-    items: computed(() => {
-      const getterParams: any = unref(params)
-
-      if (getterParams) {
-        if (getterParams.paginate) {
-          const serviceState = model.store
-          const { defaultSkip, defaultLimit } = serviceState.pagination
-          const skip = getterParams.query.$skip || defaultSkip
-          const limit = getterParams.query.$limit || defaultLimit
-          const pagination = computes.paginationData.value[getterParams.qid || state.qid] || {}
-          const response = skip != null && limit != null ? { limit, skip } : {}
-          const queryInfo = getQueryInfo(getterParams, response)
-          const items = getItemsFromQueryInfo(pagination, queryInfo, serviceState.itemsById)
-          return items
-        } else {
-          return model.findInStore(getterParams).data
-        }
-      } else {
-        return []
-      }
-    }),
+    items: makeUseFind(model.store, params).items,
     paginationData: computed(() => {
       return model.store.pagination
     }),

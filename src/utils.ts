@@ -6,7 +6,7 @@ import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'isomorphic-mongo-objectid'
 import fastCopy from 'fast-copy'
-import { unref } from 'vue-demi'
+import { computed, unref } from 'vue-demi'
 import { isEqual } from 'lodash'
 
 function stringifyIfObject(val: any): string | any {
@@ -218,4 +218,37 @@ export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition)
   }, {})
 
   return diff
+}
+
+export const setOnRef = (obj: any, key: string, val: number) => {
+  (obj.value || obj)[key] = val
+}
+export const computedAttr = (obj: any, key: string) =>
+  computed({
+    set: (val) => setOnRef(obj, key, val),
+    get: () => unref(obj)[key],
+  })
+
+export const makeUseFind = (store: any, params: any) => {
+  const items = computed(() => {
+    const _params: any = unref(params)
+
+    if (_params) {
+      if (_params.paginate) {
+        const { defaultSkip, defaultLimit } = store.pagination
+        const skip = _params.query.$skip || defaultSkip
+        const limit = _params.query.$limit || defaultLimit
+        const pagination = store.pagination[_params.qid] || {}
+        const response = skip != null && limit != null ? { limit, skip } : {}
+        const queryInfo = getQueryInfo(_params, response)
+        const items = getItemsFromQueryInfo(pagination, queryInfo, store.itemsById)
+        return items
+      } else {
+        return store.findInStore(_params).data
+      }
+    } else {
+      return []
+    }
+  })
+  return { items }
 }
