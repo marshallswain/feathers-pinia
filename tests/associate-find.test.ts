@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Params } from '@feathersjs/feathers/lib'
+import type { ComputedRef, Ref } from 'vue-demi'
 import { setupFeathersPinia, BaseModel, associateFind } from '../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
-import { ComputedRef, Ref } from 'vue-demi'
 
 interface AssociateFindUtils<M extends BaseModel> {
   params?: Ref<Params> // imperatively modify params?
