@@ -20,7 +20,76 @@ Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benef
 - As from the beginning, you still have full control over adding instances to the store with `new User().addToStore()`.
 - For the features that require objects to be in the store (for example, `handleClones`) feathers-pinia will implicitly add items to the store when needed.
 
-## Define Default Values on the Class Definition 🎁
+## Support SQL `$like` Operators 🎁
+
+The most-requested feature has finally landed: built-in support for SQL `LIKE`. This means the queries made to the store will **finally** automatically match the queries made to your SQL-backed API. 
+
+These are the supported operators:
+
+- `$like` and `$notLike` for case-sensitive matches
+- `$ilike`, `$iLike`, and `$notILike` for case-insensitive matches
+
+Let's have a look at them in action. First, assume that we have the following messages in the store:
+
+```json
+[
+  { "id": 1, "text": "Moose" },
+  { "id": 2, "text": "moose" },
+  { "id": 3, "text": "Goose" },
+  { "id": 4, "text": "Loose" },
+]
+```
+
+Now see the fancy new query operators in action:
+
+```ts
+import { useMessages } from '../stores/messages'
+const messageStore = useMessages
+
+// $like
+const { data: $like } = messageStore.findInStore({
+  query: { text: { $like: '%Mo%' } }
+})
+expect($like.map((m) => m.id)).toEqual([1])
+
+// $notLike
+const { data: $notLike } = messageStore.findInStore({
+  query: { text: { $notLike: '%Mo%' } }
+})
+expect($notLike.map((m) => m.id)).toEqual([2, 3, 4])
+
+// $ilike
+const { data: $ilike } = messageStore.findInStore({
+  query: { text: { $ilike: '%Mo%' } }
+})
+expect($ilike.map((m) => m.id)).toEqual([1, 2])
+
+// $iLike
+const { data: $iLike } = messageStore.findInStore({
+  query: { text: { $iLike: '%Mo%' } }
+})
+expect($iLike.map((m) => m.id)).toEqual([1, 2])
+
+// $notILike
+const { data: $notILike } = messageStore.findInStore({
+  query: { text: { $notILike: '%Mo%' } }
+})
+expect($notILike.map((m) => m.id)).toEqual([3, 4])
+```
+
+These new operators support queries made with SQL-backed adapters like the official, core SQL service adapter in Feathers v5 Dove:
+
+- [@feathersjs/knex](https://dove.feathersjs.com/api/databases/knex.html) 
+
+These adapters for are also supported:
+
+- [feathers-knex](https://github.com/feathersjs-ecosystem/feathers-knex), the Feathers v4 Crow version of `@feathersjs/knex`, above
+- [feathers-objection](https://github.com/feathersjs-ecosystem/feathers-objection)
+- [feathers-sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
+
+If you use any of the above database adapters, give the new query operators a try!  Enjoy your new superpowers!
+
+## Class Definition Defaults 🎁
 
 **[Small breaking change]**
 

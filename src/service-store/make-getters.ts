@@ -1,15 +1,15 @@
-import { MakeServiceGettersOptions, ServiceStoreDefaultGetters, ServiceStoreDefaultState } from './types'
-import { Params } from '../types'
-import { Id } from '@feathersjs/feathers'
-
+import type { MakeServiceGettersOptions, ServiceStoreDefaultGetters, ServiceStoreDefaultState } from './types'
+import type { Params } from '../types'
+import type { Id } from '@feathersjs/feathers'
+import type { StateTree, _GettersTree } from 'pinia'
+import type { TypedGetters } from '../utility-types'
 import sift from 'sift'
+import { operations } from '../utils-custom-operators'
 import { _ } from '@feathersjs/commons'
 import { filterQuery, sorter, select } from '@feathersjs/adapter-commons'
 import { unref } from 'vue-demi'
 import fastCopy from 'fast-copy'
-import { StateTree, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
-import { TypedGetters } from '../utility-types'
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
@@ -70,6 +70,7 @@ export function makeGetters<
         const { query, filters } = filterQuery(q, {
           operators: additionalOperators
             .concat(whitelist || [])
+            .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike'])
             .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
         let values = _.values(itemsById)
@@ -78,7 +79,7 @@ export function makeGetters<
           values.push(..._.values(this.tempsById))
         }
 
-        values = values.filter(sift(query))
+        values = values.filter(sift(query, { operations }))
 
         const total = values.length
 
