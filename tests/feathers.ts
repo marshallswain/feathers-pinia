@@ -33,7 +33,7 @@ const hooks = {
   before: {
     find: [
       async () => {
-        await timeout(180)
+        await timeout(0)
       },
     ],
   },
