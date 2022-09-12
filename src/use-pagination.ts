@@ -1,6 +1,7 @@
 import type { MaybeRef } from './utility-types'
 import { computed, watch, Ref, unref } from 'vue-demi'
 import { usePageData } from './utils-pagination'
+import { computedAttr } from './utils'
 
 interface Pagination {
   $limit: number
@@ -8,16 +9,8 @@ interface Pagination {
 }
 
 export function usePagination(pagination: MaybeRef<Pagination>, latestQuery: Ref) {
-  const set = (pagination: any, key: string, val: number) => {
-    (pagination.value || pagination)[key] = val
-  }
-  const makeComputed = (key: '$limit' | '$skip') =>
-    computed({
-      set: (val) => set(pagination, key, val),
-      get: () => unref(pagination)[key],
-    })
-  const $limit = makeComputed('$limit')
-  const $skip = makeComputed('$skip')
+  const $limit = computedAttr(pagination, '$limit')
+  const $skip = computedAttr(pagination, '$skip')
   const total = computed(() => latestQuery.value.response.total)
   const { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev } = usePageData(
     $limit,
