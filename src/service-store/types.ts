@@ -136,8 +136,11 @@ export interface ServiceStoreDefaultGetters<M extends BaseModel = BaseModel> {
 export type HandleFindResponseOptions = { params: Params; response: any }
 export type HandleFindErrorOptions = { params: Params; error: any }
 
+// The find action will always return data at params.data, even for non-paginated requests.
+export type FindFn<M extends BaseModel> = (params?: MaybeRef<Params>) => Promise<Paginated<M>>
+
 export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
-  find: (params?: MaybeRef<Params>) => Promise<M[] | Paginated<M>>
+  find: FindFn<M>
   handleFindResponse: (findResponse: HandleFindResponseOptions) => Promise<any>
   afterFind: <T = M[] | Paginated<M>>(response: T) => Promise<T>
   handleFindError({ params, error }: HandleFindErrorOptions): Promise<any>

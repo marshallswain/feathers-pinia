@@ -56,7 +56,7 @@ export interface QueryInfo {
   queryParams: Query
   pageParams: { $limit: number; $skip: number | undefined } | undefined
   pageId: string | undefined
-  response: Paginated<any[]> | undefined
+  response: Partial<Paginated<any>> | undefined
   isOutdated: boolean | undefined
 }
 

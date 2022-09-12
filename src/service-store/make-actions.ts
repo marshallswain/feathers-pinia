@@ -103,14 +103,16 @@ export function makeActions<
     async handleFindResponse({ params, response }: HandleFindResponseOptions) {
       const { idField } = this
       const { qid = 'default', query, preserveSsr = false } = params
+      // Normalize response so data is always found at response.data
+      if (Array.isArray(response)) response = { data: response }
 
-      this.addOrUpdate(response.data || response)
+      this.addOrUpdate(response.data)
 
       // The pagination data will be under `pagination.default` or whatever qid is passed.
       response.data && this.updatePaginationForQuery({ qid, response, query, preserveSsr })
 
       // Swap out the response records for their Vue-observable store versions
-      const data = response.data || response
+      const data = response.data
       const mappedFromState = data.map((i: any) => this.itemsById[getId(i, idField)])
       if (mappedFromState[0] !== undefined) {
         response.data ? (response.data = mappedFromState) : (response = mappedFromState)

@@ -53,4 +53,21 @@ describe('Store Actions', () => {
     messagesStore.addToStore(messageWithMoreKeys)
     expect(itemInStore.otherText).toBe('added')
   })
+
+  test('non-paginated data is still returned as response.data', async () => {
+    // Turn off pagination
+    const oldPaginateOptions = messagesStore.service.options.paginate
+    messagesStore.service.options.paginate = false
+
+    await new Message({ text: 'this is a test' }).save()
+    await new Message({ text: 'this is a test' }).save()
+    await new Message({ text: 'this is a test' }).save()
+
+    const response = await messagesStore.find({ query: {} })
+
+    expect(Array.isArray(response.data)).toBeTruthy()
+
+    // Turn pagination back on
+    messagesStore.service.options.paginate = oldPaginateOptions
+  })
 })
