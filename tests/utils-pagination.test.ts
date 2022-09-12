@@ -1,4 +1,3 @@
-import { text } from 'stream/consumers'
 import { ref } from 'vue-demi'
 import { usePageData } from '../src/utils-pagination'
 
