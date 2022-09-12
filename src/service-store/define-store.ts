@@ -43,7 +43,7 @@ export function defineStore<
   let isInitialized = false
 
   Object.keys(options.clients || {}).forEach((name) => {
-    registerClient(name, clients[name])
+    registerClient(name, options.clients[name])
   })
 
   // Create and initialize the Pinia store.
