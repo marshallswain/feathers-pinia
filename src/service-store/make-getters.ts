@@ -102,7 +102,7 @@ export function makeGetters<
         // Make sure items are instances
         values = values.map((item) => {
           if (item && !item.constructor.modelName) {
-            // @ts-expect-error access action in getter is not intended
+            // @ts-expect-error it's ok to do this side effect once.
             item = this.addOrUpdate(item)
           }
           return item

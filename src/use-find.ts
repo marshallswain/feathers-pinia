@@ -51,7 +51,7 @@ export function useFind<M extends BaseModel = BaseModel>({
   }
 
   /**
-   * If queryWhen is a function, call queryWhen with a context, otherwise return it's value.
+   * If queryWhen is a function, call queryWhen with a context, otherwise return its value.
    * @param queryWhen
    * @param params
    * @returns boolean
