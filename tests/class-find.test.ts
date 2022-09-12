@@ -4,7 +4,6 @@ import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
 import { Find } from '../src/class-find'
 import { ref } from 'vue-demi'
-import fastCopy from 'fast-copy'
 
 const pinia = createPinia()
 const { defineStore } = setupFeathersPinia({ clients: { api } })
