@@ -29,13 +29,11 @@ export const usePageData = ($limit: Ref<number>, $skip: Ref<number>, _total: Ref
     return currentPage.value < pageCount.value
   })
 
-  const toStart = () => (currentPage.value = 1)
-  const toEnd = () => (currentPage.value = pageCount.value)
-  const toPage = (pageNumber: number) => (currentPage.value = pageNumber)
-  const next = () => {
-    currentPage.value++
-  }
-  const prev = () => currentPage.value--
+  const toStart = () => Promise.resolve((currentPage.value = 1))
+  const toEnd = () => Promise.resolve((currentPage.value = pageCount.value))
+  const toPage = (pageNumber: number) => Promise.resolve((currentPage.value = pageNumber))
+  const next = () => Promise.resolve(currentPage.value++)
+  const prev = () => Promise.resolve(currentPage.value--)
 
   return { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev }
 }
