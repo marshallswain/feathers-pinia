@@ -229,16 +229,19 @@ export const computedAttr = (obj: any, key: string) =>
     get: () => unref(obj)[key],
   })
 
+/**
+ * A wrapper for findInStore that can return server-paginated data
+ */
 export const makeUseFind = (store: any, params: any) => {
   const items = computed(() => {
     const _params: any = unref(params)
 
     if (_params) {
-      if (_params.paginate) {
+      if (_params.paginate || _params.paginateOnServer) {
         const { defaultSkip, defaultLimit } = store.pagination
         const skip = _params.query.$skip || defaultSkip
         const limit = _params.query.$limit || defaultLimit
-        const pagination = store.pagination[_params.qid] || {}
+        const pagination = store.pagination[_params.qid || 'default'] || {}
         const response = skip != null && limit != null ? { limit, skip } : {}
         const queryInfo = getQueryInfo(_params, response)
         const items = getItemsFromQueryInfo(pagination, queryInfo, store.itemsById)
