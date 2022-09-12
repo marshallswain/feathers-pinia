@@ -2,7 +2,7 @@ import type { UseFindComputed, UseFindOptionsStandalone, UseFindState } from './
 import type { Params, Paginated } from './types'
 import { computed, reactive, Ref, unref, toRefs, watch } from 'vue-demi'
 import debounce from 'just-debounce'
-import { getQueryInfo, makeUseFind } from './utils'
+import { getQueryInfo, makeUseFindItems } from './utils'
 import { BaseModel } from './service-store'
 
 export function useFind<M extends BaseModel = BaseModel>({
@@ -42,7 +42,7 @@ export function useFind<M extends BaseModel = BaseModel>({
 
   const computes: UseFindComputed<M> = {
     // The find getter
-    items: makeUseFind(model.store || model, params).items,
+    items: makeUseFindItems(model.store || model, params),
     paginationData: computed(() => {
       return model.store.pagination
     }),

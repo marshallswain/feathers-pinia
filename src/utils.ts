@@ -229,8 +229,8 @@ export const computedAttr = (obj: any, key: string) =>
 /**
  * A wrapper for findInStore that can return server-paginated data
  */
-export const makeUseFind = (store: any, params: any) => {
-  const items = computed(() => {
+export const makeUseFindItems = (store: any, params: any) => {
+  return computed(() => {
     const _params: any = unref(params)
 
     if (_params) {
@@ -250,5 +250,4 @@ export const makeUseFind = (store: any, params: any) => {
       return []
     }
   })
-  return { items }
 }
