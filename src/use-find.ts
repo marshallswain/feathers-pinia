@@ -99,7 +99,6 @@ export function useFind<M extends BaseModel = BaseModel>({
       state.haveLoaded = true
       if (!Array.isArray(response)) {
         const queryInfo = getQueryInfo(params, response)
-        queryInfo.response = response
         queryInfo.isOutdated = false
         state.latestQuery = queryInfo
       }

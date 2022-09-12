@@ -45,10 +45,7 @@ export function getAnyId(item: any, tempIdField: string, idField: string) {
   return getId(item, idField) != undefined ? getId(item, idField) : getTempId(item, tempIdField)
 }
 
-export function getQueryInfo(
-  params: Params = {},
-  response: Partial<Pick<Paginated<any>, 'limit' | 'skip'>> = {},
-): QueryInfo {
+export function getQueryInfo(params: Params = {}, response: Partial<Paginated<any>> = {}): QueryInfo {
   const { query = {}, qid = 'default' } = params
   const $limit = response.limit != undefined ? response.limit : query?.$limit
   const $skip = response.skip != undefined ? response.skip : query?.$skip
@@ -66,7 +63,7 @@ export function getQueryInfo(
     queryParams,
     pageParams,
     pageId,
-    response: undefined,
+    response,
     isOutdated: undefined as boolean | undefined,
   }
 }
