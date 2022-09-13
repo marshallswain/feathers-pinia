@@ -1,10 +1,11 @@
-import type { Paginated, Params, QueryInfo } from './types'
-import type { ServiceStoreDefault, FindFn, FindClassParamsStandalone } from './service-store/types'
+import type { Paginated, Params, Query, QueryInfo } from './types'
+import type { ServiceStoreDefault, FindFn, FindClassParamsStandalone, CurrentQuery } from './service-store/types'
 import type { MaybeRef } from './utility-types'
-import { computed, ComputedRef, isRef, Ref, ref, watch } from 'vue-demi'
+import { computed, ComputedRef, isRef, Ref, ref, unref, watch, WritableComputedRef } from 'vue-demi'
 import { BaseModel } from './service-store/base-model'
 import { usePageData } from './utils-pagination'
 import { computedAttr, getQueryInfo, hasOwn, makeUseFindItems } from './utils'
+import { _ } from '@feathersjs/commons'
 
 type Store<M extends BaseModel> = ServiceStoreDefault<M>
 
@@ -12,11 +13,16 @@ export function useFind<M extends BaseModel>(params: MaybeRef<FindClassParamsSta
   return new Find(params)
 }
 
+interface ParamsWithQuery<M extends BaseModel> extends FindClassParamsStandalone<M> {
+  query: Query
+}
+
 export class Find<M extends BaseModel> {
-  params: Ref<FindClassParamsStandalone<M>>
+  params: Ref<ParamsWithQuery<M>>
   store: Store<M>
   paginateOnServer: boolean
   isSsr: ComputedRef<boolean>
+  qid: WritableComputedRef<string>
 
   // Data
   data: ComputedRef<M[]>
@@ -27,12 +33,16 @@ export class Find<M extends BaseModel> {
   findInStore: (params: Params) => Paginated<M>
 
   // Queries
+  currentQuery: ComputedRef<CurrentQuery<M> | null>
   latestQuery: ComputedRef<QueryInfo | null>
   previousQuery: ComputedRef<QueryInfo | null>
 
+  // Requests & Watching
   find: FindFn<M>
   request: Ref<Promise<Paginated<M>>>
   requestCount: Ref<number>
+  queryWhen: (queryWhenFn: () => boolean) => void
+  // watchParams: (paramsFn: () => Params | null, watchOptions?: WatchOptions) => void
 
   // Request State
   isPending: Ref<boolean>
@@ -53,11 +63,17 @@ export class Find<M extends BaseModel> {
   toPage: (page: number) => Promise<void>
 
   constructor(_params: MaybeRef<FindClassParamsStandalone<M>>) {
+    // If we started without a query, flag `startedWithoutQuery`` then assign an empty query.
     const params = isRef(_params) ? _params : ref(_params)
+    const startedWithQuery = hasOwn(params.value, 'query')
+    if (!startedWithQuery) params.value.query = {}
     ;(this.store as Store<M>) = params.value.store as Store<M>
 
     /*** PARAMS ***/
-    this.params = params as Ref<FindClassParamsStandalone<M>>
+    this.params = params as Ref<ParamsWithQuery<M>>
+    this.qid = computedAttr(params.value, 'qid')
+    // Set qid to default if it was not passed in the params.
+    if (!this.qid.value) this.qid.value = 'default'
     const { immediate = true, watch: _watch = false } = params.value
     const query = computedAttr(this.params, 'query')
     this.limit = computedAttr(query, '$limit')
@@ -102,8 +118,34 @@ export class Find<M extends BaseModel> {
     this.data = inStore
     this.findInStore = this.store.findInStore
 
+    /*** QUERY WHEN ***/
+    let queryWhen = () => true
+    this.queryWhen = (queryWhenFn: () => boolean) => {
+      queryWhen = queryWhenFn
+    }
+    // returns cached query data from the store BEFORE the request is sent.
+    this.currentQuery = computed(() => {
+      const qidState: any = this.store.pagination[this.qid.value]
+      if (!qidState) return null
+      const queryInfo = getQueryInfo(params.value)
+      delete queryInfo.response
+      delete queryInfo.isOutdated
+
+      const queryState = qidState[queryInfo.queryId]
+      if (!queryState) return null
+
+      const { total } = queryState
+      const pageState = queryState[queryInfo.pageId as string]
+      if (!pageState) return null
+
+      const { ids, queriedAt } = pageState
+      const items = Object.values(_.pick(this.store.itemsById, ...ids))
+      const info = { ...queryInfo, ids, items, total, queriedAt } as CurrentQuery<M>
+      return info || null
+    })
+
     /*** QUERIES ***/
-    const queries: Ref<QueryInfo[]> = ref([])
+    const queries: Ref<QueryInfo[]> = ref([]) // query info after the response returns
     this.latestQuery = computed(() => {
       return queries.value[queries.value.length - 1] || null
     })
@@ -125,34 +167,37 @@ export class Find<M extends BaseModel> {
     const waitForExistingRequest = async () => {
       if (request.value) await request.value
     }
-    const makePageRequest = async () => {
-      return makeRequest({ ...params.value, fromPagination: true })
-    }
     this.toStart = () =>
       waitForExistingRequest()
         .then(() => pageData.toStart())
-        .then(makePageRequest)
+        .then(() => makeRequest())
     this.toEnd = () =>
       waitForExistingRequest()
         .then(() => pageData.toEnd())
-        .then(makePageRequest)
+        .then(() => makeRequest())
     this.toPage = (page: number) =>
       waitForExistingRequest()
         .then(() => pageData.toPage(page))
-        .then(makePageRequest)
+        .then(() => makeRequest())
     this.next = () =>
       waitForExistingRequest()
         .then(() => pageData.next())
-        .then(makePageRequest)
+        .then(() => makeRequest())
     this.prev = () =>
       waitForExistingRequest()
         .then(() => pageData.prev())
-        .then(makePageRequest)
+        .then(() => makeRequest())
 
     /*** SERVER FETCHING ***/
     this.requestCount = ref(0)
     this.request = ref(null) as any
-    this.find = async (params: MaybeRef<Params> = paramsWithPagination.value) => {
+    this.find = async (params: MaybeRef<Params> = paramsWithPagination) => {
+      const _params = unref(params)
+      // if queryWhen is falsey, return early with dummy data
+      if (!queryWhen()) {
+        return Promise.resolve({ data: [] as M[] } as Paginated<M>)
+      }
+
       this.requestCount.value++
       haveBeenRequested.value = true // never resets
       isPending.value = true
@@ -160,7 +205,7 @@ export class Find<M extends BaseModel> {
       error.value = null
 
       try {
-        const response = await this.store.find(params)
+        const response = await this.store.find(_params)
 
         // Set limit and skip if missing
         if ((hasOwn(response, 'limit') && this.limit.value == null) || this.skip.value == null) {
@@ -192,7 +237,8 @@ export class Find<M extends BaseModel> {
     // provide access to the request from inside the watcher
     const request = this.request
     if (this.limit.value || this.skip.value) initWithLimitOrSkip = true
-    const makeRequest = async () => {
+
+    const makeRequest = async (_params?: Params) => {
       if (!this.paginateOnServer) return
 
       // Don't make a second request if no limit or skip were provided
@@ -200,7 +246,7 @@ export class Find<M extends BaseModel> {
         initWithLimitOrSkip = true
         return
       }
-      request.value = this.find(params)
+      request.value = this.find(_params || params)
       await request.value
     }
 

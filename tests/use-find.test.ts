@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
 import { Find, useFind } from '../src/use-find'
-import { ref } from 'vue-demi'
+import { computed, reactive, ref } from 'vue-demi'
 
 const pinia = createPinia()
 const { defineStore } = setupFeathersPinia({ clients: { api } })
@@ -82,6 +82,70 @@ describe('Find Class', () => {
     params.value.query.text = 'Goose'
 
     expect(data.value[0].text).toBe('Goose')
+  })
+})
+
+describe('queryWhen', () => {
+  test('use `queryWhen` to control queries', async () => {
+    const { request, currentQuery, requestCount, queryWhen, next, prev } = new Find({
+      query: { $limit: 3, $skip: 0 },
+      store: messageStore,
+      paginateOnServer: true,
+      qid: 'test',
+    })
+    await request.value
+
+    expect(requestCount.value).toBe(1)
+
+    // run the query if we don't already have items.
+    queryWhen(() => {
+      if (!currentQuery.value || !currentQuery.value.items.length) {
+        return true
+      }
+      return false
+    })
+    // The `watchParams` does not automatically trigger request
+    expect(requestCount.value).toBe(1)
+
+    await next()
+
+    // Another request went out to get the next page.
+    expect(requestCount.value).toBe(2)
+
+    await prev()
+
+    // Going back to a cached page so we didn't make another request.
+    expect(requestCount.value).toBe(2)
+  })
+
+  test('does not make pagination requests when queryWhen is false', async () => {
+    const { request, requestCount, queryWhen, next, prev } = new Find({
+      query: { $limit: 3, $skip: 0 },
+      store: messageStore,
+      paginateOnServer: true,
+      qid: 'test',
+      immediate: false,
+    })
+    await request.value
+
+    expect(requestCount.value).toBe(0)
+
+    // run the query if we don't already have items.
+    queryWhen(() => {
+      return false
+    })
+    // The `watchParams` does not automatically trigger request
+    expect(requestCount.value).toBe(0)
+
+    await next()
+
+    // Another request went out to get the next page.
+    expect(requestCount.value).toBe(0)
+
+    await prev()
+
+    // Going back to a cached page so we didn't make another request.
+    expect(requestCount.value).toBe(0)
   })
 })
 
@@ -181,7 +245,7 @@ describe('Local Pagination', () => {
     expect(data.value.length).toBe(3)
     expect(data.value.map((i) => i.id)).toEqual([1, 2, 3])
 
-    next()
+    await next()
 
     expect(data.value.length).toBe(3)
     expect(data.value.map((i) => i.id)).toEqual([4, 5, 6])
