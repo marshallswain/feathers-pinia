@@ -122,11 +122,32 @@ export class Find<M extends BaseModel> {
     Object.assign(this, { pageCount, currentPage, canPrev, canNext })
 
     /*** PAGINATION UTILS ***/
-    this.toStart = () => pageData.toStart().then(() => makeRequest())
-    this.toEnd = () => pageData.toEnd().then(() => makeRequest())
-    this.toPage = (pageNumber: number) => pageData.toPage(pageNumber).then(() => makeRequest())
-    this.next = () => pageData.next().then(() => makeRequest())
-    this.prev = () => pageData.prev().then(() => makeRequest())
+    const waitForExistingRequest = async () => {
+      if (request.value) await request.value
+    }
+    const makePageRequest = async () => {
+      return makeRequest({ ...params.value, fromPagination: true })
+    }
+    this.toStart = () =>
+      waitForExistingRequest()
+        .then(() => pageData.toStart())
+        .then(makePageRequest)
+    this.toEnd = () =>
+      waitForExistingRequest()
+        .then(() => pageData.toEnd())
+        .then(makePageRequest)
+    this.toPage = (page: number) =>
+      waitForExistingRequest()
+        .then(() => pageData.toPage(page))
+        .then(makePageRequest)
+    this.next = () =>
+      waitForExistingRequest()
+        .then(() => pageData.next())
+        .then(makePageRequest)
+    this.prev = () =>
+      waitForExistingRequest()
+        .then(() => pageData.prev())
+        .then(makePageRequest)
 
     /*** SERVER FETCHING ***/
     this.requestCount = ref(0)
