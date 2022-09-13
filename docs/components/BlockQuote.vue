@@ -16,6 +16,7 @@ const labelTag = computed(() => (props.type === 'details' ? 'summary' : 'p'))
       :is="labelTag"
       class="custom-block-title"
       :class="type === 'details' ? 'capitalize' : 'uppercase'"
+      style="text-transform: uppercase;"
     >
       {{ label || type }}
     </component>
