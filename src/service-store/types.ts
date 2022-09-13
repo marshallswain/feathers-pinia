@@ -37,6 +37,11 @@ interface MostRecentQuery {
   total: number
 }
 
+export interface CurrentQuery<M extends BaseModel> extends MostRecentQuery {
+  ids: number[]
+  items: M[]
+}
+
 /**
  * Pagination State Types: below are types for the basic format shown here.
  * I'm surprised that something like the below can't work in TypeScript. Instead,
