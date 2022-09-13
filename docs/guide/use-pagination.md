@@ -2,49 +2,69 @@
 outline: deep
 ---
 
+<script setup>
+import BlockQuote from '../components/BlockQuote.vue'
+</script>
+
 # usePagination
 
 [[toc]]
 
-The `usePagination` utility is designed to pair with `useFind`. It aids in creating custom pagination interfaces.
+<BlockQuote type="warning" label="⚠️ warning ⚠️">
+
+The new [`useFind`](./use-find) API has pagination built in and is easier to use. Unless you know you need the standalone functionality provided by this component, it probably makes more sense to try the new [`useFind`](./use-find), first.
+
+</BlockQuote>
+
+The `usePagination` utility is designed to pair with `useFindWatched`. It aids in creating custom pagination interfaces.
 
 ## Setup Steps
 
-1. Create a reactive pagination object. It needs two properties:  `$limit` and`$skip`:
+### 1. Create Pagination Reactive
 
-    ```ts
-    const pagination = reactive({ $limit: 5, $skip: 0 })
-    ```
-
-2. Create a computed `params` object that spreads the pagination props into `params.query`. If pagination happens on the server, set `params.paginate` to `true`.
-
-    ```ts
-    const params = computed(() => {
-      return {
-        query: {
-          ...pagination
-        },
-        paginate: true,
-      }
-    })
-    ```
-
-3. Pass the `params` object into the `useFind` utility, pulling the `items` and `lastUsedQuery` out of the return value:
-
-    ```ts
-    const { items: users, latestQuery } = useFind({ model: userStore.Model, params })
-    ```
-
-4. Pass the `pagination` and `latestQuery` to the `usePagination` utility, pulling out whichever utilities you can use to create your pagination experience.
-
-    ```ts
-    const { next, prev, canNext, canPrev, currentPage, pageCount, toPage, toStart, toEnd } = usePagination(pagination, latestQuery)
-    ```
-
-So the full example script looks like this:
+Create a reactive pagination object. It needs two properties:  `$limit` and`$skip`:
 
 ```ts
-import { useFind, usePagination } from 'feathers-pinia'
+const pagination = reactive({ $limit: 5, $skip: 0 })
+```
+
+### 2. Create Computed Params
+
+Create a computed `params` object that spreads the pagination props into `params.query`. If pagination happens on the server, set `params.paginate` to `true`.
+
+```ts
+const params = computed(() => {
+  return {
+    query: {
+      ...pagination
+    },
+    paginate: true,
+  }
+})
+```
+
+### 3. `params` to `useFindWatched`
+
+Pass the `params` object into the `useFindWatched` utility, pulling the `items` and `lastUsedQuery` out of the return value:
+
+```ts
+const { items: users, latestQuery } = useFindWatched({ model: userStore.Model, params })
+```
+
+### 4. Setup `usePagination`
+
+Pass the `pagination` and `latestQuery` to the `usePagination` utility, pulling out whichever utilities you can use to create your pagination experience.
+
+```ts
+const { next, prev, canNext, canPrev, currentPage, pageCount, toPage, toStart, toEnd } = usePagination(pagination, latestQuery)
+```
+
+## Complete Example
+
+The full setup script looks like this:
+
+```ts
+import { useFindWatched, usePagination } from 'feathers-pinia'
 
 const pagination = reactive({ $limit: 5, $skip: 0 })
 const params = computed(() => {
@@ -55,7 +75,7 @@ const params = computed(() => {
     paginate: true,
   }
 })
-const { items: users, latestQuery } = useFind({ model: userStore.Model, params })
+const { items: users, latestQuery } = useFindWatched({ model: userStore.Model, params })
 const {
   next,
   prev,
