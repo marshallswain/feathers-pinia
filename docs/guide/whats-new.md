@@ -240,19 +240,12 @@ export class User extends BaseModel {
 
 ## New `useFind` API 🎁
 
-The `useFind` API has been completely rewritten from scratch. Here's an overview of its features:
+The `useFind` API has been completely rewritten from scratch. A couple of its best features include
 
 - **Intelligent Fall-Through Caching** - Like SWR, but way smarter.
-- **Client-Side Pagination** - Built in, sharing the same logic with `usePagination`.
-- **Server-Side Pagination** - Also built in.
-- **Infinite Pagination Support** - Give it a query and tell it when to load more data.
-- Read more on the [`useFind` page](./use-find).
+- **Pagination Support** - Built in, sharing the same logic with `usePagination`.
 
-<BlockQuote>
-
-To lighten the burden of migrating with this breaking change, the old `useFind` utility is now provided as [`useFindWatched`](./use-find-watched).
-
-</BlockQuote>
+See all of the features on the [`useFind` page](./use-find).
 
 ### Client Paging, Manual Fetch
 
@@ -275,6 +268,8 @@ await next()
 await prev()
 ```
 
+See the component example of client-side pagination on the [`useFind` page](./use-find).
+
 ### Server Paging, Auto Fetch
 
 Another common use case is server-side pagination. Enable it by passing `paginateOnServer` in the params. You can also pull out `isPending` to show a status indicator when a request is pending. That's it!
@@ -296,9 +291,15 @@ await next()
 await prev()
 ```
 
-## `useFindWatched` API
+See the component example of server-side pagination on the [`useFind` page](./use-find).
 
-The old `useFind` API is still around and is now called `useFindWatched`.
+## `useFindWatched` API ⚠️
+
+To make migration to the new `useFind` API easier, the old `useFind` API has been renamed and is now called [`useFindWatched`](./use-find-watched.md).
+
+Learn more about the old API on the [`useFindWatched` page](./use-find-watched.md).
+
+See the new API on the [`useFind` page](./use-find.md).
 
 ## Store API Improvements
 
