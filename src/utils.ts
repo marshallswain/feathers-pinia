@@ -109,7 +109,7 @@ export function assignTempId(item: any, tempIdField: string) {
  */
 export function cleanData<T = AnyDataOrArray>(data: T, tempIdField: string): T {
   const { items, isArray } = getArray(data)
-  const cleaned = items.map(item => _.omit(item, '__isClone', tempIdField))
+  const cleaned = items.map((item) => _.omit(item, '__isClone', tempIdField))
 
   return isArray ? cleaned : cleaned[0]
 }
@@ -163,10 +163,18 @@ export function getArray<T>(data: T | T[]) {
   return { items: isArray ? data : [data], isArray }
 }
 
-export const hasOwn = (obj: AnyData, prop: string) =>
-  Object.prototype.hasOwnProperty.call(obj, prop)
+export const hasOwn = (obj: AnyData, prop: string) => Object.prototype.hasOwnProperty.call(obj, prop)
 
 export function getSaveParams(params?: MaybeRef<Params>): Params {
-  if (!params) { return {} }
-  return fastCopy(unref(params));
+  if (!params) {
+    return {}
+  }
+  return fastCopy(unref(params))
+}
+export function markAsClone<T>(item: T) {
+  Object.defineProperty(item, '__isClone', {
+    value: true,
+    enumerable: false,
+  })
+  return item
 }

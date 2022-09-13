@@ -1,8 +1,14 @@
+---
+outline: deep
+---
+
 <script setup>
 import Badge from '../components/Badge.vue'
 </script>
 
 # BaseModel
+
+[[toc]]
 
 As explained in [Model Classes](./model-classes) Every service has its own `BaseModel` class. Here is an overview of its API.
 

@@ -1,4 +1,10 @@
+---
+outline: deep
+---
+
 # Service Stores
+
+[[toc]]
 
 ## Setup
 

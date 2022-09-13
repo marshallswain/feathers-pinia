@@ -1,8 +1,12 @@
-# Setup
+---
+outline: deep
+---
 
-Pinia's well-designed architecture allows it to be modular while also functioning as a central store. This means that we don't have to register each service's store in a central location. Here's are the recommended steps for setting up Feathers-Pinia:
+# Getting Started
 
 [[toc]]
+
+Pinia's well-designed architecture allows it to be modular while also functioning as a central store. This means that we don't have to register each service's store in a central location. Here's are the recommended steps for setting up Feathers-Pinia:
 
 ## Install Pinia
 
@@ -29,6 +33,38 @@ If your app will use feathers-rest (no realtime connection), install these packa
 ## Project Configuration
 
 Vite will work without any configuration. Instructions for Quasar, Nuxt, and Vue CLI are yet to be determined.
+
+### TypeScript
+
+By default, TypeScript will expect you to strictly identify properties on Model classes.  See the `!` in the following example:
+
+```ts
+class UserModel extends BaseModel {
+  foo!: string
+  bar!: number
+}
+```
+
+You can optionally configure TypeScript to not require the `!` on every property in your `tsconfig.json`. The `strictPropertyInitialization` property goes at the top level of the config, and not in the `compilerOptions`:
+
+```json
+{
+  "strictPropertyInitialization": false,
+  "compilerOptions": {
+    // not in here
+  },
+}
+```
+
+With `strictPropertyInitialization` turned off, you can declare class properties as normal:
+
+```ts
+// No `!` needed after every property
+class UserModel extends BaseModel {
+  foo: string
+  bar: number
+}
+```
 
 ## Setup
 

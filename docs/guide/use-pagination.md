@@ -1,4 +1,10 @@
+---
+outline: deep
+---
+
 # usePagination
+
+[[toc]]
 
 The `usePagination` utility is designed to pair with `useFind`. It aids in creating custom pagination interfaces.
 

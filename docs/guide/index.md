@@ -1,4 +1,9 @@
+---
+outline: deep
+---
 # Introduction
+
+[[toc]]
 
 Feathers-Pinia is the next generation of [Feathers-Vuex](https://vuex.feathersjs.com). The difference is that it's built on [Pinia](https://pinia.esm.dev/): a Vue store with an intuitive API.
 
@@ -16,7 +21,7 @@ Using Pinia in your apps will have a few positive effects:
 - You'll be more ready for the major breaking changes coming in Vuex 5. Vuex was originally written as a Flux/Redux implementation for Vue. It has served its purpose well. With Vuex 5, the team is focusing on making a Vue store.
   :::
 
-## What's Different from Feathers-Vuex
+## Compared to Feathers-Vuex
 
 Apart from being a LOT faster and having a really clean API (thanks to Pinia), there are a few breaking changes to some of the familiar processes from Feathers-Vuex.
 

@@ -1,8 +1,14 @@
+---
+outline: deep
+---
+
 <script setup>
 import Badge from '../components/Badge.vue'
 </script>
 
 # useFind
+
+[[toc]]
 
 The `useFind` utility reduces boilerplate for querying with fall-through cache and realtime updates. To get started with it you provide a `model` class and a computed `params` object.
 

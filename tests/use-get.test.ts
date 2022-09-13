@@ -9,6 +9,7 @@ const pinia = createPinia()
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
+  id: number | string
   static modelName = 'Message'
 }
 
@@ -36,7 +37,7 @@ describe('useGet', () => {
     expect(data.item.value).toBe(null)
     expect(data.servicePath.value).toBe('messages')
     expect(data.isSsr.value).toBe(false)
-    expect(data.request.value.then)
+    expect(data.request.value?.then)
   })
 
   test('item is returned', async () => {
@@ -77,5 +78,31 @@ describe('useGet', () => {
     const data = useGet({ id, model: Message, immediate: false })
 
     expect(data.hasBeenRequested.value).toBe(false)
+  })
+
+  describe('error behavior', () => {
+    test('error resets on query', async () => {
+      const id = ref(44)
+      const data = useGet({ id, model: Message })
+      await data.get(44)
+
+      expect(data.error.value?.name).toBe('NotFound')
+
+      await messagesService.create({ id: 44, text: 'Test Message' })
+
+      expect(data.item.value?.id).toBe(44)
+      expect(data.error.value).toBe(null)
+
+      id.value = 21
+
+      await data.get(id.value)
+      expect(data.error.value?.name).toBe('NotFound')
+
+      id.value = 44
+      await data.request
+      expect(data.item.value?.id).toBe(44)
+
+      expect(data.error.value).toBe(null)
+    })
   })
 })

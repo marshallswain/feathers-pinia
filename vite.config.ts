@@ -2,10 +2,11 @@
 import { defineConfig } from 'vite'
 import path from 'path'
 import vue from '@vitejs/plugin-vue'
+import dts from 'vite-plugin-dts'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), dts()],
   server: {
     hmr: {
       port: parseInt(process.env.KUBERNETES_SERVICE_PORT, 10) || 3000,
@@ -15,6 +16,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'feathersPinia',
+      fileName: 'feathers-pinia',
     },
     sourcemap: true,
     rollupOptions: {
@@ -35,6 +37,6 @@ export default defineConfig({
     },
   },
   test: {
-    globals: true
-  }
+    globals: true,
+  },
 })

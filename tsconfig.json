@@ -13,5 +13,6 @@
     "types": ["vite/client", "node", "vitest/globals"],
     "declaration": true
   },
+  "strictPropertyInitialization": false,
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

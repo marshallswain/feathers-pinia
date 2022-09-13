@@ -8,32 +8,31 @@ const pinia = createPinia()
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
-  id: number
+  _id: number
 }
-const servicePath = 'messages'
-const useMessages = defineStore({ servicePath, Model: Message })
+const servicePath = 'alt-ids'
+const useMessages = defineStore({ servicePath, Model: Message, idField: '_id' })
+const altIdStore = useMessages(pinia)
 
-const messagesStore = useMessages(pinia)
-
-const reset = () => resetStores(api.service('messages'), messagesStore)
+const reset = () => resetStores(api.service('messages'), altIdStore)
 
 describe('Model Instances', () => {
   beforeEach(() => reset())
   afterEach(() => reset())
 
-  test('creating an instance does NOT add it to the messagesStore', () => {
-    new Message({ id: 0, text: 'this is a test' })
+  test('creating an instance does NOT add it to the altIdStore', () => {
+    new Message({ _id: 0, text: 'this is a test' })
 
-    expect(messagesStore.itemsById[0]).toBeUndefined()
-    expect(messagesStore.tempsById[0]).toBeUndefined()
+    expect(altIdStore.itemsById[0]).toBeUndefined()
+    expect(altIdStore.tempsById[0]).toBeUndefined()
   })
 
   test('calling instance.addToStore() adds it to itemsById when the data contains an id', () => {
-    const message = new Message({ id: 0, text: 'this is a test' })
+    const message = new Message({ _id: 0, text: 'this is a test' })
 
     message.addToStore()
 
-    expect(messagesStore.itemsById[0]).toBeTruthy()
+    expect(altIdStore.itemsById[0]).toBeTruthy()
   })
 
   test('calling instance.addToStore() adds it to tempsById when the record contains no id', () => {
@@ -41,8 +40,8 @@ describe('Model Instances', () => {
 
     message.addToStore()
 
-    expect(messagesStore.itemsById[0]).toBeUndefined()
-    expect(Object.keys(messagesStore.tempsById)).toHaveLength(1)
+    expect(altIdStore.itemsById[0]).toBeUndefined()
+    expect(Object.keys(altIdStore.tempsById)).toHaveLength(1)
   })
 
   test('new instances have truthy __isTemp', () => {
@@ -53,11 +52,11 @@ describe('Model Instances', () => {
     expect(message.__isTemp).toBeFalsy
   })
 
-  describe('id after create', () => {
+  describe('_id after create', () => {
     test('non-reactive records have id after save', async () => {
       const message = new Message({ text: 'this is a test' })
       await message.save()
-      expect(message.id).toBeDefined()
+      expect(message._id).toBeDefined()
     })
   })
 })

@@ -1,4 +1,10 @@
+---
+outline: deep
+---
+
 # Auth Stores
+
+[[toc]]
 
 ## Setup
 

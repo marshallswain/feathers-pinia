@@ -1,4 +1,10 @@
+---
+outline: deep
+---
+
 # useGet
+
+[[toc]]
 
 The `useGet` Composition API utility provides the same fall-through cache functionality as `useFind`. It has a slightly simpler API, only requiring a `model` and `id` instead of the `params` object. Still, the `params` object can be used to send along additional query parameters in the request. Below is an example of how you might use the `useGet` utility.
 

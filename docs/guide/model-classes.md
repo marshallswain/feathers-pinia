@@ -1,4 +1,10 @@
+---
+outline: deep
+---
+
 # Model Classes
+
+[[toc]]
 
 Each Service Store gets its own Model Class. If you don't explicitly create it, one gets created under the hood. There are some benefits to using them:
 
