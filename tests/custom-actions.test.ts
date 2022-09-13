@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import { setupFeathersPinia, defineStore } from '../src/index'
 import { api } from './feathers'
 import { timeout } from './test-utils'
-import { useFind } from '../src/use-find'
+import { useFindWatched } from '../src/use-find-watched'
 import { vi } from 'vitest'
 
 describe('Custom Actions', () => {
@@ -31,7 +31,7 @@ describe('Custom Actions', () => {
       servicePath: 'messages',
       actions: {
         findMessages(params: any) {
-          return useFind({ params, model: this })
+          return useFindWatched({ params, model: this })
         },
       },
     })

@@ -1,4 +1,4 @@
-import {
+import type {
   ServiceStoreDefaultActions,
   UpdatePaginationForQueryOptions,
   RequestType,
@@ -10,11 +10,14 @@ import {
   AnyData,
   MakeServiceActionsOptions,
   CloneOptions,
-  UseFindOptions,
+  UseFindWatchedOptions,
   UseGetOptions,
+  FindClassParams,
+  FindClassParamsStandalone,
 } from './types'
-import { Params } from '../types'
-import { Id, NullableId } from '@feathersjs/feathers'
+import type { Params } from '../types'
+import type { Id, NullableId } from '@feathersjs/feathers'
+import type { MaybeArray, MaybeRef, TypedActions } from '../utility-types'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
 import {
@@ -34,8 +37,8 @@ import {
 import { unref, set } from 'vue-demi'
 import { StateTree, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
-import { MaybeArray, MaybeRef, TypedActions } from '../utility-types'
 import { useFind } from '../use-find'
+import { useFindWatched } from '../use-find-watched'
 import { useGet } from '../use-get'
 
 type ServiceStoreTypedActions<M extends BaseModel = BaseModel> = TypedActions<
@@ -465,9 +468,15 @@ export function makeActions<
       pageData.ssr = false
     },
 
-    // alias to useFind, doesn't require passing the model
-    useFind<M extends BaseModel>(options: UseFindOptions) {
-      return useFind<M>({ model: this.Model as any, ...options })
+    // alias to useFind, doesn't require passing the store
+    useFind(params: MaybeRef<FindClassParams>) {
+      (params.value || params).store = this
+      return useFind(params as MaybeRef<FindClassParamsStandalone<M>>)
+    },
+
+    // alias to useFindWatched, doesn't require passing the model
+    useFindWatched<M extends BaseModel>(options: UseFindWatchedOptions) {
+      return useFindWatched<M>({ model: this.Model as any, ...options })
     },
     // alias to useGet, doesn't require passing the model
     useGet<M extends BaseModel>(options: UseGetOptions) {

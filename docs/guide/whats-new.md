@@ -238,6 +238,68 @@ export class User extends BaseModel {
 
 ### `associateGet` 🎁
 
+## New `useFind` API 🎁
+
+The `useFind` API has been completely rewritten from scratch. Here's an overview of its features:
+
+- **Intelligent Fall-Through Caching** - Like SWR, but way smarter.
+- **Client-Side Pagination** - Built in, sharing the same logic with `usePagination`.
+- **Server-Side Pagination** - Also built in.
+- **Infinite Pagination Support** - Give it a query and tell it when to load more data.
+- Read more on the [`useFind` page](./use-find).
+
+<BlockQuote>
+
+To lighten the burden of migrating with this breaking change, the old `useFind` utility is now provided as [`useFindWatched`](./use-find-watched).
+
+</BlockQuote>
+
+### Client Paging, Manual Fetch
+
+Let's look at the two most-common use cases. This example shows client-side pagination with manual fetch:
+
+```ts
+import usePosts from '../stores/posts'
+
+const postStore = usePosts()
+
+const { data, next, prev, find } = postStore.useFind({ query: {} })
+
+// fetch data
+await find()
+
+// move to the next page
+await next()
+
+// move to the previous page
+await prev()
+```
+
+### Server Paging, Auto Fetch
+
+Another common use case is server-side pagination. Enable it by passing `paginateOnServer` in the params. You can also pull out `isPending` to show a status indicator when a request is pending. That's it!
+
+```ts
+import usePosts from '../stores/posts'
+
+const postStore = usePosts()
+
+const { data, next, prev, isPending } = postStore.useFind({ 
+  query: {}, 
+  paginateOnServer: true 
+})
+
+// move to the next page
+await next()
+
+// move to the previous page
+await prev()
+```
+
+## `useFindWatched` API
+
+The old `useFind` API is still around and is now called `useFindWatched`.
+
 ## Store API Improvements
 
 The `useFind` utility -- for implementing fall-through-cached `find` requests -- is now available directly on the store, further reducing boilerplate.

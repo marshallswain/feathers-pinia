@@ -4,6 +4,7 @@ import type { Id, Query, NullableId, Application as FeathersClient } from '@feat
 import type { StateTree, Store as _Store, StoreDefinition, _GettersTree } from 'pinia'
 import type { MaybeArray, MaybeRef } from '../utility-types'
 import { BaseModel } from './base-model'
+import { Find } from '../use-find'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
@@ -168,7 +169,8 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   hydrateAll: () => void
   toggleEventLock: (idOrIds: MaybeArray<Id>, event: string) => void
   unflagSsr: (params: Params) => void
-  useFind: (options: UseFindOptions) => UseFindComputed<M>
+  useFind: (params: MaybeRef<FindClassParams>) => Find<M>
+  useFindWatched: (options: UseFindWatchedOptions) => UseFindComputed<M>
   useGet: (options: UseGetOptions) => UseGetComputed<M>
 }
 
@@ -582,7 +584,18 @@ export type DefineFeathersStoreOptions<
   actions?: A
 }
 
-export interface UseFindOptions {
+export interface FindClassParams extends Params {
+  query: Query
+  paginateOnServer?: boolean
+  qid?: string
+  immediate?: boolean
+  watch?: boolean
+}
+export interface FindClassParamsStandalone<M extends BaseModel> extends FindClassParams {
+  store: ServiceStoreDefault<M>
+}
+
+export interface UseFindWatchedOptions {
   params: Params | ComputedRef<Params | null>
   fetchParams?: ComputedRef<Params | null | undefined>
   queryWhen?: ComputedRef<boolean> | QueryWhenFunction
@@ -590,7 +603,7 @@ export interface UseFindOptions {
   local?: boolean
   immediate?: boolean
 }
-export interface UseFindOptionsStandalone<M extends BaseModel> extends UseFindOptions {
+export interface UseFindWatchedOptionsStandalone<M extends BaseModel> extends UseFindWatchedOptions {
   model: ModelStatic<M>
 }
 export interface UseFindState {

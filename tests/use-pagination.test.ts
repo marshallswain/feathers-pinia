@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import { setupFeathersPinia } from '../src/index'
 import { api } from './feathers'
 import { timeout } from './test-utils'
-import { useFind } from '../src/use-find'
+import { useFindWatched } from '../src/use-find-watched'
 import { usePagination } from '../src/use-pagination'
 
 const pinia = createPinia()
@@ -46,14 +46,11 @@ describe('usePagination', () => {
       Object.assign(query, pagination.value)
       return { query, paginate: true }
     })
-    const { latestQuery } = useFind({ model: Message, params })
+    const { latestQuery } = useFindWatched({ model: Message, params })
 
     await timeout(200)
 
-    const { currentPage, pageCount, next, canNext, canPrev } = usePagination(
-      pagination,
-      latestQuery,
-    )
+    const { currentPage, pageCount, next, canNext, canPrev } = usePagination(pagination, latestQuery)
     expect(currentPage.value).toBe(1)
     expect(pageCount.value).toBe(Math.ceil(totalItems / pageLimit))
     expect(canNext.value).toBeTruthy()
@@ -86,14 +83,11 @@ describe('usePagination', () => {
       Object.assign(query, pagination)
       return { query, paginate: true }
     })
-    const { latestQuery } = useFind({ model: Message, params })
+    const { latestQuery } = useFindWatched({ model: Message, params })
 
     await timeout(200)
 
-    const { currentPage, itemsCount, pageCount, next, canNext, canPrev } = usePagination(
-      pagination,
-      latestQuery,
-    )
+    const { currentPage, itemsCount, pageCount, next, canNext, canPrev } = usePagination(pagination, latestQuery)
     expect(currentPage.value).toBe(1)
     expect(itemsCount.value).toBe(totalItems)
     expect(pageCount.value).toBe(Math.ceil(totalItems / pageLimit))
