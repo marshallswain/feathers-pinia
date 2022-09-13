@@ -87,7 +87,7 @@ And here's a look at each individual property:
   - Explicitly returning `null` will prevent an API request from being made (but only for Vue 3. For Vue 2, use `queryWhen`).
 - `queryWhen` provides a logical separation for preventing API requests _outside_ of the `params`. It must be a `computed` property that returns one of the following:
   - a `boolean`
-  - a `QueryWhenFunction`, receiving a `QueryWhenContext` and returning a boolean. <Badge text="0.25.0+" />
+  - <Badge type="error" text="pending removal" /> a `QueryWhenFunction`, receiving a `QueryWhenContext` and returning a boolean.
 - `qid` allows you to specify a query identifier (used in the pagination data in the store). This can also be set dynamically by returning a `qid` in the params.
 - `immediate`, which is `true` by default, determines if the internal `watch` should fire immediately. Set `immediate: false` and the query will not fire immediately. It will only fire on subsequent changes to the params.
 
