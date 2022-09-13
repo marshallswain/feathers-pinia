@@ -91,7 +91,7 @@ If you use any of the above database adapters, give the new query operators a tr
 
 ## Class Definition Defaults 🎁
 
-**[Small breaking change]**
+[Small breaking change]
 
 Defaults values can now be specified directly on the Model interface. Custom constructors have been made much cleaner due to the new `instance.init()` BaseModel method.  After calling `super(data, options)` to initialize the BaseModel, the `init` method can be called from `this`:
 
@@ -155,7 +155,7 @@ clone.name = 'Feathers is Amazing!'
 await clone.save(). // --> Only the changed props go to the server!
 ```
 
-<BlockQuote label="HOW IT WORKS" type="details">
+<BlockQuote label="How It Works" type="info">
 
 - By default, all keys are deep-compared between the original record and the clone.
 - Once all changes are found, only the top-level keys are sent to the server.

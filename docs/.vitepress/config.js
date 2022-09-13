@@ -72,10 +72,10 @@ function getGuideSidebar() {
       text: 'Common Tools',
       items: [
         { text: 'useFind', link: '/guide/use-find' },
-        { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
         { text: 'useGet', link: '/guide/use-get' },
-        { text: 'usePagination', link: '/guide/use-pagination' },
         { text: 'useClones', link: '/guide/use-clones' },
+        { text: 'usePagination', link: '/guide/use-pagination' },
+        { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
       ],
     },
     {
