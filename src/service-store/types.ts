@@ -38,6 +38,7 @@ interface MostRecentQuery {
 }
 
 export interface CurrentQuery<M extends BaseModel> extends MostRecentQuery {
+  qid: string
   ids: number[]
   items: M[]
 }
