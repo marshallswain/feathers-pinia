@@ -1,3 +1,11 @@
+---
+outline: deep
+---
+
+# Common Patterns
+
+[[toc]]
+
 ## Accessing a Store From Hooks
 
 Coming Soon
