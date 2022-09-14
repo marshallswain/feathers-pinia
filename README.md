@@ -1,7 +1,7 @@
 # Feathers-Pinia
 
 <a href="https://feathers-pinia.pages.dev">
-  <img src="https://user-images.githubusercontent.com/128857/190210382-c461ac5b-5f0f-4531-8d2d-081e0ec7343c.jpg" alt="Feathers Pinia Website Hero" />
+  <img src="https://user-images.githubusercontent.com/128857/190210685-df1dbd54-eb41-442e-90c1-d82ca44fc786.jpg" alt="Feathers Pinia Website Hero" />
 </a>
 
 [Read the Documentation](https://feathers-pinia.pages.dev)
