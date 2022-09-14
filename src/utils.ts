@@ -77,7 +77,7 @@ export function getItemsFromQueryInfo(pagination: any, queryInfo: any, keyedById
   const ids = pageLevel && pageLevel.ids
 
   if (ids && ids.length) {
-    return ids.map((id: Id) => keyedById[id])
+    return Object.values(_.pick(keyedById, ...ids))
   } else {
     return []
   }
