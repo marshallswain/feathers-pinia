@@ -196,3 +196,64 @@ Make sure you import and create store beforehand with `const <id>Store = use<id>
 - If you where using renderless components `<feathers-vuex-form-wrapper>` and/or `<feathers-vuex-form-input>`, you can either create 2 custom components to recreate that functionality or use the recommended `handleClones` utility.
 
 **Tip:** you can use of the find-and-replace functionality in the IDE of your choice to make this easier.
+
+## Compared to Feathers-Vuex
+
+Apart from being a LOT faster and having a really clean API (thanks to Pinia), there are a few breaking changes to some of the familiar processes from Feathers-Vuex.
+
+### New Model Instances Not Added to the store
+
+With Feathers-Vuex, when you called `new Model(data)`, the new instance would automatically get added to the store.
+
+In Feathers-Pinia, you have to call `instance.addToStore()` to manually add the instance to the store.
+
+```ts
+import { models } from 'feathers-pinia'
+
+const todo = new models.api.Todo({ name: 'do something' })
+todo.addToStore()
+```
+
+### Calling .clone() on a clone is allowed
+
+In Feathers-Vuex you couldn't call `.clone()` on a clone. Now, calling `.clone()` will do the same as
+calling `.reset()`.
+
+### Store Structure Changes
+
+Since `state`, `getters`, and `actions` all live inside the same Pinia store object, the getters have been renamed to avoid colliding with action names.
+
+#### State
+
+- `ids` is no longer in state. It's now a getter named `itemIds`.
+- `keyedById` is now called `itemsById`.
+
+#### Getters
+
+- **`findInStore`** takes the place of the `find` getter.
+- **`countInStore`** takes the place of the `count` getter.
+- **`getFromStore`** takes the place of the `get` getter.
+- **`itemIds`** takes the place of the `ids` array in data.
+- **`items`** takes the place of the `list` getter.
+- **`tempIds`** is like `itemIds` but for temp records.
+- **`temps`** is a new array of temp records.
+- **`cloneIds`** is like `itemIds` but for clone records.
+- **`clones`** is a new array of clone records.
+
+#### Actions Mostly the Same
+
+- **`find`**
+- **`count`**
+- **`get`**
+- **`create`**
+- **`update`**
+- **`patch`**
+- **`remove`**
+- **`removeFromStore`**
+- **`addOrUpdate`**
+- **`addToStore`** is a new alias to `addOrUpdate`
+- **`clearAll`**
+- **`clone`**
+- **`commit`**
+- **`reset`**
+- **`hydrateAll`** might be deprecated. Hydration with Pinia is as simple as `Object.assign(store, data)`.
