@@ -12,27 +12,27 @@ Pinia's well-designed architecture allows it to be modular while also functionin
 
 Install these packages using your preferred package manager.  Until version 1.0.0, it's recommended that you add a `~` in front of the version number for Feathers-Pinia to only get patch releases.
 
-```
-pinia feathers-pinia
+```bash
+npm i pinia feathers-pinia
 ```
 
 ## Install Feathers
 
 If your app will use socket.io, install these packages:
 
-```
-@feathersjs/feathers @feathersjs/authentication-client feathers-hooks-common @feathersjs/socketio-client  socket.io-client
+```bash
+npm i @feathersjs/feathers@pre @feathersjs/authentication-client@pre @feathersjs/socketio-client@pre socket.io-client
 ```
 
 If your app will use feathers-rest (no realtime connection), install these packages:
 
-```
-@feathersjs/feathers @feathersjs/authentication-client feathers-hooks-common @feathersjs/rest-client
+```bash
+npm i @feathersjs/feathers@pre @feathersjs/authentication-client@pre @feathersjs/rest-client@pre
 ```
 
 ## Project Configuration
 
-Vite will work without any configuration. Instructions for Quasar, Nuxt, and Vue CLI are yet to be determined.
+Vite will work without any configuration. Specific instructions for Quasar and Nuxt are yet to be determined, but will be an adaptation of the below.
 
 ### TypeScript
 
@@ -58,9 +58,8 @@ You can optionally configure `tsconfig.json` to not require the `!` on every pro
 With `strictPropertyInitialization` turned off, you can declare class properties as normal:
 
 ```ts
-// No `!` needed after every property
 class UserModel extends BaseModel {
-  foo: string
+  foo: string // No `!` needed after every property
   bar: number
 }
 ```
@@ -186,3 +185,52 @@ export const useUsers = defineStore({
 
 api.service(servicePath).hooks({})
 ```
+
+## Other Setup Examples
+
+### With `@feathersjs/memory`
+
+You can try Feathers-Pinia without a backend by using `@feathersjs/memory`. First, you'll need to install the package:
+
+```bash
+npm i @feathersjs/memory
+```
+
+Now you only need to instantiate the memory server on the service. It takes only two lines of code!  See here:
+
+```ts
+// src/store/users.ts
+import { defineStore, BaseModel } from './store.pinia'
+import { api } from '../feathers'
+import { memory } from '@feathersjs/memory' // import the memory module
+
+export class User extends BaseModel {}
+
+const servicePath = 'users'
+export const useUsers = defineStore({ servicePath, Model: User })
+
+// make a memory store for the service
+api.use(servicePath, memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
+api.service(servicePath).hooks({})
+```
+
+With the `memory` adapter in place, you'll be able to make requests as though you were connected to a remote server. And technically, for this service it is no longer required to have a client transport (rest or socket.io) configured.
+
+One more thing: you can start the memory adapter with fixture data in place, if wanted. Provide the `store` option with the the data keyed by id, as shown below. You can also provide this option during instantiation.
+
+```ts
+api.use(servicePath, memory({ 
+  paginate: { default: 10, max: 100 }, 
+  whitelist: ['$options'], 
+  store: {
+    1: { id: 1, name: 'Marshall' },
+    2: { id: 2, name: 'David' },
+    10: { id: 10, name: 'Wolverine' },
+    10: { id: 10, name: 'Gambit' },
+    11: { id: 11, name: 'Rogue' },
+    12: { id: 12, name: 'Jubilee' },
+  } 
+}))
+```
+
+The same data can be written at any time during runtime by setting `api.service('users').options.store` to the new object, keyed by id.
