@@ -25,7 +25,7 @@ In Feathers-Pinia, model classes are not required in all cases. Model classes ar
 If neither of the above scenarios applies to your situation, you can shorten the service setup and remove the `Model`.
 
 ```ts
-import { defineStore, BaseModel } from './store.pinia'
+import { defineStore, BaseModel } from '../pinia'
 import { api } from '../feathers'
 
 const servicePath = 'users'
@@ -55,7 +55,7 @@ usersService.addToStore({ id: 0, name: 'Marshall' })
 Another potential caveat with using Model classes in Feathers-Pinia is that any default values defined on a class will override and overwrite the values provided in `instanceDefaults` UNLESS you assign them again in the extending class's constructor. Read the comment and string values in the next example for more information.
 
 ```ts
-import { defineStore, BaseModel } from './store.pinia'
+import { defineStore, BaseModel } from '../pinia'
 
 class Message extends BaseModel {
   // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
@@ -76,7 +76,7 @@ console.log(message.text) // --> 'The text in the model always wins. You can onl
 Notice in the above example how even though we've provided `text: 'hello there!'` to the new message, the value ends up being the default value defined in the class definition. This is an important part of how extending classes works in JavaScript. If you definitely require to define instance properties inside the class definition, the workaround is to add a `constructor` to the class and re-assign the properties in the same way that the `BaseModel` constructor does it. Here's what it looks like:
 
 ```ts
-import { defineStore, BaseModel } from './store.pinia'
+import { defineStore, BaseModel } from '../pinia'
 import { models } from 'feathers-pinia'
 import type { ModelStatic } from 'feathers-pinia'
 

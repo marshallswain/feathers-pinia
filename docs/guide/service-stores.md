@@ -226,6 +226,25 @@ Uses the Feathers Client to send an `patch` request to the API server.
 
 Uses the Feathers Client to send a `remove` request to the API server.
 
+### `afterFind(response)`
+
+The `afterFind` method is a store-level callback that gets called with the response data once the response data has been added to the store.  It's useful if you need to access additional keys on the reponse object.
+
+```js
+
+export const useUsers = defineStore({
+  servicePath,
+  Model: User,
+  actions: {
+    afterFind (response: any) {
+      // do extra processing on the response
+    },
+  },
+})
+```
+
+See an example on the [Common Patterns](./common-patterns#handling-custom-server-responses) page.
+
 ## Custom Properties
 
 You can customize a store using the `state`, `getters` and `actions` options. It's possible to overwrite the built-in properties.
