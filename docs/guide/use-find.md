@@ -218,7 +218,7 @@ Declarative queries can work exactly the same way. When queries re-run based on 
 
 <BlockQuote>
 
-In the above scenario, if you use the `feathers-batch` plugins on the client and server, it will automatically group all queries into a single request.  They don't even have to be to the same service, only to the same server. It will really speed up your API.
+In the above scenario, if you use the [`feathers-batch` plugins](https://github.com/feathersjs-ecosystem/feathers-batch) on the client and server, it will automatically group all queries into a single request.  They don't even have to be to the same service, only to the same server. It will really speed up your API.
 
 </BlockQuote>
 
