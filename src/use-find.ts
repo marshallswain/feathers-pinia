@@ -1,11 +1,25 @@
-import type { Paginated, Params, Query, QueryInfo } from './types'
-import type { ServiceStoreDefault, FindFn, FindClassParamsStandalone, CurrentQuery } from './service-store/types'
+import type { Paginated, Params, QueryInfo } from './types'
+import type {
+  ServiceStoreDefault,
+  FindFn,
+  FindClassParamsStandalone,
+  FindClassParams,
+  CurrentQuery,
+} from './service-store/types'
 import type { MaybeRef } from './utility-types'
-import { computed, ComputedRef, isRef, Ref, ref, unref, watch, WritableComputedRef } from 'vue-demi'
+import { computed, ComputedRef, isReadonly, isRef, Ref, ref, unref, watch, WritableComputedRef } from 'vue-demi'
 import { BaseModel } from './service-store/base-model'
 import { usePageData } from './utils-pagination'
-import { computedAttr, getQueryInfo, hasOwn, makeUseFindItems } from './utils'
+import {
+  computedAttr,
+  getQueryInfo,
+  hasOwn,
+  makeParamsWithoutPage,
+  makeUseFindItems,
+  updateParamsExcludePage,
+} from './utils'
 import { _ } from '@feathersjs/commons'
+import { isEqual } from 'lodash'
 
 type Store<M extends BaseModel> = ServiceStoreDefault<M>
 
@@ -13,12 +27,8 @@ export function useFind<M extends BaseModel>(params: MaybeRef<FindClassParamsSta
   return new Find(params)
 }
 
-interface ParamsWithQuery<M extends BaseModel> extends FindClassParamsStandalone<M> {
-  query: Query
-}
-
 export class Find<M extends BaseModel> {
-  params: Ref<ParamsWithQuery<M>>
+  params: Ref<FindClassParams>
   store: Store<M>
   paginateOnServer: boolean
   isSsr: ComputedRef<boolean>
@@ -63,14 +73,21 @@ export class Find<M extends BaseModel> {
   toPage: (page: number) => Promise<void>
 
   constructor(_params: MaybeRef<FindClassParamsStandalone<M>>) {
-    // If we started without a query, flag `startedWithoutQuery`` then assign an empty query.
-    const params = isRef(_params) ? _params : ref(_params)
-    const startedWithQuery = hasOwn(params.value, 'query')
-    if (!startedWithQuery) params.value.query = {}
-    ;(this.store as Store<M>) = params.value.store as Store<M>
+    // If the _params are a computed, store them so we can watch them later.
+    let _computedParams: any
+    if (isReadonly(_params)) {
+      _computedParams = _params
+    }
+
+    (this.store as Store<M>) = unref(_params).store as Store<M>
+    // If we started without a query, assign an empty query. Assure computed params becomes writable ref.
+    const params = isRef(_params) ? (isReadonly(_params) ? ref(_params.value) : _params) : ref(_params)
+
+    // Remove the store from the provided params
+    delete (params.value as FindClassParams).store
 
     /*** PARAMS ***/
-    this.params = params as Ref<ParamsWithQuery<M>>
+    this.params = params as Ref<FindClassParams>
     this.qid = computedAttr(params.value, 'qid')
     // Set qid to default if it was not passed in the params.
     if (!this.qid.value) this.qid.value = 'default'
@@ -251,11 +268,30 @@ export class Find<M extends BaseModel> {
     }
 
     if (this.paginateOnServer) {
-      if (_watch) {
+      // When a read-only computed was provided, watch the params
+      if (_computedParams) {
+        let _cachedWatchedParams: FindClassParams
+        // Run `find` whenever they change.
+        const updateParams = (_params: FindClassParams) => {
+          // If params are null, do nothing
+          if (_params == null) return
+
+          // If params don't match the cached ones, update internal params and send request.
+          const newParams = makeParamsWithoutPage(_params)
+          if (!isEqual(_.omit(newParams, 'store'), _.omit(_cachedWatchedParams, 'store'))) {
+            _cachedWatchedParams = newParams
+            updateParamsExcludePage(params as any, newParams)
+            makeRequest()
+          }
+        }
+        watch(_computedParams, updateParams, { immediate })
+      }
+      // Watch the reactive params
+      else if (_watch && !_computedParams) {
         watch(paramsWithoutPagination, () => makeRequest(), { immediate })
       }
       // If immediate is provided without limit or skip, manually run immediately
-      if ((!_watch && immediate) || (immediate && (this.limit.value == null || this.limit.value == null))) {
+      else if ((!_watch && immediate) || (immediate && (this.limit.value == null || this.limit.value == null))) {
         makeRequest()
       }
     }

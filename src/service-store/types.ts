@@ -598,6 +598,7 @@ export interface FindClassParams extends Params {
   watch?: boolean
 }
 export interface FindClassParamsStandalone<M extends BaseModel> extends FindClassParams {
+  query: Query
   store: ServiceStoreDefault<M>
 }
 

@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
 import { Find, useFind } from '../src/use-find'
-import { computed, reactive, ref } from 'vue-demi'
+import { computed, ref } from 'vue-demi'
 
 const pinia = createPinia()
 const { defineStore } = setupFeathersPinia({ clients: { api } })
@@ -579,5 +579,96 @@ describe('latestQuery and previousQuery', () => {
       expect(idsAfterRequest).not.toEqual(idsFromFirstPage)
       expect(idsAfterRequest).not.toEqual(idsWhilePending)
     })
+  })
+})
+
+describe('Computed Params', () => {
+  test('can use computed params, immediately sends request by default', async () => {
+    const text = ref('Moose')
+    const params = computed(() => {
+      return {
+        query: { text: text.value },
+        store: messageStore,
+        paginateOnServer: true,
+      }
+    })
+    const { data, total, requestCount, request } = useFind(params)
+
+    await request.value
+
+    // requests are not sent by default
+    expect(data.value.length).toBe(1)
+    expect(requestCount.value).toBe(1)
+
+    text.value = 'Goose'
+
+    // Wait for watcher to run and the request to finish
+    await timeout(20)
+    await request.value
+
+    // request was sent after computed params changed
+    expect(requestCount.value).toBe(2)
+    expect(total.value).toBe(1)
+    expect(data.value[0].text).toBe('Goose')
+  })
+
+  test('computed params can start with limit and skip', async () => {
+    const ids = ref([1, 2, 3, 4, 5, 6])
+    const params = computed(() => {
+      return {
+        query: { id: { $in: ids.value }, $limit: 5, $skip: 0 },
+        store: messageStore,
+        paginateOnServer: true,
+      }
+    })
+    const { params: _params, data, total, requestCount, request } = useFind(params)
+
+    expect(_params.value.query.$limit).toBe(5)
+    expect(_params.value.query.$skip).toBe(0)
+
+    await request.value
+
+    // requests are not sent by default
+    expect(data.value.length).toBe(5)
+    expect(requestCount.value).toBe(1)
+
+    ids.value = [4, 5, 6, 7, 8, 9, 10]
+
+    // Wait for watcher to run and the request to finish
+    await timeout(20)
+    await request.value
+
+    // request was sent after computed params changed
+    expect(data.value.length).toBe(5)
+    expect(requestCount.value).toBe(2)
+    expect(total.value).toBe(7)
+  })
+
+  test.skip('return null from computed params to prevent a request', async () => {
+    const params = computed(() => {
+      // if (shouldQuery.value)
+      return {
+        query: { text: 'Moose' },
+        store: messageStore,
+        paginateOnServer: true,
+      }
+      // else return null
+    })
+    const { data, total, requestCount, request } = useFind(params)
+
+    await request.value
+
+    // requests are not sent by default
+    expect(data.value.length).toBe(1)
+    expect(requestCount.value).toBe(1)
+
+    // Wait for watcher to run and the request to finish
+    await timeout(20)
+    await request.value
+
+    // request was sent after computed params changed
+    expect(requestCount.value).toBe(2)
+    expect(total.value).toBe(1)
+    expect(data.value[0].text).toBe('Goose')
   })
 })

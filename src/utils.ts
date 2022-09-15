@@ -1,12 +1,11 @@
 import type { Params, Paginated, QueryInfo, DiffDefinition } from './types'
 import type { MaybeRef } from './utility-types'
-import type { Id } from '@feathersjs/feathers'
-import type { AnyData, AnyDataOrArray, BaseModelAssociations } from './service-store/types'
+import type { AnyData, AnyDataOrArray, BaseModelAssociations, FindClassParams } from './service-store/types'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'isomorphic-mongo-objectid'
 import fastCopy from 'fast-copy'
-import { computed, unref } from 'vue-demi'
+import { computed, Ref, unref } from 'vue-demi'
 import { isEqual } from 'lodash'
 
 function stringifyIfObject(val: any): string | any {
@@ -250,4 +249,20 @@ export const makeUseFindItems = (store: any, params: any) => {
       return []
     }
   })
+}
+
+export function makeParamsWithoutPage(params: MaybeRef<FindClassParams>) {
+  params = unref(params)
+  const query = _.omit(params.query, '$limit', '$skip')
+  const newParams = _.omit(params, 'query')
+  return { ...newParams, query }
+}
+
+// Updates the _params with everything from _newParams except `$limit` and `$skip`
+export function updateParamsExcludePage(_params: Ref<FindClassParams>, _newParams: MaybeRef<FindClassParams>) {
+  _newParams = unref(_newParams)
+  const query = _.omit(_newParams.query, '$limit', '$skip')
+  const newParams = _.omit(_params.value, 'store', 'query')
+  Object.assign(_params.value.query, query)
+  Object.assign(_params.value, newParams)
 }
