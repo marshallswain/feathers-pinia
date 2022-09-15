@@ -38,7 +38,7 @@ To lighten the burden of migrating with this breaking change, the old `useFind` 
 
 We stated earlier that the new `useFind` supports both declarative and imperative workflows. What's the difference and what does it mean in the code?  The short definitions are these:
 
-- Imperative code gives commands at each step and expecting to be obeyed. The figurative verbal summary would be "Do this. Now do this. Now do that."
+- Imperative code gives commands at each step and expects to be obeyed. The figurative verbal summary would be "Do this. Now do this. Now do that."
 - Declarative code gives a full specification of how to act based on conditions. You sort of teach the code correct principles and let it govern itself. The figurative verbal summary would be "Here are instructions of how to respond to different conditions. Watch for those conditions and act accordingly."
 
 So imperative code is like pushing instructions to the computer one line at a time.  Declarative code is more like having the computer pull from a set of instructions based on conditions.
@@ -47,7 +47,7 @@ In Vue, the declarative APIs include `computed` and `watch` and other APIs like 
 
 ### Declarative Example
 
-To implement `useFind` declaratively, we can use computed params, as shown here.  This example runs three requests based on a shared value. Suppose you have a set of tasks related to features which users can upvote.  Tasks have an `isCompleted` attribute, an `upvotes` count and a `dueDate` property.  Now let's suppose we're going to build a dashboard where you want to see a few lists based on the date picked
+To implement `useFind` declaratively, we can use computed params, as shown here.  This example runs four requests based on a shared value. Suppose you have a set of tasks related to features which users can upvote.  Tasks have an `isCompleted` attribute, an `upvotes` count and a `dueDate` property.  Now let's suppose we're going to build a tasks dashboard. You want to see various types of task lists all based on a chosen date. So let's pretend that these are our requirements:
 
 - The 5 most-upvoted tasks for the day
 - The 5 least-upvoted tasks for the day
@@ -73,7 +73,7 @@ const paramsMostUpvoted = computed(() => ({
 const { data: mostUpvoted } = taskStore.useFind(paramsMostUpvoted)
 
 // 5 least-upvoted tasks for the day
-const paramsLeastUpvotedTasks = computed(() => ({ 
+const paramsLeastUpvoted = computed(() => ({ 
   query: { 
     dueDate: date.value, 
     $sort: { upvotes: 1 },
@@ -88,26 +88,26 @@ const paramsComplete = computed(() => ({
   query: { 
     dueDate: date.value, 
     isCompleted: true,
-    $sort: { upvotes: -1 },
-    $limit: 10,
+    $limit: 20,
   },
   paginateOnServer: true
 }))
-const { data: completedTasks } = taskStore.useFind(pastParams)
+const { data: completedTasks } = taskStore.useFind(paramsComplete)
 
 // Ten most-voted-for, incomplete tasks for the day
 const paramsIncomplete = computed(() => ({ 
   query: { 
     dueDate: date.value, 
     isCompleted: false,
-    $limit: 20,
+    $sort: { upvotes: -1 },
+    $limit: 10,
   },
   paginateOnServer: true
 }))
 const { data: incompleteTasks } = taskStore.useFind(paramsIncomplete)
 ```
 
-In the above scenario, we can bind lists in the template to display the four types of data.  Now, what code do we need to write to show data for a different date?  Let's see what a handler looks like when we have written declarative code.
+In the above scenario, we can bind to the task lists in the template and display the four reports.  Now, what code do we need to write to show data for a different date?  Let's see what a handler looks like when we have written declarative code.
 
 ### Declarative Handler
 
@@ -141,7 +141,7 @@ const paramsMostUpvoted = reactive({
 const { data: mostUpvoted, find: findMostUpvoted } = taskStore.useFind(paramsMostUpvoted)
 
 // 5 least-upvoted tasks for the day
-const paramsLeastUpvotedTasks = reactive({ 
+const paramsLeastUpvoted = reactive({ 
   query: { 
     dueDate: new Date(), 
     $sort: { upvotes: 1 },
@@ -156,19 +156,19 @@ const paramsComplete = reactive({
   query: { 
     dueDate: new Date(), 
     isCompleted: true,
-    $sort: { upvotes: -1 },
-    $limit: 10,
+    $limit: 20,
   },
   paginateOnServer: true
 })
-const { data: completedTasks, find: findComplete } = taskStore.useFind(pastParams)
+const { data: completedTasks, find: findComplete } = taskStore.useFind(paramsComplete)
 
 // Ten most-voted-for, incomplete tasks for the day
 const paramsIncomplete = reactive({ 
   query: { 
     dueDate: new Date(), 
     isCompleted: false,
-    $limit: 20,
+    $sort: { upvotes: -1 },
+    $limit: 10,
   },
   paginateOnServer: true
 })
@@ -177,16 +177,16 @@ const { data: incompleteTasks, find: findIncomplete } = taskStore.useFind(params
 
 ### Imperative Handler
 
-What does a handler look like for an imperative-minded example of our test scenario?  Let's take a look.  First, we have to update each set of params, since they can't automatically compute themselves (that's what `computed` properties are for).
+What does a handler look like for an imperative-minded example of our test scenario?  Let's take a look.  First, we have to update each set of params, since they can't automatically compute themselves (that's what `computed` properties are for). Then we have to manually tell `useFind` to request the new data.
 
 ```ts
 // A handler to change the date for each query
 const setDate = (newDate) => {
   paramsMostUpvoted.query.date = newDate
-  paramsLeastUpvotedTasks.query.date = newDate
+  paramsLeastUpvoted.query.date = newDate
   paramsComplete.query.date = newDate
   paramsIncomplete.query.date = newDate
-  // query more data
+  // fetch data for the new date
   await Promise.all([
     findMostUpvoted()
     findLeastUpvoted()
@@ -196,7 +196,25 @@ const setDate = (newDate) => {
 }
 ```
 
-Look how much longer the above code is!  We had to manually tell it to update the date in each query, then we had to manually fetch each one.  With declarative-minded code, we can change the `date` as the source of truth.  The computed property also makes `useFind` query when changes occur.
+Look how much longer the imperative code is!  We had to manually tell `useFind` to update the date in each set of params. Then we had to manually command each one to fetch the new data.  With declarative-minded code, we can change the `date` as the source of truth. When it receives a `computed` property, `useFind` knows to re-fetch when changes occur.
+
+So is it better to write declarative code? The answer is "maybe". It often makes the most sense to write declarative code, but some situations will work better with imperative code.  When writing in Vue, sometimes declarative code will lead to infinite loops. If you have three computed variables that watch each other, they will run forever. This code would create a loop (actually the code probably wouldn't run because `c` is being used before it's declared, but let's pretend it can run):
+
+```ts
+const a = computed(() => c.value + 1)
+const b = computed(() => a.value + 1)
+const c = computed(() => b.value + 1)
+```
+
+Can you see the loop?  
+
+- When `c` updates, `a` will notice and increase its value by 1.
+- When `a` increases its value, `b` will notice and increase its value by 1.
+- When `b` increases its value, `c` will notice and increase its value by 1, which then re-triggers `a`.
+
+The loop will go on until the allocated space for tracking current operations is too full, also known as a "stack overflow".
+
+Declarative queries can work exactly the same way. When queries re-run based on other data and that logic goes in a loop, you'll end up with an asynchronous stack of requests. In order to fix the problem, you can switch one of them to imperative to break the automated flow.
 
 <BlockQuote>
 
