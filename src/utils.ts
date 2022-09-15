@@ -254,7 +254,7 @@ export const makeUseFindItems = (store: any, params: any) => {
 export function makeParamsWithoutPage(params: MaybeRef<FindClassParams>) {
   params = unref(params)
   const query = _.omit(params.query, '$limit', '$skip')
-  const newParams = _.omit(params, 'query')
+  const newParams = _.omit(params, 'query', 'store')
   return { ...newParams, query }
 }
 

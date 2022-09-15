@@ -259,7 +259,7 @@ export class Find<M extends BaseModel> {
       if (!this.paginateOnServer) return
 
       // Don't make a second request if no limit or skip were provided
-      if (this.requestCount.value === 1 && !initWithLimitOrSkip) {
+      if (this.requestCount.value === 1 && !initWithLimitOrSkip && !_computedParams) {
         initWithLimitOrSkip = true
         return
       }
