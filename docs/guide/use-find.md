@@ -120,7 +120,7 @@ const setDate = (newDate) => {
 }
 ```
 
-## Imperative Example
+### Imperative Example
 
 To write the example as imperative-focused code, we only need to replace the `computed` properties with `reactive` ones. A `reactive` object will not autmoatically update when sub-values like `date` change, so we just have to pass the date to each query.  Now we have more repetition. Notice how the same date is specified four times.
 
