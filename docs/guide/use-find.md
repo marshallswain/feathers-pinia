@@ -32,7 +32,17 @@ To lighten the burden of migrating with this breaking change, the old `useFind` 
 
 ### `useFind(params)`
 
-### Returned Utilities
+- **`params`** can be a `reactive` a `ref` or a `computed` object of the following structure:
+  - **`query` {Object}** <Badge type="danger" label="required" /> a Feathers query object.
+  - **`store` {Store}** <Badge type="danger" label="conditionally required" /> a Feathers-Pinia service store. It is required in order to use `useFind` in standalone mode. `useFind` can also be find on any service store by calling `store.useFind(params)`. When called from the store, you do not pass the store object in the params.
+  - **`qid` {string}** an identifier for this query. Allows pagination data to be tracked separately.
+  - **`paginateOnServer` {boolean}** when enabled, the internal `findInStore` getter will return only the results that match the current query in the `pagination` object for this store.
+  - **`immediate` {boolean = true}** when `paginateOnServer` is set, by default it will make an initial request. Set `immediate: false` to prevent the initial request.
+  - **`watch` {boolean = false}** enable this to automatically query when `reactive` or `ref` params are changed. This does not apply to `computed` params, since they are automatically watched.
+
+### Returned Object
+
+The `useFind` function is actually a factory function that returns an instance of the `Find` class. So when you call `useFind` you get back an object with the following properties:
 
 ## Declarative vs. Imperative Flow
 
@@ -47,7 +57,7 @@ In Vue, the declarative APIs include `computed` and `watch` and other APIs like 
 
 ### Declarative Example
 
-To implement `useFind` declaratively, we can use computed params, as shown here.  This example runs four requests based on a shared value. Suppose you have a set of tasks related to features which users can upvote.  Tasks have an `isCompleted` attribute, an `upvotes` count and a `dueDate` property.  Now let's suppose we're going to build a tasks dashboard. You want to see various types of task lists all based on a chosen date. So let's pretend that these are our requirements:
+To implement `useFind` declaratively, we can use computed params.  The below example creates four declarative queries which watch a value called `date`. Suppose you have a set of tasks related to features which users can upvote.  Tasks have an `isCompleted` attribute, an `upvotes` count and a `dueDate` property.  Now let's suppose we're going to build a tasks dashboard. You want to see various types of task lists all based on a chosen date. So let's pretend that these are our requirements:
 
 - The 5 most-upvoted tasks for the day
 - The 5 least-upvoted tasks for the day
@@ -111,7 +121,7 @@ In the above scenario, we can bind to the task lists in the template and display
 
 ### Declarative Handler
 
-With declarative code, we only need to change the `date` variable.  The computed properties will tell `useFind` to fetch new data, automagically. There's no need to manually fetch. When the data returns, the lists will update on their own. As long as your template is rendering correctly, there's no more work to do.
+With declarative code, we only need to change the `date` variable.  The computed properties will tell `useFind` to fetch new data, ✨automagically✨. There's no need to manually fetch. When the data returns, the lists will update on their own. As long as your template is rendering correctly, there's no more work to do.
 
 ```ts
 // A handler to change the date from the UI
@@ -181,7 +191,7 @@ What does a handler look like for an imperative-minded example of our test scena
 
 ```ts
 // A handler to change the date for each query
-const setDate = (newDate) => {
+const setDate = async (newDate) => {
   paramsMostUpvoted.query.date = newDate
   paramsLeastUpvoted.query.date = newDate
   paramsComplete.query.date = newDate
@@ -198,7 +208,7 @@ const setDate = (newDate) => {
 
 Look how much longer the imperative code is!  We had to manually tell `useFind` to update the date in each set of params. Then we had to manually command each one to fetch the new data.  With declarative-minded code, we can change the `date` as the source of truth. When it receives a `computed` property, `useFind` knows to re-fetch when changes occur.
 
-So is it better to write declarative code? The answer is "maybe". It often makes the most sense to write declarative code, but some situations will work better with imperative code.  When writing in Vue, sometimes declarative code will lead to infinite loops. If you have three computed variables that watch each other, they will run forever. This code would create a loop (actually the code probably wouldn't run because `c` is being used before it's declared, but let's pretend it can run):
+So is it better to write declarative code? The answer is usually yes. It often makes the most sense to write declarative code, but some situations will work better with imperative code.  When writing in Vue, sometimes declarative code will lead to infinite loops. If you have three computed variables that watch each other, they will run forever. This code would create an infinite loop:
 
 ```ts
 const a = computed(() => c.value + 1)
@@ -206,19 +216,19 @@ const b = computed(() => a.value + 1)
 const c = computed(() => b.value + 1)
 ```
 
-Can you see the loop?  
+Can you see the loop? It will start as soon as you try to read any of the variables.
 
-- When `c` updates, `a` will notice and increase its value by 1.
-- When `a` increases its value, `b` will notice and increase its value by 1.
-- When `b` increases its value, `c` will notice and increase its value by 1, which then re-triggers `a`.
+- When reading `a` it will try to read `c` before adding `1`.
+- Reading `c` will cause it to try to read `b` before adding `1` to the return value of `b`.
+- But when reading `b`, it will try to read `a` again.
 
-The loop will go on until the allocated space for tracking current operations is too full, also known as a "stack overflow".
+None of the variables will ever return a value because they'll keep reading each other in a loop. The loop will go on until the allocated memory space for tracking current operations is too full, also known as a "stack overflow".
 
-Declarative queries can work exactly the same way. When queries re-run based on other data and that logic goes in a loop, you'll end up with an asynchronous stack of requests. In order to fix the problem, you can switch one of them to imperative to break the automated flow.
+Declarative queries can work exactly the same way. When queries re-run based on other data and that logic goes in a loop, you'll end up with an asynchronous stack overflow. In order to fix the problem, you can switch one of them to imperative to break the automated flow. That's why `useFind` supports both workflows.
 
 <BlockQuote>
 
-In the above scenario, if you use the [`feathers-batch` plugins](https://github.com/feathersjs-ecosystem/feathers-batch) on the client and server, it will automatically group all queries into a single request.  They don't even have to be to the same service, only to the same server. It will really speed up your API.
+In the above scenario, if you use the [`feathers-batch` plugins](https://github.com/feathersjs-ecosystem/feathers-batch) on the client and server, it will automatically group all queries into a single request. It really speeds up your API with almost zero effort on your part.  Give it a try!
 
 </BlockQuote>
 
