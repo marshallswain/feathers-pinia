@@ -1,11 +1,12 @@
-import type { ModelStatic } from './service-store/types'
+import type { FindClassParams, FindClassParamsStandalone, ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model'
-import { Params } from './types'
 import { getParams, setupAssociation } from './associate-utils'
+import { Find } from './use-find'
+import { ref } from 'vue'
 
 interface AssociateFindOptions<M extends BaseModel> {
   Model: ModelStatic<BaseModel>
-  makeParams: (instance: M) => Params
+  makeParams: (instance: M) => FindClassParams
   handleSetInstance?: (this: M, associatedRecord: M) => void
   propUtilsPrefix?: string
 }
@@ -24,24 +25,19 @@ export function associateFind<M extends BaseModel>(
     propUtilsPrefix,
   )
 
-  const utils = {
-    find(params: Params) {
-      const _params = getParams(instance, makeParams) || params
-      return Model.find(_params)
-    },
-    findInStore(params: Params) {
-      const _params = getParams(instance, makeParams) || params
-      return Model.findInStore(_params)
-    },
+  let _utils: Find<M>
+
+  function setupFind(instance: M) {
+    if (!makeParams) return null
+    const _params = getParams(instance, Model.store as any, makeParams)
+    _utils = new Find(_params as FindClassParamsStandalone<M>)
   }
 
   Object.defineProperty(instance, prop, {
-    // Define the key as non-enumerable so it won't get cloned
     enumerable: false,
     get() {
-      const params = getParams(this, makeParams)
-      params.temps = true
-      return Model.findInStore(params).data
+      if (!_utils) setupFind(this)
+      return _utils.data.value
     },
     // Writing values to the setter will write them to the other Model's store.
     set(this: M, items: any[]) {
@@ -50,10 +46,12 @@ export function associateFind<M extends BaseModel>(
   })
 
   // Create the `_propName` utility object
-  Object.defineProperty(instance.Model.prototype, propUtilName, {
-    configurable: true,
+  Object.defineProperty(instance, propUtilName, {
     enumerable: false,
-    value: utils,
+    get() {
+      if (!_utils) setupFind(this)
+      return _utils
+    },
   })
 
   // Write the initial data to the new setter
