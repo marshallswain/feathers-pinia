@@ -2,7 +2,6 @@ import type { FindClassParams, FindClassParamsStandalone, ModelStatic } from './
 import { BaseModel } from './service-store/base-model'
 import { getParams, setupAssociation } from './associate-utils'
 import { Find } from './use-find'
-import { ref } from 'vue'
 
 interface AssociateFindOptions<M extends BaseModel> {
   Model: ModelStatic<BaseModel>
