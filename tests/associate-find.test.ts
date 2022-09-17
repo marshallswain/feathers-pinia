@@ -178,7 +178,6 @@ describe('Fetching Associated Data', () => {
 })
 
 describe('Writing to the Association Attribute', () => {
-  //
   test('writing records to the association triggers the handleSetInstance callback', async () => {
     const stargazers = [{ id: 1, name: 'Marshall' }]
     const message = new Message({}).addToStore() as Message
@@ -199,7 +198,7 @@ describe('Writing to the Association Attribute', () => {
     expect(message.stargazers).toEqual(stargazers)
   })
 
-  test('associations are maintained for records without ids (which get tempIds) and the query in makeParams includes _tempId', async () => {
+  test('associations are maintained for records without ids and the query in makeParams includes _tempId', async () => {
     const message = new Message({}).addToStore() as Message
 
     // Write data without an id to the `stargazers` setter
