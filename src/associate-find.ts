@@ -1,7 +1,8 @@
-import type { FindClassParams, FindClassParamsStandalone, ModelStatic } from './service-store/types'
+import type { FindClassParams, FindClassParamsStandalone, AssociateFindUtils, ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model'
 import { getParams, setupAssociation } from './associate-utils'
-import { Find } from './use-find'
+import { Find, useFind } from './use-find'
+import { MaybeRef } from './utility-types'
 
 interface AssociateFindOptions<M extends BaseModel> {
   Model: ModelStatic<BaseModel>
@@ -24,12 +25,16 @@ export function associateFind<M extends BaseModel>(
     propUtilsPrefix,
   )
 
-  // enable lazy creation of associated getters. no extra cpu cycles
-  let _utils: Find<M>
+  // define `setupFind` for lazy creation of associated getters.
+  let _utils: AssociateFindUtils<M>
   function setupFind(instance: M) {
     if (!makeParams) return null
     const _params = getParams(instance, Model.store as any, makeParams)
-    _utils = new Find(_params as FindClassParamsStandalone<M>)
+    _utils = new Find(_params as FindClassParamsStandalone<M>) as any
+    _utils.useFind = (params: MaybeRef<FindClassParams>): Find<M> => {
+      (params.value || params).store = Model.store
+      return useFind(params as MaybeRef<FindClassParamsStandalone<M>>)
+    }
   }
 
   // create the `propName` where the data is found.

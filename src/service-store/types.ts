@@ -658,3 +658,7 @@ export interface UseGetComputed<M> {
   servicePath: ComputedRef<string>
   isSsr: ComputedRef<boolean>
 }
+
+export interface AssociateFindUtils<M extends BaseModel> extends Find<M> {
+  useFind: (params: MaybeRef<FindClassParams>) => Find<M>
+}

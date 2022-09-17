@@ -1,8 +1,9 @@
 import type { ComputedRef, Ref, UnwrapRef } from 'vue-demi'
 import { DefineStoreOptionsBase, StateTree, Store } from 'pinia'
-import { AnyData, ModelStatic } from './service-store/types'
+import { AnyData, FindClassParams, ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model'
-import { TypedActions, TypedGetters } from './utility-types'
+import { MaybeRef, TypedActions, TypedGetters } from './utility-types'
+import { Find } from './use-find'
 
 export interface Filters {
   $sort?: { [prop: string]: -1 | 1 }

@@ -1,30 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Params } from '@feathersjs/feathers/lib'
 import type { ComputedRef, Ref } from 'vue-demi'
-import { setupFeathersPinia, BaseModel, associateFind } from '../src/index' // from 'feathers-pinia'
+import { setupFeathersPinia, BaseModel, associateFind, AssociateFindUtils } from '../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
-
-interface AssociateFindUtils<M extends BaseModel> {
-  params?: Ref<Params> // imperatively modify params?
-  findInStore: (params?: Params) => any // access other values that don't match the above params.
-  find: (params?: Params) => any // manually re-find with the current params (not watched, by default)
-  lastFindAt: number // timestamp
-
-  // Pagination Utils
-  paginateOn?: Ref<'server' | 'client'>
-  next?: () => void
-  prev?: () => void
-  toPage?: () => void
-  canNext?: ComputedRef<boolean>
-  canPrev?: ComputedRef<boolean>
-  currentPage?: ComputedRef<number>
-  itemsCount?: ComputedRef<number>
-  pageCount?: ComputedRef<number>
-  toStart?: () => void
-  toEnd?: () => void
-}
 
 export class User extends BaseModel {
   id: number
@@ -138,7 +118,6 @@ describe('Populated Data', () => {
 })
 
 describe('AssociateFind Utils', () => {
-  //
   test('utils are added at underscored prop, like `_stargazers`', async () => {
     const message = new Message({}).addToStore() as Message
     expect(message._stargazers).toBeDefined()
@@ -152,6 +131,19 @@ describe('AssociateFind Utils', () => {
   test('utils include a `findInStore` method', () => {
     const message = new Message({}).addToStore() as Message
     expect(typeof message._stargazers.findInStore).toBe('function')
+  })
+
+  test('utils include a `useFind` method', () => {
+    const message = new Message({}).addToStore() as Message
+    expect(typeof message._stargazers.useFind).toBe('function')
+  })
+
+  test('can `useFind` to make a new query', () => {
+    const message = new Message({}).addToStore() as Message
+    const { data, prev, next } = message._stargazers.useFind({ query: {} })
+    expect(Array.isArray(data.value)).toBe(true)
+    expect(typeof next).toBe('function')
+    expect(typeof prev).toBe('function')
   })
 })
 
