@@ -14,7 +14,7 @@ export function associateFind<M extends BaseModel>(
   prop: string,
   { Model, makeParams, handleSetInstance, propUtilsPrefix = '_' }: AssociateFindOptions<M>,
 ) {
-  // Cache the initial data in a variable
+  // cache the initial data in a variable
   const initialData = (instance as any)[prop]
   const { _handleSetInstance, propUtilName } = setupAssociation(
     instance,
@@ -24,14 +24,15 @@ export function associateFind<M extends BaseModel>(
     propUtilsPrefix,
   )
 
+  // enable lazy creation of associated getters. no extra cpu cycles
   let _utils: Find<M>
-
   function setupFind(instance: M) {
     if (!makeParams) return null
     const _params = getParams(instance, Model.store as any, makeParams)
     _utils = new Find(_params as FindClassParamsStandalone<M>)
   }
 
+  // create the `propName` where the data is found.
   Object.defineProperty(instance, prop, {
     enumerable: false,
     get() {
