@@ -123,7 +123,7 @@ export class Find<M extends BaseModel> {
     this.clearError = () => (error.value = null)
 
     /*** STORE ITEMS ***/
-    const inStore = computed(() => {
+    this.data = computed(() => {
       if (isPending.value && this.latestQuery.value && this.paginateOnServer) {
         const { pageParams, queryParams } = this.latestQuery.value as any
         const params = { query: { ...pageParams, ...queryParams }, paginateOnServer: true }
@@ -131,8 +131,23 @@ export class Find<M extends BaseModel> {
       }
       return makeUseFindItems(this.store, paramsWithPagination).value
     })
-    this.allData = computed(() => this.store.findInStore(paramsWithoutPagination).data)
-    this.data = inStore
+    this.allData = computed(() => {
+      if (this.currentQuery == null) {
+        return []
+      }
+      // Pull server results for each page of data
+      const pageKeys = Object.keys(_.omit(this.currentQuery.value?.queryState, 'total', 'queryParams'))
+      const pages = Object.values(_.pick(this.currentQuery.value?.queryState, ...pageKeys))
+      // remove possible duplicates (page data can be different as you browse between pages and new items are added)
+      const ids = pages.reduce((allIds, page) => {
+        page.ids.forEach((id: number | string) => {
+          if (!allIds.includes(id)) allIds.push(id)
+        })
+        return allIds
+      }, [])
+      const matchingItemsById = _.pick(this.store.itemsById, ...ids)
+      return Object.values(matchingItemsById)
+    })
     this.findInStore = this.store.findInStore
 
     /*** QUERY WHEN ***/
@@ -157,7 +172,7 @@ export class Find<M extends BaseModel> {
 
       const { ids, queriedAt } = pageState
       const items = Object.values(_.pick(this.store.itemsById, ...ids))
-      const info = { ...queryInfo, ids, items, total, queriedAt } as CurrentQuery<M>
+      const info = { ...queryInfo, ids, items, total, queriedAt, queryState } as CurrentQuery<M>
       return info || null
     })
 

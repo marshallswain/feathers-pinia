@@ -535,7 +535,7 @@ describe('latestQuery and previousQuery', () => {
         store: messageStore,
         paginateOnServer: true,
       }
-      const { allData, find, next } = new Find(_params)
+      const { allData, find, next } = useFind(_params)
       await find()
       await next()
       expect(allData.value.length).toBe(8)
@@ -558,7 +558,7 @@ describe('latestQuery and previousQuery', () => {
         paginateOnServer: true,
         immediate: false,
       }
-      const { data, find, next, request, isPending } = new Find(_params)
+      const { data, find, next, request, isPending } = useFind(_params)
       await find()
 
       const idsFromFirstPage = data.value.map((i) => i.id)
