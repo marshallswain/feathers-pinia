@@ -186,8 +186,8 @@ Make sure you import and create store beforehand with `const <id>Store = use<id>
 
 #### Common Tools
 
-- **useFind:** (optional) the `useFind` utility should require no changes (see [here](/guide/use-find))
-- **useGet:** (optional) the `useGet` utility should require no changes (see [here](/guide/use-get))
+- **`useFind`:** has been renamed to `useFindWatched`. The API is the same. (See [here](./use-find-watched))
+- **`useGet`:** has been renamed to `useGetWatched`. The API is the same. (See [here](/guide/use-get-watched))
 - **usePagination:** (optional) replace custom implementations of pagination with the `usePagination` utility
 - **handleClones:** the new `handleClones` utility removes boilerplate from the clone and commit pattern (see [here](/guide/handle-clones))
 

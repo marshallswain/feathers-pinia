@@ -39,7 +39,7 @@ import { StateTree, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
 import { useFind } from '../use-find'
 import { useFindWatched } from '../use-find-watched'
-import { useGet } from '../use-get'
+import { useGetWatched } from '../use-get-watched'
 
 type ServiceStoreTypedActions<M extends BaseModel = BaseModel> = TypedActions<
   ServiceStoreDefaultState<M>,
@@ -478,9 +478,9 @@ export function makeActions<
     useFindWatched<M extends BaseModel>(options: UseFindWatchedOptions) {
       return useFindWatched<M>({ model: this.Model as any, ...options })
     },
-    // alias to useGet, doesn't require passing the model
-    useGet<M extends BaseModel>(options: UseGetOptions) {
-      return useGet<M>({ model: this.Model as any, ...options })
+    // alias to useGetWatched, doesn't require passing the model
+    useGetWatched<M extends BaseModel>(options: UseGetOptions) {
+      return useGetWatched<M>({ model: this.Model as any, ...options })
     },
   }
 

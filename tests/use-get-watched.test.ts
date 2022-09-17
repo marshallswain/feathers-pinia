@@ -2,7 +2,7 @@ import { computed, ref } from 'vue-demi'
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
-import { useGet, setupFeathersPinia } from '../src/index'
+import { useGetWatched, setupFeathersPinia } from '../src/index'
 
 const pinia = createPinia()
 
@@ -20,13 +20,13 @@ const messagesService = useMessagesService(pinia)
 
 const reset = () => resetStores(api.service('messages'), messagesService)
 
-describe('useGet', () => {
+describe('useGetWatched', () => {
   beforeEach(() => reset())
   afterEach(() => reset())
 
   test('returns correct data', async () => {
     const id = computed(() => 0)
-    const data = useGet({ id, model: Message })
+    const data = useGetWatched({ id, model: Message })
 
     expect(data.error.value).toBe(null)
     expect(typeof data.get).toBe('function')
@@ -42,7 +42,7 @@ describe('useGet', () => {
 
   test('can be used directly from the store', async () => {
     const id = computed(() => 0)
-    const data = messagesService.useGet({ id })
+    const data = messagesService.useGetWatched({ id })
 
     await messagesService.create({ id: 0, text: 'Test Message' })
 
@@ -51,7 +51,7 @@ describe('useGet', () => {
 
   test('item is returned', async () => {
     const id = computed(() => 0)
-    const data = useGet({ id, model: Message })
+    const data = useGetWatched({ id, model: Message })
 
     await messagesService.create({ id: 0, text: 'Test Message' })
 
@@ -60,7 +60,7 @@ describe('useGet', () => {
 
   test('null id with params', async () => {
     const id = ref(null)
-    const data = useGet({ id, model: Message })
+    const data = useGetWatched({ id, model: Message })
 
     await messagesService.create({ id: 0, text: 'Test Message' })
 
@@ -72,7 +72,7 @@ describe('useGet', () => {
     await messagesService.create({ text: 'yo!', id })
     const isReady = ref(false)
     const queryWhen = computed(() => isReady.value)
-    const data = useGet({ id, model: Message, queryWhen })
+    const data = useGetWatched({ id, model: Message, queryWhen })
 
     expect(data.hasBeenRequested.value).toBe(false)
 
@@ -84,7 +84,7 @@ describe('useGet', () => {
 
   test('use {immediate:false} to not query immediately', async () => {
     const id = ref(0)
-    const data = useGet({ id, model: Message, immediate: false })
+    const data = useGetWatched({ id, model: Message, immediate: false })
 
     expect(data.hasBeenRequested.value).toBe(false)
   })
@@ -92,7 +92,7 @@ describe('useGet', () => {
   describe('error behavior', () => {
     test('error resets on query', async () => {
       const id = ref(44)
-      const data = useGet({ id, model: Message })
+      const data = useGetWatched({ id, model: Message })
       await data.get(44)
 
       expect(data.error.value?.name).toBe('NotFound')

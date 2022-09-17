@@ -73,15 +73,19 @@ function getGuideSidebar() {
       text: 'Common Tools',
       items: [
         { text: 'useFind', link: '/guide/use-find' },
-        { text: 'useGet', link: '/guide/use-get' },
         { text: 'useClones', link: '/guide/use-clones' },
-        { text: 'usePagination', link: '/guide/use-pagination' },
-        { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
+        { text: 'associateFind', link: '/guide/associate-find' },
+        { text: 'associateGet', link: '/guide/associate-get' },
       ],
     },
     {
-      text: 'Storage Sync',
-      items: [{ text: 'syncWithStorage', link: '/guide/storage-sync' }],
+      text: 'Other Tools',
+      items: [
+        { text: 'syncWithStorage', link: '/guide/storage-sync' },
+        { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
+        { text: 'useGetWatched ⚠️', link: '/guide/use-get-watched' },
+        { text: 'usePagination ⚠️', link: '/guide/use-pagination' },
+      ],
     },
   ]
 }

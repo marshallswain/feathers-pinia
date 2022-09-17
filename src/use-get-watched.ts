@@ -4,7 +4,7 @@ import type { Params } from './types'
 import { reactive, computed, toRefs, unref, watch } from 'vue-demi'
 import { BaseModel } from './service-store'
 
-export function useGet<M extends BaseModel = BaseModel>({
+export function useGetWatched<M extends BaseModel = BaseModel>({
   model,
   id,
   params = computed(() => ({})),
@@ -13,7 +13,7 @@ export function useGet<M extends BaseModel = BaseModel>({
   immediate = true,
 }: UseGetOptionsStandalone<M>) {
   if (!model) {
-    throw new Error(`No model provided for useGet(). Did you define and register it with FeathersPinia?`)
+    throw new Error(`No model provided for useGetWatched(). Did you define and register it with FeathersPinia?`)
   }
 
   function getId() {

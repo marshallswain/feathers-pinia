@@ -2,6 +2,11 @@
 outline: deep
 ---
 
+<script setup>
+import Badge from '../components/Badge.vue'
+import BlockQuote from '../components/BlockQuote.vue'
+</script>
+
 # Module Overview
 
 [[toc]]
@@ -20,10 +25,12 @@ export { clients } from './clients'
 export { models, registerClient } from './models'
 
 // Common Tools
-export { useFind } from './use-find'
-export { useGet } from './use-get'
 export { useClones } from './use-clones'
 export { usePagination } from './use-pagination'
+
+// 
+export { useFindWatched } from './use-find-watched'
+export { useGetWatched } from './use-get-watched'
 
 // Storage Utilities
 export { syncWithStorage } from './storage-sync'
@@ -59,15 +66,21 @@ export { clearStorage } from './clear-storage'
 
 ## Common Tools
 
-- **`useFind`** gives you reactive data by providing it with a set of `params` like what you would pass to a Feathers service's `find` method. This provides smart SWR (stale while revalidate) functionality, which we generally refer to as a fall-through cache. The cool thing with `useFind` is that since it uses the `findInStore` getter under the hood, it can show records from other queries that match with the current query. Learn more in [useFind](./use-find).
-- **`useGet`** gives you a reactive `get` request. Like `useFind`, it's basically a fall-through cache, only its for individual records. Learn more in [useGet](./use-get).
+- **`useFind`** <Badge>New API in v1</Badge> is a utility that assists you in implementing the Live Query pattern. Give it a set of params and you'll get back live-updating lists of `data`, as well as pagination utilities like `next`, and `prev`. It's super versatile, handling declarative and imperative workflows that support both the client- and server-side pagination. It's similar to SWR but far more intelligent, being able to reuse data between different queries. See [useFind](./use-find)
+- **`useGet`** <Badge>New API in v1</Badge>
 - **`usePagination`** is a composition api utility that handles typical pagination logic. See [usePagination](./use-pagination)
 - **`useClones`** removes boilerplate from the [clone and commit pattern](https://vuex.feathersjs.com/feathers-vuex-forms.html#the-clone-and-commit-pattern). It automatically clones all component props containing a `feathers-pinia` instance and provides a handy `save` function for each one. The `save` function performs automatic diffing to only patch data that has changed. See [useClones](./use-clones)
 
+## Feathers-Vuex Migration Utils
+
+These utilities exist to assist with migration from Feathers-Vuex. Use them for migrating existing Feathers-Vuex code, but not for new development. Use the new `useFind` and `useGet` utilities for new development.
+
+- **`useFindWatched`** is the equivalent to Feathers-Vuex's `useFind` utility. See [useFindWatched](./use-find-watched)
+- **`useGetWatched`** is the equivalent to Feathers-Vuex's `useGet` utility. See [useGetWatched](./use-get-watched).
+
 ## Storage Sync
 
-- **`syncWithStorage`** synchronizes specific parts of a store's state into `localStorage` or any storage adapter you provide.
-- **`syncWithStorageCompressed`** is just like `syncWithStorage`, but it uses LZW compression to fit roughly 10MB of data into the 5MB localStorage limit. The downside is that the data is unreadable in devtools, so you generally only would use it for production.
-- **`clearStorage`** just clears data stored with the above utilities.
+- **`syncWithStorage`** synchronizes specific parts of a store's state into `localStorage` or any [Storage-compatible](https://developer.mozilla.org/en-US/docs/Web/API/Storage) adapter you provide.
+- **`clearStorage`** clears data stored with the above utilities.
 
 Learn more about these utilities in [syncWithStorage](./storage-sync)

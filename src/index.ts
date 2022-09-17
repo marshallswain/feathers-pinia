@@ -11,7 +11,7 @@ export { clients, registerClient } from './clients'
 
 export { Find, useFind } from './use-find'
 export { useFindWatched } from './use-find-watched'
-export { useGet } from './use-get'
+export { useGetWatched } from './use-get-watched'
 export { usePagination } from './use-pagination'
 export { useClones } from './use-clones'
 export { useClone } from './use-clone'

@@ -180,7 +180,8 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   unflagSsr: (params: Params) => void
   useFind: (params: MaybeRef<FindClassParams>) => Find<M>
   useFindWatched: (options: UseFindWatchedOptions) => UseFindComputed<M>
-  useGet: (options: UseGetOptions) => UseGetComputed<M>
+  // useGet: (options: UseGetOptions) => UseGetComputed<M>
+  useGetWatched: (options: UseGetOptions) => UseGetComputed<M>
 }
 
 export type ServiceOptions<
