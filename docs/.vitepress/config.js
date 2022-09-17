@@ -73,6 +73,7 @@ function getGuideSidebar() {
       text: 'Common Tools',
       items: [
         { text: 'useFind', link: '/guide/use-find' },
+        { text: 'useGet', link: '/guide/use-get' },
         { text: 'useClones', link: '/guide/use-clones' },
         { text: 'associateFind', link: '/guide/associate-find' },
         { text: 'associateGet', link: '/guide/associate-get' },
