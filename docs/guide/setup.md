@@ -39,7 +39,7 @@ Vite will work without any configuration. Specific instructions for Quasar and N
 By default, TypeScript will expect you to strictly identify properties on Model classes.  See the `!` in the following example:
 
 ```ts
-class UserModel extends BaseModel {
+class User extends BaseModel {
   foo!: string
   bar!: number
 }
@@ -58,7 +58,7 @@ You can optionally configure `tsconfig.json` to not require the `!` on every pro
 With `strictPropertyInitialization` turned off, you can declare class properties as normal:
 
 ```ts
-class UserModel extends BaseModel {
+class User extends BaseModel {
   foo: string // No `!` needed after every property
   bar: number
 }
@@ -156,7 +156,24 @@ Now that we've created the main `pinia` store, we are ready to setup our first s
 import { defineStore, BaseModel } from './store.pinia'
 import { api } from '../feathers'
 
-export class User extends BaseModel {}
+// create a data model
+export class User extends BaseModel {
+  id?: number | string
+  name: string = ''
+  email: string = ''
+  password: string = ''
+
+  // Minimum required constructor
+  constructor(data: Partial<User> = {}, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
+
+  // optional for setting up data objects and/or associations
+  static setupInstance(message: Partial<Message>) {
+    const { store, models } = this
+  }
+}
 
 const servicePath = 'users'
 export const useUsers = defineStore({ servicePath, Model: User })
@@ -173,7 +190,24 @@ Small tweaks are needed for SSR apps:
 import { defineStore, BaseModel } from 'feathers-pinia' // (1)
 import { api } from '../feathers'
 
-export class User extends BaseModel {}
+// create a data model
+export class User extends BaseModel {
+  id?: number | string
+  name: string = ''
+  email: string = ''
+  password: string = ''
+
+  // Minimum required constructor
+  constructor(data: Partial<User> = {}, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
+
+  // optional for setting up data objects and/or associations
+  static setupInstance(message: Partial<Message>) {
+    const { store, models } = this
+  }
+}
 
 const servicePath = 'users'
 export const useUsers = defineStore({
@@ -204,7 +238,24 @@ import { defineStore, BaseModel } from './store.pinia'
 import { api } from '../feathers'
 import { memory } from '@feathersjs/memory' // import the memory module
 
-export class User extends BaseModel {}
+// create a data model
+export class User extends BaseModel {
+  id?: number | string
+  name: string = ''
+  email: string = ''
+  password: string = ''
+
+  // Minimum required constructor
+  constructor(data: Partial<User> = {}, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
+
+  // optional for setting up data objects and/or associations
+  static setupInstance(message: Partial<Message>) {
+    const { store, models } = this
+  }
+}
 
 const servicePath = 'users'
 export const useUsers = defineStore({ servicePath, Model: User })
