@@ -140,10 +140,16 @@ describe('With onServer', () => {
   })
 
   test('id can be null with onServer', async () => {
-    const { id, data, requestCount } = new Get(null, { store: messageStore, onServer: true })
+    const { id, data, requestCount, get } = new Get(null, { store: messageStore, immediate: false, onServer: true })
     expect(id.value).toBe(null)
     expect(data.value).toBe(null)
     expect(requestCount.value).toBe(0)
+
+    try {
+      expect(await get()).toThrow()
+    } catch (error) {
+      expect(error).toBeTruthy()
+    }
   })
 
   test('can show previous record while a new one loads', async () => {
