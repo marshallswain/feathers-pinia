@@ -71,3 +71,30 @@ const { data: pastAppointments } = appointmentStore.useFind(pastParams)
 ```
 
 in the above example of component code, the `future` and `pastAppointments` will automatically update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.  `feathers-pinia` listens to socket events automatically, so you don't have to manually wire any of this up!
+
+## Only Query Once Per Record
+
+For real-time apps, it's not necessary to retrieve a single record more than once, since feathers-pinia will automatically keep the record up to date with real-time events. You can use `queryWhen` to make sure you only retrieve a record once. Perform the following steps to accomplish this:
+
+1. Pass `immediate: false` in the params to prevent the initial request.
+2. Pass a function that returns a boolean to `queryWhen`. In this example, we return `!user.value` because we should query when we don't already have a user record.
+3. Manually call `get`, which will only trigger an API request if we don't have the record. Woot!
+
+```ts
+import { useUsers } from '../store/users'
+
+interface Props {
+  id: string | number
+}
+const props = defineProps<Props>()
+const userStore = useUsers()
+
+const { data: user, queryWhen get } = userStore.useGet(props.id, { 
+  onServer: true, 
+  immediate: false            // (1)
+})
+queryWhen(() => !user.value)  // (2)
+await get()                   // (3)
+```
+
+The above example also shows why `queryWhen` is no longer passed as an argument. It's most common that `queryWhen` needs values returned by `useGet`, but those values aren't available until after `useGet` runs, making them unavailable to `queryWhen` as an argument. In short, moving `queryWhen` to the returned object gives us access to everything we need to productively prevent queries.

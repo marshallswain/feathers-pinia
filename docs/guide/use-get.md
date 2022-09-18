@@ -96,4 +96,8 @@ const { data: user, isPending, error } = useGet(props.id, { store: userStore, on
   - **`error` {Computed error}** will display any error that occurs. The error is cleared if another request is made or if `clearError` is called.
   - **`clearError` {Function}** can be used to manually clear the `error`.
 
-### Examples
+## Examples
+
+### Only Query Once Per Record
+
+See the example on the [Common Patterns](./common-patterns#only-query-once-per-record) page.

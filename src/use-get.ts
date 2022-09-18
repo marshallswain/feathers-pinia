@@ -86,6 +86,8 @@ export class Get<M extends BaseModel> {
       const _id = unref(__id || id)
       const _params = unref(params)
 
+      if (!queryWhen()) return
+
       if (_id == null) {
         throw new Error('id is required for feathers-pinia get requests')
       }
@@ -126,9 +128,7 @@ export class Get<M extends BaseModel> {
       watch(
         id,
         async () => {
-          if (queryWhen()) {
-            await makeRequest(id as any, params)
-          }
+          await makeRequest(id as any, params)
         },
         { immediate },
       )

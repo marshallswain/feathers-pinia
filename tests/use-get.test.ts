@@ -199,8 +199,8 @@ describe('With onServer', () => {
 
     await get()
 
-    // queryWhen doesn't get called when you manually call `get`
-    expect(queryWhenFn).not.toHaveBeenCalled()
+    // queryWhen is called even when manually calling `get`
+    expect(queryWhenFn).toHaveBeenCalled()
     expect(requestCount.value).toBe(1)
 
     id.value = 2
@@ -214,7 +214,7 @@ describe('With onServer', () => {
     await request.value
 
     expect(requestCount.value).toBe(2)
-    expect(queryWhenFn).toHaveBeenCalledTimes(2)
+    expect(queryWhenFn).toHaveBeenCalledTimes(3)
   })
 
   test('can disable watch', async () => {
