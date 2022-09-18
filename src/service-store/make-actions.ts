@@ -14,6 +14,8 @@ import type {
   UseGetOptions,
   FindClassParams,
   FindClassParamsStandalone,
+  GetClassParams,
+  GetClassParamsStandalone,
 } from './types'
 import type { Params } from '../types'
 import type { Id, NullableId } from '@feathersjs/feathers'
@@ -38,6 +40,7 @@ import { unref, set } from 'vue-demi'
 import { StateTree, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
 import { useFind } from '../use-find'
+import { useGet } from '../use-get'
 import { useFindWatched } from '../use-find-watched'
 import { useGetWatched } from '../use-get-watched'
 
@@ -472,6 +475,12 @@ export function makeActions<
     useFind(params: MaybeRef<FindClassParams>) {
       (params.value || params).store = this
       return useFind(params as MaybeRef<FindClassParamsStandalone<M>>)
+    },
+
+    // alias to useGet, doesn't require passing the store
+    useGet(_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
+      (_params.value || _params).store = this
+      return useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
     },
 
     // alias to useFindWatched, doesn't require passing the model

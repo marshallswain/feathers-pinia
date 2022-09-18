@@ -5,6 +5,7 @@ import type { StateTree, Store as _Store, StoreDefinition, _GettersTree } from '
 import type { MaybeArray, MaybeRef } from '../utility-types'
 import { BaseModel } from './base-model'
 import { Find } from '../use-find'
+import { Get } from '../use-get'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
@@ -182,7 +183,7 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   unflagSsr: (params: Params) => void
   useFind: (params: MaybeRef<FindClassParams>) => Find<M>
   useFindWatched: (options: UseFindWatchedOptions) => UseFindComputed<M>
-  // useGet: (options: UseGetOptions) => UseGetComputed<M>
+  useGet: (_id: MaybeRef<Id | null>, _params?: MaybeRef<GetClassParams>) => Get<M>
   useGetWatched: (options: UseGetOptions) => UseGetComputed<M>
 }
 
