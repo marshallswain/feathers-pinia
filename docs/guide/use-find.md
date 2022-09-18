@@ -24,7 +24,7 @@ In version 1.0, the `useFind` utility has been completely rewritten from scratch
 
 <BlockQuote>
 
-To lighten the burden of migrating with this breaking change, the old `useFind` utility is now provided as [`useFindWatched`](./use-find-watched).
+To lighten the burden of migrating from Feathers-Vuex, the old `useFind` utility is now provided as [`useFindWatched`](./use-find-watched). It is recommended that all new code be written with the new `useFind` API.
 
 </BlockQuote>
 
@@ -43,6 +43,57 @@ To lighten the burden of migrating with this breaking change, the old `useFind` 
 ### Returned Object
 
 The `useFind` function is actually a factory function that returns an instance of the `Find` class. So when you call `useFind` you get back an object with the following properties:
+
+#### Params & Config
+
+- **`params` {Ref Object}** are an internal, `ref` copy of the initially-provided params.
+- **`store` {Store}** is a reference to the associated store.
+- **`onServer` {boolean}** indicates whether this instance makes requests to the API server. Defaults to `false`.
+- **`isSsr` {Computed boolean}** 
+- **`qid` {Ref string}** 
+
+#### Data
+
+- **`data` {Ref Array}** 
+- **`allData` {Ref Array}** 
+- **`total` {Computed number}** 
+- **`limit` {Ref number}**
+- **`skip` {Ref number}** 
+- **`findInStore` {Function}** 
+
+#### Query Tracking
+
+- **`currentQuery` {Computed Object}** 
+- **`latestQuery` {Computed Object}** 
+- **`previousQuery` {Computed Object}** 
+
+#### Requests & Watching
+
+- **`find` {Function}** 
+- **`request` {Ref Promise}** 
+- **`requestCount` {Computed number}** 
+- **`queryWhen` {Function}** 
+
+#### Request State
+
+- **`isPending` {Computed boolean}** 
+- **`haveBeenRequested` {Computed boolean}** 
+- **`haveLoaded` {Computed boolean}** 
+- **`error` {Computed error}** 
+- **`clearError` {Function}** 
+
+#### Pagination Utils
+
+- **`pageCount` {Computed number}** 
+- **`currentPage` {Ref number}** 
+- **`canPrev` {Computed boolean}** 
+- **`canNext` {Computed boolean}** 
+- **`next` {Function}** 
+- **`prev` {Function}** 
+- **`toStart` {Function}** 
+- **`toEnd` {Function}** 
+- **`toPage(pageNumber)` {Function}** 
+
 
 ## Declarative vs. Imperative Flow
 

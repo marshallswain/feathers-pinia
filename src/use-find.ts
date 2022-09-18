@@ -52,12 +52,11 @@ export class Find<M extends BaseModel> {
   request: Ref<Promise<Paginated<M>>>
   requestCount: Ref<number>
   queryWhen: (queryWhenFn: () => boolean) => void
-  // watchParams: (paramsFn: () => Params | null, watchOptions?: WatchOptions) => void
 
   // Request State
-  isPending: Ref<boolean>
-  haveBeenRequested: Ref<boolean>
-  haveLoaded: Ref<boolean>
+  isPending: ComputedRef<boolean>
+  haveBeenRequested: ComputedRef<boolean>
+  haveLoaded: ComputedRef<boolean>
   error: ComputedRef<any>
   clearError: () => void
 
