@@ -8,9 +8,54 @@ outline: deep
 
 ## Accessing a Store From Hooks
 
-Coming Soon
+When setting up a service, it's recommended that you declare hooks for the service next to the store. As per the Pinia docs, since we're using the store outside of a component context, the original `pinia` instance will need to be provided when calling `useUsers`, as shown here:
 
-## Handling Custom Server Responses
+```ts
+// src/store/users.ts
+import type { HookContext, NextFunction } from '@feathersjs/feathers'
+import { defineStore, BaseModel, pinia } from './store.pinia'
+import { api } from '../feathers'
+
+// create a data model
+export class User extends BaseModel {
+  id?: number | string
+  name: string = ''
+  email: string = ''
+  password: string = ''
+
+  // Minimum required constructor
+  constructor(data: Partial<User> = {}, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
+
+  // optional for setting up data objects and/or associations
+  static setupInstance(message: Partial<Message>) {
+    const { store, models } = this
+  }
+}
+
+const servicePath = 'users'
+export const useUsers = defineStore({ servicePath, Model: User })
+
+api.service(servicePath).hooks({
+  around: {
+    find: [
+      async (context: HookContext, next: NextFunction) => {
+        const userStore = useUsers(pinia)
+
+        // Do something with the store before sending the request or...
+
+        await next()
+
+        // Do something with the store after the response comes back.
+      }
+    ]
+  }
+})
+```
+
+## Handle Custom Server Response
 
 Sometimes your server response may contain more attributes than just `data`, `limit`, `skip`, and `sort`.  Maybe your API response include a `summary` field, and you need access to that. You could process this directly in a component, if it's only needed in that one component,  But, if you need it in multiple components, there are better options.
 
@@ -98,3 +143,8 @@ await get()                   // (3)
 ```
 
 The above example also shows why `queryWhen` is no longer passed as an argument. It's most common that `queryWhen` needs values returned by `useGet`, but those values aren't available until after `useGet` runs, making them unavailable to `queryWhen` as an argument. In short, moving `queryWhen` to the returned object gives us access to everything we need to productively prevent queries.
+
+## Clearing Data on Logout
+
+The best solution is to simply refresh to clear memory.  If you're using localStorage, clear the localStorage, then refresh. The alternative to refreshing would be to perform manual cleanup of the service stores. Refreshing is much simpler and more practical, so it's the official solution.
+
