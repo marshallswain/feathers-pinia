@@ -30,7 +30,7 @@ export function useFind<M extends BaseModel>(params: MaybeRef<FindClassParamsSta
 export class Find<M extends BaseModel> {
   params: Ref<FindClassParams>
   store: Store<M>
-  paginateOnServer: boolean
+  onServer: boolean
   isSsr: ComputedRef<boolean>
   qid: WritableComputedRef<string>
 
@@ -108,7 +108,7 @@ export class Find<M extends BaseModel> {
       const { $limit, $skip, ...query } = queryShallowCopy
       return { ...params.value, query }
     })
-    this.paginateOnServer = !!params.value.paginateOnServer
+    this.onServer = !!params.value.onServer
     this.isSsr = computed(() => this.store.isSsr)
 
     /*** REQUEST STATE ***/
@@ -124,9 +124,9 @@ export class Find<M extends BaseModel> {
 
     /*** STORE ITEMS ***/
     this.data = computed(() => {
-      if (isPending.value && this.latestQuery.value && this.paginateOnServer) {
+      if (isPending.value && this.latestQuery.value && this.onServer) {
         const { pageParams, queryParams } = this.latestQuery.value as any
-        const params = { query: { ...pageParams, ...queryParams }, paginateOnServer: true }
+        const params = { query: { ...pageParams, ...queryParams }, onServer: true }
         return makeUseFindItems(this.store, params).value
       }
       return makeUseFindItems(this.store, paramsWithPagination).value
@@ -188,7 +188,7 @@ export class Find<M extends BaseModel> {
     /*** PAGINATION DATA ***/
     const storeCount = computed(() => this.store.countInStore(paramsWithoutPagination.value))
     this.total = computed(() => {
-      if (this.paginateOnServer) return (this.latestQuery.value as any)?.response.total
+      if (this.onServer) return (this.latestQuery.value as any)?.response.total
       else return storeCount.value
     })
     const pageData = usePageData(this.limit, this.skip, this.total)
@@ -271,7 +271,7 @@ export class Find<M extends BaseModel> {
     if (this.limit.value || this.skip.value) initWithLimitOrSkip = true
 
     const makeRequest = async (_params?: Params) => {
-      if (!this.paginateOnServer) return
+      if (!this.onServer) return
 
       // Don't make a second request if no limit or skip were provided
       if (this.requestCount.value === 1 && !initWithLimitOrSkip && !_computedParams) {
@@ -282,7 +282,7 @@ export class Find<M extends BaseModel> {
       await request.value
     }
 
-    if (this.paginateOnServer) {
+    if (this.onServer) {
       // When a read-only computed was provided, watch the params
       if (_computedParams) {
         let _cachedWatchedParams: FindClassParams

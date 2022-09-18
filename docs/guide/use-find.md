@@ -36,8 +36,8 @@ To lighten the burden of migrating with this breaking change, the old `useFind` 
   - **`query` {Object}** <Badge type="danger" label="required" /> a Feathers query object.
   - **`store` {Store}** <Badge type="danger" label="conditionally required" /> a Feathers-Pinia service store. It is required in order to use `useFind` in standalone mode. `useFind` can also be find on any service store by calling `store.useFind(params)`. When called from the store, you do not pass the store object in the params.
   - **`qid` {string}** an identifier for this query. Allows pagination data to be tracked separately.
-  - **`paginateOnServer` {boolean}** when enabled, the internal `findInStore` getter will return only the results that match the current query in the `pagination` object for this store.
-  - **`immediate` {boolean = true}** when `paginateOnServer` is set, by default it will make an initial request. Set `immediate: false` to prevent the initial request.
+  - **`onServer` {boolean}** when enabled, the internal `findInStore` getter will return only the results that match the current query in the `pagination` object for this store.
+  - **`immediate` {boolean = true}** when `onServer` is set, by default it will make an initial request. Set `immediate: false` to prevent the initial request.
   - **`watch` {boolean = false}** enable this to automatically query when `reactive` or `ref` params are changed. This does not apply to `computed` params, since they are automatically watched.
 
 ### Returned Object
@@ -78,7 +78,7 @@ const paramsMostUpvoted = computed(() => ({
     $sort: { upvotes: -1 },
     $limit: 5,
   },
-  paginateOnServer: true
+  onServer: true
 }))
 const { data: mostUpvoted } = taskStore.useFind(paramsMostUpvoted)
 
@@ -89,7 +89,7 @@ const paramsLeastUpvoted = computed(() => ({
     $sort: { upvotes: 1 },
     $limit: 5,
   },
-  paginateOnServer: true
+  onServer: true
 }))
 const { data: leastUpvotedTasks } = taskStore.useFind(paramsLeastUpvoted)
 
@@ -100,7 +100,7 @@ const paramsComplete = computed(() => ({
     isCompleted: true,
     $limit: 20,
   },
-  paginateOnServer: true
+  onServer: true
 }))
 const { data: completedTasks } = taskStore.useFind(paramsComplete)
 
@@ -112,7 +112,7 @@ const paramsIncomplete = computed(() => ({
     $sort: { upvotes: -1 },
     $limit: 10,
   },
-  paginateOnServer: true
+  onServer: true
 }))
 const { data: incompleteTasks } = taskStore.useFind(paramsIncomplete)
 ```
@@ -146,7 +146,7 @@ const paramsMostUpvoted = reactive({
     $sort: { upvotes: -1 },
     $limit: 5,
   },
-  paginateOnServer: true
+  onServer: true
 })
 const { data: mostUpvoted, find: findMostUpvoted } = taskStore.useFind(paramsMostUpvoted)
 
@@ -157,7 +157,7 @@ const paramsLeastUpvoted = reactive({
     $sort: { upvotes: 1 },
     $limit: 5,
   },
-  paginateOnServer: true
+  onServer: true
 })
 const { data: leastUpvotedTasks, find: findLeastUpvoted } = taskStore.useFind(paramsLeastUpvoted)
 
@@ -168,7 +168,7 @@ const paramsComplete = reactive({
     isCompleted: true,
     $limit: 20,
   },
-  paginateOnServer: true
+  onServer: true
 })
 const { data: completedTasks, find: findComplete } = taskStore.useFind(paramsComplete)
 
@@ -180,7 +180,7 @@ const paramsIncomplete = reactive({
     $sort: { upvotes: -1 },
     $limit: 10,
   },
-  paginateOnServer: true
+  onServer: true
 })
 const { data: incompleteTasks, find: findIncomplete } = taskStore.useFind(paramsIncomplete)
 ```

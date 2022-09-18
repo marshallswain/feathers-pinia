@@ -233,7 +233,7 @@ export const makeUseFindItems = (store: any, params: any) => {
     const _params: any = unref(params)
 
     if (_params) {
-      if (_params.paginate || _params.paginateOnServer) {
+      if (_params.paginate || _params.onServer) {
         const { defaultSkip, defaultLimit } = store.pagination
         const skip = _params.query.$skip || defaultSkip
         const limit = _params.query.$limit || defaultLimit

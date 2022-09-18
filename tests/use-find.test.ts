@@ -90,7 +90,7 @@ describe('queryWhen', () => {
     const { request, currentQuery, requestCount, queryWhen, next, prev } = new Find({
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
       qid: 'test',
     })
     await request.value
@@ -122,7 +122,7 @@ describe('queryWhen', () => {
     const { request, requestCount, queryWhen, next, prev } = new Find({
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
       qid: 'test',
       immediate: false,
     })
@@ -253,22 +253,22 @@ describe('Local Pagination', () => {
 })
 
 describe('Server Pagination', () => {
-  test('passing `paginateOnServer` enables server pagination', async () => {
+  test('passing `onServer` enables server pagination', async () => {
     const params = {
       query: {},
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
     }
     const query = new Find(params)
     expect(query.data.value.length).toBe(0)
-    expect(query.paginateOnServer).toBeTruthy()
+    expect(query.onServer).toBeTruthy()
   })
 
-  test('paginateOnServer with `immediate` immediately fetches data', async () => {
+  test('onServer with `immediate` immediately fetches data', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
     }
     const { request, requestCount } = new Find(params)
     const response = await request.value
@@ -276,11 +276,11 @@ describe('Server Pagination', () => {
     expect(requestCount.value).toBe(1)
   })
 
-  test('paginateOnServer, immediate: false does not immediately fetch data', async () => {
+  test('onServer, immediate: false does not immediately fetch data', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
       immediate: false,
     }
     const { request, requestCount } = new Find(params)
@@ -292,7 +292,7 @@ describe('Server Pagination', () => {
     const params = {
       query: {},
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
     }
     const { request, requestCount, limit, skip } = new Find(params)
     await request.value
@@ -308,7 +308,7 @@ describe('Server Pagination', () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
       immediate: false,
     }
     const { data, requestCount, limit, skip, next, toEnd, pageCount, find } = new Find(params)
@@ -339,7 +339,7 @@ describe('Server Pagination', () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
     }
     const { isPending, haveBeenRequested, haveLoaded, request, skip, next } = new Find(params)
     expect(isPending.value).toBe(true)
@@ -370,7 +370,7 @@ describe('Server Pagination', () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
       immediate: false,
     }
 
@@ -402,7 +402,7 @@ describe('Server Pagination', () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
       immediate: false,
     }
     const { error, find } = new Find(params)
@@ -420,7 +420,7 @@ describe('Server Pagination', () => {
     }
   })
 
-  test('paginateOnServer when server pagination is turned off', async () => {
+  test('onServer when server pagination is turned off', async () => {
     // Turn off service's pagination
     const oldPaginate = messageStore.service.options.paginate
     messageStore.service.options.paginate = false
@@ -428,7 +428,7 @@ describe('Server Pagination', () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
     }
     const { data, request, requestCount, limit, skip, next, toEnd, pageCount } = new Find(params)
     await request.value
@@ -461,11 +461,11 @@ describe('Server Pagination', () => {
 })
 
 describe('latestQuery and previousQuery', () => {
-  test('paginateOnServer stores latestQuery and previousQuery', async () => {
+  test('onServer stores latestQuery and previousQuery', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
       store: messageStore,
-      paginateOnServer: true,
+      onServer: true,
       immediate: false,
     }
     const { latestQuery, previousQuery, find, next } = new Find(params)
@@ -533,7 +533,7 @@ describe('latestQuery and previousQuery', () => {
       const _params = {
         query: { $limit: 4, $skip: 0 },
         store: messageStore,
-        paginateOnServer: true,
+        onServer: true,
       }
       const { allData, find, next } = useFind(_params)
       await find()
@@ -555,7 +555,7 @@ describe('latestQuery and previousQuery', () => {
       const _params = {
         query: { $limit: 4, $skip: 0 },
         store: messageStore,
-        paginateOnServer: true,
+        onServer: true,
         immediate: false,
       }
       const { data, find, next, request, isPending } = useFind(_params)
@@ -589,7 +589,7 @@ describe('Computed Params', () => {
       return {
         query: { text: text.value },
         store: messageStore,
-        paginateOnServer: true,
+        onServer: true,
       }
     })
     const { data, total, requestCount, request } = useFind(params)
@@ -618,7 +618,7 @@ describe('Computed Params', () => {
       return {
         query: { id: { $in: ids.value }, $limit: 5, $skip: 0 },
         store: messageStore,
-        paginateOnServer: true,
+        onServer: true,
       }
     })
     const { params: _params, data, total, requestCount, request } = useFind(params)
@@ -650,7 +650,7 @@ describe('Computed Params', () => {
       return {
         query: { text: 'Moose' },
         store: messageStore,
-        paginateOnServer: true,
+        onServer: true,
       }
       // else return null
     })

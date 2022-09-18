@@ -272,7 +272,7 @@ See the component example of client-side pagination on the [`useFind` page](./us
 
 ### Server Paging, Auto Fetch
 
-Another common use case is server-side pagination. Enable it by passing `paginateOnServer` in the params. You can also pull out `isPending` to show a status indicator when a request is pending. That's it!
+Another common use case is server-side pagination. Enable it by passing `onServer` in the params. You can also pull out `isPending` to show a status indicator when a request is pending. That's it!
 
 ```ts
 import usePosts from '../stores/posts'
@@ -281,7 +281,7 @@ const postStore = usePosts()
 
 const { data, next, prev, isPending } = postStore.useFind({ 
   query: {}, 
-  paginateOnServer: true 
+  onServer: true 
 })
 
 // move to the next page

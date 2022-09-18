@@ -148,6 +148,7 @@ export type HandleFindErrorOptions = { params: Params; error: any }
 
 // The find action will always return data at params.data, even for non-paginated requests.
 export type FindFn<M extends BaseModel> = (params?: MaybeRef<Params>) => Promise<Paginated<M>>
+export type GetFn<M extends BaseModel> = (id?: Id, params?: MaybeRef<Params>) => Promise<M | undefined>
 
 export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   find: FindFn<M>
@@ -155,7 +156,7 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   afterFind: <T = M[] | Paginated<M>>(response: T) => Promise<T>
   handleFindError({ params, error }: HandleFindErrorOptions): Promise<any>
   count: (params?: MaybeRef<Params>) => number
-  get: (id: Id, params?: MaybeRef<Params>) => Promise<M | undefined>
+  get: GetFn<M>
   create(data: AnyData, params?: MaybeRef<Params>): Promise<M>
   create(data: AnyData[], params?: MaybeRef<Params>): Promise<M[]>
   update: (id: Id, data: AnyData, params?: MaybeRef<Params>) => Promise<M>
@@ -594,15 +595,22 @@ export type DefineFeathersStoreOptions<
   actions?: A
 }
 
+export interface GetClassParams extends Params {
+  query?: Query
+  onServer?: boolean
+  immediate?: boolean
+}
+export interface GetClassParamsStandalone<M extends BaseModel> extends GetClassParams {
+  store: ServiceStoreDefault<M>
+}
 export interface FindClassParams extends Params {
   query: Query
-  paginateOnServer?: boolean
+  onServer?: boolean
   qid?: string
   immediate?: boolean
   watch?: boolean
 }
 export interface FindClassParamsStandalone<M extends BaseModel> extends FindClassParams {
-  query: Query
   store: ServiceStoreDefault<M>
 }
 
