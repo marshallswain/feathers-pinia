@@ -11,13 +11,16 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
+The `useFind` function is a Vue Composition API utility that takes the work out of retrieving lists of records from the store or API server.
+
 ## Overview of Features
 
 In version 1.0, the `useFind` utility has been completely rewritten from scratch.  It is a workflow-driven utility, which makes it a pleasure to use. Here's an overview of its features:
 
 - **Intelligent Fall-Through Caching** - Like SWR, but way smarter.
+- **Live Queries** - For server data, reactive records. For client-side data, reactive lists and records. No need to manually refresh data.
 - **Client-Side Pagination** - Built in, sharing the same logic with `usePagination`.
-- **Server-Side Pagination** - Also built in.
+- **Server-Side Pagination** - Also built in and made super easy.
 - **Infinite Pagination Support** - Bind to `allData` and tell it when to load more data.
 - **Declarative Workflow Support** - Compose computed params and let query as they change.
 - **Imperative Workflow Support** - Pass reactive params for imperative control.
@@ -27,6 +30,65 @@ In version 1.0, the `useFind` utility has been completely rewritten from scratch
 To lighten the burden of migrating from Feathers-Vuex, the old `useFind` utility is now provided as [`useFindWatched`](./use-find-watched). It is recommended that all new code be written with the new `useFind` API.
 
 </BlockQuote>
+
+## Usage
+
+There are two ways to use `useFind`: from the store (recommended) or standalone.
+
+### Recommended
+
+You can call `useFind` directly from the store. the advantage being that you don't have to provide the `store` in the params, as shown here:
+
+```ts
+import { useMessages } from '../store/messages'
+
+interface Props {
+  userId: string | number
+}
+const props = defineProps<Props>()
+const messageStore = useMessages()
+
+const query = computed(() => ({ userId: props.userId }))
+
+// client-side pagination with manual fetch
+const { data, prev, next, find } = messageStore.useFind({ query })
+await find() // retrieve data for the current query
+await next() // show the next page of results
+await prev() // show the previous page of results
+
+// server-side pagination with auto fetch
+const { data, prev, next } = messageStore.useFind({ query, onServer: true })
+await next() // retrieve the next page of results
+await prev() // retrieve the previous page of results
+```
+
+### Standalone
+
+In standalone mode, you have to import `useFind` and provide the `store` option in the params object, as shown here:
+
+```ts
+import { useMessages } from '../store/messages'
+import { useFind } from 'feathers-pinia'
+
+interface Props {
+  userId: string | number
+}
+const props = defineProps<Props>()
+const messageStore = useMessages()
+
+const query = computed(() => ({ userId: props.userId }))
+
+// client-side pagination with manual fetch
+const { data, prev, next, find } = useFind({ query, store: messageStore })
+await find() // retrieve data for the current query
+await next() // show the next page of results
+await prev() // show the previous page of results
+
+// server-side pagination with auto fetch
+const { data, prev, next } = useFind({ query, store: messageStore, onServer: true })
+await next() // retrieve the next page of results
+await prev() // retrieve the previous page of results
+```
 
 ## API
 
@@ -49,49 +111,62 @@ The `useFind` function is actually a factory function that returns an instance o
 - **`params` {Ref Object}** are an internal, `ref` copy of the initially-provided params.
 - **`store` {Store}** is a reference to the associated store.
 - **`onServer` {boolean}** indicates whether this instance makes requests to the API server. Defaults to `false`.
-- **`isSsr` {Computed boolean}** 
-- **`qid` {Ref string}** 
+- **`isSsr` {Computed boolean}** will be true if `isSsr` was passed into the `defineStore` options for this service store. Useful for awaint the `request` during SSR.
+- **`qid` {Ref string}** the query identifier. Causes this query's pagination data to be stored under its own `qid` in `store.pagination`.
 
 #### Data
 
-- **`data` {Ref Array}** 
-- **`allData` {Ref Array}** 
-- **`total` {Computed number}** 
-- **`limit` {Ref number}**
-- **`skip` {Ref number}** 
-- **`findInStore` {Function}** 
+- **`data` {Ref Array}** the array of results.
+- **`allData` {Ref Array}** all results for the matching query or server-retrieved data. With `onServer`, will return the correct results, even with custom query params that the store does not understand.
+- **`total` {Computed number}** One of two things: For client-side results, the total number of records in the store that match the query. For `onServer` results, the total number of records on the server that match the query.
+- **`limit` {Ref number}** the pagination `$limit`. Updating this value will change the internal pagination and the returned `data`.
+- **`skip` {Ref number}** the pagination `$skip`. Updating this value will change the internal pagination and the returned `data`.
 
 #### Query Tracking
 
-- **`currentQuery` {Computed Object}** 
-- **`latestQuery` {Computed Object}** 
-- **`previousQuery` {Computed Object}** 
+- **`currentQuery` {Computed Object}** an object containing the following:
+  - **`qid` {string}** the query identifier
+  - **`ids` {number[]}** the ids in this page of data
+  - **`items` {Record[]}** the items in this page of data
+  - **`total` {number}** the total number of items matching this query
+  - **`queriedAt` {number}** the timestamp when this page of data was retrieved. Useful when used with `queryWhen` to prevent repeated queries during a period of time.
+  - **`queryState` {Object}** a pagination object from the store
+- **`latestQuery` {Computed Object}** an object containing the following:
+  - **`pageId` {string}** stable stringified page params
+  - **`pageParams` {Object}** the page params
+  - **`queriedAt` {number}** timestamp when this page of records was received from the server.
+  - **`query` {Object}** the query params, including $limit and $skip.
+  - **`queryId` {string}** stable-stringified query params
+  - **`queryParams` {Object}** the query params, excluding $limit and $skip.
+  - **`total` {number}** the total number of records matching the query.
+- **`previousQuery` {Computed Object}** an object with the same format as `latestQuery`.
 
-#### Requests & Watching
+#### Data Retrieval & Watching
 
-- **`find` {Function}** 
-- **`request` {Ref Promise}** 
-- **`requestCount` {Computed number}** 
-- **`queryWhen` {Function}** 
+- **`find` {Function}** the same as `store.find`.
+- **`request` {Ref Promise}** the promise for the current request.
+- **`requestCount` {Computed number}** the number of requests sent by this `Find` instance.
+- **`queryWhen` {Function}** pass a function that returns a boolean into `queryWhen` and that function will be run before retrieving data. If it returns false, the query will not happen.
+- **`findInStore` {Function}** the same as `store.findInStore`.
 
 #### Request State
 
-- **`isPending` {Computed boolean}** 
-- **`haveBeenRequested` {Computed boolean}** 
-- **`haveLoaded` {Computed boolean}** 
-- **`error` {Computed error}** 
-- **`clearError` {Function}** 
+- **`isPending` {Computed boolean}** returns true if the current `request` is pending.
+- **`haveBeenRequested` {Computed boolean}** returns true if any request has been sent by this `Find` instance. Never resets for the life of the instance.
+- **`haveLoaded` {Computed boolean}** essentially the same purpose, but opposite of `isPending`. Returns true once the request finishes.
+- **`error` {Computed error}** will contain any error. The error will be cleared when a new request is made or when manually calling `clearError`.
+- **`clearError` {Function}** call this function to clear the `error`.
 
 #### Pagination Utils
 
-- **`pageCount` {Computed number}** 
-- **`currentPage` {Ref number}** 
-- **`canPrev` {Computed boolean}** 
-- **`canNext` {Computed boolean}** 
-- **`next` {Function}** 
-- **`prev` {Function}** 
-- **`toStart` {Function}** 
-- **`toEnd` {Function}** 
+- **`pageCount` {Computed number}** the number of pages for the current query params.
+- **`currentPage` {Ref number}** the current page number. Can be set to change to that page, or use `toPage(pageNumber)`.
+- **`canPrev` {Computed boolean}** returns true if there is a previous page.
+- **`canNext` {Computed boolean}** returns true if there is a next page.
+- **`next` {Function}** moves to the next page of data.
+- **`prev` {Function}** moves to the previous page of data.
+- **`toStart` {Function}** moves to the first page of data.
+- **`toEnd` {Function}** moves to the last page of data.
 - **`toPage(pageNumber)` {Function}** 
 
 
