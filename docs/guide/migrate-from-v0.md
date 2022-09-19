@@ -60,9 +60,9 @@ The `instanceDefaults` static Model function is now optional. You have a couple 
 
 ## Use `instanceDefaults` Correctly
 
-If you are using `instanceDefaults` for anything other than simply initializing default values, refactor and move any complex functionality to `setupInstance`.  The `setupInstance` function runs twice since it is stilled declared on BaseModel. The `setupInstance` function has been removed from BaseModel and only runs once.
+If you are using `instanceDefaults` for anything other than simply initializing default values, refactor and move any complex functionality to `setupInstance`.  The `instanceDefaults` method runs twice since it is stilled declared on BaseModel. The `setupInstance` function has been removed from BaseModel, so it only runs once.
 
-If you are cloning large amounts of default data inside of `instanceDefaults`, consider moving only that part into setupInstance, as well, so it won't be run twice.
+If you are cloning large amounts of default data inside of `instanceDefaults` or doing any complex processing, move it into `setupInstance` so it won't be run twice.
 
 ## `useClones` API Change
 
