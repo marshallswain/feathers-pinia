@@ -285,3 +285,30 @@ api.use(servicePath, memory({
 ```
 
 The same data can be written at any time during runtime by setting `api.service('users').options.store` to the new object, keyed by id.
+
+
+## Server-Side Rendering (SSR)
+
+Server-Side Rendering support is built into the service module and doesn't require much to enable. The main requirement is to set `ssr: true` (usually based on an environment variable) when setting up the service store on the server:
+
+```ts
+import { defineStore, BaseModel } from 'feathers-pinia' // (1)
+import { api } from '../feathers'
+
+export class User extends BaseModel {
+  // Truncated. See examples, above.
+}
+
+const servicePath = 'users'
+export const useUsers = defineStore({
+  ssr: true, // pass in an environment variable that evaluates to `true` ONLY ON THE SERVER.
+  idField: 'id',
+  clients: { api },
+  servicePath,
+  Model: User,
+})
+
+api.service(servicePath).hooks({})
+```
+
+As long as the `ssr` option evaluates to `true` on the server and `false` on the client, SSR support will work correctly in Feathers-Pinia.

@@ -148,3 +148,66 @@ The above example also shows why `queryWhen` is no longer passed as an argument.
 
 The best solution is to simply refresh to clear memory.  If you're using localStorage, clear the localStorage, then refresh. The alternative to refreshing would be to perform manual cleanup of the service stores. Refreshing is much simpler and more practical, so it's the official solution.
 
+## Server-Side Rendering (SSR)
+
+See the SSR example on the [Getting Started](./setup.md#server-side-rendering-ssr) page.
+
+## Directly Using Action Results
+
+Actions return reactive store records.
+
+## Handling Non-Reactive Data
+
+https://vuex.feathersjs.com/common-patterns.html#handling-non-reactive-data
+
+
+## Model-Level Computed Props
+
+https://vuex.feathersjs.com/common-patterns.html#model-specific-computed-properties
+
+## Relationships Between Services
+
+See the [Model Associations](./model-associations.md) page.
+
+## Working with Forms
+
+### Mutation Multiplicity Pattern
+
+The Mutation Multiplicity (anti) Pattern is a side effect of strict mode in stores. Vuex strict mode would throw errors when editing data in the store. Thankfully, Pinia will not throw errors when you modify store data. However, it's considered an anti-pattern to modify store data directly. The one exception is that cloned records are considered safe to edit in Feathers-Pinia, despite being kept in the store.  The most common (anti)pattern that beginners use to work around the "limitation" of not being able to edit store data is to
+
+1. Read data from the store and use it for display in the UI.
+2. Create custom actions/mutations intended to modify the data in specific ways.
+3. Use the actions/mutations wherever they apply (usually implemented as one mutation per form).
+
+There are times when defining custom mutations is the most supportive pattern for the task, but consider them to be more rare.  The above pattern can result in a huge number of mutations, extra lines of code, and increased long-term maintenance costs.
+
+The solution to the Mutation Multiplicity Malfeasance is the Clone and Commit Pattern in Feathers-Pinia.
+
+### Clone and Commit Pattern
+
+The "Clone and Commit" pattern provides an alternative to using a lot of actions/mutations. This patterns looks more like this:
+
+1. Read data from the store and use it for display in the UI.  (Same as above)
+2. Create and modify a clone of the data.
+3. Use a single mutation to commit the changes back to the original record in the store.
+
+Sending most edits through a single mutation can really simplify the way you work with store data.  The `BaseModel` class has `clone` and `commit` instance methods. These methods provide a clean API for working with items in the store and not unsafely editing data:
+
+```ts
+import { useTodos } from '../stores/todos'
+
+const todoStore = useTodos()
+
+const todo = new todoStore.Model({
+  description: 'Plant the garden',
+  isComplete: false
+})
+
+const clone = todo.clone()
+clone.description = 'Plant half of the garden."
+clone.commit()
+```
+
+In the example above, modifying the `todo` variable would unsafely modify stored data, which is a generally unsupportive practice when not done consciously. Calling `todo.clone()` returns a reactive clone of the instance.  It's safe to change clones. You can then call `clone.commit()` to update the original record in the store.
+
+The `clone` and `commit` methods are used by [useClone and useClones](./use-clones.md).

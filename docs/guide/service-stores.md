@@ -18,7 +18,7 @@ Here's a look at the `DefineStoreOptions` interface. By the way, there's lots of
 import { Application as FeathersClient } from '@feathersjs/feathers'
 
 interface DefineStoreOptions {
-  ssr?: boolean // New in 0.24.0
+  ssr?: boolean
   servicePath: string
   Model?: any
   idField?: 'id' | '_id' | string
