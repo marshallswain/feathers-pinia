@@ -29,6 +29,8 @@ export default defineConfig({
         '@feathersjs/commons',
         '@feathersjs/errors',
         '@feathersjs/adapter-commons',
+        '@feathersjs/rest-client',
+        '@feathersjs/feathers',
       ],
       output: {
         // Provide global variables to use in the UMD build
@@ -40,6 +42,8 @@ export default defineConfig({
           '@feathersjs/commons': 'commons',
           '@feathersjs/errors': 'errors',
           '@feathersjs/adapter-commons': 'adapterCommons',
+          '@feathersjs/rest-client': 'restClient',
+          '@feathersjs/feathers': 'feathers',
         },
       },
     },

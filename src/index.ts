@@ -8,6 +8,7 @@ export { makeState } from './service-store/make-state'
 
 export { models } from './models'
 export { clients, registerClient } from './clients'
+export { OhMyFetch } from './feathers-ohmyfetch'
 
 export { Find, useFind } from './use-find'
 export { Get, useGet } from './use-get'
