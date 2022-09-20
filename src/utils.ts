@@ -6,7 +6,7 @@ import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'isomorphic-mongo-objectid'
 import fastCopy from 'fast-copy'
 import { computed, Ref, unref } from 'vue-demi'
-import { isEqual } from 'lodash'
+import isEqual from 'fast-deep-equal'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {

@@ -19,7 +19,7 @@ import {
   updateParamsExcludePage,
 } from './utils'
 import { _ } from '@feathersjs/commons'
-import { isEqual } from 'lodash'
+import isEqual from 'fast-deep-equal'
 
 type Store<M extends BaseModel> = ServiceStoreDefault<M>
 
