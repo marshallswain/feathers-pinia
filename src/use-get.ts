@@ -14,7 +14,6 @@ export function useGet<M extends BaseModel>(id: Id, params: MaybeRef<GetClassPar
 export class Get<M extends BaseModel> {
   id: Ref<Id | null>
   params: Ref<GetClassParams>
-  store: Store<M>
   isSsr: ComputedRef<boolean>
 
   // Data
@@ -36,7 +35,7 @@ export class Get<M extends BaseModel> {
   clearError: () => void
 
   constructor(_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParamsStandalone<M>>) {
-    (this.store as Store<M>) = unref(_params).store as Store<M>
+    const store = unref(_params).store as Store<M>
     const id = isRef(_id) ? (isReadonly(_id) ? ref(_id.value) : _id) : ref(_id)
     const params = isRef(_params) ? (isReadonly(_params) ? ref(_params.value) : _params) : ref(_params)
 
@@ -47,7 +46,7 @@ export class Get<M extends BaseModel> {
     this.id = id as Ref<Id | null>
     this.params = params as Ref<GetClassParams>
     const { immediate = true, watch: _watch = true, onServer = false } = params.value
-    this.isSsr = computed(() => this.store.isSsr)
+    this.isSsr = computed(() => store.isSsr)
 
     /*** REQUEST STATE ***/
     const isPending = ref(false)
@@ -67,11 +66,11 @@ export class Get<M extends BaseModel> {
     })
     this.data = computed(() => {
       if (isPending.value && mostRecentId.value != null) {
-        return this.store.getFromStore(mostRecentId.value, params) || null
+        return store.getFromStore(mostRecentId.value, params) || null
       }
-      return this.store.getFromStore(id.value, params) || null
+      return store.getFromStore(id.value, params) || null
     })
-    this.getFromStore = this.store.getFromStore
+    this.getFromStore = store.getFromStore
 
     /*** QUERY WHEN ***/
     let queryWhen = () => true
@@ -99,7 +98,7 @@ export class Get<M extends BaseModel> {
       error.value = null
 
       try {
-        const response = await this.store.get(_id as Id, _params)
+        const response = await store.get(_id as Id, _params)
 
         // Keep a list of retrieved ids
         if (response && _id) {

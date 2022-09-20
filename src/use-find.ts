@@ -29,7 +29,6 @@ export function useFind<M extends BaseModel>(params: MaybeRef<FindClassParamsSta
 
 export class Find<M extends BaseModel> {
   params: Ref<FindClassParams>
-  store: Store<M>
   onServer: boolean
   isSsr: ComputedRef<boolean>
   qid: WritableComputedRef<string>
@@ -78,7 +77,7 @@ export class Find<M extends BaseModel> {
       _computedParams = _params
     }
 
-    (this.store as Store<M>) = unref(_params).store as Store<M>
+    const store = unref(_params).store as Store<M>
     // If we started without a query, assign an empty query. Assure computed params becomes writable ref.
     const params = isRef(_params) ? (isReadonly(_params) ? ref(_params.value) : _params) : ref(_params)
 
@@ -108,7 +107,7 @@ export class Find<M extends BaseModel> {
       return { ...params.value, query }
     })
     this.onServer = !!params.value.onServer
-    this.isSsr = computed(() => this.store.isSsr)
+    this.isSsr = computed(() => store.isSsr)
 
     /*** REQUEST STATE ***/
     const isPending = ref(false)
@@ -126,9 +125,9 @@ export class Find<M extends BaseModel> {
       if (isPending.value && this.latestQuery.value && this.onServer) {
         const { pageParams, queryParams } = this.latestQuery.value as any
         const params = { query: { ...pageParams, ...queryParams }, onServer: true }
-        return makeUseFindItems(this.store, params).value
+        return makeUseFindItems(store, params).value
       }
-      return makeUseFindItems(this.store, paramsWithPagination).value
+      return makeUseFindItems(store, paramsWithPagination).value
     })
     this.allData = computed(() => {
       if (this.currentQuery == null) {
@@ -144,10 +143,10 @@ export class Find<M extends BaseModel> {
         })
         return allIds
       }, [])
-      const matchingItemsById = _.pick(this.store.itemsById, ...ids)
+      const matchingItemsById = _.pick(store.itemsById, ...ids)
       return Object.values(matchingItemsById)
     })
-    this.findInStore = this.store.findInStore
+    this.findInStore = store.findInStore
 
     /*** QUERY WHEN ***/
     let queryWhen = () => true
@@ -156,7 +155,7 @@ export class Find<M extends BaseModel> {
     }
     // returns cached query data from the store BEFORE the request is sent.
     this.currentQuery = computed(() => {
-      const qidState: any = this.store.pagination[this.qid.value]
+      const qidState: any = store.pagination[this.qid.value]
       if (!qidState) return null
       const queryInfo = getQueryInfo(params.value)
       delete queryInfo.response
@@ -170,7 +169,7 @@ export class Find<M extends BaseModel> {
       if (!pageState) return null
 
       const { ids, queriedAt } = pageState
-      const items = Object.values(_.pick(this.store.itemsById, ...ids))
+      const items = Object.values(_.pick(store.itemsById, ...ids))
       const info = { ...queryInfo, ids, items, total, queriedAt, queryState } as CurrentQuery<M>
       return info || null
     })
@@ -185,7 +184,7 @@ export class Find<M extends BaseModel> {
     })
 
     /*** PAGINATION DATA ***/
-    const storeCount = computed(() => this.store.countInStore(paramsWithoutPagination.value))
+    const storeCount = computed(() => store.countInStore(paramsWithoutPagination.value))
     this.total = computed(() => {
       if (this.onServer) return (this.latestQuery.value as any)?.response.total
       else return storeCount.value
@@ -236,7 +235,7 @@ export class Find<M extends BaseModel> {
       error.value = null
 
       try {
-        const response = await this.store.find(_params)
+        const response = await store.find(_params)
 
         // Set limit and skip if missing
         if ((hasOwn(response, 'limit') && this.limit.value == null) || this.skip.value == null) {
