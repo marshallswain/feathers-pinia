@@ -220,9 +220,12 @@ describe('With onServer', () => {
   test('store.useGetOnce only queries once per id', async () => {
     const id = ref(1)
     const { data, get, requestCount, request } = messageStore.useGetOnce(id)
-    expect(requestCount.value).toBe(0)
+    expect(requestCount.value).toBe(1)
     expect(data.value).toBe(null)
 
+    // Wait for the internal request and for the data to fill the store.
+    await request.value
+    await timeout(20)
     await get()
 
     // queryWhen is called even when manually calling `get`

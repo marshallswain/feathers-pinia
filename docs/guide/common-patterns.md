@@ -2,6 +2,11 @@
 outline: deep
 ---
 
+<script setup>
+import Badge from '../components/Badge.vue'
+import BlockQuote from '../components/BlockQuote.vue'
+</script>
+
 # Common Patterns
 
 [[toc]]
@@ -117,7 +122,13 @@ const { data: pastAppointments } = appointmentStore.useFind(pastParams)
 
 in the above example of component code, the `future` and `pastAppointments` will automatically update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.  `feathers-pinia` listens to socket events automatically, so you don't have to manually wire any of this up!
 
-## Only Query Once Per Record
+## Manually-Query Once Per Record
+
+<BlockQuote>
+
+See the next example for a new short-hand syntax to implement this same pattern with `store.useGetOnce`.
+
+</BlockQuote>
 
 For real-time apps, it's not necessary to retrieve a single record more than once, since feathers-pinia will automatically keep the record up to date with real-time events. You can use `queryWhen` to make sure you only retrieve a record once. Perform the following steps to accomplish this:
 
@@ -134,7 +145,7 @@ interface Props {
 const props = defineProps<Props>()
 const userStore = useUsers()
 
-const { data: user, queryWhen get } = userStore.useGet(props.id, { 
+const { data: user, queryWhen, get } = userStore.useGet(props.id, { 
   onServer: true, 
   immediate: false            // (1)
 })
@@ -143,6 +154,24 @@ await get()                   // (3)
 ```
 
 The above example also shows why `queryWhen` is no longer passed as an argument. It's most common that `queryWhen` needs values returned by `useGet`, but those values aren't available until after `useGet` runs, making them unavailable to `queryWhen` as an argument. In short, moving `queryWhen` to the returned object gives us access to everything we need to productively prevent queries.
+
+## Auto-Query Once Per Record
+
+The previous pattern of only querying once is so common for real-time apps that we've built a shortcut for it at `store.useGetOnce`. It uses the same code as above, but built into the store method.
+
+```ts
+import { useUsers } from '../store/users'
+
+interface Props {
+  id: string | number
+}
+const props = defineProps<Props>()
+const userStore = useUsers()
+
+const { data: user } = userStore.useGetOnce(props.id)
+```
+
+Now the same record will only be retrieved once.
 
 ## Clearing Data on Logout
 

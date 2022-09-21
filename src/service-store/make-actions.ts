@@ -488,6 +488,7 @@ export function makeActions<
       Object.assign(_params.value || _params, { store: this, immediate: false, onServer: true })
       const results = useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
       results.queryWhen(() => !results.data.value)
+      results.get()
       return results
     },
 
