@@ -483,6 +483,14 @@ export function makeActions<
       return useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
     },
 
+    // Retrieves a record only once.
+    useGetOnce(_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
+      Object.assign(_params.value || _params, { store: this, immediate: false, onServer: true })
+      const results = useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
+      results.queryWhen(() => !results.data.value)
+      return results
+    },
+
     // alias to useFindWatched, doesn't require passing the model
     useFindWatched<M extends BaseModel>(options: UseFindWatchedOptions) {
       return useFindWatched<M>({ model: this.Model as any, ...options })

@@ -217,6 +217,30 @@ describe('With onServer', () => {
     expect(queryWhenFn).toHaveBeenCalledTimes(3)
   })
 
+  test('store.useGetOnce only queries once per id', async () => {
+    const id = ref(1)
+    const { data, get, requestCount, request } = messageStore.useGetOnce(id)
+    expect(requestCount.value).toBe(0)
+    expect(data.value).toBe(null)
+
+    await get()
+
+    // queryWhen is called even when manually calling `get`
+    expect(requestCount.value).toBe(1)
+
+    id.value = 2
+    await timeout(20)
+    await request.value
+
+    expect(requestCount.value).toBe(2)
+
+    id.value = 1
+    await timeout(20)
+    await request.value
+
+    expect(requestCount.value).toBe(2)
+  })
+
   test('can disable watch', async () => {
     const id = ref(1)
     const { get, requestCount, request } = new Get(id, {

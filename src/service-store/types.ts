@@ -151,6 +151,7 @@ export type HandleFindErrorOptions = { params: Params; error: any }
 export type FindFn<M extends BaseModel> = (params?: MaybeRef<Params>) => Promise<Paginated<M>>
 export type GetFn<M extends BaseModel> = (id?: Id, params?: MaybeRef<Params>) => Promise<M | undefined>
 export type GetFnWithId<M extends BaseModel> = (id: Id, params?: MaybeRef<Params>) => Promise<M | undefined>
+export type UseGetFn<M extends BaseModel> = (_id: MaybeRef<Id | null>, _params?: MaybeRef<GetClassParams>) => Get<M>
 
 export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   find: FindFn<M>
@@ -183,7 +184,8 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   unflagSsr: (params: Params) => void
   useFind: (params: MaybeRef<FindClassParams>) => Find<M>
   useFindWatched: (options: UseFindWatchedOptions) => UseFindComputed<M>
-  useGet: (_id: MaybeRef<Id | null>, _params?: MaybeRef<GetClassParams>) => Get<M>
+  useGet: UseGetFn<M>
+  useGetOnce: UseGetFn<M>
   useGetWatched: (options: UseGetOptions) => UseGetComputed<M>
 }
 
