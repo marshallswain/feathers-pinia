@@ -34,7 +34,7 @@ If your app will use feathers-rest (no realtime connection), install these packa
 npm i @feathersjs/feathers@pre @feathersjs/authentication-client@pre @feathersjs/rest-client@pre
 ```
 
-### TypeScript
+## TypeScript
 
 By default, TypeScript will expect you to strictly identify properties on Model classes.  See the `!` in the following example:
 
