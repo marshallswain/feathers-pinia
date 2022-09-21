@@ -45,7 +45,7 @@ beforeEach(async () => {
 afterEach(() => reset())
 
 describe('Factory Function', () => {
-  test('can use `useGet` to get a Find instance', async () => {
+  test('can use `useGet` to get a Get instance', async () => {
     const returned = useGet(1, { store: messageStore })
     expect(returned instanceof Get).toBeTruthy()
     expect(returned.data.value).toBeDefined()
