@@ -37,12 +37,21 @@ module.exports = {
 function getGuideSidebar() {
   return [
     {
-      text: 'Guide',
+      text: 'Introduction',
       items: [
         { text: "What's New 🎁", link: '/guide/whats-new' },
         { text: 'Introduction', link: '/guide/' },
-        { text: 'Getting Started', link: '/guide/setup' },
         { text: 'Module Overview', link: '/guide/module-overview' },
+      ],
+    },
+    {
+      text: 'Start a Project',
+      items: [
+        { text: 'Install Modules', link: '/guide/setup' },
+        { text: 'with Vite', link: '/guide/setup-vite' },
+        { text: 'with Nuxt 3', link: '/guide/setup-nuxt3' },
+        { text: 'with Quasar 🚧', link: '/guide/setup-quasar' },
+        { text: 'Other Setup Examples', link: '/guide/setup-other' },
       ],
     },
     {
