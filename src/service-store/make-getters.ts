@@ -19,11 +19,9 @@ type ServiceStoreTypedGetters<M extends BaseModel = BaseModel> = TypedGetters<
   ServiceStoreDefaultGetters<M>
 >
 
-export function makeGetters<
-  M extends BaseModel = BaseModel,
-  S extends StateTree = StateTree,
-  G extends _GettersTree<S> = {},
->(options: MakeServiceGettersOptions<M, S, G>): ServiceStoreDefaultGetters<M> & G {
+export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree = {}, G extends _GettersTree<S> = {}>(
+  options: MakeServiceGettersOptions<M, S, G>,
+): ServiceStoreDefaultGetters<M> & G {
   const defaultGetters: ServiceStoreTypedGetters<M> = {
     // Returns the Feathers service currently assigned to this store.
     service() {

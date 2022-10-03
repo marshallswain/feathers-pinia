@@ -5,7 +5,7 @@ import { Ref } from 'vue-demi'
 
 import { HandleEvents } from './types'
 import { Pinia, StateTree, _GettersTree } from 'pinia'
-import { ServiceStore, DefineFeathersStoreOptions } from './service-store/types'
+import { ServiceStore, DefineFeathersStoreOptions, ServiceStoreDefaultState } from './service-store/types'
 
 interface SetupOptions {
   ssr?: boolean | Ref<boolean>
@@ -31,7 +31,24 @@ export function setupFeathersPinia(globalOptions: SetupOptions) {
   function defineStoreWrapper<
     Id extends string,
     M extends BaseModel = BaseModel,
-    S extends StateTree = StateTree,
+    S extends StateTree = {},
+    G extends _GettersTree<S> = {},
+    A = {},
+  >(
+    id: Id,
+    options: Omit<DefineFeathersStoreOptions<Id, M, S, G, A>, 'id'>,
+  ): (pinia?: Pinia) => ServiceStore<Id, M, S, G, A>
+  function defineStoreWrapper<
+    Id extends string,
+    M extends BaseModel = BaseModel,
+    S extends StateTree = {},
+    G extends _GettersTree<S> = {},
+    A = {},
+  >(options: DefineFeathersStoreOptions<Id, M, S, G, A>): (pinia?: Pinia) => ServiceStore<Id, M, S, G, A>
+  function defineStoreWrapper<
+    Id extends string,
+    M extends BaseModel = BaseModel,
+    S extends StateTree = {},
     G extends _GettersTree<S> = {},
     A = {},
   >(
