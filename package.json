@@ -52,6 +52,9 @@
     "sift": "^16.0.0",
     "vue-demi": "latest"
   },
+  "optionalDependencies": {
+    "@feathersjs/rest-client": "5.0.0-pre.28"
+  },
   "devDependencies": {
     "@babel/types": "^7.19.0",
     "@cspell/dict-fr-fr": "^2.1.1",
