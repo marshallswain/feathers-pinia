@@ -22,7 +22,7 @@ export function hydrateStore(store: any, storage: any) {
  * @param store pinia store
  * @param keys an array of keys to watch and write to localStorage.
  */
-export function syncWithStorage(store: any, stateKeys: Array<string> = [], storage: Storage = window.localStorage) {
+export function syncWithStorage(store: any, stateKeys: Array<string>, storage: Storage = window.localStorage) {
   hydrateStore(store, storage)
 
   const debouncedWrite = debounce(writeToStorage, 500)
