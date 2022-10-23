@@ -1,8 +1,8 @@
 import type { Params, Paginated, QueryInfo, HandleEvents } from '../types'
 import type { Ref, ComputedRef } from 'vue-demi'
 import type { Id, Query, NullableId, Application as FeathersClient } from '@feathersjs/feathers'
-import type { StateTree, Store as _Store, StoreDefinition, _GettersTree } from 'pinia'
-import type { MaybeArray, MaybeRef } from '../utility-types'
+import type { StateTree, Store as _Store, StoreDefinition, _GettersTree, DefineStoreOptionsBase } from 'pinia'
+import type { MaybeArray, MaybeRef, TypedActions, TypedGetters } from '../utility-types'
 import { BaseModel } from './base-model'
 import { Find } from '../use-find'
 import { Get } from '../use-get'
@@ -192,9 +192,9 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
 export type ServiceOptions<
   Id extends string = any,
   M extends BaseModel = BaseModel,
-  S extends StateTree = Record<string, any>,
-  G extends _GettersTree<S> = Record<string, any>,
-  A = Record<string, any>,
+  S extends StateTree = {},
+  G extends _GettersTree<S> = {},
+  A = {},
 > = Required<
   Pick<
     DefineFeathersStoreOptions<Id, M, S, G, A>,
@@ -572,13 +572,8 @@ export type ServiceStoreDefinition<
   ServiceStoreDefaultActions<M> & A
 >
 
-export type DefineFeathersStoreOptions<
-  Id extends string = string,
-  M extends BaseModel = BaseModel,
-  S extends StateTree = Record<string, any>,
-  G extends _GettersTree<S> = Record<string, any>,
-  A = Record<string, any>,
-> = {
+export interface DefineFeathersStoreOptions<Id extends string, M extends BaseModel, S extends StateTree, G, A>
+  extends DefineStoreOptionsBase<S, _Store<Id, S, G, A>> {
   clientAlias?: string
   idField?: string
   tempIdField?: string
@@ -588,15 +583,15 @@ export type DefineFeathersStoreOptions<
   ssr?: boolean
   servicePath: string
   Model?: ModelStatic<M>
-  id?: Id
   clients?: { [alias: string]: FeathersClient }
   enableEvents?: boolean
   handleEvents?: HandleEvents<M>
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
+  id?: Id
   state?: () => S
-  getters?: G
-  actions?: A
+  getters?: TypedGetters<S, G, ServiceStoreDefaultState>
+  actions?: TypedActions<S, G, A, ServiceStoreDefaultState, ServiceStoreDefaultGetters, ServiceStoreDefaultActions>
 }
 
 export interface GetClassParams extends Params {

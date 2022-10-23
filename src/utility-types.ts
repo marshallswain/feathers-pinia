@@ -1,4 +1,4 @@
-import { StateTree, _GettersTree, _StoreWithGetters, _StoreWithState } from 'pinia'
+import { StateTree, _GettersTree, _StoreWithGetters, _StoreWithState, PiniaCustomProperties } from 'pinia'
 import { Ref, UnwrapRef } from 'vue-demi'
 
 export type MaybeRef<T> = T | Ref<T>
@@ -13,5 +13,6 @@ export type TypedActions<S, G, A, DefaultS extends StateTree = {}, DefaultG = {}
     A &
       UnwrapRef<DefaultS & S> &
       _StoreWithState<any, DefaultS & S, DefaultG & G, DefaultA & A> &
-      _StoreWithGetters<DefaultG & G> /* & PiniaCustomProperties*/
+      _StoreWithGetters<DefaultG & G> &
+      PiniaCustomProperties
   >

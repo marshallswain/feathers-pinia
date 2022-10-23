@@ -52,7 +52,7 @@ type ServiceStoreTypedActions<M extends BaseModel = BaseModel> = TypedActions<
 
 export function makeActions<
   M extends BaseModel = BaseModel,
-  S extends StateTree = StateTree,
+  S extends StateTree = {},
   G extends _GettersTree<S> = {},
   A = {},
 >(options: MakeServiceActionsOptions<M, S, G, A>): ServiceStoreDefaultActions<M> & A {
