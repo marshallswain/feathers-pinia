@@ -94,7 +94,7 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
         }
 
         if (filters.$select) {
-          values = values.map((value) => _.pick(value, ...filters.$select.slice()))
+          values = values.map((value) => _.pick(value, ...filters.$select.slice(), this.idField, this.tempIdField))
         }
 
         // Make sure items are instances
