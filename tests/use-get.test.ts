@@ -52,6 +52,23 @@ describe('Factory Function', () => {
   })
 })
 
+describe('Manual Get with Ref', () => {
+  test('can update ref and manually get correct data', async () => {
+    const id = ref(1)
+    const { data, get } = new Get(id, { store: messageStore, immediate: false })
+    expect(data.value).toBeNull()
+
+    await get()
+    expect(data.value?.id).toBe(1)
+
+    id.value = 2
+    expect(data.value).toBeNull()
+
+    await get()
+    expect(data.value?.id).toBe(2)
+  })
+})
+
 describe('Get Class', () => {
   beforeEach(async () => {
     await messageStore.find({ query: { $limit: 20 } })
