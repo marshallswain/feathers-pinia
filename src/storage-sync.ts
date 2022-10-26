@@ -28,11 +28,5 @@ export function syncWithStorage(store: any, stateKeys: Array<string>, storage: S
   const debouncedWrite = debounce(writeToStorage, 500)
   const toWatch = computed(() => _.pick(store, ...stateKeys))
 
-  watch(
-    () => toWatch.value,
-    (val) => {
-      debouncedWrite(store.$id, val, storage)
-    },
-    { deep: true },
-  )
+  watch(toWatch, (val) => debouncedWrite(store.$id, val, storage), { deep: true })
 }
