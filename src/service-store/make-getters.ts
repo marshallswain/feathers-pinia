@@ -93,9 +93,10 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
           values = values.slice(0, filters.$limit)
         }
 
-        if (filters.$select) {
-          values = values.map((value) => _.pick(value, ...filters.$select.slice(), this.idField, this.tempIdField))
-        }
+        // TODO: explore if there's any useful benefit to $select on the client. Right now this causes an infinite loop.
+        // if (filters.$select) {
+        //   values = values.map((value) => _.pick(value, ...filters.$select.slice(), this.idField, this.tempIdField))
+        // }
 
         // Make sure items are instances
         values = values.map((item) => {
