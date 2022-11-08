@@ -47,7 +47,7 @@ export class Message extends BaseModel {
     associateFind(message, 'stargazers', {
       Model: models.api.User,
       makeParams: (message) => ({
-        query: { $or: [{ id: { $in: message.stargazerIds } }, { _tempId: { $in: message.stargazerIds } }] },
+        query: { $or: [{ id: { $in: message.stargazerIds } }, { __tempId: { $in: message.stargazerIds } }] },
       }),
       handleSetInstance(user) {
         this.handleSetInstanceRan = true

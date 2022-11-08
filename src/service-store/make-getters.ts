@@ -71,6 +71,8 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
             .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike'])
             .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
+        if (filters.$or) query.$or = filters.$or
+
         let values = _.values(itemsById)
 
         if (params.temps) {

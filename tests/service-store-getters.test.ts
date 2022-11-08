@@ -24,6 +24,31 @@ const reset = () => {
   resetStores(api.service('messages'), messageStore)
 }
 
+// Tests for $or
+describe('findInStore with _or', () => {
+  beforeEach(async () => {
+    reset()
+    api.service('messages').store = {
+      1: { id: 1, text: 'Moose', description: 'one' },
+      2: { id: 2, text: 'moose', description: 'two' },
+      3: { id: 3, text: 'Goose', description: 'three' },
+      4: { id: 4, text: 'Loose', description: 'four' },
+    }
+    await messageStore.find({ query: {} })
+  })
+  afterAll(() => reset())
+
+  test('Can use or on store queries', async () => {
+    const { data } = messageStore.findInStore({
+      query: {
+        $or: [{ text: 'Moose' }, { text: 'Goose' }],
+      },
+    })
+    const textValues = data.map((i) => i.text)
+    expect(textValues).toEqual(['Moose', 'Goose'])
+  })
+})
+
 describe('Filtering With findInStore', () => {
   beforeEach(async () => {
     reset()
