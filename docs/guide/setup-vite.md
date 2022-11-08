@@ -26,11 +26,10 @@ Here's an example **feathers-socket.io** client:
 
 ```ts
 // src/feathers.ts
-import feathers from '@feathersjs/feathers'
+import { feathers } from '@feathersjs/feathers'
 import socketio from '@feathersjs/socketio-client'
 import auth from '@feathersjs/authentication-client'
 import io from 'socket.io-client'
-import { iff, discard } from 'feathers-hooks-common'
 
 const socket = io('http://localhost:3030', { transports: ['websocket'] })
 
@@ -46,9 +45,11 @@ Here's an example that exports a couple of **feathers-rest** clients:
 
 ```ts
 // src/feathers.ts
-import feathers from '@feathersjs/feathers'
+import { feathers } from '@feathersjs/feathers'
 import rest from '@feathersjs/rest-client'
 import auth from '@feathersjs/authentication-client'
+
+const fetch = window.fetch.bind(window)
 
 // The variable name of each client becomes the alias for its server.
 export const api = feathers()
@@ -59,6 +60,10 @@ export const analytics = feathers()
   .configure(rest('http://localhost:3031').fetch(fetch))
   .configure(auth())
 ```
+
+:::tip 
+If upgrading from v4 (crow) and you receive this error "Error: Failed to execute 'fetch' on 'Window': Illegal invocation", make sure you bind the window to the fetch window.fetch.bind(window) 
+:::
 
 ## 2. Pinia
 
