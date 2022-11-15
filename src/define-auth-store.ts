@@ -98,7 +98,7 @@ export function defineAuthStore<
     async authenticate(authData: any) {
       try {
         const response = await feathersClient.authenticate(authData)
-        Object.assign(this, { ...response, isAuthenticated: true })
+        this.$patch({ ...response, isAuthenticated: true })
         return this.handleResponse(response) || response
       } catch (error) {
         this.error = error
