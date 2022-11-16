@@ -392,7 +392,7 @@ The above file includes the following logic:
   - Specify the name of the cookie, which can be changed if desired.
 - JWT expiration checking.
 - An `authenticate` function which stores the `user` and sets the `userId`.
-- A `logout` function, which removes the JWT from storage and refreshes the page. When we create our auth middleware, the refresh will trigger a route change to redirect the user. If you use Feathers-Pinia's [localStorage plugin](/guides/storage-sync), you might clear localStorage before refreshing the page.
+- A `logout` function, which removes the JWT from storage and refreshes the page. When we create our auth middleware, the refresh will trigger a route change to redirect the user. If you use Feathers-Pinia's [localStorage plugin](/guide/storage-sync), you might clear localStorage before refreshing the page.
 
 ### 6.2 Auth Plugin
 
