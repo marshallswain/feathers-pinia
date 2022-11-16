@@ -195,7 +195,7 @@ For more information about setting up associations, see the [Model Associations]
 
 In Nuxt 3, the user stores are setup as auto-imported composables, making them really convenient to use.  (If you haven't noticed, yet, one of the primary themes of Nuxt 3 is convenient Developer Experience.)
 
-### 5.1 The Users Service
+### 5.1 Users Service
 
 To setup the `/users` service store, create the following file:
 
@@ -234,7 +234,7 @@ Note that we have to cast the `User` model into `typeof userStore.Model`. For no
 
 </BlockQuote>
 
-### 5.2 The Tasks Service
+### 5.2 Tasks Service
 
 To setup the `/tasks` service store, create the following file:
 
