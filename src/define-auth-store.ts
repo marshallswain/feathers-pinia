@@ -39,6 +39,7 @@ interface AuthStoreDefaultGetters extends _GettersTree<AuthStoreDefaultState> {
 
 interface AuthStoreDefaultActions {
   authenticate: (authData: any) => Promise<any>
+  reAuthenticate: (force: boolean) => Promise<any>
   handleResponse: (response: any) => any
   handleError: (err: Error) => any
   setLoaded: (val: boolean) => void
@@ -81,6 +82,17 @@ export function defineAuthStore<
    * Default Actions
    */
   const defaultActions: AuthStoreTypedActions = {
+    // https://dove.feathersjs.com/api/authentication/client.html#app-reauthenticate-force
+    async reAuthenticate(force: boolean = false) {
+      try {
+        const response = await feathersClient.reAuthenticate(force)
+        Object.assign(this, { ...response, isAuthenticated: true })
+        return this.handleResponse(response) || response
+      } catch (error) {
+        this.error = error
+        return this.handleError(error as Error)
+      }
+    },
     async authenticate(authData: any) {
       try {
         const response = await feathersClient.authenticate(authData)
