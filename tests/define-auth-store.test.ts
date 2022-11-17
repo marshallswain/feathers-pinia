@@ -20,6 +20,13 @@ describe('Define Auth Store 1 (from options without options.id)', () => {
     expect(store.payload).toBeTruthy
     expect(store.user).toBeUndefined
   })
+  test('can reAuthenticate', async () => {
+    const response = await store.reAuthenticate()
+    expect(store.$id).toBe('auth')
+    expect(store.accessToken).toBeTruthy
+    expect(store.payload).toBeTruthy
+    expect(store.user).toBeUndefined
+  })
   test('has a feathersClient getter', async () => {
     expect(store.feathersClient).toBeTruthy
   })
