@@ -28,28 +28,28 @@ Note that for auto-import to work in Nuxt 3, the dev server must be running. The
 
 </BlockQuote>
 
-## 1. Install OhMyFetch
+## 1. Install `ofetch`
 
-The `ohmyfetch` adapter fulfills the promise of the `fetch` API, being a universal client that works on client, server, and in serverless environments.  Install it with the following command.  Note that you can put it in `devDependencies` since Nuxt makes a clean, standalone version of your project during build.
+The `ofetch` adapter fulfills the promise of the `fetch` API, being a universal client that works on client, server, and in serverless environments.  Install it with the following command.  Note that you can put it in `devDependencies` since Nuxt makes a clean, standalone version of your project during build.
 
 ```bash
-npm i ohmyfetch -D
+npm i ofetch -D
 ```
 
 ## 2. Feathers Client Plugin
 
-With `ohmyfetch` installed, you can use the `OhMyFetch` adapter from Feathers-Pinia to setup a Feathers client. The following example shows how to setup a hybrid client that uses `fetch` on the server and seamlessly switches to WebSockets on the client.  Yes! Feathers-Pinia is capable of switching client transports and will continue to work seamlessly!
+With `ofetch` installed, you can use the `OFetch` adapter from Feathers-Pinia to setup a Feathers client. The following example shows how to setup a hybrid client that uses `fetch` on the server and seamlessly switches to WebSockets on the client.  Yes! Feathers-Pinia is capable of switching client transports and will continue to work seamlessly!
 
 Notice that we prefix the filename with `1.`, this is to guarantee that Nuxt runs our future plugins in the correct order. In the future, if you need to run other plugins before the `feathers.plugin.ts` file, you can update the numbers to reflect the required order.
 
 ```ts
 // plugins/1.feathers.ts
-import { $fetch } from 'ohmyfetch'
+import { $fetch } from 'ofetch'
 import rest from '@feathersjs/rest-client'
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
 import { feathers } from '@feathersjs/feathers'
-import { OhMyFetch, setupFeathersPinia } from 'feathers-pinia'
+import { OFetch, setupFeathersPinia } from 'feathers-pinia'
 
 export default defineNuxtPlugin(async (_nuxtApp) => {
   // Creating the Feathers client in a plugin avoids stateful data and
@@ -70,7 +70,7 @@ export default defineNuxtPlugin(async (_nuxtApp) => {
   // Use Rest on the server
   // Check process.server so the code can be tree shaken out of the client build.
   if (process.server)
-    api.configure(rest(host).fetch($fetch, OhMyFetch))
+    api.configure(rest(host).fetch($fetch, OFetch))
 
   // Switch to Socket.io on the client
   else

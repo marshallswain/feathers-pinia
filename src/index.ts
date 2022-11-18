@@ -6,7 +6,7 @@ export { associateGet } from './associate-get'
 
 export { models } from './models'
 export { clients, registerClient } from './clients'
-export { OhMyFetch } from './feathers-ohmyfetch'
+export { OFetch } from './feathers-ofetch'
 
 export { Find, useFind } from './use-find'
 export { Get, useGet } from './use-get'

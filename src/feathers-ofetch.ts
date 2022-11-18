@@ -1,7 +1,8 @@
 import { FetchClient } from '@feathersjs/rest-client'
 import type { Params } from '@feathersjs/feathers'
 
-export class OhMyFetch extends FetchClient {
+// A feathers-rest transport adapter for https://github.com/unjs/ofetch
+export class OFetch extends FetchClient {
   async request(options: any, params: Params) {
     const fetchOptions = Object.assign({}, options, (params as any).connection)
 
@@ -16,7 +17,7 @@ export class OhMyFetch extends FetchClient {
       if (status === 204) return null
       return _data
     } catch (error) {
-      console.error('feathers-ohmyfetch request error', error)
+      console.error('feathers-ofetch request error', error)
       throw error
     }
   }
