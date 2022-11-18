@@ -159,7 +159,7 @@ Now here's the `Task` Model with the `associateGet` utility:
 
 ```ts
 // models/task.ts
-import type { Id } from '@feathersjs/feathers/lib'
+import type { Id } from '@feathersjs/feathers'
 import { BaseModel, associateGet } from 'feathers-pinia'
 import { User } from './user'
 
@@ -300,7 +300,7 @@ const user = new User({ email: 'foo', _id: 'bar' }).addToStore()
 </template>
 ```
 
-## 6. Adding Authentication
+## 6. Authentication
 
 If your app requires login, the following sections demonstrate how to cleanly support it. In an ideal world, we add auth without mixing concerns.  Let's take a look at how we can add auth without touching our existing code.
 
