@@ -32,7 +32,8 @@ export function associateFind<M extends BaseModel>(
     const _params = getParams(instance, Model.store as any, makeParams)
     _utils = new Find(_params as FindClassParamsStandalone<M>) as any
     _utils.useFind = (params: MaybeRef<FindClassParams>): Find<M> => {
-      (params.value || params).store = Model.store
+      const _params = params.value || params
+      _params.store = Model.store
       return useFind(params as MaybeRef<FindClassParamsStandalone<M>>)
     }
   }
@@ -61,6 +62,7 @@ export function associateFind<M extends BaseModel>(
 
   // Write the initial data to the new setter
   if (initialData) {
-    (instance as any)[prop] = initialData
+    const _instance: any = instance
+    _instance[prop] = initialData
   }
 }
