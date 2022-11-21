@@ -4,6 +4,7 @@ import { memory } from '@feathersjs/memory'
 import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
 import { timeout } from './test-utils'
+import { NotAuthenticated } from '@feathersjs/errors'
 
 const restClient = rest()
 
@@ -13,11 +14,22 @@ export const api: any = feathers().configure(restClient.axios(axios)).configure(
 api.authentication.service.hooks({
   before: {
     create: [
-      (context: HookContext) => {
+      async (context: HookContext) => {
         const { data } = context
-        if (data.strategy === 'jwt') {
-          context.result = { accessToken: 'jwt-access-token', payload: { test: true } }
+        if (data.accessToken === 'invalid') {
+          throw new NotAuthenticated('invalid token')
+        } else if (data.strategy === 'jwt') {
+          context.result = {
+            accessToken: 'jwt-access-token',
+            payload: { test: true },
+            user: { id: 1, email: 'test@test.com' },
+          }
         }
+      },
+    ],
+    remove: [
+      async (context: HookContext) => {
+        context.result = {}
       },
     ],
   },

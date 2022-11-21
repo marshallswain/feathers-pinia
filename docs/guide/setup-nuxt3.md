@@ -306,7 +306,7 @@ If your app requires login, the following sections demonstrate how to cleanly su
 
 <BlockQuote type="danger" label="Assess Your Risk">
 
-These auth example on this page will suffice for apps with simple security requirements. If you are building an app with privacy requirements, you need something more secure.
+The examples on this page will suffice for apps with simple security requirements. If you are building an app with privacy requirements, you need something more secure.
 
 There are multiple ways to secure your app. If you need help, please [contact a FeathersHQ member](https://github.com/feathershq/) for consulting services.
 

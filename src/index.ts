@@ -15,6 +15,7 @@ export { useGetWatched } from './use-get-watched'
 export { usePagination } from './use-pagination'
 export { useClones } from './use-clones'
 export { useClone } from './use-clone'
+export { useAuth } from './use-auth'
 
 export { syncWithStorage } from './storage-sync'
 export { clearStorage } from './clear-storage'

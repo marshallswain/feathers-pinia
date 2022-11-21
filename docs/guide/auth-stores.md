@@ -2,9 +2,19 @@
 outline: deep
 ---
 
-# Auth Stores
+<script setup>
+import BlockQuote from '../components/BlockQuote.vue'
+</script>
+
+# The `defineAuthStore` Utility
 
 [[toc]]
+
+<BlockQuote type="danger" label="Deprecated">
+
+The `defineAuthStore` utility is deprecated and will be replaced by the more flexible [useFind](/guide/use-find) API.
+
+</BlockQuote>
 
 ## Setup
 

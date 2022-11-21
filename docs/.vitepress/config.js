@@ -15,12 +15,7 @@ module.exports = {
       copyright: 'MIT Licensed',
     },
     nav: [
-      { text: 'Guide', link: '/guide/' },
-      // {
-      //   text: 'Config Reference',
-      //   link: '/config/basics',
-      //   activeMatch: '^/config/'
-      // },
+      { text: 'Guide & APIs', link: '/guide/' },
       {
         text: 'Release Notes',
         link: 'https://github.com/marshallswain/feathers-pinia/releases',
@@ -51,6 +46,7 @@ function getGuideSidebar() {
         { text: 'with Vite', link: '/guide/setup-vite' },
         { text: 'with Nuxt 3', link: '/guide/setup-nuxt3' },
         { text: 'with Quasar 🚧', link: '/guide/setup-quasar' },
+        { text: 'Example Apps', link: '/guide/example-apps' },
         { text: 'Other Setup Examples', link: '/guide/setup-other' },
       ],
     },
@@ -65,7 +61,8 @@ function getGuideSidebar() {
       text: 'Pinia Stores',
       items: [
         { text: 'Service Stores', link: '/guide/service-stores' },
-        { text: 'Auth Stores', link: '/guide/auth-stores' },
+        { text: 'Auth Stores (useAuth)', link: '/guide/use-auth' },
+        { text: 'defineAuthStore⚠️', link: '/guide/auth-stores' },
       ],
     },
     {
