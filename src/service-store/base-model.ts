@@ -31,6 +31,7 @@ export class BaseModel implements AnyData {
     Object.assign(this, instanceDefaults.call(this.Model, data, { models, store }))
 
     Object.defineProperty(this, '__isClone', {
+      enumerable: false,
       value: !!options.clone,
     })
     return this
