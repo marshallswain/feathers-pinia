@@ -63,7 +63,7 @@ export function associateGet<M extends BaseModel>(
   })
 
   // Create the `_propName` utility object
-  Object.defineProperty(instance.Model.prototype, propUtilName, {
+  Object.defineProperty(instance, propUtilName, {
     configurable: true,
     enumerable: false,
     value: utils,
@@ -71,6 +71,7 @@ export function associateGet<M extends BaseModel>(
 
   // Write the initial data to the new setter
   if (initialData) {
-    (instance as any)[prop] = initialData
+    const _instance: any = instance
+    _instance[prop] = initialData
   }
 }
