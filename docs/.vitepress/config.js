@@ -88,6 +88,7 @@ function getGuideSidebar() {
     {
       text: 'Other Tools',
       items: [
+        { text: 'OFetch', link: '/guide/ofetch' },
         { text: 'syncWithStorage', link: '/guide/storage-sync' },
         { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
         { text: 'useGetWatched ⚠️', link: '/guide/use-get-watched' },
