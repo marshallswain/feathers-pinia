@@ -89,6 +89,34 @@ These adapters for are also supported:
 
 If you use any of the above database adapters, give the new query operators a try!  Enjoy your new superpowers!
 
+## New `useAuth` for Setup Stores 🎁
+
+Create ultra-flexible `setup stores` with the new [useAuth](/guide/use-auth) utility:
+
+```ts
+// src/store/store.auth.ts
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { useAuth } from 'feathers-pinia'
+
+export const useAuthStore = defineStore('auth', () => {
+  const { userStore } = useUserStore()
+  const { $api } = useFeathers()
+
+  const auth = useAuth({
+    api: $api,
+    userStore,
+  })
+
+  auth.reAuthenticate()
+
+  return auth
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
+}
+```
+
 ## Class Definition Defaults 🎁
 
 [Small breaking change]
