@@ -12,6 +12,11 @@ class Message extends BaseModel {
   __tempId?: number
   text: string
   otherText?: string
+
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
 const servicePath = 'messages'
 const useMessages = defineStore({ servicePath, Model: Message })

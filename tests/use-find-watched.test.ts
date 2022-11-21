@@ -14,6 +14,11 @@ function createTestContext() {
   class Message extends BaseModel {
     static modelName = 'Message'
     messageTo: string
+
+    constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+      super(data, options)
+      this.init(data)
+    }
   }
 
   const servicePath = 'messages'

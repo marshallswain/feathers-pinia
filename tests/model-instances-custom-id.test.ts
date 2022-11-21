@@ -9,12 +9,24 @@ const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class AltId extends BaseModel {
   _id: number
+  text: string
+
+  constructor(data: Partial<AltId>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
 const useAltIds = defineStore({ servicePath: 'alt-ids', Model: AltId, idField: '_id' })
 const altIdStore = useAltIds(pinia)
 
 class CustomId extends BaseModel {
   'my-id': number
+  text: string
+
+  constructor(data: Partial<CustomId>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
 const useCustomIds = defineStore({ servicePath: 'custom-ids', Model: CustomId, idField: 'my-id' })
 const customIdStore = useCustomIds(pinia)

@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { Params } from '@feathersjs/feathers/lib'
-import type { ComputedRef, Ref } from 'vue-demi'
 import { setupFeathersPinia, BaseModel, associateFind, AssociateFindUtils } from '../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
+import { _ } from '@feathersjs/commons'
 
 export class User extends BaseModel {
   id: number
   name: string
 
   messages?: Partial<Message>[]
+
+  constructor(data: Partial<User>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
 
 export class Message extends BaseModel {
@@ -112,7 +116,7 @@ describe('Populated Data', () => {
       { id: 3, name: 'Beau' },
     ]
     const message = new Message({ stargazerIds: [1, 2, 3], stargazers }).addToStore() as Message
-    const populatedStargazers = JSON.parse(JSON.stringify(message.stargazers))
+    const populatedStargazers = message.stargazers
     expect(populatedStargazers).toEqual(stargazers)
   })
 })

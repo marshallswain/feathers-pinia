@@ -5,6 +5,7 @@ import { setupFeathersPinia, BaseModel, associateGet, type Params } from '../src
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
+import { _ } from '@feathersjs/commons'
 
 interface AssociateGetUtils<M extends BaseModel> {
   params?: Ref<Params> // imperatively modify params?
@@ -16,8 +17,17 @@ interface AssociateGetUtils<M extends BaseModel> {
 export class User extends BaseModel {
   id: number
   name: string
+
+  constructor(data: Partial<User>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
 
+// interface MessageRelations {
+//   [key: string]: any
+//   _user?: AssociateGetUtils<User>
+// }
 export class Message extends BaseModel {
   id: number
   text = ''

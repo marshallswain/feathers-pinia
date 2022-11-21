@@ -7,12 +7,18 @@ const pinia = createPinia()
 const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
-  id: string
+  id: string | number
+  text: string
   foo: any
   additionalData: any
 
   get baz() {
     return 'baz'
+  }
+
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
   }
 }
 

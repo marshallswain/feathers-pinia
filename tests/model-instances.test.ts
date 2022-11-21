@@ -9,6 +9,12 @@ const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
 
 class Message extends BaseModel {
   id: number
+  text: string
+
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
 const servicePath = 'messages'
 const useMessages = defineStore({ servicePath, Model: Message })

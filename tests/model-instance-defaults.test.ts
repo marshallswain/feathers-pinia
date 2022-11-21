@@ -12,6 +12,11 @@ class Message extends BaseModel {
   text = 'The text in the model always wins. You can only overwrite it after instantiation'
   otherText: string
 
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
+
   static instanceDefaults() {
     return {
       text: 'this gets overwritten by the class-level `text`',
@@ -33,13 +38,11 @@ describe('Model Instance Defaults', () => {
   beforeAll(() => resetStore())
   afterAll(() => resetStore())
 
-  test('class-level defaults do not work because they overwrite provided data', async () => {
+  test('class-level defaults work with the minimum required constructor', async () => {
     const message = await messagesService.create({
       text: 'this text will be overwritten by the value in the Message class.',
     })
-    expect(message.text).toBe(
-      'The text in the model always wins. You can only overwrite it after instantiation',
-    )
+    expect(message.text).toBe('this text will be overwritten by the value in the Message class.')
   })
 
   test('use instanceDefaults for default values', async () => {
