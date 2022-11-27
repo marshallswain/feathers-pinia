@@ -1,5 +1,5 @@
-import { useServiceClones } from './use-service-clones'
-import { useServiceStorage } from './use-service-storage'
+import { useServiceClones } from '../src/use-service/use-service-clones'
+import { useServiceStorage } from '../src/use-service/use-service-storage'
 
 const itemStorage = useServiceStorage({ getId: (item) => item.id })
 const tempStorage = useServiceStorage({ getId: (item) => item.tempId })

@@ -1,4 +1,4 @@
-import { useServiceStorage } from './use-service-storage'
+import { useServiceStorage } from '../src/use-service/use-service-storage'
 
 const storage = useServiceStorage({
   getId: (item) => item.id,

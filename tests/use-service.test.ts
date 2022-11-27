@@ -1,5 +1,5 @@
-import { useService } from './use-service'
-import { api } from '../../tests/feathers'
+import { useService } from '../src/use-service/use-service'
+import { api } from './feathers'
 
 const service = useService({
   service: api.service('messages'),
@@ -62,9 +62,7 @@ describe('use-service', () => {
       'useGetWatched',
       'removeFromStore',
       'addToStore',
-      'addOrUpdate',
       'reset',
-      'hydrateAll',
     ])
     expect(service).toBeTruthy()
   })
