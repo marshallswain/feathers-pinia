@@ -217,7 +217,8 @@ export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition)
 }
 
 export const setOnRef = (obj: any, key: string, val: number) => {
-  (obj.value || obj)[key] = val
+  const _obj = obj.value || obj
+  _obj[key] = val
 }
 export const computedAttr = (obj: any, key: string) =>
   computed({

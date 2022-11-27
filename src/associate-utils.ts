@@ -41,7 +41,8 @@ export function setupAssociation<M extends BaseModel>(
 
   // Register the association on the instance.Model
   if (!instance.Model.associations[prop]) {
-    (instance.Model.associations as BaseModelAssociations)[prop] = def
+    const _associations = instance.Model.associations as BaseModelAssociations
+    _associations[prop] = def
   }
 
   // prefix the prop name with the `propUtilsPrefix`, which is `_`, by default.

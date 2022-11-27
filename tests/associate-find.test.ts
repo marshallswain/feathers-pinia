@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { setupFeathersPinia, BaseModel, associateFind, AssociateFindUtils } from '../src/index' // from 'feathers-pinia'
+import { setupFeathersPinia, BaseModel, associateFind, AssociateFindUtils, BaseModelAssociations } from '../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores } from './test-utils'
@@ -28,6 +28,8 @@ export class Message extends BaseModel {
   // Properties added by associateFind
   stargazers: Partial<User>[]
   _stargazers: AssociateFindUtils<User>
+
+  static associations: BaseModelAssociations = {}
 
   // findStargazers: any
 
