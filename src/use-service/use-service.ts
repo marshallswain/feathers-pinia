@@ -113,7 +113,7 @@ export const useService = (_options: UseFeathersServiceOptions) => {
     },
     afterClear: () => {
       cloneStorage.clear()
-      pendingState.clearAll()
+      pendingState.clearAllPending()
     },
     moveTempToItems,
   })
@@ -178,6 +178,10 @@ export const useService = (_options: UseFeathersServiceOptions) => {
     // service
     ...(service.value ? { service } : {}),
     Model: computed(() => ModelFn),
+    whitelist,
+    paramsForServer,
+    skipRequestIfExists,
+    isSsr,
 
     // items
     idField,
@@ -197,18 +201,18 @@ export const useService = (_options: UseFeathersServiceOptions) => {
     cloneIds: cloneStorage.ids,
     clone,
     commit,
+    reset,
 
     // options
     pagination,
-    whitelist,
-    paramsForServer,
-    skipRequestIfExists,
-    isSsr,
 
-    // getter functions
+    // local queries
     findInStore,
     countInStore,
     getFromStore,
+    removeFromStore,
+    addToStore,
+    clearAll,
 
     // pending (conditional based on if service was provided)
     ...pendingState,
@@ -218,12 +222,6 @@ export const useService = (_options: UseFeathersServiceOptions) => {
 
     // service utils
     ...serviceUtils,
-
-    // store handlers
-    removeFromStore,
-    addToStore,
-    clearAll,
-    reset,
   }
 
   return store

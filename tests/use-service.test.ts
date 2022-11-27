@@ -11,27 +11,43 @@ describe('use-service', () => {
     expect(Object.keys(service)).toEqual([
       'service',
       'Model',
+      'whitelist',
+      'paramsForServer',
+      'skipRequestIfExists',
+      'isSsr',
+
+      // items
       'idField',
       'itemsById',
       'items',
       'itemIds',
+
+      // temps
       'tempIdField',
       'tempsById',
       'temps',
       'tempIds',
+
+      // clones
       'clonesById',
       'clones',
       'cloneIds',
       'clone',
       'commit',
+      'reset',
+
+      // pagination
       'pagination',
-      'whitelist',
-      'paramsForServer',
-      'skipRequestIfExists',
-      'isSsr',
+
+      // local queries
       'findInStore',
       'countInStore',
       'getFromStore',
+      'removeFromStore',
+      'addToStore',
+      'clearAll',
+
+      // pending state
       'isPending',
       'createPendingById',
       'updatePendingById',
@@ -47,7 +63,9 @@ describe('use-service', () => {
       'setPending',
       'setPendingById',
       'unsetPendingById',
-      'clearAll',
+      'clearAllPending',
+
+      // service methods
       'find',
       'count',
       'get',
@@ -55,14 +73,13 @@ describe('use-service', () => {
       'update',
       'patch',
       'remove',
+
+      // service utils
       'useFind',
       'useGet',
       'useGetOnce',
       'useFindWatched',
       'useGetWatched',
-      'removeFromStore',
-      'addToStore',
-      'reset',
     ])
     expect(service).toBeTruthy()
   })

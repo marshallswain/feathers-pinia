@@ -83,7 +83,7 @@ export const useServicePending = () => {
     })
   }
 
-  function clearAll() {
+  function clearAllPending() {
     isPending.value = defaultPending()
 
     createPendingById.value = {}
@@ -108,6 +108,6 @@ export const useServicePending = () => {
     setPending,
     setPendingById,
     unsetPendingById,
-    clearAll,
+    clearAllPending,
   }
 }
