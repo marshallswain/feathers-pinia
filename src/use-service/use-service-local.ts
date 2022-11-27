@@ -49,6 +49,7 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
   const _filterQueryOperators = computed(() => {
     return additionalOperators
       .concat(whitelist.value || [])
+      .concat(['$regex', '$options'])
       .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike'])
     // .concat(service.options?.allow || service.options?.whitelist || [])
   })
