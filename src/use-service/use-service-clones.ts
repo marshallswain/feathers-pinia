@@ -84,10 +84,20 @@ export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOpt
     return cloneStorage.get(item)
   }
 
+  const markAsClone = (item: M) => {
+    Object.defineProperty(item, '__isClone', {
+      writable: false,
+      enumerable: false,
+      value: true,
+    })
+    return item
+  }
+
   return {
     cloneStorage,
     clone,
     commit,
     reset,
+    markAsClone,
   }
 }

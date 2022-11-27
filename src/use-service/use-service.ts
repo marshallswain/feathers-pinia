@@ -25,7 +25,6 @@ import { useServicePending } from './use-service-pending'
 import { useServiceStorage } from './use-service-storage'
 import { useServicePagination } from './use-service-pagination'
 import { useServiceApiFeathers } from './use-service-api-feathers'
-import { markAsClone } from './utils'
 
 export type UseFeathersServiceOptions = {
   service: Service
@@ -77,7 +76,7 @@ export const useService = (_options: UseFeathersServiceOptions) => {
   })
 
   // clones
-  const { cloneStorage, clone, commit, reset } = useServiceClones({
+  const { cloneStorage, clone, commit, reset, markAsClone } = useServiceClones({
     itemStorage,
     tempStorage,
     onRead: assureInstance,

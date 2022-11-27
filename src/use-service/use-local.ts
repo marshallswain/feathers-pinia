@@ -5,7 +5,6 @@ import { ref, computed, unref } from 'vue-demi'
 import { useServiceLocal } from './use-service-local'
 import { useServiceClones } from './use-service-clones'
 import { useServiceStorage } from './use-service-storage'
-import { markAsClone } from '../utils'
 
 export type UseLocalOptions = {
   Model?: any
@@ -37,7 +36,7 @@ export const useService = (_options: UseLocalOptions) => {
   })
 
   // clones
-  const { cloneStorage, clone, commit, reset } = useServiceClones({
+  const { cloneStorage, clone, commit, reset, markAsClone } = useServiceClones({
     itemStorage,
     onRead: assureInstance,
     beforeWrite: (item) => {
@@ -52,18 +51,17 @@ export const useService = (_options: UseLocalOptions) => {
   })
 
   // local data filtering
-  const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, addOrUpdate, hydrateAll, clearAll } =
-    useServiceLocal({
-      idField,
-      itemStorage,
-      whitelist,
-      afterRemove: (item: any) => {
-        cloneStorage.remove(item)
-      },
-      afterClear: () => {
-        cloneStorage.clear()
-      },
-    })
+  const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, clearAll } = useServiceLocal({
+    idField,
+    itemStorage,
+    whitelist,
+    afterRemove: (item: any) => {
+      cloneStorage.remove(item)
+    },
+    afterClear: () => {
+      cloneStorage.clear()
+    },
+  })
 
   const store = {
     // service
@@ -94,10 +92,8 @@ export const useService = (_options: UseLocalOptions) => {
     // store handlers
     removeFromStore,
     addToStore,
-    addOrUpdate,
     clearAll,
     reset,
-    hydrateAll,
   }
 
   return store
