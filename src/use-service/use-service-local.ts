@@ -144,12 +144,6 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
   function addToStore(data: AnyData): M
   function addToStore(data: AnyData[]): M[]
   function addToStore(data: AnyDataOrArray): MaybeArray<M> {
-    return addOrUpdate(data)
-  }
-
-  function addOrUpdate(data: AnyData): M
-  function addOrUpdate(data: AnyData[]): M[]
-  function addOrUpdate(data: AnyDataOrArray): MaybeArray<M> {
     const _idField = idField.value
     const _tempIdField = tempStorage && tempIdField && tempIdField.value
     const { items, isArray } = getArray(data)
@@ -158,7 +152,12 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
       if (getId(item, _idField) != null && _tempIdField && getTempId(item, _tempIdField) != null) {
         return moveTempToItems(item)
       } else {
-        return _addOrMergeToStore(item)
+        const asTemp = itemStorage.getId(item) == null
+        if (tempIdField?.value && asTemp && !tempStorage?.getId(item)) assignTempId(item, tempIdField.value)
+
+        const storage = tempStorage ? (asTemp ? tempStorage : itemStorage) : itemStorage
+        const stored = storage.merge(item)
+        return stored
       }
     })
 
@@ -176,26 +175,12 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
     addToStore(itemStorage.list)
   }
 
-  /** @private */
-  function _addOrMergeToStore(item: AnyData) {
-    const _idField = idField.value
-    const _tempIdField = tempIdField && tempIdField.value
-
-    const asTemp = tempStorage && getId(item, _idField) != null
-    if (_tempIdField && asTemp && !item[_tempIdField]) assignTempId(item, _tempIdField)
-
-    const storage = asTemp ? tempStorage : itemStorage
-    const stored = storage.merge(item)
-    return stored
-  }
-
   return {
     findInStore,
     countInStore,
     getFromStore,
     removeFromStore,
     addToStore,
-    addOrUpdate,
     clearAll,
     hydrateAll,
   }

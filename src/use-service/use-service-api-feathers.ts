@@ -19,7 +19,7 @@ interface UseServiceFeathersOptions {
   unflagSsr: any
   getFromStore: any
   removeFromStore: any
-  addOrUpdate: any
+  addToStore: any
   skipRequestIfExists: boolean
 }
 
@@ -35,7 +35,7 @@ export const useServiceApiFeathers = (options: UseServiceFeathersOptions) => {
     unflagSsr,
     getFromStore,
     removeFromStore,
-    addOrUpdate,
+    addToStore,
     itemStorage,
     skipRequestIfExists,
   } = options
@@ -96,7 +96,7 @@ export const useServiceApiFeathers = (options: UseServiceFeathersOptions) => {
     // Normalize response so data is always found at response.data
     const paginated = Array.isArray(response) ? { data: response } : response
 
-    addOrUpdate(paginated.data)
+    addToStore(paginated.data)
 
     // The pagination data will be under `pagination.default` or whatever qid is passed.
     paginated.data && updatePaginationForQuery({ qid, response: paginated, query, preserveSsr })
@@ -150,7 +150,7 @@ export const useServiceApiFeathers = (options: UseServiceFeathersOptions) => {
 
     try {
       const response = await service.get(id, params)
-      addOrUpdate(response)
+      addToStore(response)
       return itemStorage.getItem(id)
     } catch (error) {
       return await Promise.reject(error)
@@ -176,7 +176,7 @@ export const useServiceApiFeathers = (options: UseServiceFeathersOptions) => {
     try {
       const response = await service.create(cleanData(data, _tempIdField), params)
       const restoredTempIds = restoreTempIds(data, response, _tempIdField)
-      return addOrUpdate(restoredTempIds)
+      return addToStore(restoredTempIds)
     } catch (error) {
       return await Promise.reject(error)
     } finally {
@@ -195,7 +195,7 @@ export const useServiceApiFeathers = (options: UseServiceFeathersOptions) => {
 
     try {
       const response = await service.update(id, cleanData(data, tempIdField.value), params)
-      return addOrUpdate(response)
+      return addToStore(response)
     } catch (error) {
       return await Promise.reject(error)
     } finally {
@@ -218,7 +218,7 @@ export const useServiceApiFeathers = (options: UseServiceFeathersOptions) => {
 
     try {
       const response = await service.patch(id, cleanData(data, tempIdField.value), params)
-      return addOrUpdate(response)
+      return addToStore(response)
     } catch (error) {
       return await Promise.reject(error)
     } finally {

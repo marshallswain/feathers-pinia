@@ -102,23 +102,22 @@ export const useService = (_options: UseFeathersServiceOptions) => {
   })
 
   // local data filtering
-  const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, addOrUpdate, hydrateAll, clearAll } =
-    useServiceLocal({
-      idField,
-      tempIdField,
-      itemStorage,
-      tempStorage,
-      whitelist,
-      paramsForServer,
-      afterRemove: (item: any) => {
-        cloneStorage.remove(item)
-      },
-      afterClear: () => {
-        cloneStorage.clear()
-        pendingState.clearAll()
-      },
-      moveTempToItems,
-    })
+  const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, clearAll } = useServiceLocal({
+    idField,
+    tempIdField,
+    itemStorage,
+    tempStorage,
+    whitelist,
+    paramsForServer,
+    afterRemove: (item: any) => {
+      cloneStorage.remove(item)
+    },
+    afterClear: () => {
+      cloneStorage.clear()
+      pendingState.clearAll()
+    },
+    moveTempToItems,
+  })
 
   // feathers service
   const serviceMethods = useServiceApiFeathers({
@@ -134,7 +133,7 @@ export const useService = (_options: UseFeathersServiceOptions) => {
     updatePaginationForQuery,
     unflagSsr,
     removeFromStore,
-    addOrUpdate,
+    addToStore,
   })
 
   // events
@@ -224,10 +223,8 @@ export const useService = (_options: UseFeathersServiceOptions) => {
     // store handlers
     removeFromStore,
     addToStore,
-    addOrUpdate,
     clearAll,
     reset,
-    hydrateAll,
   }
 
   return store
