@@ -1,43 +1,39 @@
 import type { AnyData } from '../service-store'
-import { del, Ref, ref } from 'vue-demi'
 import { useServiceStorage, type StorageMapUtils } from './use-service-storage'
-import { getId, getTempId } from '../utils'
+import { Id } from '@feathersjs/feathers/lib'
 
 interface UseServiceTempsOptions<M extends AnyData> {
-  idField: Ref<string>
-  tempIdField: string
+  getId: (item: M) => keyof M
+  removeId: (item: M) => void
   itemStorage: StorageMapUtils
   onRead?: (item: M) => M
   beforeWrite?: (item: M) => M
 }
 
 export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptions<M>) => {
-  const { idField, itemStorage, onRead, beforeWrite } = options
+  const { getId, removeId, itemStorage, onRead, beforeWrite } = options
 
-  const tempIdField = ref(options.tempIdField)
   const tempStorage = useServiceStorage({
-    getId: (item) => item[tempIdField.value],
+    getId,
     onRead,
     beforeWrite,
   })
 
   function moveTempToItems(data: M) {
-    const _idField = idField.value
-    const _tempIdField = tempIdField.value
-    const id = getId(data, _idField)
+    const id = itemStorage.getId(data)
     if (id == undefined) return
-    const tempId = getTempId(data, _tempIdField)
-    const existingTemp = tempStorage.get(tempId)
+    const tempId: Id = itemStorage.getId(data)
+    const existingTemp = tempStorage.getItem(tempId)
     if (existingTemp) {
       itemStorage.setItem(id, Object.assign(existingTemp, data))
       tempStorage.removeItem(tempId)
 
       const item = itemStorage.getItem(id)
-      del(item, _tempIdField)
+      removeId(item as M)
     }
-    del(data, _tempIdField)
-    return itemStorage.get(id)
+    removeId(data)
+    return itemStorage.getItem(id)
   }
 
-  return { tempIdField, tempStorage, moveTempToItems }
+  return { tempStorage, moveTempToItems }
 }

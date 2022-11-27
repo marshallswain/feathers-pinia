@@ -1,5 +1,5 @@
 import { Service } from '@feathersjs/feathers'
-import { ref, computed, unref } from 'vue-demi'
+import { ref, computed, unref, del } from 'vue-demi'
 import { MaybeRef } from '../utility-types'
 
 import type { Id } from '@feathersjs/feathers'
@@ -25,6 +25,7 @@ import { useServicePending } from './use-service-pending'
 import { useServiceStorage } from './use-service-storage'
 import { useServicePagination } from './use-service-pagination'
 import { useServiceApiFeathers } from './use-service-api-feathers'
+import { markAsClone } from './utils'
 
 export type UseFeathersServiceOptions = {
   service: Service
@@ -66,9 +67,10 @@ export const useService = (_options: UseFeathersServiceOptions) => {
   })
 
   // temp item storage
-  const { tempIdField, tempStorage, moveTempToItems } = useServiceTemps({
-    idField: idField,
-    tempIdField: options.tempIdField,
+  const tempIdField = ref(options.tempIdField)
+  const { tempStorage, moveTempToItems } = useServiceTemps({
+    getId: (item) => item[tempIdField.value],
+    removeId: (item) => del(item, tempIdField.value),
     itemStorage,
     onRead: assureInstance,
     beforeWrite: assureInstance,
@@ -79,7 +81,10 @@ export const useService = (_options: UseFeathersServiceOptions) => {
     itemStorage,
     tempStorage,
     onRead: assureInstance,
-    beforeWrite: assureInstance,
+    beforeWrite: (item) => {
+      markAsClone(item)
+      return assureInstance(item)
+    },
   })
 
   const isSsr = computed(() => {
