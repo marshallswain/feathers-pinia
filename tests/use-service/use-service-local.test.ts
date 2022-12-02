@@ -1,8 +1,6 @@
+import type { AnyData } from '../../src/use-service/types'
+import { useServiceLocal, useServiceStorage, useServiceTemps } from '../../src'
 import { del, ref } from 'vue-demi'
-import { AnyData } from '../src/use-service/types'
-import { useServiceLocal } from '../src/use-service/use-service-local'
-import { useServiceStorage } from '../src/use-service/use-service-storage'
-import { useServiceTemps } from '../src/use-service/use-service-temps'
 
 const itemStorage = useServiceStorage({ getId: (item) => item.id })
 // temp item storage

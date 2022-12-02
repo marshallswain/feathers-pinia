@@ -1,8 +1,8 @@
 import { syncWithStorageCompressed } from './storage-sync-compressed'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia } from '../src/index'
-import { api } from './feathers'
-import { resetStores, timeout } from './test-utils'
+import { setupFeathersPinia } from '../../src/index'
+import { api } from '../feathers'
+import { resetStores, timeout } from '../test-utils'
 import lz from 'lz-string'
 import { vi } from 'vitest'
 

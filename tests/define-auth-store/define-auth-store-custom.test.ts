@@ -1,7 +1,7 @@
 import { createPinia } from 'pinia'
 import { vi } from 'vitest'
-import { defineAuthStore } from '../src/index'
-import { api } from './feathers'
+import { defineAuthStore } from '../../src/index'
+import { api } from '../feathers'
 
 const pinia = createPinia()
 const handleResponse = vi.fn()

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { setupFeathersPinia, BaseModel } from '../src/index' // from 'feathers-pinia'
+import { setupFeathersPinia, BaseModel } from '../../src/index' // from 'feathers-pinia'
 import { createPinia } from 'pinia'
-import { api } from './feathers'
+import { api } from '../feathers'
 
 const pinia = createPinia()
 const { defineStore } = setupFeathersPinia({ clients: { api } })
