@@ -1,8 +1,7 @@
-import { syncWithStorage } from '../src/storage-sync'
+import { syncWithStorage, setupFeathersPinia } from '../../src/'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia } from '../src/index'
-import { api } from './feathers'
-import { resetStores, timeout } from './test-utils'
+import { api } from '../feathers'
+import { resetStores, timeout } from '../test-utils'
 import { vi } from 'vitest'
 
 const pinia = createPinia()

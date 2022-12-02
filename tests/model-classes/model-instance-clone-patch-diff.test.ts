@@ -1,8 +1,8 @@
 import { vi } from 'vitest'
 import { createPinia } from 'pinia'
-import { setupFeathersPinia } from '../src/index'
-import { api } from './feathers'
-import { resetStores } from './test-utils'
+import { setupFeathersPinia } from '../../src/index'
+import { api } from '../feathers'
+import { resetStores } from '../test-utils'
 
 const pinia = createPinia()
 

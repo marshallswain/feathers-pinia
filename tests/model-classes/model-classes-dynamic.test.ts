@@ -1,6 +1,6 @@
 import { createPinia } from 'pinia'
-import { setupFeathersPinia, models } from '../src/index'
-import { api } from './feathers'
+import { setupFeathersPinia, models } from '../../src/index'
+import { api } from '../feathers'
 
 const pinia = createPinia()
 
