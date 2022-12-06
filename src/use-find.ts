@@ -1,4 +1,4 @@
-import type { Paginated, Params, QueryInfo } from './types'
+import type { Paginated, Params, Query, QueryInfo } from './types'
 import type {
   ServiceStoreDefault,
   FindFn,
@@ -39,7 +39,7 @@ export class Find<M extends BaseModel> {
   total: ComputedRef<number>
   limit: Ref<number>
   skip: Ref<number>
-  findInStore: (params: Params) => Paginated<M>
+  findInStore: (params: Params<Query>) => Paginated<M>
 
   // Queries
   currentQuery: ComputedRef<CurrentQuery<M> | null>
@@ -82,7 +82,7 @@ export class Find<M extends BaseModel> {
     const params = isRef(_params) ? (isReadonly(_params) ? ref(_params.value) : _params) : ref(_params)
 
     // Remove the store from the provided params
-    delete (params.value as FindClassParams).store
+    delete (params.value as any).store
 
     /*** PARAMS ***/
     this.params = params as Ref<FindClassParams>
@@ -221,7 +221,7 @@ export class Find<M extends BaseModel> {
     /*** SERVER FETCHING ***/
     this.requestCount = ref(0)
     this.request = ref(null) as any
-    this.find = async (params: MaybeRef<Params> = paramsWithPagination) => {
+    this.find = async (params: MaybeRef<Params<Query>> = paramsWithPagination) => {
       const _params = unref(params)
       // if queryWhen is falsey, return early with dummy data
       if (!queryWhen()) {
@@ -268,7 +268,7 @@ export class Find<M extends BaseModel> {
     const request = this.request
     if (this.limit.value || this.skip.value) initWithLimitOrSkip = true
 
-    const makeRequest = async (_params?: Params) => {
+    const makeRequest = async (_params?: Params<Query>) => {
       if (!this.onServer) return
 
       // Don't make a second request if no limit or skip were provided

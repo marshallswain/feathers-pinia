@@ -1,13 +1,13 @@
 import { useService } from '../src/use-service/use-service'
 import { api } from './feathers'
 
-const service = useService({
-  service: api.service('messages'),
-  idField: 'id',
-})
-
-describe('use-service', () => {
+describe('use service', () => {
   test('setup', () => {
+    const service = useService({
+      service: api.service('messages'),
+      idField: 'id',
+    })
+
     expect(Object.keys(service)).toEqual([
       'service',
       'Model',

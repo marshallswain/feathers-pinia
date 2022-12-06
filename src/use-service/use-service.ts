@@ -1,7 +1,5 @@
-import { Service } from '@feathersjs/feathers'
-import { ref, computed, unref, del } from 'vue-demi'
-import { MaybeRef } from '../utility-types'
-
+import type { MaybeRef } from '../utility-types'
+import type { ModelFn as ModelFnType } from '../use-base-model'
 import type { Id } from '@feathersjs/feathers'
 import type {
   UseFindWatchedOptions,
@@ -13,77 +11,56 @@ import type {
   AnyData,
 } from './types'
 
+import { Service } from '@feathersjs/feathers'
+import { ref, computed, unref } from 'vue-demi'
 import { useFind as _useFind } from '../use-find'
 import { useGet as _useGet } from '../use-get'
 import { useFindWatched as _useFindWatched } from '../use-find-watched'
 import { useGetWatched as _useGetWatched } from '../use-get-watched'
-import { useServiceLocal } from './use-service-local'
-import { useServiceTemps } from './use-service-temps'
+import { useServiceLocal } from './use-service-local-queries'
 import { useServiceEvents } from './use-service-events'
-import { useServiceClones } from './use-service-clones'
+
 import { useServicePending } from './use-service-pending'
-import { useServiceStorage } from './use-service-storage'
 import { useServicePagination } from './use-service-pagination'
 import { useServiceApiFeathers } from './use-service-api-feathers'
+import EventEmitter from 'events'
+import { useServiceEventLocks } from './use-service-event-locks'
+import { useAllStorageTypes } from './use-all-storage-types'
 
-export type UseFeathersServiceOptions = {
+export type UseFeathersServiceOptions<M extends AnyData> = {
   service: Service
-  Model?: any
-  idField?: string
+  ModelFn: ModelFnType<M>
+  idField: string
   tempIdField?: string
   whitelist?: string[]
   paramsForServer?: string[]
   skipRequestIfExists?: boolean
   ssr?: MaybeRef<boolean>
-  handleEvents?: HandleEvents
+  handleEvents?: HandleEvents<M>
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
 }
 
 const makeDefaultOptions = () => ({
-  idField: 'id',
   tempIdField: '__tempId',
   skipRequestIfExists: false,
 })
 
-export const useService = (_options: UseFeathersServiceOptions) => {
+export const useService = <M extends AnyData, D extends AnyData = AnyData, Q extends AnyData = AnyData>(
+  _options: UseFeathersServiceOptions<M>,
+) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const ModelFn = options.Model
+  const ModelFn = _options.ModelFn as ModelFnType<M> & EventEmitter
+
   const service = computed(() => options.service)
   const whitelist = ref(options.whitelist ?? [])
   const paramsForServer = ref(options.paramsForServer ?? [])
   const skipRequestIfExists = ref(options.skipRequestIfExists ?? false)
-
-  // Make sure the provided item is a model "instance" (in quotes because it's not a class)
-  const assureInstance = (item: AnyData) => (item.__modelName ? item : ModelFn(item))
-
-  // item storage
   const idField = ref(options.idField)
-  const itemStorage = useServiceStorage({
-    getId: (item) => item[idField.value],
-    onRead: assureInstance,
-    beforeWrite: assureInstance,
-  })
-
-  // temp item storage
   const tempIdField = ref(options.tempIdField)
-  const { tempStorage, moveTempToItems } = useServiceTemps({
-    getId: (item) => item[tempIdField.value],
-    removeId: (item) => del(item, tempIdField.value),
-    itemStorage,
-    onRead: assureInstance,
-    beforeWrite: assureInstance,
-  })
 
-  // clones
-  const { cloneStorage, clone, commit, reset, markAsClone } = useServiceClones({
-    itemStorage,
-    tempStorage,
-    onRead: assureInstance,
-    beforeWrite: (item) => {
-      markAsClone(item)
-      return assureInstance(item)
-    },
+  const { itemStorage, tempStorage, moveTempToItems, cloneStorage, clone, commit, reset } = useAllStorageTypes({
+    ModelFn,
   })
 
   const isSsr = computed(() => {
@@ -101,7 +78,7 @@ export const useService = (_options: UseFeathersServiceOptions) => {
   })
 
   // local data filtering
-  const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, clearAll } = useServiceLocal({
+  const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, clearAll } = useServiceLocal<M, Q>({
     idField,
     tempIdField,
     itemStorage,
@@ -119,47 +96,43 @@ export const useService = (_options: UseFeathersServiceOptions) => {
   })
 
   // feathers service
-  const serviceMethods = useServiceApiFeathers({
+  const serviceMethods = useServiceApiFeathers<M, D, Q>({
     service: options.service,
-    idField,
     tempIdField,
-    pagination,
-    getFromStore,
-    itemStorage,
-    skipRequestIfExists: options.skipRequestIfExists,
-    setPending: pendingState.setPending,
-    setPendingById: pendingState.setPendingById,
-    updatePaginationForQuery,
-    unflagSsr,
-    removeFromStore,
     addToStore,
   })
+
+  // event locks
+  const eventLocks = useServiceEventLocks()
 
   // events
   useServiceEvents({
     idField: idField.value,
-    Model: ModelFn,
+    ModelFn: ModelFn,
     onAddOrUpdate: addToStore,
     onRemove: removeFromStore,
     service: service.value,
     handleEvents: options.handleEvents,
     debounceEventsGuarantee: options.debounceEventsGuarantee,
     debounceEventsTime: options.debounceEventsTime,
+    toggleEventLock: eventLocks.toggleEventLock,
+    eventLocks: eventLocks.eventLocks,
   })
 
   const serviceUtils = {
-    useFind: function (params: MaybeRef<FindClassParams>) {
-      const _params = params.value || params
-      _params.store = this
+    useFind: function (_params: MaybeRef<FindClassParams>) {
+      const params: any = unref(_params)
+      params.store = this
       return _useFind(params as MaybeRef<FindClassParamsStandalone>)
     },
-    useGet: function (_id: MaybeRef<Id | null>, params: MaybeRef<GetClassParams> = {}) {
-      const _params = params.value || params
-      _params.store = this
+    useGet: function (_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
+      const params: any = unref(_params)
+      params.store = this
       return _useGet(_id as Id, _params as MaybeRef<any>)
     },
     useGetOnce: function (_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
-      Object.assign(_params.value || _params, { store: this, immediate: false, onServer: true })
+      const params = unref(_params)
+      Object.assign(params, { store: this, immediate: false, onServer: true })
       const results = this.useGet(_id as Id, _params as MaybeRef<any>)
       results.queryWhen(() => !results.data.value)
       results.get()
@@ -170,7 +143,7 @@ export const useService = (_options: UseFeathersServiceOptions) => {
     },
     // alias to useGetWatched, doesn't require passing the model
     useGetWatched: function (options: UseGetOptions) {
-      return _useGetWatched({ model: ModelFn, ...options })
+      return _useGetWatched({ model: ModelFn as any, ...options })
     },
   }
 
@@ -205,6 +178,8 @@ export const useService = (_options: UseFeathersServiceOptions) => {
 
     // options
     pagination,
+    updatePaginationForQuery,
+    unflagSsr,
 
     // local queries
     findInStore,
@@ -216,6 +191,9 @@ export const useService = (_options: UseFeathersServiceOptions) => {
 
     // pending (conditional based on if service was provided)
     ...pendingState,
+
+    // event locks
+    ...eventLocks,
 
     // service actions (conditional based on if service was provided)
     ...serviceMethods,

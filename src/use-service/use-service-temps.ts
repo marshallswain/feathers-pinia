@@ -1,19 +1,20 @@
 import type { AnyData } from '../service-store'
+import type { BaseModelProps } from '../use-base-model'
 import { useServiceStorage, type StorageMapUtils } from './use-service-storage'
 import { Id } from '@feathersjs/feathers/lib'
 
 interface UseServiceTempsOptions<M extends AnyData> {
-  getId: (item: M) => keyof M
+  getId: (item: M) => string
   removeId: (item: M) => void
-  itemStorage: StorageMapUtils
-  onRead?: (item: M) => M
-  beforeWrite?: (item: M) => M
+  itemStorage: StorageMapUtils<M>
+  onRead?: (item: M) => M | (Partial<M> & BaseModelProps)
+  beforeWrite?: (item: M) => M | (Partial<M> & BaseModelProps)
 }
 
 export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptions<M>) => {
   const { getId, removeId, itemStorage, onRead, beforeWrite } = options
 
-  const tempStorage = useServiceStorage({
+  const tempStorage = useServiceStorage<M>({
     getId,
     onRead,
     beforeWrite,
@@ -21,7 +22,7 @@ export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptio
 
   function moveTempToItems(data: M) {
     const id = itemStorage.getId(data)
-    if (id == undefined) return
+    if (id == undefined) return data
     const tempId: Id = itemStorage.getId(data)
     const existingTemp = tempStorage.getItem(tempId)
     if (existingTemp) {
@@ -32,7 +33,7 @@ export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptio
       removeId(item as M)
     }
     removeId(data)
-    return itemStorage.getItem(id)
+    return itemStorage.getItem(id) as M
   }
 
   return { tempStorage, moveTempToItems }

@@ -3,6 +3,7 @@ import { DefineStoreOptionsBase, StateTree, Store } from 'pinia'
 import { AnyData, ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model'
 import { TypedActions, TypedGetters } from './utility-types'
+import type { Params as FeathersParams } from '@feathersjs/feathers'
 
 export interface Filters {
   $sort?: { [prop: string]: -1 | 1 }
@@ -21,8 +22,8 @@ export type AnyRef<M> = ComputedRef<M | null> | Ref<UnwrapRef<M> | null>
 
 export type DiffDefinition = undefined | string | string[] | Record<string, any> | false
 
-export interface Params extends AnyData {
-  query?: Query
+export interface Params<Q extends Query> extends FeathersParams<Q> {
+  query?: Q
   paginate?: boolean | PaginationOptions
   provider?: string
   route?: Record<string, string>
@@ -34,7 +35,7 @@ export interface Params extends AnyData {
   data?: any
   preserveSsr?: boolean
 }
-export interface PatchParams extends Params {
+export interface PatchParams<Q extends Query> extends Params<Q> {
   data?: Partial<AnyData>
   diff?: DiffDefinition
   with?: DiffDefinition

@@ -6,6 +6,7 @@ import type { MaybeArray, MaybeRef, TypedActions, TypedGetters } from '../utilit
 import { BaseModel } from './base-model'
 import { Find } from '../use-find'
 import { Get } from '../use-get'
+import { ModelFn } from '../use-base-model'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
@@ -135,22 +136,22 @@ export interface ServiceStoreDefaultGetters<M extends BaseModel = BaseModel> {
   temps: () => M[]
   cloneIds: () => Id[]
   clones: () => M[]
-  findInStore: () => (params: Params) => Paginated<M>
-  countInStore: () => (params: Params) => number
-  getFromStore: () => (id: Id | null, params?: Params) => M | undefined
+  findInStore: () => (params: Params<Query>) => Paginated<M>
+  countInStore: () => (params: Params<Query>) => number
+  getFromStore: () => (id: Id | null, params?: Params<Query>) => M | undefined
   isCreatePending: () => boolean
   isPatchPending: () => boolean
   isUpdatePending: () => boolean
   isRemovePending: () => boolean
 }
 
-export type HandleFindResponseOptions = { params: Params; response: any }
-export type HandleFindErrorOptions = { params: Params; error: any }
+export type HandleFindResponseOptions = { params: Params<Query>; response: any }
+export type HandleFindErrorOptions = { params: Params<Query>; error: any }
 
 // The find action will always return data at params.data, even for non-paginated requests.
-export type FindFn<M extends BaseModel> = (params?: MaybeRef<Params>) => Promise<Paginated<M>>
-export type GetFn<M extends BaseModel> = (id?: Id, params?: MaybeRef<Params>) => Promise<M | undefined>
-export type GetFnWithId<M extends BaseModel> = (id: Id, params?: MaybeRef<Params>) => Promise<M | undefined>
+export type FindFn<M extends BaseModel> = (params?: MaybeRef<Params<Query>>) => Promise<Paginated<M>>
+export type GetFn<M extends BaseModel> = (id?: Id, params?: MaybeRef<Params<Query>>) => Promise<M | undefined>
+export type GetFnWithId<M extends BaseModel> = (id: Id, params?: MaybeRef<Params<Query>>) => Promise<M | undefined>
 export type UseGetFn<M extends BaseModel> = (_id: MaybeRef<Id | null>, _params?: MaybeRef<GetClassParams>) => Get<M>
 
 export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
@@ -158,13 +159,13 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   handleFindResponse: (findResponse: HandleFindResponseOptions) => Promise<any>
   afterFind: <T = M[] | Paginated<M>>(response: T) => Promise<T>
   handleFindError({ params, error }: HandleFindErrorOptions): Promise<any>
-  count: (params?: MaybeRef<Params>) => number
+  count: (params?: MaybeRef<Params<Query>>) => number
   get: GetFnWithId<M>
-  create(data: AnyData, params?: MaybeRef<Params>): Promise<M>
-  create(data: AnyData[], params?: MaybeRef<Params>): Promise<M[]>
-  update: (id: Id, data: AnyData, params?: MaybeRef<Params>) => Promise<M>
-  patch: (id: NullableId, data: AnyData, params?: MaybeRef<Params>) => Promise<M>
-  remove: (id: NullableId, params?: Params) => any
+  create(data: AnyData, params?: MaybeRef<Params<Query>>): Promise<M>
+  create(data: AnyData[], params?: MaybeRef<Params<Query>>): Promise<M[]>
+  update: (id: Id, data: AnyData, params?: MaybeRef<Params<Query>>) => Promise<M>
+  patch: (id: NullableId, data: AnyData, params?: MaybeRef<Params<Query>>) => Promise<M>
+  remove: (id: NullableId, params?: Params<Query>) => any
   removeFromStore<T extends AnyData>(data: T): T
   removeFromStore<T extends AnyData[]>(data: T[]): T[]
   addToStore(data: AnyData): M
@@ -181,7 +182,7 @@ export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   setPendingById(id: NullableId, method: RequestTypeById, val: boolean): void
   hydrateAll: () => void
   toggleEventLock: (idOrIds: MaybeArray<Id>, event: string) => void
-  unflagSsr: (params: Params) => void
+  unflagSsr: (params: Params<Query>) => void
   useFind: (params: MaybeRef<FindClassParams>) => Find<M>
   useFindWatched: (options: UseFindWatchedOptions) => UseFindComputed<M>
   useGet: UseGetFn<M>
@@ -594,7 +595,7 @@ export interface DefineFeathersStoreOptions<Id extends string, M extends BaseMod
   actions?: TypedActions<S, G, A, ServiceStoreDefaultState, ServiceStoreDefaultGetters, ServiceStoreDefaultActions>
 }
 
-export interface GetClassParams extends Params {
+export interface GetClassParams extends Params<Query> {
   query?: Query
   onServer?: boolean
   immediate?: boolean
@@ -602,7 +603,7 @@ export interface GetClassParams extends Params {
 export interface GetClassParamsStandalone<M extends BaseModel> extends GetClassParams {
   store: ServiceStoreDefault<M>
 }
-export interface FindClassParams extends Params {
+export interface FindClassParams extends Params<Query> {
   query: Query
   onServer?: boolean
   qid?: string
@@ -614,8 +615,8 @@ export interface FindClassParamsStandalone<M extends BaseModel> extends FindClas
 }
 
 export interface UseFindWatchedOptions {
-  params: Params | ComputedRef<Params | null>
-  fetchParams?: ComputedRef<Params | null | undefined>
+  params: Params<Query> | ComputedRef<Params<Query> | null>
+  fetchParams?: ComputedRef<Params<Query> | null | undefined>
   queryWhen?: ComputedRef<boolean> | QueryWhenFunction
   qid?: string
   local?: boolean
@@ -644,13 +645,13 @@ export interface UseFindComputed<M> {
 
 export interface UseGetOptions {
   id: Ref<Id | null> | ComputedRef<Id | null> | null
-  params?: Ref<Params>
+  params?: Ref<Params<Query>>
   queryWhen?: Ref<boolean>
   local?: boolean
   immediate?: boolean
 }
 export interface UseGetOptionsStandalone<M extends BaseModel> extends UseGetOptions {
-  model: ModelStatic<M>
+  model: ModelStatic<M> | ModelFn<M>
 }
 export interface UseGetState {
   isPending: boolean

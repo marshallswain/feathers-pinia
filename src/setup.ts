@@ -5,7 +5,7 @@ import { Ref } from 'vue-demi'
 
 import { HandleEvents } from './types'
 import { Pinia, StateTree, _GettersTree } from 'pinia'
-import { ServiceStore, DefineFeathersStoreOptions, ServiceStoreDefaultState } from './service-store/types'
+import { ServiceStore, DefineFeathersStoreOptions } from './service-store/types'
 
 interface SetupOptions {
   ssr?: boolean | Ref<boolean>

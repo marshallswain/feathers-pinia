@@ -1,7 +1,7 @@
 import type { Params } from './types'
 import type { ServiceStoreDefault, GetFn, GetClassParamsStandalone, GetClassParams } from './service-store/types'
 import type { MaybeRef } from './utility-types'
-import type { Id } from '@feathersjs/feathers'
+import type { Id, Query } from '@feathersjs/feathers'
 import { computed, ComputedRef, isReadonly, isRef, Ref, ref, unref, watch } from 'vue-demi'
 import { BaseModel } from './service-store/base-model'
 
@@ -19,7 +19,7 @@ export class Get<M extends BaseModel> {
   // Data
   data: ComputedRef<M | null>
   ids: Ref<Id[]>
-  getFromStore: (id: Id | null, params: Params) => M | undefined
+  getFromStore: (id: Id | null, params: Params<Query>) => M | undefined
 
   // Requests & Watching
   get: GetFn<M>
@@ -40,12 +40,12 @@ export class Get<M extends BaseModel> {
     const params = isRef(_params) ? (isReadonly(_params) ? ref(_params.value) : _params) : ref(_params)
 
     // Remove the store from the provided params
-    delete (params.value as GetClassParams).store
+    delete (params.value as any).store
 
     /*** ID & PARAMS ***/
     this.id = id as Ref<Id | null>
     this.params = params as Ref<GetClassParams>
-    const { immediate = true, watch: _watch = true, onServer = false } = params.value
+    const { immediate = true, watch: _watch = true, onServer = false } = params.value as any
     this.isSsr = computed(() => store.isSsr)
 
     /*** REQUEST STATE ***/
@@ -66,9 +66,9 @@ export class Get<M extends BaseModel> {
     })
     this.data = computed(() => {
       if (isPending.value && mostRecentId.value != null) {
-        return store.getFromStore(mostRecentId.value, params) || null
+        return store.getFromStore(mostRecentId.value, params as Params<Query>) || null
       }
-      return store.getFromStore(id.value, params) || null
+      return store.getFromStore(id.value, params as Params<Query>) || null
     })
     this.getFromStore = store.getFromStore
 
@@ -81,7 +81,7 @@ export class Get<M extends BaseModel> {
     /*** SERVER FETCHING ***/
     this.requestCount = ref(0)
     this.request = ref(null) as any
-    this.get = async (__id?: MaybeRef<Id>, params?: MaybeRef<Params>) => {
+    this.get = async (__id?: MaybeRef<Id>, params?: MaybeRef<Params<Query>>) => {
       const _id = unref(__id || id)
       const _params = unref(params)
 
@@ -116,7 +116,7 @@ export class Get<M extends BaseModel> {
     }
 
     const request = this.request
-    const makeRequest = async (id: Id, params: MaybeRef<Params>) => {
+    const makeRequest = async (id: Id, params: MaybeRef<Params<Query>>) => {
       if (!id) return
       request.value = this.get(id, params)
       await request.value

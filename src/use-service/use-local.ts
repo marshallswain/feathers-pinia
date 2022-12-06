@@ -2,7 +2,7 @@ import type { MaybeRef } from '../utility-types'
 import type { AnyData } from './types'
 
 import { ref, computed, unref } from 'vue-demi'
-import { useServiceLocal } from './use-service-local'
+import { useServiceLocal } from './use-service-local-queries'
 import { useServiceClones } from './use-service-clones'
 import { useServiceStorage } from './use-service-storage'
 
@@ -19,7 +19,12 @@ const makeDefaultOptions = () => ({
   skipRequestIfExists: false,
 })
 
-export const useService = (_options: UseLocalOptions) => {
+/**
+ * Creates a store for working with local data, only.
+ * @param options
+ * @returns
+ */
+export const useLocal = (_options: UseLocalOptions) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const ModelFn = options.Model
   const whitelist = ref(options.whitelist ?? [])

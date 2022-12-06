@@ -1,5 +1,5 @@
 import type { UseGetComputed, UseGetOptionsStandalone, UseGetState } from './service-store/types'
-import type { Id } from '@feathersjs/feathers'
+import type { Id, Query } from '@feathersjs/feathers'
 import type { Params } from './types'
 import { reactive, computed, toRefs, unref, watch } from 'vue-demi'
 import { BaseModel } from './service-store'
@@ -44,7 +44,7 @@ export function useGetWatched<M extends BaseModel = BaseModel>({
     isSsr: computed(() => model.store.isSsr),
   }
 
-  async function get(id: Id | null, params?: Params): Promise<M | undefined | any> {
+  async function get(id: Id | null, params?: Params<Query>): Promise<M | undefined | any> {
     const idToUse = unref(id)
     const paramsToUse = unref(params)
 
@@ -74,7 +74,7 @@ export function useGetWatched<M extends BaseModel = BaseModel>({
   watch(
     () => [getId(), getParams(), queryWhen.value],
     ([id, params]) => {
-      get(id as Id | null, params as Params)
+      get(id as Id | null, params as Params<Query>)
     },
     { immediate },
   )

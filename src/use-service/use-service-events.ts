@@ -1,17 +1,21 @@
 import type { HandledEvents, HandleEvents } from './types'
+import type { ModelFn } from '../use-base-model'
 import { getId, hasOwn } from '../utils'
 import { del, ref, set } from 'vue-demi'
 import _debounce from 'just-debounce'
+import EventEmitter from 'events'
 
-type UseServiceStoreEventsOptions<C extends Record<string, any>> = {
+type UseServiceStoreEventsOptions<M extends Record<string, any>> = {
   service: any
-  Model: C
+  ModelFn?: ModelFn<M> & EventEmitter
   idField: string
   debounceEventsTime?: number
   onAddOrUpdate: (item: any) => void
   onRemove: (item: any) => void
   debounceEventsGuarantee?: boolean
-  handleEvents?: HandleEvents
+  handleEvents?: HandleEvents<M>
+  toggleEventLock: any
+  eventLocks: any
 }
 
 export const useServiceEvents = <C extends Record<string, any>>(options: UseServiceStoreEventsOptions<C>) => {
@@ -82,8 +86,18 @@ export const useServiceEvents = <C extends Record<string, any>>(options: UseServ
       return
     }
 
+    /**
+     * For `created` events, we don't know the id since it gets assigned on the server. Also, since `created` events
+     * arrive before the `create` response, we only act on other events. For all other events, toggle the event lock.
+     */
+    const id = getId(item, options.idField)
+    if (eventName !== 'created' && options.eventLocks[eventName][id]) {
+      options.toggleEventLock(id, eventName)
+      return
+    }
+
     if (handler) {
-      const handled = handler(item, { model: Model })
+      const handled = handler(item, { model: ModelFn })
       if (!handled) {
         return
       }
@@ -96,23 +110,23 @@ export const useServiceEvents = <C extends Record<string, any>>(options: UseServ
     }
   }
 
-  const { Model, service } = options
+  const { ModelFn, service } = options
 
   // Listen to socket events when available.
   service.on('created', (item: any) => {
     handleEvent('created', item)
-    Model.emit && Model.emit('created', item)
+    ModelFn?.emit && ModelFn.emit('created', item)
   })
   service.on('updated', (item: any) => {
     handleEvent('updated', item)
-    Model.emit && Model.emit('updated', item)
+    ModelFn?.emit && ModelFn.emit('updated', item)
   })
   service.on('patched', (item: any) => {
     handleEvent('patched', item)
-    Model.emit && Model.emit('patched', item)
+    ModelFn?.emit && ModelFn.emit('patched', item)
   })
   service.on('removed', (item: any) => {
     handleEvent('removed', item)
-    Model.emit && Model.emit('removed', item)
+    ModelFn?.emit && ModelFn.emit('removed', item)
   })
 }

@@ -18,7 +18,7 @@ import type {
   GetClassParamsStandalone,
 } from './types'
 import type { Params } from '../types'
-import type { Id, NullableId } from '@feathersjs/feathers'
+import type { Id, NullableId, Query } from '@feathersjs/feathers'
 import type { MaybeArray, MaybeRef, TypedActions } from '../utility-types'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
@@ -57,7 +57,7 @@ export function makeActions<
   A = {},
 >(options: MakeServiceActionsOptions<M, S, G, A>): ServiceStoreDefaultActions<M> & A {
   const defaultActions: ServiceStoreTypedActions<M> = {
-    find(_params?: MaybeRef<Params>) {
+    find(_params?: MaybeRef<Params<Query>>) {
       const params = getSaveParams(_params)
       const { query = {} } = params
       const isPaginated = params.paginate === true || hasOwn(query, '$limit') || hasOwn(query, '$skip')
@@ -136,7 +136,7 @@ export function makeActions<
       return Promise.reject(error)
     },
 
-    count(_params?: MaybeRef<Params>) {
+    count(_params?: MaybeRef<Params<Query>>) {
       const params = getSaveParams(_params)
       const { query = {} } = params
 
@@ -154,7 +154,7 @@ export function makeActions<
     // Supports passing params the feathers way: `get(id, params)`
     // Does NOT support the old array syntax:
     // `get([null, params])` which was only needed for Vuex
-    get(id: Id, _params?: MaybeRef<Params>) {
+    get(id: Id, _params?: MaybeRef<Params<Query>>) {
       const params = getSaveParams(_params)
 
       const skipRequestIfExists = params.skipRequestIfExists || this.skipRequestIfExists
@@ -182,7 +182,7 @@ export function makeActions<
         })
     },
 
-    create(data: AnyDataOrArray, _params?: MaybeRef<Params>) {
+    create(data: AnyDataOrArray, _params?: MaybeRef<Params<Query>>) {
       const params = getSaveParams(_params)
 
       const { idField, tempIdField } = this
@@ -206,7 +206,7 @@ export function makeActions<
           }
         })
     },
-    update(id: Id, data: AnyData, _params?: MaybeRef<Params>) {
+    update(id: Id, data: AnyData, _params?: MaybeRef<Params<Query>>) {
       const params = getSaveParams(_params)
 
       this.setPendingById(id, 'update', true)
@@ -224,7 +224,7 @@ export function makeActions<
           this.setPendingById(id, 'update', false)
         })
     },
-    patch(id: NullableId, data: any, _params?: MaybeRef<Params>) {
+    patch(id: NullableId, data: any, _params?: MaybeRef<Params<Query>>) {
       const params = getSaveParams(_params)
 
       if (params && params.data) {
@@ -253,7 +253,7 @@ export function makeActions<
      * @param params
      * @returns
      */
-    remove(id: NullableId, _params?: MaybeRef<Params>) {
+    remove(id: NullableId, _params?: MaybeRef<Params<Query>>) {
       const params = getSaveParams(_params)
 
       this.setPendingById(id, 'remove', true)
@@ -463,7 +463,7 @@ export function makeActions<
     toggleEventLock(idOrIds: MaybeArray<Id>, event: string) {
       setEventLockState(idOrIds, event, true, this)
     },
-    unflagSsr(params: Params) {
+    unflagSsr(params: Params<Query>) {
       const queryInfo = getQueryInfo(params, {})
       const { qid, queryId, pageId } = queryInfo
       // @ts-expect-error todo
@@ -472,20 +472,23 @@ export function makeActions<
     },
 
     // alias to useFind, doesn't require passing the store
-    useFind(params: MaybeRef<FindClassParams>) {
-      (params.value || params).store = this
+    useFind(_params: MaybeRef<FindClassParams>) {
+      const params: Params<Query> = unref(_params)
+      Object.assign(params, { store: this })
       return useFind(params as MaybeRef<FindClassParamsStandalone<M>>)
     },
 
     // alias to useGet, doesn't require passing the store
     useGet(_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
-      (_params.value || _params).store = this
+      const params = unref(_params) as GetClassParamsStandalone<any>
+      params.store = this
       return useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
     },
 
     // Retrieves a record only once.
     useGetOnce(_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
-      Object.assign(_params.value || _params, { store: this, immediate: false, onServer: true })
+      const params: Params<Query> = unref(_params)
+      Object.assign(params, { store: this, immediate: false, onServer: true })
       const results = useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
       results.queryWhen(() => !results.data.value)
       results.get()

@@ -616,20 +616,20 @@ describe('Computed Params', () => {
     const ids = ref([1, 2, 3, 4, 5, 6])
     const params = computed(() => {
       return {
-        query: { id: { $in: ids.value }, $limit: 5, $skip: 0 },
+        query: { id: { $in: ids.value }, $limit: 10, $skip: 0 },
         store: messageStore,
         onServer: true,
       }
     })
     const { params: _params, data, total, requestCount, request } = useFind(params)
 
-    expect(_params.value.query.$limit).toBe(5)
+    expect(_params.value.query.$limit).toBe(10)
     expect(_params.value.query.$skip).toBe(0)
 
     await request.value
 
     // requests are not sent by default
-    expect(data.value.length).toBe(5)
+    expect(data.value.length).toBe(6)
     expect(requestCount.value).toBe(1)
 
     ids.value = [4, 5, 6, 7, 8, 9, 10]
@@ -639,7 +639,7 @@ describe('Computed Params', () => {
     await request.value
 
     // request was sent after computed params changed
-    expect(data.value.length).toBe(5)
+    expect(data.value.length).toBe(7)
     expect(requestCount.value).toBe(2)
     expect(total.value).toBe(7)
   })

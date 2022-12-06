@@ -1,6 +1,7 @@
 import type { Params, Paginated, QueryInfo, DiffDefinition } from './types'
 import type { MaybeRef } from './utility-types'
 import type { AnyData, AnyDataOrArray, BaseModelAssociations, FindClassParams } from './service-store/types'
+import type { Query } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
 import ObjectID from 'isomorphic-mongo-objectid'
@@ -44,7 +45,7 @@ export function getAnyId(item: any, tempIdField: string, idField: string) {
   return getId(item, idField) != undefined ? getId(item, idField) : getTempId(item, tempIdField)
 }
 
-export function getQueryInfo(params: Params = {}, response: Partial<Paginated<any>> = {}): QueryInfo {
+export function getQueryInfo(params: AnyData = {}, response: Partial<Paginated<any>> = {}): QueryInfo {
   const { query = {}, qid = 'default' } = params
   const $limit = response.limit != undefined ? response.limit : query?.$limit
   const $skip = response.skip != undefined ? response.skip : query?.$skip
@@ -154,7 +155,7 @@ export function getArray<T>(data: T | T[]) {
 
 export const hasOwn = (obj: AnyData, prop: string) => Object.prototype.hasOwnProperty.call(obj, prop)
 
-export function getSaveParams(params?: MaybeRef<Params>): Params {
+export function getSaveParams(params?: MaybeRef<Params<Query>>): Params<Query> {
   if (!params) {
     return {}
   }

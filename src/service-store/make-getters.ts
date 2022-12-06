@@ -1,6 +1,6 @@
 import type { MakeServiceGettersOptions, ServiceStoreDefaultGetters, ServiceStoreDefaultState } from './types'
 import type { Params } from '../types'
-import type { Id } from '@feathersjs/feathers'
+import type { Id, Query } from '@feathersjs/feathers'
 import type { StateTree, _GettersTree } from 'pinia'
 import type { TypedGetters } from '../utility-types'
 import sift from 'sift'
@@ -59,7 +59,7 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
       return Object.values(this.clonesById) as M[]
     },
     findInStore() {
-      return (params: Params) => {
+      return (params: Params<Query>) => {
         params = { ...unref(params) } || {}
 
         const { paramsForServer, whitelist, itemsById } = this
@@ -118,7 +118,7 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
       }
     },
     countInStore() {
-      return (params: Params) => {
+      return (params: Params<Query>) => {
         params = { ...unref(params) }
 
         if (!params.query) {
@@ -131,7 +131,7 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
       }
     },
     getFromStore() {
-      return (id: Id | null, params: Params = {}) => {
+      return (id: Id | null, params: Params<Query> = {}) => {
         id = unref(id)
         params = fastCopy(unref(params) || {})
 

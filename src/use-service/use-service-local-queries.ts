@@ -14,11 +14,11 @@ import { MaybeArray } from '../utility-types'
 interface UseServiceLocalOptions<M extends AnyData> {
   idField: Ref<string>
   tempIdField?: Ref<string>
-  itemStorage: StorageMapUtils
-  tempStorage?: StorageMapUtils
+  itemStorage: StorageMapUtils<M>
+  tempStorage?: StorageMapUtils<M>
   whitelist?: Ref<string[]>
   paramsForServer?: Ref<string[]>
-  moveTempToItems?: any
+  moveTempToItems?: (data: M) => M
   /**
    * A callback after removing an item. Allows for loose coupling of other functionality, like clones.
    */
@@ -32,7 +32,7 @@ interface UseServiceLocalOptions<M extends AnyData> {
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
 
-export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptions<M>) => {
+export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: UseServiceLocalOptions<M>) => {
   const {
     idField,
     tempIdField,
@@ -54,7 +54,7 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
     // .concat(service.options?.allow || service.options?.whitelist || [])
   })
 
-  const findInStore = computed(() => (params: Params) => {
+  const findInStore = computed(() => (params: Params<Q>) => {
     params = { ...unref(params) } || {}
 
     const _paramsForServer = paramsForServer.value
@@ -95,7 +95,7 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
     }
   })
 
-  const countInStore = computed(() => (params: Params) => {
+  const countInStore = computed(() => (params: Params<Q>) => {
     params = { ...unref(params) }
 
     if (!params.query) throw new Error('params must contain a query-object')
@@ -104,7 +104,7 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
     return findInStore.value(params).total
   })
 
-  const getFromStore = computed(() => (id: Id | null, params?: Params): M | null => {
+  const getFromStore = computed(() => (id: Id | null, params?: Params<Q>): M | null => {
     id = unref(id)
     params = fastCopy(unref(params) || {})
 
@@ -135,6 +135,7 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
       tempStorage && tempStorage.remove(item)
       if (afterRemove) afterRemove(item)
     })
+    return data
   }
 
   /**
@@ -142,23 +143,23 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
    * @param data a single record or array of records.
    * @returns data added or modified in the store. If you pass an array, you get an array back.
    */
-  function addToStore(data: AnyData): M
-  function addToStore(data: AnyData[]): M[]
-  function addToStore(data: AnyDataOrArray): MaybeArray<M> {
+  function addToStore<N extends M>(data: M): N
+  function addToStore<N extends M>(data: N[]): N[]
+  function addToStore<N extends M>(data: AnyDataOrArray<N>): MaybeArray<N> {
     const _idField = idField.value
     const _tempIdField = tempStorage && tempIdField && tempIdField.value
     const { items, isArray } = getArray(data)
 
-    const _items = items.map((item: AnyData) => {
-      if (getId(item, _idField) != null && _tempIdField && getTempId(item, _tempIdField) != null) {
-        return moveTempToItems(item)
+    const _items = items.map((item: N) => {
+      if (moveTempToItems && getId(item, _idField) != null && _tempIdField && getTempId(item, _tempIdField) != null) {
+        return moveTempToItems(item) as N
       } else {
         const asTemp = itemStorage.getId(item) == null
         if (tempIdField?.value && asTemp && !tempStorage?.getId(item)) assignTempId(item, tempIdField.value)
 
         const storage = tempStorage ? (asTemp ? tempStorage : itemStorage) : itemStorage
         const stored = storage.merge(item)
-        return stored
+        return stored as N
       }
     })
 
@@ -173,7 +174,7 @@ export const useServiceLocal = <M extends AnyData>(options: UseServiceLocalOptio
   }
 
   function hydrateAll() {
-    addToStore(itemStorage.list)
+    addToStore(itemStorage.list.value)
   }
 
   return {

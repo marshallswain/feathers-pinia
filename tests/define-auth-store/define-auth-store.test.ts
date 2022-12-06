@@ -1,6 +1,6 @@
 import { createPinia } from 'pinia'
-import { defineAuthStore } from '../src/index'
-import { api } from './feathers'
+import { defineAuthStore } from '../../src/index'
+import { api } from '../feathers'
 
 const pinia = createPinia()
 
@@ -14,7 +14,7 @@ describe('Define Auth Store 1 (from options without options.id)', () => {
     expect(response).toHaveProperty('payload')
   })
   test('adds auth data to the store', async () => {
-    const response = await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
+    await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
     expect(store.$id).toBe('auth')
     expect(store.accessToken).toBeTruthy
     expect(store.payload).toBeTruthy
@@ -35,7 +35,7 @@ describe('Define Auth Store 2 (from options with options.id)', () => {
     expect(response).toHaveProperty('payload')
   })
   test('adds auth data to the store', async () => {
-    const response = await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
+    await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
     expect(store.$id).toBe('auth2')
     expect(store.accessToken).toBeTruthy
     expect(store.payload).toBeTruthy
@@ -56,7 +56,7 @@ describe('Define Auth Store 3 (from id and options without options.id)', () => {
     expect(response).toHaveProperty('payload')
   })
   test('adds auth data to the store', async () => {
-    const response = await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
+    await store.authenticate({ strategy: 'jwt', accessToken: 'hi' })
     expect(store.$id).toBe('auth3')
     expect(store.accessToken).toBeTruthy
     expect(store.payload).toBeTruthy

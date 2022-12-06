@@ -1,14 +1,14 @@
-import type { AnyData } from './types'
+import type { AnyData, beforeWriteFn, onReadFn } from './types'
 import type { Id } from '@feathersjs/feathers'
 import { ref, computed, del as vueDel, set as vueSet, type Ref } from 'vue-demi'
 
 interface UseServiceStorageOptions<M extends AnyData> {
-  getId: (item: M) => keyof M
-  onRead?: (item: M) => M
-  beforeWrite?: (item: M) => M
+  getId: (item: M) => string
+  onRead?: onReadFn<M>
+  beforeWrite?: beforeWriteFn<M>
 }
 type ById<M> = Ref<Record<string | number | symbol, M>>
-export type StorageMapUtils = ReturnType<typeof useServiceStorage>
+export type StorageMapUtils<M extends AnyData> = ReturnType<typeof useServiceStorage<M>>
 
 /**
  * General storage adapter
@@ -80,7 +80,8 @@ export const useServiceStorage = <M extends AnyData>({
    * @returns
    */
   const getItem = (id: Id) => {
-    const _item = onRead(byId.value[id])
+    const inStore = byId.value[id]
+    const _item = inStore ? onRead(inStore) : null
     return _item as M
   }
 

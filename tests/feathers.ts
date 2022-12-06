@@ -1,10 +1,12 @@
-import feathers, { HookContext } from '@feathersjs/feathers'
+import type { Tasks, TasksData, TasksQuery } from './feathers-schema-tasks'
+import feathers, { HookContext, Params } from '@feathersjs/feathers'
 import rest from '@feathersjs/rest-client'
-import { memory } from '@feathersjs/memory'
+import { memory, MemoryService } from '@feathersjs/memory'
 import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
 import { timeout } from './test-utils'
 import { NotAuthenticated } from '@feathersjs/errors'
+import type { AdapterParams } from '@feathersjs/adapter-commons'
 
 const restClient = rest()
 
@@ -35,6 +37,12 @@ api.authentication.service.hooks({
   },
 })
 
+interface TasksParams extends AdapterParams<TasksQuery> {
+  skipStore?: boolean
+}
+class TaskService<ServiceParams extends Params = TasksParams> extends MemoryService<Tasks, TasksData, ServiceParams> {}
+api.use('tasks', new TaskService({ paginate: { default: 10, max: 100 }, whitelist: ['$options'], id: '_id' }))
+
 api.use('users', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 api.use('messages', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 api.use('alt-ids', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'], id: '_id' }))
@@ -50,5 +58,6 @@ const hooks = {
     ],
   },
 }
+api.service('tasks').hooks(hooks)
 api.service('users').hooks(hooks)
 api.service('messages').hooks(hooks)

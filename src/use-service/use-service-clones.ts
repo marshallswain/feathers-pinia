@@ -1,20 +1,20 @@
-import { StorageMapUtils, useServiceStorage } from './use-service-storage'
-// import { copyAssociations } from '../utils'
-import { AnyData, CloneOptions } from './types'
+import { useServiceStorage, type StorageMapUtils } from './use-service-storage'
+import type { AnyData, beforeWriteFn, CloneOptions, onReadFn } from './types'
 import fastCopy from 'fast-copy'
 import { _ } from '@feathersjs/commons'
+// import { copyAssociations } from '../utils'
 
 export type UseServiceClonesOptions<M extends AnyData> = {
-  itemStorage: StorageMapUtils
-  tempStorage?: StorageMapUtils
-  onRead?: (item: M) => M
-  beforeWrite?: (item: M) => M
+  itemStorage: StorageMapUtils<M>
+  tempStorage?: StorageMapUtils<M>
+  onRead?: onReadFn<M>
+  beforeWrite?: beforeWriteFn<M>
 }
 
 export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOptions<M>) => {
   const { itemStorage, tempStorage, onRead, beforeWrite } = options
   const cloneStorage = useServiceStorage({
-    getId: (item) => (tempStorage ? itemStorage.getId(item) || tempStorage.getId(item) : itemStorage.getId(item)),
+    getId: (item) => (tempStorage ? itemStorage.getId(item as M) || tempStorage.getId(item) : itemStorage.getId(item)),
     onRead,
     beforeWrite,
   })

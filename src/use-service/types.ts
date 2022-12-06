@@ -2,12 +2,27 @@ import type { Params, Paginated, QueryInfo } from '../types'
 import type { Ref, ComputedRef } from 'vue-demi'
 import type { Id, Query } from '@feathersjs/feathers'
 import type { MaybeArray, MaybeRef } from '../utility-types'
-import { BaseModel } from './base-model'
+import { BaseModelProps } from '../use-base-model'
+
+export interface FindResponseAlwaysData<M extends AnyData> {
+  data: M[]
+  limit?: number
+  skip?: number
+  total?: number
+}
+
+// event locks
+export type EventName = 'created' | 'patched' | 'updated' | 'removed'
+export type EventLocks = {
+  [key in EventName]: {
+    [key: string]: boolean
+  }
+}
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 
 export type AnyData = Record<string, any>
-export type AnyDataOrArray = MaybeArray<AnyData>
+export type AnyDataOrArray<M extends AnyData> = MaybeArray<M>
 
 interface QueryPagination {
   $limit: number
@@ -23,7 +38,7 @@ interface MostRecentQuery {
   total: number
 }
 
-export interface CurrentQuery<M extends BaseModel> extends MostRecentQuery {
+export interface CurrentQuery<M extends AnyData> extends MostRecentQuery {
   qid: string
   ids: number[]
   items: M[]
@@ -83,8 +98,11 @@ export type PaginationStateQuery = { [pageId: string]: PaginationStatePage } & {
 export type PaginationStateQid = { [qid: string]: PaginationStateQuery } & { mostRecent: MostRecentQuery }
 export type PaginationState = { [qid: string]: PaginationStateQid } & { defaultLimit: number; defaultSkip: number }
 
-export type HandleFindResponseOptions<M = AnyData> = { params: Params; response: M[] | Paginated<M> }
-export type HandleFindErrorOptions = { params: Params; error: any }
+export type HandleFindResponseOptions<M extends AnyData, Q extends Query = Query> = {
+  params: Params<Q>
+  response: M[] | Paginated<M>
+}
+export type HandleFindErrorOptions<Q extends Query> = { params: Params<Q>; error: any }
 
 // The find action will always return data at params.data, even for non-paginated requests.
 // export type FindFn<C extends ModelConstructor = ModelConstructor, M extends InstanceType<C> = InstanceType<C>> = (
@@ -154,16 +172,16 @@ export interface QueryWhenContext {
 
 export type QueryWhenFunction = ComputedRef<(context: QueryWhenContext) => boolean>
 
-export interface GetClassParams extends Params {
-  query?: Query
+export interface GetClassParams<Q extends Query = Query> extends Params<Q> {
+  query?: Q
   onServer?: boolean
   immediate?: boolean
 }
 export interface GetClassParamsStandalone extends GetClassParams {
   store: any
 }
-export interface FindClassParams extends Params {
-  query: Query
+export interface FindClassParams<Q extends Query = Query> extends Params<Q> {
+  query: Q
   onServer?: boolean
   qid?: string
   immediate?: boolean
@@ -173,9 +191,9 @@ export interface FindClassParamsStandalone extends FindClassParams {
   store: any
 }
 
-export interface UseFindWatchedOptions {
-  params: Params | ComputedRef<Params | null>
-  fetchParams?: ComputedRef<Params | null | undefined>
+export interface UseFindWatchedOptions<Q extends Query = Query> {
+  params: Params<Q> | ComputedRef<Params<Q> | null>
+  fetchParams?: ComputedRef<Params<Q> | null | undefined>
   queryWhen?: ComputedRef<boolean> | QueryWhenFunction
   qid?: string
   local?: boolean
@@ -202,9 +220,9 @@ export interface UseFindComputed {
   isSsr: ComputedRef<boolean>
 }
 
-export interface UseGetOptions {
+export interface UseGetOptions<Q extends Query = Query> {
   id: Ref<Id | null> | ComputedRef<Id | null> | null
-  params?: Ref<Params>
+  params?: Ref<Params<Q>>
   queryWhen?: Ref<boolean>
   local?: boolean
   immediate?: boolean
@@ -232,13 +250,15 @@ export interface AssociateFindUtils {
 }
 
 export type HandledEvents = 'created' | 'patched' | 'updated' | 'removed'
-export type HandleEventsFunction<M extends BaseModel = BaseModel> = (
-  item: any,
-  ctx: { model: Record<string, any>; models: any },
-) => any
+export type HandleEventsFunction<M extends AnyData> = (item: M, ctx: { model: M; models: any }) => any
 
-export type HandleEvents<M extends BaseModel = BaseModel> =
+export type HandleEvents<M extends AnyData> =
   | {
       [event in HandledEvents]: HandleEventsFunction<M>
     }
   | boolean
+
+export type onReadFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelProps<M, typeof item.__tempIdField>)
+export type beforeWriteFn<M extends AnyData> = (
+  item: M,
+) => M | (Partial<M> & BaseModelProps<M, typeof item.__tempIdField>)
