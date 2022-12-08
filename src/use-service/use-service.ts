@@ -1,5 +1,5 @@
 import type { MaybeRef } from '../utility-types'
-import type { ModelFn as ModelFnType } from '../use-base-model'
+import type { ModelFnTypeExtended } from '../use-base-model'
 import type { Id } from '@feathersjs/feathers'
 import type {
   UseFindWatchedOptions,
@@ -29,9 +29,8 @@ import { useAllStorageTypes } from './use-all-storage-types'
 
 export type UseFeathersServiceOptions<M extends AnyData> = {
   service: Service
-  ModelFn: ModelFnType<M>
+  ModelFn: ModelFnTypeExtended<M>
   idField: string
-  tempIdField?: string
   whitelist?: string[]
   paramsForServer?: string[]
   skipRequestIfExists?: boolean
@@ -42,7 +41,6 @@ export type UseFeathersServiceOptions<M extends AnyData> = {
 }
 
 const makeDefaultOptions = () => ({
-  tempIdField: '__tempId',
   skipRequestIfExists: false,
 })
 
@@ -50,26 +48,40 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
   _options: UseFeathersServiceOptions<M>,
 ) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const ModelFn = _options.ModelFn as ModelFnType<M> & EventEmitter
+  const ModelFn = _options.ModelFn as ModelFnTypeExtended<M> & EventEmitter
 
   const service = computed(() => options.service)
   const whitelist = ref(options.whitelist ?? [])
   const paramsForServer = ref(options.paramsForServer ?? [])
   const skipRequestIfExists = ref(options.skipRequestIfExists ?? false)
   const idField = ref(options.idField)
-  const tempIdField = ref(options.tempIdField)
 
-  const { itemStorage, tempStorage, moveTempToItems, cloneStorage, clone, commit, reset } = useAllStorageTypes({
+  // pending state
+  const pendingState = useServicePending()
+
+  // storage
+  const {
+    itemStorage,
+    tempStorage,
+    cloneStorage,
+    clone,
+    commit,
+    reset,
+    removeFromStore,
+    addToStore,
+    clearAll,
+    hydrateAll,
+  } = useAllStorageTypes<M>({
     ModelFn,
+    afterClear: () => {
+      pendingState.clearAllPending()
+    },
   })
 
   const isSsr = computed(() => {
     const ssr = unref(options.ssr)
     return !!ssr
   })
-
-  // pending state
-  const pendingState = useServicePending()
 
   // pagination
   const { pagination, updatePaginationForQuery, unflagSsr } = useServicePagination({
@@ -78,27 +90,17 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
   })
 
   // local data filtering
-  const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, clearAll } = useServiceLocal<M, Q>({
+  const { findInStore, countInStore, getFromStore } = useServiceLocal<M, Q>({
     idField,
-    tempIdField,
     itemStorage,
     tempStorage,
     whitelist,
     paramsForServer,
-    afterRemove: (item: any) => {
-      cloneStorage.remove(item)
-    },
-    afterClear: () => {
-      cloneStorage.clear()
-      pendingState.clearAllPending()
-    },
-    moveTempToItems,
   })
 
   // feathers service
   const serviceMethods = useServiceApiFeathers<M, D, Q>({
     service: options.service,
-    tempIdField,
     addToStore,
   })
 
@@ -163,7 +165,6 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
     itemIds: itemStorage.ids,
 
     // temps
-    tempIdField,
     tempsById: tempStorage.byId,
     temps: tempStorage.list,
     tempIds: tempStorage.ids,
@@ -188,6 +189,7 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
     removeFromStore,
     addToStore,
     clearAll,
+    hydrateAll,
 
     // pending (conditional based on if service was provided)
     ...pendingState,

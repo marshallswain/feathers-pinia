@@ -1,13 +1,15 @@
-import type { AnyData, beforeWriteFn, onReadFn } from './types'
+import type { AnyData, AssignFn, beforeWriteFn, onReadFn } from './types'
 import type { Id } from '@feathersjs/feathers'
-import { ref, computed, del as vueDel, set as vueSet, type Ref } from 'vue-demi'
+import type { ById } from '../use-base-model'
+import { reactive, computed, del as vueDel, set as vueSet } from 'vue-demi'
 
 interface UseServiceStorageOptions<M extends AnyData> {
   getId: (item: M) => string
   onRead?: onReadFn<M>
   beforeWrite?: beforeWriteFn<M>
+  assign?: AssignFn<M>
 }
-type ById<M> = Ref<Record<string | number | symbol, M>>
+
 export type StorageMapUtils<M extends AnyData> = ReturnType<typeof useServiceStorage<M>>
 
 /**
@@ -17,15 +19,16 @@ export const useServiceStorage = <M extends AnyData>({
   getId,
   onRead = (item) => item,
   beforeWrite = (item) => item,
+  assign = (dest, src) => Object.assign(dest, src),
 }: UseServiceStorageOptions<M>) => {
-  const byId: ById<M> = ref({})
+  const byId: ById<M> = reactive({})
 
   const list = computed(() => {
-    return Object.values(byId.value)
+    return Object.values(byId)
   })
 
   const ids = computed(() => {
-    return Object.keys(byId.value)
+    return Object.keys(byId)
   })
 
   /**
@@ -44,7 +47,7 @@ export const useServiceStorage = <M extends AnyData>({
    * @returns
    */
   const hasItem = (id: Id) => {
-    return !!byId.value[id]
+    return !!byId[id]
   }
 
   /**
@@ -57,7 +60,7 @@ export const useServiceStorage = <M extends AnyData>({
     const id = getId(item) as Id
     const existing = getItem(id)
     if (existing) {
-      Object.assign(existing, item)
+      assign(existing, item)
     } else {
       setItem(id, item)
     }
@@ -80,7 +83,7 @@ export const useServiceStorage = <M extends AnyData>({
    * @returns
    */
   const getItem = (id: Id) => {
-    const inStore = byId.value[id]
+    const inStore = byId[id]
     const _item = inStore ? onRead(inStore) : null
     return _item as M
   }
@@ -97,7 +100,7 @@ export const useServiceStorage = <M extends AnyData>({
 
   const setItem = (id: Id, item: M) => {
     if (id == null) throw new Error('item has no id')
-    vueSet(byId.value, id, beforeWrite(item))
+    vueSet(byId, id, beforeWrite(item))
     return getItem(id)
   }
 
@@ -119,7 +122,7 @@ export const useServiceStorage = <M extends AnyData>({
   const removeItem = (id: Id) => {
     const hadItem = hasItem(id)
     if (hadItem) {
-      vueDel(byId.value, id)
+      vueDel(byId, id)
     }
     return hadItem
   }
@@ -132,7 +135,9 @@ export const useServiceStorage = <M extends AnyData>({
    * empties the store
    */
   const clear = () => {
-    byId.value = {}
+    Object.keys(byId).forEach((id) => {
+      vueDel(byId, id)
+    })
   }
 
   return { byId, list, ids, getId, clear, has, hasItem, get, getItem, set, setItem, remove, removeItem, getKeys, merge }

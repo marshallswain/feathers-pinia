@@ -1,12 +1,12 @@
 import { useServiceStorage, type StorageMapUtils } from './use-service-storage'
 import type { AnyData, beforeWriteFn, CloneOptions, onReadFn } from './types'
 import fastCopy from 'fast-copy'
-import { _ } from '@feathersjs/commons'
+import { del as vueDelete } from 'vue-demi'
 // import { copyAssociations } from '../utils'
 
 export type UseServiceClonesOptions<M extends AnyData> = {
   itemStorage: StorageMapUtils<M>
-  tempStorage?: StorageMapUtils<M>
+  tempStorage: StorageMapUtils<M>
   onRead?: onReadFn<M>
   beforeWrite?: beforeWriteFn<M>
 }
@@ -14,10 +14,43 @@ export type UseServiceClonesOptions<M extends AnyData> = {
 export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOptions<M>) => {
   const { itemStorage, tempStorage, onRead, beforeWrite } = options
   const cloneStorage = useServiceStorage({
-    getId: (item) => (tempStorage ? itemStorage.getId(item as M) || tempStorage.getId(item) : itemStorage.getId(item)),
+    getId: (item) => itemStorage.getId(item as M) || tempStorage.getId(item),
     onRead,
     beforeWrite,
   })
+
+  /**
+   * Makes a copy with __isClone properly set
+   * Private
+   */
+  interface MakeCopyOptions {
+    isClone: boolean
+  }
+  const makeCopy = (item: M, data: AnyData = {}, { isClone }: MakeCopyOptions) => {
+    const copied = item.__Model({
+      ...fastCopy(item),
+      ...data,
+      __isClone: isClone,
+      __tempId: item.__tempId,
+    })
+    return copied
+  }
+
+  /**
+   * Makes sure the provided item is stored in itemStorage or tempStorage.
+   * Private
+   */
+  const assureOriginalIsStored = (item: M): M => {
+    const existingItem = itemStorage.get(item) || tempStorage.get(item)
+    if (!existingItem) {
+      if (itemStorage.getId(item) != null) {
+        itemStorage.merge(item)
+      } else if (tempStorage.getId(item) != null) {
+        tempStorage.merge(item)
+      }
+    }
+    return itemStorage.get(item) || tempStorage.get(item)
+  }
 
   /**
    * Fast-copies the provided `item`, placing it in `cloneStorage`.
@@ -27,18 +60,15 @@ export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOpt
    * @returns
    */
   function clone(item: M, data = {}, options: CloneOptions = {}): M {
-    const originalItem = tempStorage ? tempStorage.get(item) || itemStorage.get(item) : itemStorage.get(item)
     const existingClone = cloneStorage.get(item)
+
+    assureOriginalIsStored(item)
 
     if (existingClone) {
       if (options.useExisting) return existingClone as M
-      return reset(item, data) as M
+      return reset(item, data)
     } else {
-      const copy = fastCopy(originalItem || item) as M
-
-      // copyAssociations(originalItem, copy, copy.getModel().associations)
-      Object.assign(copy, data)
-      const clone = cloneStorage.set(copy)
+      const clone = reset(item, data)
       return clone as M
     }
   }
@@ -52,9 +82,9 @@ export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOpt
    */
   function commit(item: M, data: Partial<M> = {}) {
     const itemId = itemStorage.getId(item)
-    const _item = Object.assign(fastCopy(item), data)
+    const _item = makeCopy(item, data, { isClone: false })
     // copyAssociations(clone, newOriginal, clone.getModel().associations)
-    if (itemId || !tempStorage) {
+    if (itemId) {
       itemStorage.merge(_item)
       return itemStorage.get(_item)
     } else {
@@ -70,15 +100,20 @@ export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOpt
    * @param data
    * @returns
    */
-  function reset(item: M, data = {}) {
-    const storage = itemStorage.has(item) || !tempStorage ? itemStorage : tempStorage
-    const existingStored = storage.get(item)
-    if (existingStored) {
-      const copied = fastCopy(existingStored)
-      const picked = _.pick(copied, ...Object.keys(existingStored)) as M
-      cloneStorage.merge(Object.assign(picked, data))
+  function reset(item: M, data = {}): M {
+    const original = assureOriginalIsStored(item)
+    const existingClone = cloneStorage.get(item)
+
+    if (existingClone) {
+      const copied = makeCopy(original, data, { isClone: true })
+      Object.keys(original).forEach((key) => {
+        if (original[key] == null) {
+          vueDelete(copied, key)
+        }
+      })
+      cloneStorage.merge(copied)
     } else {
-      const copied = fastCopy(item)
+      const copied = makeCopy(item, data, { isClone: true })
       cloneStorage.set(copied)
     }
     return cloneStorage.get(item)

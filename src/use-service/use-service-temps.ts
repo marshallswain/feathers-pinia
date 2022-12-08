@@ -1,14 +1,14 @@
 import type { AnyData } from '../service-store'
-import type { BaseModelProps } from '../use-base-model'
 import { useServiceStorage, type StorageMapUtils } from './use-service-storage'
 import { Id } from '@feathersjs/feathers/lib'
+import type { beforeWriteFn, onReadFn } from './types'
 
 interface UseServiceTempsOptions<M extends AnyData> {
   getId: (item: M) => string
   removeId: (item: M) => void
   itemStorage: StorageMapUtils<M>
-  onRead?: (item: M) => M | (Partial<M> & BaseModelProps)
-  beforeWrite?: (item: M) => M | (Partial<M> & BaseModelProps)
+  onRead?: onReadFn<M>
+  beforeWrite?: beforeWriteFn<M>
 }
 
 export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptions<M>) => {

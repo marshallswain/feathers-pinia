@@ -13,8 +13,9 @@ export const useModelClones = <M extends AnyData, F extends ModelFnTypeExtended<
 
   // API to overwrite cloneStorage (for example, with the store clones)
   const setCloneStorage = (allStorage: ReturnType<typeof useAllStorageTypes>) => {
-    const { itemStorage, tempStorage, cloneStorage, clone, commit, reset } = allStorage
+    const { additionalFields, itemStorage, tempStorage, cloneStorage, clone, commit, reset, clearAll } = allStorage
     const toMerge = {
+      additionalFields,
       // items
       itemsById: itemStorage.byId,
       items: itemStorage.list,
@@ -32,9 +33,11 @@ export const useModelClones = <M extends AnyData, F extends ModelFnTypeExtended<
       clone,
       commit,
       reset,
+
+      clearAll,
     }
 
-    Object.assign(_ModelFn, toMerge)
+    Object.assign(ModelFn, toMerge)
   }
   Object.defineProperties(_ModelFn, {
     setCloneStorage: {

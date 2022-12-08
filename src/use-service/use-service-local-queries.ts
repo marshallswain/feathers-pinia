@@ -7,43 +7,21 @@ import sift from 'sift'
 import { operations } from '../utils-custom-operators'
 import { _ } from '@feathersjs/commons'
 import fastCopy from 'fast-copy'
-import { assignTempId, getArray, getId, getTempId } from '../utils'
-import { AnyData, AnyDataOrArray } from './types'
-import { MaybeArray } from '../utility-types'
+import { AnyData } from './types'
 
 interface UseServiceLocalOptions<M extends AnyData> {
   idField: Ref<string>
-  tempIdField?: Ref<string>
   itemStorage: StorageMapUtils<M>
   tempStorage?: StorageMapUtils<M>
   whitelist?: Ref<string[]>
   paramsForServer?: Ref<string[]>
-  moveTempToItems?: (data: M) => M
-  /**
-   * A callback after removing an item. Allows for loose coupling of other functionality, like clones.
-   */
-  afterRemove?: (item: M) => void
-  /**
-   * A callback after clearing the store. Allows loose coupling of other functionality, like clones.
-   */
-  afterClear?: () => void
 }
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
 
 export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: UseServiceLocalOptions<M>) => {
-  const {
-    idField,
-    tempIdField,
-    itemStorage,
-    tempStorage,
-    paramsForServer = ref([]),
-    whitelist = ref([]),
-    moveTempToItems,
-    afterRemove,
-    afterClear,
-  } = options
+  const { idField, itemStorage, tempStorage, paramsForServer = ref([]), whitelist = ref([]) } = options
 
   /** @private */
   const _filterQueryOperators = computed(() => {
@@ -111,10 +89,7 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     let item = null
     const existingItem = itemStorage.getItem(id as Id) && select(params, idField.value)(itemStorage.getItem(id as Id))
     const tempItem =
-      tempStorage &&
-      tempIdField &&
-      tempStorage.getItem(id as Id) &&
-      select(params, tempIdField.value)(tempStorage.getItem(id as Id))
+      tempStorage && tempStorage.getItem(id as Id) && select(params, '__tempId')(tempStorage.getItem(id as Id))
 
     if (existingItem) item = existingItem
     else if (tempItem) item = tempItem
@@ -122,68 +97,9 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     return item || null
   })
 
-  /**
-   * Removes item from all stores (items, temps, clones).
-   * Reactivity in Vue 3 might be fast enough to just remove each item and not batch.
-   * If an `afterRemove` callback was provided, it calls `afterRemove` with each item.
-   * @param data
-   */
-  function removeFromStore(data: M | M[]) {
-    const { items } = getArray(data)
-    items.forEach((item: M) => {
-      itemStorage.remove(item)
-      tempStorage && tempStorage.remove(item)
-      if (afterRemove) afterRemove(item)
-    })
-    return data
-  }
-
-  /**
-   * An alias for addOrUpdate
-   * @param data a single record or array of records.
-   * @returns data added or modified in the store. If you pass an array, you get an array back.
-   */
-  function addToStore<N extends M>(data: M): N
-  function addToStore<N extends M>(data: N[]): N[]
-  function addToStore<N extends M>(data: AnyDataOrArray<N>): MaybeArray<N> {
-    const _idField = idField.value
-    const _tempIdField = tempStorage && tempIdField && tempIdField.value
-    const { items, isArray } = getArray(data)
-
-    const _items = items.map((item: N) => {
-      if (moveTempToItems && getId(item, _idField) != null && _tempIdField && getTempId(item, _tempIdField) != null) {
-        return moveTempToItems(item) as N
-      } else {
-        const asTemp = itemStorage.getId(item) == null
-        if (tempIdField?.value && asTemp && !tempStorage?.getId(item)) assignTempId(item, tempIdField.value)
-
-        const storage = tempStorage ? (asTemp ? tempStorage : itemStorage) : itemStorage
-        const stored = storage.merge(item)
-        return stored as N
-      }
-    })
-
-    return isArray ? _items : _items[0]
-  }
-
-  function clearAll() {
-    itemStorage.clear()
-    tempStorage && tempStorage.clear()
-
-    if (afterClear) afterClear()
-  }
-
-  function hydrateAll() {
-    addToStore(itemStorage.list.value)
-  }
-
   return {
     findInStore,
     countInStore,
     getFromStore,
-    removeFromStore,
-    addToStore,
-    clearAll,
-    hydrateAll,
   }
 }

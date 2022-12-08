@@ -1,5 +1,5 @@
 import type { HandledEvents, HandleEvents } from './types'
-import type { ModelFn } from '../use-base-model'
+import type { ModelFnType } from '../use-base-model'
 import { getId, hasOwn } from '../utils'
 import { del, ref, set } from 'vue-demi'
 import _debounce from 'just-debounce'
@@ -7,7 +7,7 @@ import EventEmitter from 'events'
 
 type UseServiceStoreEventsOptions<M extends Record<string, any>> = {
   service: any
-  ModelFn?: ModelFn<M> & EventEmitter
+  ModelFn?: ModelFnType<M> & EventEmitter
   idField: string
   debounceEventsTime?: number
   onAddOrUpdate: (item: any) => void

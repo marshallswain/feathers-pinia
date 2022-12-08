@@ -262,3 +262,7 @@ export type onReadFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseMod
 export type beforeWriteFn<M extends AnyData> = (
   item: M,
 ) => M | (Partial<M> & BaseModelProps<M, typeof item.__tempIdField>)
+export type AssignFn<M extends AnyData> = (
+  dest: M,
+  src: M,
+) => M | (Partial<M> & BaseModelProps<typeof dest, typeof dest.__tempIdField>)

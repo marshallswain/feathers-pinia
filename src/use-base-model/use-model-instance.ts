@@ -1,34 +1,33 @@
 import type { BaseModelProps, WithModel } from './types'
 import { reactive } from 'vue'
-import { AnyData } from '../use-service'
+import { AnyData, CloneOptions } from '../use-service'
 import ObjectID from 'isomorphic-mongo-objectid'
 
-interface UseBaseModelOptions<TempId extends string = '__tempId'> {
+interface UseBaseModelOptions {
   name: string
   idField: string
-  tempIdField?: TempId
   ModelFn?: any
 }
 
-export const useInstanceModel = <M extends AnyData, TempId extends string = '__tempId'>(
-  data: M,
-  options: UseBaseModelOptions<TempId>,
-) => {
-  const { name, idField, tempIdField = '__tempId' } = options
+export const useInstanceModel = <M extends AnyData>(data: M, options: UseBaseModelOptions) => {
+  const { name, idField } = options
   const __isClone = data.__isClone || false
 
   // The `__Model` property was added by the `useModelBase` wrapper in `use-model-base.ts`.
   const _data = data as M & WithModel<M>
 
   const cloneMethods = {
-    clone(this: M) {
-      return this
+    clone(this: M, data: Partial<M> = {}, options: CloneOptions = {}) {
+      const cloned = this.__Model.clone(this, data, options)
+      return cloned
     },
-    commit(this: M) {
-      return this
+    commit(this: M, data: Partial<M> = {}) {
+      const committed = this.__Model.commit(this, data, options)
+      return committed
     },
-    reset(this: M) {
-      return this
+    reset(this: M, data: Partial<M> = {}) {
+      const resetted = this.__Model.reset(this, data, options)
+      return resetted
     },
   }
 
@@ -37,12 +36,11 @@ export const useInstanceModel = <M extends AnyData, TempId extends string = '__t
     __modelName: name,
     __isClone,
     __idField: idField,
-    __tempIdField: tempIdField,
-    [tempIdField]: data[idField] == null ? new ObjectID().toString() : undefined,
+    __tempId: data[idField] == null && data.__tempId == null ? new ObjectID().toString() : data.__tempId || undefined,
     clone: cloneMethods.clone,
     commit: cloneMethods.commit,
     reset: cloneMethods.reset,
-  }) as M & BaseModelProps<M, TempId>
+  }) as M & BaseModelProps<M>
 
   // make the data reactive, but ignore the proxy "Reactive" wrapper type to keep internal types simpler.
   const newData = reactive(asBaseModel) as typeof asBaseModel

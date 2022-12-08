@@ -11,9 +11,8 @@ import { useModelEvents } from './use-model_events'
  */
 export const useModelBase = <
   M extends AnyData,
-  TempId extends string = '__tempId',
   N extends Partial<M & BaseModelData> = Partial<M & BaseModelData>,
-  F extends ModelFnType<M> = ModelFnType<M, TempId>,
+  F extends ModelFnType<M> = ModelFnType<M>,
 >(
   ModelFn: F,
 ) => {
@@ -22,12 +21,12 @@ export const useModelBase = <
     Object.defineProperty(data, '__Model', {
       configurable: true,
       enumerable: false,
-      value: ModelFn,
+      value: fn,
     })
     return ModelFn(data)
   }) as any as ModelFnTypeExtended<N>
 
-  const CloneModel = useModelClones<N, ModelFnTypeExtended<N, TempId>>(fn)
+  const CloneModel = useModelClones<N, ModelFnTypeExtended<N>>(fn)
   const EventModel = useModelEvents(CloneModel)
-  return EventModel as any as F & ModelFnTypeExtended<M, TempId>
+  return EventModel as any as ModelFnTypeExtended<M>
 }

@@ -86,9 +86,8 @@ export function getItemsFromQueryInfo(pagination: any, queryInfo: any, keyedById
  * @param state
  * @param item
  */
-export function assignTempId(item: any, tempIdField: string) {
-  const newId = new ObjectID().toString()
-  item[tempIdField] = newId
+export function assignTempId(item: any, tempIdField?: string) {
+  item[item.__tempIdField || tempIdField] = new ObjectID().toString()
   return item
 }
 
