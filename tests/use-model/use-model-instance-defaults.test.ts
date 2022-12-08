@@ -2,7 +2,7 @@ import type { Tasks } from '../feathers-schema-tasks'
 import { useInstanceModel, type BaseModelData, useInstanceDefaults, useModelBase } from '../../src/use-base-model/index'
 
 const Task = useModelBase((data: Partial<Tasks & BaseModelData>) => {
-  const asModel = useInstanceModel(data, { name: 'Task', idField: '_id', ModelFn: Task })
+  const asModel = useInstanceModel(data, { name: 'Task', idField: '_id' })
   const withDefaults = useInstanceDefaults({ test: true, foo: 'bar', description: 'default' }, asModel)
 
   return withDefaults
