@@ -1,16 +1,19 @@
 import fastCopy from 'fast-copy'
-import { defineBaseModelProps } from './use-model-instance'
+import { AnyData } from '../use-service'
+import { _ } from '@feathersjs/commons'
+import { BaseModelData } from './types'
 
-export const useInstanceDefaults = <M, D>(defaults: D, data: M) => {
-  const _data: any = data
-  const cloned: any = Object.assign({}, fastCopy(defaults), data)
-  // re-init baseModel since non-enumerables get wiped out
-  const baseModel = defineBaseModelProps({
-    data: cloned,
-    name: _data.__modelName,
-    isClone: _data.__isClone,
-    idField: _data.__idField,
-    tempIdField: _data.__tempIdField,
-  })
-  return baseModel as D & M
+export const useInstanceDefaults = <
+  M extends AnyData,
+  N extends Partial<M & BaseModelData>,
+  D extends AnyData = AnyData,
+>(
+  defaults: D,
+  data: N,
+) => {
+  const dataKeys = Object.keys(data)
+  const defaultsToApply = _.omit(defaults, ...dataKeys)
+  const cloned = Object.assign(data, fastCopy(defaultsToApply)) as D & N
+
+  return cloned
 }
