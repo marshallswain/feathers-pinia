@@ -5,11 +5,10 @@ import {
   useInstanceModel,
   BaseModelData,
   useInstanceFeathers,
-  makeModelInstances,
 } from '../../src/use-base-model/index'
 import { api } from '../feathers'
 import { createPinia, defineStore } from 'pinia'
-import { setPending, syncStore } from '../../src/use-service'
+import { feathersPiniaHooks } from '../../src/hooks'
 
 const pinia = createPinia()
 
@@ -35,16 +34,9 @@ const useTaskStore = defineStore('counter', () => {
 })
 const taskStore = useTaskStore(pinia)
 
-// MARSHALL:
-// - Test these new hooks: `makeModelInstances` and`syncStore` in hooks
-// - Remove `addToStore` calls in
-
 api.service('tasks').hooks({
   around: {
-    all: [setPending(taskStore)],
-  },
-  after: {
-    all: [makeModelInstances(Task), syncStore(taskStore)],
+    all: [...feathersPiniaHooks(Task, taskStore)],
   },
 })
 
