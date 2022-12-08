@@ -1,5 +1,4 @@
 export { useService, type UseFeathersServiceOptions } from './use-service'
-export { useLocal } from './use-local'
 export { useQueuePromise } from './event-queue-promise'
 export { useServiceLocal } from './use-service-local-queries'
 export { useServiceTemps } from './use-service-temps'

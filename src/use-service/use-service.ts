@@ -60,23 +60,13 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
   const pendingState = useServicePending()
 
   // storage
-  const {
-    itemStorage,
-    tempStorage,
-    cloneStorage,
-    clone,
-    commit,
-    reset,
-    removeFromStore,
-    addToStore,
-    clearAll,
-    hydrateAll,
-  } = useAllStorageTypes<M>({
-    ModelFn,
-    afterClear: () => {
-      pendingState.clearAllPending()
-    },
-  })
+  const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, removeFromStore, addToStore, clearAll } =
+    useAllStorageTypes<M>({
+      ModelFn,
+      afterClear: () => {
+        pendingState.clearAllPending()
+      },
+    })
 
   const isSsr = computed(() => {
     const ssr = unref(options.ssr)
@@ -189,7 +179,6 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
     removeFromStore,
     addToStore,
     clearAll,
-    hydrateAll,
 
     // pending (conditional based on if service was provided)
     ...pendingState,

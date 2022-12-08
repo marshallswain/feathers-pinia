@@ -1,5 +1,5 @@
 import { AnyData } from '../service-store'
-import type { ModelFnTypeExtended } from '../use-base-model/types'
+import type { ModelFnTypeExtended } from './types'
 import { StorageMapUtils } from '../use-service/use-service-storage'
 import { useAllStorageTypes } from '../use-service/use-all-storage-types'
 
@@ -8,12 +8,24 @@ import { useAllStorageTypes } from '../use-service/use-all-storage-types'
  * @param ModelFn
  * @returns ModelFn
  */
-export const useModelClones = <M extends AnyData, F extends ModelFnTypeExtended<M>>(ModelFn: F) => {
+export const useModelStorage = <M extends AnyData, F extends ModelFnTypeExtended<M>>(ModelFn: F) => {
   const _ModelFn: any = ModelFn
 
   // API to overwrite cloneStorage (for example, with the store clones)
   const setCloneStorage = (allStorage: ReturnType<typeof useAllStorageTypes>) => {
-    const { additionalFields, itemStorage, tempStorage, cloneStorage, clone, commit, reset, clearAll } = allStorage
+    const {
+      additionalFields,
+      itemStorage,
+      tempStorage,
+      cloneStorage,
+      clone,
+      commit,
+      reset,
+      addToStore,
+      removeFromStore,
+      clearAll,
+    } = allStorage
+
     const toMerge = {
       additionalFields,
       // items
@@ -34,6 +46,8 @@ export const useModelClones = <M extends AnyData, F extends ModelFnTypeExtended<
       commit,
       reset,
 
+      addToStore,
+      removeFromStore,
       clearAll,
     }
 

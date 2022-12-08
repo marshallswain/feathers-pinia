@@ -12,18 +12,16 @@ import { defineStore, createPinia } from 'pinia'
 import { feathersPiniaHooks } from '../../src/hooks'
 import { resetStores } from '../test-utils'
 
-const Task = useModelBase((data: Partial<Tasks & BaseModelData>) => {
+type Data = Partial<Tasks & BaseModelData>
+
+const Task = useModelBase<Data>((data) => {
   const asModel = useInstanceModel(data, { name: 'Task', idField: '_id' })
   const withDefaults = useInstanceDefaults({ test: true, foo: 'bar' }, asModel)
   const withFeathers = useInstanceFeathers(withDefaults, api.service('tasks'))
 
-  return withFeathers as typeof withFeathers
+  return withFeathers
 })
 export type TaskInstance = ReturnType<typeof Task>
-
-const task = Task({})
-task.__Model.clone
-// const task2 = task.__Model({}) as typeof task
 
 export const useTaskStore = defineStore('counter', () => {
   const service = useService<TaskInstance, TasksData, TasksQuery>({
@@ -36,6 +34,9 @@ export const useTaskStore = defineStore('counter', () => {
 })
 const pinia = createPinia()
 const taskStore = useTaskStore(pinia)
+
+const task = Task({})
+console.log(task)
 
 api.service('tasks').hooks({
   around: {

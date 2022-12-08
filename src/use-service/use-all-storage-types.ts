@@ -1,11 +1,12 @@
+import type { MakeCopyOptions, ModelFnType } from '../use-base-model'
+import type { MaybeArray } from '../utility-types'
+import type { AnyData, AnyDataOrArray } from './types'
 import { useServiceTemps } from './use-service-temps'
 import { useServiceClones } from './use-service-clones'
 import { useServiceStorage } from './use-service-storage'
-import { AnyData, AnyDataOrArray } from './types'
-import { del } from 'vue-demi'
-import type { ModelFnType } from '../use-base-model'
-import { MaybeArray } from '../utility-types'
 import { getArray } from '../utils'
+import fastCopy from 'fast-copy'
+import { del } from 'vue-demi'
 
 interface UseAllStorageOptions<M extends AnyData> {
   ModelFn: ModelFnType<M>
@@ -21,6 +22,20 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
 
   // Make sure the provided item is a model "instance" (in quotes because it's not a class)
   const assureInstance = (item: M) => (item.__modelName ? item : ModelFn ? ModelFn(item) : item)
+
+  /**
+   * Makes a copy of the Model instance with __isClone properly set
+   * Private
+   */
+  const makeCopy = (item: M, data: AnyData = {}, { isClone }: MakeCopyOptions) => {
+    const copied = item.__Model({
+      ...fastCopy(item),
+      ...data,
+      __isClone: isClone,
+      __tempId: item.__tempId,
+    })
+    return copied
+  }
 
   // item storage
   const itemStorage = useServiceStorage<M>({
@@ -43,6 +58,7 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
     itemStorage,
     tempStorage,
     onRead: assureInstance,
+    makeCopy,
     beforeWrite: (item) => {
       markAsClone(item)
       return assureInstance(item)
@@ -52,7 +68,7 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
   /**
    * Stores the provided item in the correct storage (itemStorage, tempStorage, or cloneStorage).
    * If an item has both an id and a tempId, it gets moved from tempStorage to itemStorage.
-   * @param item
+   * Private
    */
   const addToStorage = (item: M) => {
     if (item.__isClone) {
@@ -106,10 +122,6 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
     afterClear && afterClear()
   }
 
-  function hydrateAll() {
-    addToStore(itemStorage.list.value)
-  }
-
   return {
     additionalFields,
     itemStorage,
@@ -121,6 +133,5 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
     addToStore,
     removeFromStore,
     clearAll,
-    hydrateAll,
   }
 }

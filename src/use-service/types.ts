@@ -258,11 +258,6 @@ export type HandleEvents<M extends AnyData> =
     }
   | boolean
 
-export type onReadFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelProps<M, typeof item.__tempIdField>)
-export type beforeWriteFn<M extends AnyData> = (
-  item: M,
-) => M | (Partial<M> & BaseModelProps<M, typeof item.__tempIdField>)
-export type AssignFn<M extends AnyData> = (
-  dest: M,
-  src: M,
-) => M | (Partial<M> & BaseModelProps<typeof dest, typeof dest.__tempIdField>)
+export type onReadFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelProps<M>)
+export type beforeWriteFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelProps<M>)
+export type AssignFn<M extends AnyData> = (dest: M, src: M) => M | (Partial<M> & BaseModelProps<typeof dest>)

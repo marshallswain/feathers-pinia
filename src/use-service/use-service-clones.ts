@@ -1,5 +1,6 @@
-import { useServiceStorage, type StorageMapUtils } from './use-service-storage'
 import type { AnyData, beforeWriteFn, CloneOptions, onReadFn } from './types'
+import type { MakeCopyOptions } from '../use-base-model'
+import { useServiceStorage, type StorageMapUtils } from './use-service-storage'
 import fastCopy from 'fast-copy'
 import { del as vueDelete } from 'vue-demi'
 // import { copyAssociations } from '../utils'
@@ -9,32 +10,21 @@ export type UseServiceClonesOptions<M extends AnyData> = {
   tempStorage: StorageMapUtils<M>
   onRead?: onReadFn<M>
   beforeWrite?: beforeWriteFn<M>
+  makeCopy?: (item: M, data: AnyData, { isClone }: MakeCopyOptions) => M
 }
 
 export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOptions<M>) => {
   const { itemStorage, tempStorage, onRead, beforeWrite } = options
+  const defaultMakeCopy = (item: M, data: AnyData = {}, { isClone }: MakeCopyOptions) => {
+    return fastCopy(Object.assign({}, item, data, { __isClone: isClone }))
+  }
+  const makeCopy = options.makeCopy || defaultMakeCopy
+
   const cloneStorage = useServiceStorage({
     getId: (item) => itemStorage.getId(item as M) || tempStorage.getId(item),
     onRead,
     beforeWrite,
   })
-
-  /**
-   * Makes a copy with __isClone properly set
-   * Private
-   */
-  interface MakeCopyOptions {
-    isClone: boolean
-  }
-  const makeCopy = (item: M, data: AnyData = {}, { isClone }: MakeCopyOptions) => {
-    const copied = item.__Model({
-      ...fastCopy(item),
-      ...data,
-      __isClone: isClone,
-      __tempId: item.__tempId,
-    })
-    return copied
-  }
 
   /**
    * Makes sure the provided item is stored in itemStorage or tempStorage.

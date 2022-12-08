@@ -1,11 +1,22 @@
 import { useService } from '../src/use-service/use-service'
 import { api } from './feathers'
 
+import type { Tasks } from './feathers-schema-tasks'
+import { useInstanceModel, type BaseModelData, useModelBase, useInstanceDefaults } from '../src/use-base-model/index'
+
+const Task = useModelBase<Partial<Tasks & BaseModelData>>((data) => {
+  const asModel = useInstanceModel(data, { name: 'Task', idField: '_id' })
+  const withDefaults = useInstanceDefaults({ isComplete: false }, asModel)
+
+  return withDefaults
+})
+
 describe('use service', () => {
   test('setup', () => {
     const service = useService({
       service: api.service('messages'),
       idField: 'id',
+      ModelFn: Task,
     })
 
     expect(Object.keys(service)).toEqual([
@@ -23,7 +34,6 @@ describe('use service', () => {
       'itemIds',
 
       // temps
-      'tempIdField',
       'tempsById',
       'temps',
       'tempIds',
@@ -38,6 +48,8 @@ describe('use service', () => {
 
       // pagination
       'pagination',
+      'updatePaginationForQuery',
+      'unflagSsr',
 
       // local queries
       'findInStore',
@@ -64,6 +76,10 @@ describe('use service', () => {
       'setPendingById',
       'unsetPendingById',
       'clearAllPending',
+
+      'eventLocks',
+      'toggleEventLock',
+      'clearEventLock',
 
       // service methods
       'find',

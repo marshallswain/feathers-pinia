@@ -58,7 +58,7 @@ describe('use-service-clones', () => {
     const item = { id: 1, name: '1' }
     const cloned = clone(item)
     expect(cloned.name).toBe('1')
-    expect(itemStorage.getItem(1)).toBeUndefined()
+    expect(itemStorage.getItem(1)).toEqual(item)
   })
 
   test('commit when missing clone: `item` stored in itemStorage', () => {
@@ -71,6 +71,6 @@ describe('use-service-clones', () => {
     const item = { id: 1, name: '1' }
     const cloned = reset(item)
     expect(cloned.name).toBe('1')
-    expect(itemStorage.getItem(1)).toBeUndefined()
+    expect(itemStorage.getItem(1)).toEqual(item)
   })
 })

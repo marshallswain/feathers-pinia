@@ -1,32 +1,20 @@
-import type { AnyData } from '../../src/use-service/types'
 import { useServiceLocal, useServiceStorage, useServiceTemps } from '../../src'
 import { del, ref } from 'vue-demi'
 
 const itemStorage = useServiceStorage({ getId: (item) => item.id })
 // temp item storage
-const { tempStorage, moveTempToItems } = useServiceTemps({
+const { tempStorage } = useServiceTemps({
   getId: (item) => item.__tempId,
   removeId: (item) => del(item, '__tempId'),
   itemStorage,
 })
 
-let afterRemoveCalled: any
-let afterClearCalled = false
-
-const { findInStore, countInStore, getFromStore, removeFromStore, addToStore, clearAll } = useServiceLocal({
+const { findInStore, countInStore, getFromStore } = useServiceLocal({
   idField: ref('id'),
-  tempIdField: ref('__tempId'),
   itemStorage,
   tempStorage,
   whitelist: ref([]),
   paramsForServer: ref([]),
-  afterRemove: (item: AnyData) => {
-    afterRemoveCalled = item
-  },
-  afterClear: () => {
-    afterClearCalled = true
-  },
-  moveTempToItems,
 })
 
 describe('use-service-local', () => {
@@ -78,24 +66,5 @@ describe('use-service-local', () => {
   test('getFromStore invalid id', () => {
     const item = getFromStore.value('one')
     expect(item).toBe(null)
-  })
-
-  test('removeFromStore', () => {
-    removeFromStore({ id: 1 })
-    const result = getFromStore.value(1)
-    expect(result).toBe(null)
-    expect(afterRemoveCalled).toBeTruthy()
-  })
-
-  test('addToStore', () => {
-    const result = addToStore({ id: 6, name: 'Six' })
-    expect(result).toEqual({ id: 6, name: 'Six' })
-  })
-
-  test('clearAll', () => {
-    clearAll()
-    const result = findInStore.value({ query: {} })
-    expect(result.data.length).toBe(0)
-    expect(afterClearCalled).toBeTruthy()
   })
 })

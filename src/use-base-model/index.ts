@@ -2,7 +2,7 @@
 export { useModelBase } from './use-model_base'
 export { useModelStore } from './use-model_store'
 export { useModelEvents } from './use-model_events'
-export { useModelClones } from './use-model_clones'
+export { useModelStorage } from './use-model_storage'
 
 // for model instances
 export { useInstanceModel } from './use-model-instance'

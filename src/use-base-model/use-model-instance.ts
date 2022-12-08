@@ -16,30 +16,27 @@ export const useInstanceModel = <M extends AnyData>(data: M, options: UseBaseMod
   // The `__Model` property was added by the `useModelBase` wrapper in `use-model-base.ts`.
   const _data = data as M & WithModel<M>
 
-  const cloneMethods = {
-    clone(this: M, data: Partial<M> = {}, options: CloneOptions = {}) {
-      const cloned = this.__Model.clone(this, data, options)
-      return cloned
-    },
-    commit(this: M, data: Partial<M> = {}) {
-      const committed = this.__Model.commit(this, data, options)
-      return committed
-    },
-    reset(this: M, data: Partial<M> = {}) {
-      const resetted = this.__Model.reset(this, data, options)
-      return resetted
-    },
-  }
-
   // setup baseModel properties
   const asBaseModel = defineProperties(_data, {
     __modelName: name,
     __isClone,
     __idField: idField,
     __tempId: data[idField] == null && data.__tempId == null ? new ObjectID().toString() : data.__tempId || undefined,
-    clone: cloneMethods.clone,
-    commit: cloneMethods.commit,
-    reset: cloneMethods.reset,
+    clone(this: M, data: Partial<M> = {}, options: CloneOptions = {}) {
+      return this.__Model.clone(this, data, options)
+    },
+    commit(this: M, data: Partial<M> = {}) {
+      return this.__Model.commit(this, data, options)
+    },
+    reset(this: M, data: Partial<M> = {}) {
+      return this.__Model.reset(this, data, options)
+    },
+    addToStore(this: M) {
+      return this.__Model.addToStore(this)
+    },
+    removeFromStore(this: M) {
+      return this.__Model.removeFromStore(this)
+    },
   }) as M & BaseModelProps<M>
 
   // make the data reactive, but ignore the proxy "Reactive" wrapper type to keep internal types simpler.

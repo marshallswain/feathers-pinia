@@ -1,4 +1,5 @@
 import { Id } from '@feathersjs/feathers/lib'
+import { ComputedRef } from 'vue'
 import type { AnyData, CloneOptions } from '../use-service'
 
 export type ById<M> = Record<string | number | symbol, M>
@@ -27,6 +28,8 @@ export type BaseModelProps<M extends AnyData = AnyData> = {
   clone<N extends M>(this: N, data?: Partial<M>, options?: CloneOptions): N
   commit<N extends M>(this: N, data?: Partial<M>, options?: CloneOptions): N
   reset<N extends M>(this: N, data?: Partial<M>, options?: CloneOptions): N
+  addToStore<N extends M>(this: N): N
+  removeFromStore<N extends M>(this: N): N
   /**
    * the name of the Model function
    */
@@ -63,16 +66,22 @@ export type ModelFnTypeExtended<M extends AnyData, MExtended extends M & BaseMod
    */
   additionalFields: string[]
   itemsById: ById<MExtended>
-  items: MExtended[]
-  ids: Id[]
+  items: ComputedRef<MExtended[]>
+  itemIds: ComputedRef<Id[]>
   tempsById: ById<MExtended>
-  temps: MExtended[]
-  tempIds: Id[]
+  temps: ComputedRef<MExtended[]>
+  tempIds: ComputedRef<Id[]>
   clonesById: ById<MExtended>
-  clones: MExtended[]
-  cloneIds: Id[]
+  clones: ComputedRef<MExtended[]>
+  cloneIds: ComputedRef<Id[]>
   clone(item: MExtended, data?: Partial<M>, options?: CloneOptions): MExtended
   commit(item: MExtended, data?: Partial<M>): MExtended
   reset(item: MExtended, data?: Partial<M>, options?: CloneOptions): MExtended
+  addToStore(item: MExtended): MExtended
+  removeFromStore(data: MExtended | MExtended[]): typeof data
   clearAll(): void
+}
+
+export interface MakeCopyOptions {
+  isClone: boolean
 }

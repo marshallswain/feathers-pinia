@@ -1,7 +1,7 @@
 import type { BaseModelData, ModelFnType, ModelFnTypeExtended } from '../use-base-model/types'
 import type { AnyData } from '../use-service'
 
-import { useModelClones } from './use-model_clones'
+import { useModelStorage } from './use-model_storage'
 import { useModelEvents } from './use-model_events'
 
 /**
@@ -26,7 +26,7 @@ export const useModelBase = <
     return ModelFn(data)
   }) as any as ModelFnTypeExtended<N>
 
-  const CloneModel = useModelClones<N, ModelFnTypeExtended<N>>(fn)
+  const CloneModel = useModelStorage<N, ModelFnTypeExtended<N>>(fn)
   const EventModel = useModelEvents(CloneModel)
   return EventModel as any as ModelFnTypeExtended<M>
 }

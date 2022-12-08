@@ -7,7 +7,11 @@ const Task = useModelBase((data: Partial<Tasks & BaseModelData>) => {
   return asModel
 })
 
-describe('useInstanceModel', () => {
+describe('useInstanceModel props', () => {
+  beforeEach(() => {
+    Task.clearAll()
+  })
+
   test('__Model prop', async () => {
     const task = Task({ description: 'test' })
     expect(typeof task.__Model).toBe('function')
@@ -38,9 +42,9 @@ describe('useInstanceModel', () => {
     expect(task.__tempId).toBe(undefined)
   })
 
-  test('__tempIdField prop', async () => {
-    const task = Task({ _id: '1', description: 'test' })
-    expect(task.__tempIdField).toBe('__tempId')
+  test('__tempId prop without id', async () => {
+    const task = Task({ description: 'test' })
+    expect(task.__tempId).toBeDefined()
   })
 
   test('clone prop', async () => {
@@ -56,5 +60,15 @@ describe('useInstanceModel', () => {
   test('reset prop', async () => {
     const task = Task({ _id: '1', description: 'test' })
     expect(typeof task.reset).toBe('function')
+  })
+
+  test('addToStore props', async () => {
+    const task = Task({ _id: '1', description: 'test' })
+    expect(typeof task.addToStore).toBe('function')
+  })
+
+  test('removeFromStore props', async () => {
+    const task = Task({ _id: '1', description: 'test' })
+    expect(typeof task.removeFromStore).toBe('function')
   })
 })
