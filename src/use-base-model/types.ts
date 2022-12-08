@@ -7,7 +7,17 @@ export type BaseModelData = {
   __isClone?: boolean
 }
 
+export type WithModel<M extends AnyData> = {
+  /**
+   * The model function.
+   */
+  readonly __Model: ModelFnTypeExtended<M>
+}
+
 export type BaseModelProps<M extends AnyData = AnyData, TempId extends string = '__tempId'> = {
+  clone(this: M): M
+  commit(this: M): M
+  reset(this: M): M
   /**
    * the name of the Model function
    */
@@ -24,19 +34,15 @@ export type BaseModelProps<M extends AnyData = AnyData, TempId extends string = 
    * the attribute on the data holding the tempId property
    */
   readonly __tempIdField: string
-  /**
-   * The model function. We have to
-   */
-  readonly __Model: ModelFnTypeExtended<M>
 } & {
   [key in TempId]?: string
-}
+} & WithModel<M>
 
-export type ModelFnType<M extends AnyData> = {
-  (data: Partial<M & BaseModelData>): M & BaseModelProps<M>
+export type ModelFnType<M extends AnyData, TempId extends string = '__tempId'> = {
+  (data: Partial<M & BaseModelData>): M & BaseModelProps<M, TempId>
 }
-export type ModelFnTypeExtended<M extends AnyData> = {
-  (data: Partial<M & BaseModelData>): M & BaseModelProps<M>
+export type ModelFnTypeExtended<M extends AnyData, TempId extends string = '__tempId'> = {
+  (data: Partial<M & BaseModelData>): M & BaseModelProps<M, TempId>
   clone: (data: M) => M
 }
 
