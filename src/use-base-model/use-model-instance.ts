@@ -17,35 +17,9 @@ export const useInstanceModel = <M extends AnyData, TempId extends string = '__t
   const { name, idField, tempIdField = '__tempId' } = options
   const __isClone = data.__isClone || false
 
+  // The `__Model` property was added by the `useModelBase` wrapper in `use-model-base.ts`.
   const _data = data as M & WithModel<M>
 
-  const asBaseModel = defineBaseModelProps({
-    data: _data,
-    name,
-    isClone: __isClone,
-    idField,
-    tempIdField,
-  })
-
-  const newData = reactive(asBaseModel) as typeof asBaseModel
-  return newData
-}
-
-interface DefineBaseModelPropsOptions<M extends AnyData> {
-  data: M & WithModel<M>
-  name: string
-  isClone: boolean
-  idField: string
-  tempIdField: string
-}
-
-export const defineBaseModelProps = <M extends AnyData, TempId extends string>({
-  data,
-  name,
-  isClone,
-  idField,
-  tempIdField,
-}: DefineBaseModelPropsOptions<M>) => {
   const cloneMethods = {
     clone(this: M) {
       return this
@@ -58,18 +32,21 @@ export const defineBaseModelProps = <M extends AnyData, TempId extends string>({
     },
   }
 
-  defineProperties(data, {
+  // setup baseModel properties
+  const asBaseModel = defineProperties(_data, {
     __modelName: name,
-    __isClone: isClone,
+    __isClone,
     __idField: idField,
     __tempIdField: tempIdField,
     [tempIdField]: data[idField] == null ? new ObjectID().toString() : undefined,
     clone: cloneMethods.clone,
     commit: cloneMethods.commit,
     reset: cloneMethods.reset,
-  })
+  }) as M & BaseModelProps<M, TempId>
 
-  return data as M & BaseModelProps<M, TempId>
+  // make the data reactive, but ignore the proxy "Reactive" wrapper type to keep internal types simpler.
+  const newData = reactive(asBaseModel) as typeof asBaseModel
+  return newData
 }
 
 /**
