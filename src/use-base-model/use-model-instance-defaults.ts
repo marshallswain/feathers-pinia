@@ -1,11 +1,12 @@
 import fastCopy from 'fast-copy'
 import { AnyData } from '../use-service'
 import { _ } from '@feathersjs/commons'
-import { BaseModelData } from './types'
+import { BaseModelData, BaseModelInstanceProps } from './types'
 
 export const useInstanceDefaults = <
   M extends AnyData,
-  N extends Partial<M & BaseModelData>,
+  N extends Partial<M & BaseModelData> & BaseModelInstanceProps<M> = Partial<M & BaseModelData> &
+    BaseModelInstanceProps<M>,
   D extends AnyData = AnyData,
 >(
   defaults: D,

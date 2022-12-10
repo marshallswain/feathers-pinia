@@ -27,9 +27,8 @@ import EventEmitter from 'events'
 import { useServiceEventLocks } from './use-service-event-locks'
 import { useAllStorageTypes } from './use-all-storage-types'
 
-export type UseFeathersServiceOptions<M extends AnyData> = {
+export type UseServiceOptions<M extends AnyData> = {
   service: Service
-  ModelFn: ModelFnTypeExtended<M>
   idField: string
   whitelist?: string[]
   paramsForServer?: string[]
@@ -39,13 +38,16 @@ export type UseFeathersServiceOptions<M extends AnyData> = {
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
 }
+export interface UseServiceOptionsExtended<M extends AnyData> extends UseServiceOptions<M> {
+  ModelFn: ModelFnTypeExtended<M>
+}
 
 const makeDefaultOptions = () => ({
   skipRequestIfExists: false,
 })
 
 export const useService = <M extends AnyData, D extends AnyData = AnyData, Q extends AnyData = AnyData>(
-  _options: UseFeathersServiceOptions<M>,
+  _options: UseServiceOptionsExtended<M>,
 ) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const ModelFn = _options.ModelFn as ModelFnTypeExtended<M> & EventEmitter

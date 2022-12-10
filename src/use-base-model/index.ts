@@ -1,11 +1,11 @@
 // for Model functions
-export { useModelBase } from './use-model_base'
-export { useModelStore } from './use-model_store'
-export { useModelEvents } from './use-model_events'
-export { useModelStorage } from './use-model_storage'
+export { useBaseModel } from './use-model_base'
+export { useFeathersModel } from './use-model_feathers'
+export { useModelEvents } from './wrap-model_events'
+export { wrapModelFeathers } from './wrap-model_feathers'
 
 // for model instances
-export { useInstanceModel } from './use-model-instance'
+export { useModelInstance } from './use-model-instance'
 export { useInstanceDefaults } from './use-model-instance-defaults'
 export { useInstanceFeathers } from './use-model-instance-feathers'
 

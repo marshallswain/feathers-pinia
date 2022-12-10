@@ -1,5 +1,6 @@
 import type { Params, Service } from '@feathersjs/feathers'
 import { AnyData } from '../use-service'
+import { defineProperties } from './utils'
 
 export const useInstanceFeathers = <M extends AnyData, S extends Service = Service, P extends Params = Params>(
   data: M,
@@ -25,27 +26,8 @@ export const useInstanceFeathers = <M extends AnyData, S extends Service = Servi
       return service.remove(id, params).then(this.merge)
     },
   }
-  Object.defineProperties(data, {
-    save: {
-      enumerable: false,
-      configurable: true,
-      value: methods.save,
-    },
-    create: {
-      enumerable: false,
-      configurable: true,
-      value: methods.create,
-    },
-    patch: {
-      enumerable: false,
-      configurable: true,
-      value: methods.patch,
-    },
-    remove: {
-      enumerable: false,
-      configurable: true,
-      value: methods.remove,
-    },
-  })
+
+  defineProperties(data, methods)
+
   return data as M & typeof methods
 }

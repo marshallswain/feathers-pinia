@@ -24,7 +24,7 @@ export type WithModel<M extends AnyData> = {
   readonly __Model: ModelFnTypeExtended<M>
 }
 
-export type BaseModelProps<M extends AnyData = AnyData> = {
+export type BaseModelInstanceProps<M extends AnyData = AnyData> = {
   clone<N extends M>(this: N, data?: Partial<M>, options?: CloneOptions): N
   commit<N extends M>(this: N, data?: Partial<M>, options?: CloneOptions): N
   reset<N extends M>(this: N, data?: Partial<M>, options?: CloneOptions): N
@@ -48,22 +48,21 @@ export type BaseModelProps<M extends AnyData = AnyData> = {
   readonly __tempId: string
 } & WithModel<M>
 
+export type BaseModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
+export type BaseModelInstanceFull<M extends AnyData> = BaseModelInstanceData<M> & BaseModelInstanceProps<M>
+
 /**
  * The basic Model function definition which gets passed to `useModelBase`. It gets extended by `useModelBase` and
  * becomes a type of `ModelFnTypeExtended`.
  */
 export type ModelFnType<M extends AnyData> = {
-  (data: Partial<M & BaseModelData>): M & BaseModelProps<M>
+  (data: Partial<M & BaseModelData>): M & BaseModelInstanceProps<M>
 }
 
-/**
- * The extended Model function definition, which includes storage-related properties.
- */
-export type ModelFnTypeExtended<M extends AnyData, MExtended extends M & BaseModelProps<M> = M & BaseModelProps<M>> = {
-  (data: Partial<M & BaseModelData>): MExtended
-  /**
-   * non-enumerable fields on each instance that need to be handled when merging two instances
-   */
+export interface BaseModelMethods<
+  M extends AnyData,
+  MExtended extends M & BaseModelInstanceProps<M> = M & BaseModelInstanceProps<M>,
+> {
   additionalFields: string[]
   itemsById: ById<MExtended>
   items: ComputedRef<MExtended[]>
@@ -80,6 +79,39 @@ export type ModelFnTypeExtended<M extends AnyData, MExtended extends M & BaseMod
   addToStore(item: MExtended): MExtended
   removeFromStore(data: MExtended | MExtended[]): typeof data
   clearAll(): void
+}
+
+/**
+ * The extended Model function definition, which includes storage-related properties.
+ */
+export type OuterModelFnExtended<M extends AnyData> = {
+  (data: BaseModelInstanceData<M>): BaseModelInstanceFull<M>
+} & BaseModelMethods<M>
+
+/**
+ * The extended Model function definition, which includes storage-related properties.
+ */
+export type ModelFnTypeExtended<M extends AnyData> = {
+  (data: BaseModelInstanceFull<M>): BaseModelInstanceFull<M>
+  /**
+   * non-enumerable fields on each instance that need to be handled when merging two instances
+   */
+  // additionalFields: string[]
+  // itemsById: ById<NExtended>
+  // items: ComputedRef<NExtended[]>
+  // itemIds: ComputedRef<Id[]>
+  // tempsById: ById<NExtended>
+  // temps: ComputedRef<NExtended[]>
+  // tempIds: ComputedRef<Id[]>
+  // clonesById: ById<NExtended>
+  // clones: ComputedRef<NExtended[]>
+  // cloneIds: ComputedRef<Id[]>
+  // clone(item: NExtended, data?: Partial<M>, options?: CloneOptions): NExtended
+  // commit(item: NExtended, data?: Partial<M>): NExtended
+  // reset(item: NExtended, data?: Partial<M>, options?: CloneOptions): NExtended
+  // addToStore(item: NExtended): NExtended
+  // removeFromStore(data: NExtended | NExtended[]): typeof data
+  // clearAll(): void
 }
 
 export interface MakeCopyOptions {

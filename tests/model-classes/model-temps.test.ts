@@ -28,7 +28,7 @@ const storesToTest = [
 
 storesToTest.forEach(({ servicePath, store, expectedTempIdField }, i) => {
   const reset = () => resetStores(api.service(servicePath), store)
-  describe(`Temporary Records (Local-Only) - ${i === 0 ? 'default' : 'custom'} tempIdField`, () => {
+  describe.skip(`Temporary Records (Local-Only) - ${i === 0 ? 'default' : 'custom'} tempIdField`, () => {
     beforeEach(() => reset())
     afterEach(() => reset())
 

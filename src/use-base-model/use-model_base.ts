@@ -1,32 +1,37 @@
-import type { BaseModelData, ModelFnType, ModelFnTypeExtended } from '../use-base-model/types'
+import type { BaseModelData, BaseModelInstanceProps, ModelFnTypeExtended } from '../use-base-model/types'
 import type { AnyData } from '../use-service'
+// import { useModelEvents } from './wrap-model_events'
+import { wrapModelBase } from './wrap-model_base'
+import { useModelInstance } from './use-model-instance'
 
-import { useModelStorage } from './use-model_storage'
-import { useModelEvents } from './use-model_events'
+export interface UseBaseModelOptions {
+  name: string
+  idField: string
+}
 
 /**
  * Enables Model cloning and events on the provided ModelFn
  * @param ModelFn
  * @returns wrapped ModelFn
  */
-export const useModelBase = <
-  M extends AnyData,
-  N extends Partial<M & BaseModelData> = Partial<M & BaseModelData>,
-  F extends ModelFnType<M> = ModelFnType<M>,
->(
+export const useBaseModel = <M extends AnyData, F extends ModelFnTypeExtended<M> = ModelFnTypeExtended<M>>(
+  options: UseBaseModelOptions,
   ModelFn: F,
 ) => {
   // adds `item.__Model` so it's available in the ModelFn.
-  const fn = ((data: N) => {
+  const fn = (data: Partial<M & BaseModelData>) => {
     Object.defineProperty(data, '__Model', {
       configurable: true,
       enumerable: false,
       value: fn,
     })
-    return ModelFn(data)
-  }) as any as ModelFnTypeExtended<N>
+    const asModel = useModelInstance<M>(data, { name: 'Task', idField: '_id' })
+    return ModelFn(asModel)
+  }
 
-  const CloneModel = useModelStorage<N, ModelFnTypeExtended<N>>(fn)
-  const EventModel = useModelEvents(CloneModel)
-  return EventModel as any as ModelFnTypeExtended<M>
+  const WrappedBaseModel = wrapModelBase<M>(fn)
+  // const WrappedEventModel = useModelEvents(WrappedBaseModel)
+  return WrappedBaseModel as (
+    data: Partial<M & BaseModelData>,
+  ) => Partial<M & BaseModelData> & BaseModelInstanceProps<M>
 }

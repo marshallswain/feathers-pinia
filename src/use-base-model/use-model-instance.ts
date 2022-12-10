@@ -1,15 +1,18 @@
-import type { BaseModelProps, WithModel } from './types'
+import type { BaseModelData, BaseModelInstanceProps, WithModel } from './types'
+import type { AnyData, CloneOptions } from '../use-service'
 import { reactive } from 'vue'
-import { AnyData, CloneOptions } from '../use-service'
 import ObjectID from 'isomorphic-mongo-objectid'
+import { defineProperties } from './utils'
 
-interface UseBaseModelOptions {
+interface UseModelInstanceOptions {
   name: string
   idField: string
-  ModelFn?: any
 }
 
-export const useInstanceModel = <M extends AnyData>(data: M, options: UseBaseModelOptions) => {
+export const useModelInstance = <M extends AnyData>(
+  data: Partial<M & BaseModelData>,
+  options: UseModelInstanceOptions,
+) => {
   const { name, idField } = options
   const __isClone = data.__isClone || false
 
@@ -37,23 +40,9 @@ export const useInstanceModel = <M extends AnyData>(data: M, options: UseBaseMod
     removeFromStore(this: M) {
       return this.__Model.removeFromStore(this)
     },
-  }) as M & BaseModelProps<M>
+  }) as M & BaseModelData & BaseModelInstanceProps<M>
 
   // make the data reactive, but ignore the proxy "Reactive" wrapper type to keep internal types simpler.
   const newData = reactive(asBaseModel) as typeof asBaseModel
   return newData
-}
-
-/**
- * Defines all provided properties as non-enumerable and configurable
- */
-const defineProperties = <M extends AnyData, D extends AnyData>(data: M, properties: D) => {
-  Object.keys(properties).forEach((key) => {
-    Object.defineProperty(data, key, {
-      enumerable: false,
-      configurable: true,
-      value: properties[key],
-    })
-  })
-  return data
 }

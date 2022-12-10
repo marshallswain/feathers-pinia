@@ -1,22 +1,13 @@
 import type { Tasks, TasksData, TasksQuery } from '../feathers-schema-tasks'
 import { useService } from '../../src'
-import {
-  useInstanceDefaults,
-  useInstanceModel,
-  type BaseModelData,
-  useInstanceFeathers,
-  useModelBase,
-} from '../../src/use-base-model/index'
+import { useInstanceDefaults, useInstanceFeathers, useBaseModel } from '../../src/use-base-model/index'
 import { api } from '../feathers'
 import { defineStore, createPinia } from 'pinia'
 import { feathersPiniaHooks } from '../../src/hooks'
 import { resetStores } from '../test-utils'
 
-type Data = Partial<Tasks & BaseModelData>
-
-const Task = useModelBase<Data>((data) => {
-  const asModel = useInstanceModel(data, { name: 'Task', idField: '_id' })
-  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar' }, asModel)
+const Task = useBaseModel<Tasks>({ name: 'Task', idField: '_id' }, (data) => {
+  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar' }, data)
   const withFeathers = useInstanceFeathers(withDefaults, api.service('tasks'))
 
   return withFeathers

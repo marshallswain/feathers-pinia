@@ -2,7 +2,7 @@ import type { Params, Paginated, QueryInfo } from '../types'
 import type { Ref, ComputedRef } from 'vue-demi'
 import type { Id, Query } from '@feathersjs/feathers'
 import type { MaybeArray, MaybeRef } from '../utility-types'
-import { BaseModelProps } from '../use-base-model'
+import { BaseModelInstanceProps } from '../use-base-model'
 
 export interface FindResponseAlwaysData<M extends AnyData> {
   data: M[]
@@ -258,6 +258,6 @@ export type HandleEvents<M extends AnyData> =
     }
   | boolean
 
-export type onReadFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelProps<M>)
-export type beforeWriteFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelProps<M>)
-export type AssignFn<M extends AnyData> = (dest: M, src: M) => M | (Partial<M> & BaseModelProps<typeof dest>)
+export type onReadFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelInstanceProps<M>)
+export type beforeWriteFn<M extends AnyData> = (item: M) => M | (Partial<M> & BaseModelInstanceProps<M>)
+export type AssignFn<M extends AnyData> = (dest: M, src: M) => M | (Partial<M> & BaseModelInstanceProps<typeof dest>)

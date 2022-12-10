@@ -4,7 +4,7 @@ const storage = useServiceStorage({
   getId: (item) => item.id,
 })
 
-describe('user-service-storage', () => {
+describe('use-service-storage', () => {
   beforeEach(() => {
     storage.clear()
   })
