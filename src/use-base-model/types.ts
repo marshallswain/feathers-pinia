@@ -2,6 +2,15 @@ import { Id } from '@feathersjs/feathers/lib'
 import { ComputedRef } from 'vue'
 import type { AnyData, CloneOptions } from '../use-service'
 
+export interface UseBaseModelOptions {
+  name: string
+  idField: string
+}
+
+/**
+ * Similar to ReturnType<Function>, but works better for the purpose of inferring and extending Model functions.
+ */
+export type InferReturn<T> = T extends (...t: [...infer Arg]) => infer Res ? Res : never
 export type ById<M> = Record<string | number | symbol, M>
 
 export type BaseModelData = {

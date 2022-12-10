@@ -1,16 +1,20 @@
 // import { useService } from '../use-service'
 import type { AnyData } from '../service-store'
-import type { ModelFnTypeExtended } from './types'
+import type { InferReturn, ModelInstanceData, UseBaseModelOptions } from './types'
 
 /**
  * Adds the useService utilities to the ModelFn
  * @param ModelFn
  * @returns ModelFn
  */
-export const wrapModelBase = <M extends AnyData, F extends ModelFnTypeExtended<M> = ModelFnTypeExtended<M>>(
-  ModelFn: F,
-) => {
-  const _ModelFn = ModelFn as F & { setStore: (store: any) => void; store: any }
+export const wrapModelBase = <M extends AnyData, Func extends (data: ModelInstanceData<M>) => any>(
+  options: UseBaseModelOptions,
+  ModelFn: Func,
+): {
+  (data: ModelInstanceData<M>): InferReturn<Func>
+  // test: boolean
+} => {
+  const _ModelFn = ModelFn as Func & { setStore: (store: any) => void; store: any }
 
   // Add a `setStore` property to the ModelFn
   const setStore = (store: any) => {
@@ -65,7 +69,7 @@ export const wrapModelBase = <M extends AnyData, F extends ModelFnTypeExtended<M
     Object.defineProperty(_ModelFn, key, { get: value })
   })
 
-  // create getter fields for other store fields
+  // create getters for other store properties
   const fieldNames = ['additionalFields', 'clone', 'commit', 'reset', 'addToStore', 'clearAll']
   fieldNames.forEach((field) => {
     Object.defineProperty(_ModelFn, field, {
@@ -76,6 +80,9 @@ export const wrapModelBase = <M extends AnyData, F extends ModelFnTypeExtended<M
     })
   })
 
-  return ModelFn as F
-  // & { setStore: typeof setStore; store: ReturnType<typeof useService> }
+  return ModelFn as Func & {
+    setStore: typeof setStore
+    store: any
+    // ReturnType<typeof useService>
+  }
 }

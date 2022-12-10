@@ -1,5 +1,5 @@
 import type { MaybeRef } from '../utility-types'
-import type { ModelFnType } from '../use-base-model'
+import type { ModelInstance } from '../use-base-model'
 import type { Id } from '@feathersjs/feathers'
 import type {
   UseFindWatchedOptions,
@@ -23,7 +23,7 @@ import { useServiceEvents } from './use-service-events'
 import { useServicePending } from './use-service-pending'
 import { useServicePagination } from './use-service-pagination'
 import { useServiceApiFeathers } from './use-service-api-feathers'
-import EventEmitter from 'events'
+// import EventEmitter from 'events'
 import { useServiceEventLocks } from './use-service-event-locks'
 import { useAllStorageTypes } from './use-all-storage-types'
 
@@ -38,19 +38,25 @@ export type UseServiceOptions<M extends AnyData> = {
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
 }
-export interface UseServiceOptionsExtended<M extends AnyData> extends UseServiceOptions<M> {
-  ModelFn: ModelFnType<M>
+export interface UseServiceOptionsExtended<M extends AnyData, Func extends (data: ModelInstance<M>) => any>
+  extends UseServiceOptions<M> {
+  ModelFn: Func
 }
 
 const makeDefaultOptions = () => ({
   skipRequestIfExists: false,
 })
 
-export const useService = <M extends AnyData, D extends AnyData = AnyData, Q extends AnyData = AnyData>(
-  _options: UseServiceOptionsExtended<M>,
+export const useService = <
+  M extends AnyData,
+  D extends AnyData,
+  Q extends AnyData,
+  Func extends (data: ModelInstance<M>) => any,
+>(
+  _options: UseServiceOptionsExtended<M, Func>,
 ) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const ModelFn = _options.ModelFn as ModelFnType<M> & EventEmitter
+  const ModelFn = _options.ModelFn
 
   const service = computed(() => options.service)
   const whitelist = ref(options.whitelist ?? [])
@@ -63,7 +69,7 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
 
   // storage
   const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, removeFromStore, addToStore, clearAll } =
-    useAllStorageTypes<M>({
+    useAllStorageTypes<M, Func>({
       ModelFn,
       afterClear: () => {
         pendingState.clearAllPending()

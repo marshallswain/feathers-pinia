@@ -1,13 +1,13 @@
-import type { HandledEvents, HandleEvents } from './types'
-import type { ModelFnType } from '../use-base-model'
+import type { AnyData, HandledEvents, HandleEvents } from './types'
+import type { ModelInstance } from '../use-base-model'
 import { getId, hasOwn } from '../utils'
 import { del, ref, set } from 'vue-demi'
 import _debounce from 'just-debounce'
 import EventEmitter from 'events'
 
-type UseServiceStoreEventsOptions<M extends Record<string, any>> = {
+type UseServiceStoreEventsOptions<M extends AnyData, Func extends (data: ModelInstance<M>) => any> = {
   service: any
-  ModelFn?: ModelFnType<M> & EventEmitter
+  ModelFn?: Func
   idField: string
   debounceEventsTime?: number
   onAddOrUpdate: (item: any) => void
@@ -18,10 +18,14 @@ type UseServiceStoreEventsOptions<M extends Record<string, any>> = {
   eventLocks: any
 }
 
-export const useServiceEvents = <C extends Record<string, any>>(options: UseServiceStoreEventsOptions<C>) => {
+export const useServiceEvents = <C extends AnyData, Func extends (data: ModelInstance<C>) => any>(
+  options: UseServiceStoreEventsOptions<C, Func>,
+) => {
   if (!options.service || options.handleEvents === false) {
     return
   }
+  const ModelFn = options.ModelFn as Func & EventEmitter
+  const service = options.service
 
   const addOrUpdateById = ref({})
   const removeItemsById = ref({})
@@ -109,8 +113,6 @@ export const useServiceEvents = <C extends Record<string, any>>(options: UseServ
       eventName === 'removed' ? enqueueRemoval(item) : enqueueAddOrUpdate(item)
     }
   }
-
-  const { ModelFn, service } = options
 
   // Listen to socket events when available.
   service.on('created', (item: any) => {

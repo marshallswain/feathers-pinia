@@ -1,4 +1,4 @@
-import type { MakeCopyOptions, ModelFnType } from '../use-base-model'
+import type { MakeCopyOptions, ModelInstance } from '../use-base-model'
 import type { MaybeArray } from '../utility-types'
 import type { AnyData, AnyDataOrArray } from './types'
 import { useServiceTemps } from './use-service-temps'
@@ -8,20 +8,23 @@ import { getArray } from '../utils'
 import fastCopy from 'fast-copy'
 import { del } from 'vue-demi'
 
-interface UseAllStorageOptions<M extends AnyData> {
-  ModelFn: ModelFnType<M>
+interface UseAllStorageOptions<M extends AnyData, Func extends (data: ModelInstance<M>) => any> {
+  ModelFn: Func
   /**
    * A callback after clearing the store. Allows loose coupling of other functionality, like clones.
    */
   afterClear?: () => void
 }
 
-export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOptions<M>) => {
+export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelInstance<M>) => any>(
+  options: UseAllStorageOptions<M, Func>,
+) => {
   const { ModelFn, afterClear } = options
   const additionalFields: string[] = []
 
   // Make sure the provided item is a model "instance" (in quotes because it's not a class)
-  const assureInstance = (item: M) => (item.__modelName ? item : ModelFn ? ModelFn(item) : item)
+  const assureInstance = (item: AnyData) =>
+    item.__modelName ? item : ModelFn ? ModelFn(item as ModelInstance<M>) : item
 
   /**
    * Makes a copy of the Model instance with __isClone properly set

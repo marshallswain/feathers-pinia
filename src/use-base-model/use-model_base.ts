@@ -1,45 +1,45 @@
-import type { BaseModelData, BaseModelInstanceProps, ModelFnTypeExtended } from '../use-base-model/types'
+import type { InferReturn, ModelInstance, ModelInstanceData, UseBaseModelOptions } from '../use-base-model/types'
 import type { AnyData } from '../use-service'
 // import { useModelEvents } from './wrap-model_events'
 import { wrapModelBase } from './wrap-model_base'
 import { useModelInstance } from './use-model-instance'
-
-export interface UseBaseModelOptions {
-  name: string
-  idField: string
-}
 
 /**
  * Enables Model cloning and events on the provided ModelFn
  * @param ModelFn
  * @returns wrapped ModelFn
  */
-export const useBaseModel = <M extends AnyData, Func extends Function>(
+export const useBaseModel = <M extends AnyData, Func extends (data: ModelInstance<M>) => any>(
   options: UseBaseModelOptions,
   ModelFn: Func,
-): ((data: Partial<M & BaseModelData>) => InferReturn<Func>) => {
+  // SEE IF I CAN GET wrappedBaseModel TO EXTEND THIS RETURN TYPE
+): {
+  (data: ModelInstanceData<M>): InferReturn<Func>
+  test: boolean
+} => {
   // adds `item.__Model` so it's available in the ModelFn.
-  // const fn = (data: Partial<M & BaseModelData>) => {
-  const fn = (data: Partial<M & BaseModelData>) => {
-    // const [data] = args
-    Object.defineProperty(data, '__Model', {
+  const fn = (data: ModelInstanceData<M>) => {
+    const _data = data as typeof data & { __Model: typeof fn }
+    Object.defineProperty(_data, '__Model', {
       configurable: true,
       enumerable: false,
       value: fn,
     })
-    const asModel = useModelInstance<M>(data, options)
+    const asModel = useModelInstance<M>(_data, options)
     return ModelFn(asModel)
   }
-  return fn
+  // return fn as {
+  //   (data: ModelInstance<M>): InferReturn<Func>
+  //   test: boolean
+  // }
 
-  // const WrappedBaseModel = wrapModelBase<M>(fn)
+  const WrappedBaseModel = wrapModelBase<M, typeof fn>(options, fn)
   // const WrappedEventModel = useModelEvents(WrappedBaseModel)
-  // return WrappedBaseModel
+  return WrappedBaseModel as typeof fn & { test: boolean }
 }
-// as (data: Partial<M & BaseModelData>) => Partial<M & BaseModelData> & BaseModelInstanceProps<M>
+// as (data: ModelInstance<M>) => ModelInstance<M> & BaseModelInstanceProps<M>
 
 // type InferArgs<T> = T extends (...t: [...infer Arg]) => any ? Arg : never
-type InferReturn<T> = T extends (...t: [...infer Arg]) => infer Res ? Res : never
 // type AnyFn = (...args: any[]) => any
 
 // function getWrapper<TFunc extends (...args: any[]) => any>(
