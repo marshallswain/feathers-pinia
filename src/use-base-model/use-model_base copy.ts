@@ -14,7 +14,7 @@ export interface UseBaseModelOptions {
  * @param ModelFn
  * @returns wrapped ModelFn
  */
-export const useBaseModel = <M extends AnyData, Func extends Function>(
+export const useBaseModel = <M extends AnyData, Func extends (...args: any[]) => any>(
   options: UseBaseModelOptions,
   ModelFn: Func,
 ): ((data: Partial<M & BaseModelData>) => InferReturn<Func>) => {
@@ -38,22 +38,22 @@ export const useBaseModel = <M extends AnyData, Func extends Function>(
 }
 // as (data: Partial<M & BaseModelData>) => Partial<M & BaseModelData> & BaseModelInstanceProps<M>
 
-// type InferArgs<T> = T extends (...t: [...infer Arg]) => any ? Arg : never
+type InferArgs<T> = T extends (...t: [...infer Arg]) => any ? Arg : never
 type InferReturn<T> = T extends (...t: [...infer Arg]) => infer Res ? Res : never
-// type AnyFn = (...args: any[]) => any
+type AnyFn = (...args: any[]) => any
 
-// function getWrapper<TFunc extends (...args: any[]) => any>(
-//   func: TFunc,
-// ): (...args: InferArgs<TFunc>) => InferReturn<TFunc> {
-//   return (...args: InferArgs<TFunc>) => {
-//     // something before
+function getWrapper<TFunc extends (...args: any[]) => any>(
+  func: TFunc,
+): (...args: InferArgs<TFunc>) => InferReturn<TFunc> {
+  return (...args: InferArgs<TFunc>) => {
+    // something before
 
-//     return func(...args)
-//   }
-// }
+    return func(...args)
+  }
+}
 
-// const Test = getWrapper((options: { foo: string }) => {
-//   return 'blue' + options.foo
-// })
+const Test = getWrapper((options: { foo: string }) => {
+  return 'blue' + options.foo
+})
 
-// const test = Test({ foo: 'blue' })
+const test = Test({ foo: 'blue' })

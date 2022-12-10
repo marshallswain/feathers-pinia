@@ -48,8 +48,8 @@ export type BaseModelInstanceProps<M extends AnyData = AnyData> = {
   readonly __tempId: string
 } & WithModel<M>
 
-export type BaseModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
-export type BaseModelInstanceFull<M extends AnyData> = BaseModelInstanceData<M> & BaseModelInstanceProps<M>
+export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
+export type ModelInstance<M extends AnyData> = ModelInstanceData<M> & BaseModelInstanceProps<M>
 
 /**
  * The basic Model function definition which gets passed to `useModelBase`. It gets extended by `useModelBase` and
@@ -84,15 +84,8 @@ export interface BaseModelMethods<
 /**
  * The extended Model function definition, which includes storage-related properties.
  */
-export type OuterModelFnExtended<M extends AnyData> = {
-  (data: BaseModelInstanceData<M>): BaseModelInstanceFull<M>
-} & BaseModelMethods<M>
-
-/**
- * The extended Model function definition, which includes storage-related properties.
- */
 export type ModelFnTypeExtended<M extends AnyData> = {
-  (data: BaseModelInstanceFull<M>): BaseModelInstanceFull<M>
+  (data: ModelInstance<M>): ModelInstance<M>
   /**
    * non-enumerable fields on each instance that need to be handled when merging two instances
    */

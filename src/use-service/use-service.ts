@@ -1,5 +1,5 @@
 import type { MaybeRef } from '../utility-types'
-import type { ModelFnTypeExtended } from '../use-base-model'
+import type { ModelFnType } from '../use-base-model'
 import type { Id } from '@feathersjs/feathers'
 import type {
   UseFindWatchedOptions,
@@ -39,7 +39,7 @@ export type UseServiceOptions<M extends AnyData> = {
   debounceEventsGuarantee?: boolean
 }
 export interface UseServiceOptionsExtended<M extends AnyData> extends UseServiceOptions<M> {
-  ModelFn: ModelFnTypeExtended<M>
+  ModelFn: ModelFnType<M>
 }
 
 const makeDefaultOptions = () => ({
@@ -50,7 +50,7 @@ export const useService = <M extends AnyData, D extends AnyData = AnyData, Q ext
   _options: UseServiceOptionsExtended<M>,
 ) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const ModelFn = _options.ModelFn as ModelFnTypeExtended<M> & EventEmitter
+  const ModelFn = _options.ModelFn as ModelFnType<M> & EventEmitter
 
   const service = computed(() => options.service)
   const whitelist = ref(options.whitelist ?? [])
