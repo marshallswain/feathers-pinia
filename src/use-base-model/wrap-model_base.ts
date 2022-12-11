@@ -15,7 +15,6 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
   ModelFn: Func,
 ): {
   (data: ModelInstanceData<M>): InferReturn<Func>
-  // test: boolean
 } => {
   const _ModelFn = ModelFn as Func & { setStore: (store: any) => void; store: any }
 
@@ -34,61 +33,48 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     paramsForServer: ref(options.paramsForServer || []),
   })
 
-  // Setup the default store.
+  // Setup the default store, matching a subset of the pinia store structure
   const store = {
-    ...storage,
+    additionalFields: [],
+    itemsById: storage.itemStorage.byId,
+    items: storage.itemStorage.list,
+    itemIds: storage.itemStorage.ids,
+    tempsById: storage.tempStorage.byId,
+    temps: storage.tempStorage.list,
+    tempIds: storage.tempStorage.ids,
+    clonesById: storage.cloneStorage.byId,
+    clones: storage.cloneStorage.list,
+    cloneIds: storage.cloneStorage.ids,
+    clone: storage.clone,
+    commit: storage.commit,
+    reset: storage.reset,
+    addToStore: storage.addToStore,
+    removeFromStore: storage.removeFromStore,
+    clearAll: storage.clearAll,
     findInStore,
     countInStore,
     getFromStore,
   }
   _ModelFn.setStore(store)
 
-  // Create getters for renamed fields
-  const renamedFields = {
-    get itemsById() {
-      return _ModelFn.store.itemStorage.byId
+  // Add getters for key methods
+  Object.assign(ModelFn, {
+    get findInStore() {
+      return _ModelFn.store.findInStore
     },
-    get items() {
-      return _ModelFn.store.itemStorage.list
+    get countInStore() {
+      return _ModelFn.store.countInStore
     },
-    get itemIds() {
-      return _ModelFn.store.itemStorage.ids
+    get getFromStore() {
+      return _ModelFn.store.getFromStore
     },
-    get tempsById() {
-      return _ModelFn.store.tempStorage.byId
+    get addToStore() {
+      return _ModelFn.store.addToStore
     },
-    get temps() {
-      return _ModelFn.store.tempStorage.list
+    get removeFromStore() {
+      return _ModelFn.store.removeFromStore
     },
-    get tempIds() {
-      return _ModelFn.store.tempStorage.ids
-    },
-    get clonesById() {
-      return _ModelFn.store.cloneStorage.byId
-    },
-    get clones() {
-      return _ModelFn.store.cloneStorage.list
-    },
-    get cloneIds() {
-      return _ModelFn.store.cloneStorage.ids
-    },
-  }
-  Object.assign(ModelFn, renamedFields)
-
-  // create getters for other store properties
-  const fieldNames = ['additionalFields', 'clone', 'commit', 'reset', 'addToStore', 'removeFromStore', 'clearAll']
-  fieldNames.forEach((field) => {
-    Object.defineProperty(_ModelFn, field, {
-      configurable: true,
-      get() {
-        return _ModelFn.store[field]
-      },
-    })
   })
 
-  return ModelFn as Func & {
-    setStore: typeof setStore
-    store: any
-    // ReturnType<typeof useService>
-  } & typeof renamedFields
+  return ModelFn
 }

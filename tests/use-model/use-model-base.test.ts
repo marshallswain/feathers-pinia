@@ -7,75 +7,73 @@ const ModelFn = (data: ModelInstance<Tasks>) => {
 }
 const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 
-describe('useModelBase Model properties', () => {
+describe('useModelBase Model.store properties', () => {
   beforeEach(() => {
-    Task.clearAll()
-  })
-
-  test('additionalFields property', () => {
-    expect(Array.isArray(Task.additionalFields)).toBeTruthy()
+    Task.store.clearAll()
   })
 
   test('itemsById property', () => {
-    expect(Task.itemsById).toBeTruthy()
-    expect(Task.itemsById.value).toBeFalsy()
+    expect(Task.store.itemsById).toBeTruthy()
+    expect(Task.store.itemsById.value).toBeFalsy()
   })
 
   test('items property', () => {
-    expect(Array.isArray(Task.items.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.items.value)).toBeTruthy()
   })
 
   test('itemIds property', () => {
-    expect(Array.isArray(Task.itemIds.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.itemIds.value)).toBeTruthy()
   })
 
   test('tempsById property', () => {
-    expect(Task.tempsById).toBeTruthy()
-    expect(Task.tempsById.value).toBeFalsy()
+    expect(Task.store.tempsById).toBeTruthy()
+    expect(Task.store.tempsById.value).toBeFalsy()
   })
 
   test('temps property', () => {
-    expect(Array.isArray(Task.temps.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.temps.value)).toBeTruthy()
   })
 
   test('tempIds property', () => {
-    expect(Array.isArray(Task.tempIds.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.tempIds.value)).toBeTruthy()
   })
 
   test('clonesById property', () => {
-    expect(Task.clonesById).toBeTruthy()
-    expect(Task.clonesById.value).toBeFalsy()
+    expect(Task.store.clonesById).toBeTruthy()
+    expect(Task.store.clonesById.value).toBeFalsy()
   })
 
   test('clones property', () => {
-    expect(Array.isArray(Task.clones.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.clones.value)).toBeTruthy()
   })
 
   test('cloneIds property', () => {
-    expect(Array.isArray(Task.cloneIds.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.cloneIds.value)).toBeTruthy()
   })
 
   test('clone property', () => {
-    expect(typeof Task.clone).toBe('function')
+    expect(typeof Task.store.clone).toBe('function')
   })
 
   test('commit property', () => {
-    expect(typeof Task.commit).toBe('function')
+    expect(typeof Task.store.commit).toBe('function')
   })
 
   test('reset property', () => {
-    expect(typeof Task.reset).toBe('function')
+    expect(typeof Task.store.reset).toBe('function')
   })
 
   test('addToStore property', () => {
+    expect(typeof Task.store.addToStore).toBe('function')
     expect(typeof Task.addToStore).toBe('function')
   })
 
   test('removeFromStore property', () => {
+    expect(typeof Task.store.removeFromStore).toBe('function')
     expect(typeof Task.removeFromStore).toBe('function')
   })
 
   test('clearAll property', () => {
-    expect(typeof Task.clearAll).toBe('function')
+    expect(typeof Task.store.clearAll).toBe('function')
   })
 })
