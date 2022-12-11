@@ -1,8 +1,17 @@
-import type { ModelFnType, ModelFnTypeExtended, ModelInstanceData } from './types'
-import type { AnyData, UseServiceOptions } from '../use-service'
-
-import { wrapModelFeathers } from './wrap-model_feathers'
+import type {
+  FeathersInstanceMethods,
+  FeathersModelStatic,
+  InferReturn,
+  ModelInstance,
+  ModelInstanceData,
+  UseFeathersModelOptions,
+} from '../use-base-model/types'
+import type { AnyData } from '../use-service'
 import { useModelEvents } from './wrap-model_events'
+import { useModelInstance } from './use-model-instance'
+import { useModelInstanceFeathers } from './use-model-instance-feathers'
+import EventEmitter from 'events'
+import { wrapModelFeathers } from './wrap-model_feathers'
 
 /**
  * Enables Model cloning and events on the provided ModelFn
@@ -11,23 +20,32 @@ import { useModelEvents } from './wrap-model_events'
  */
 export const useFeathersModel = <
   M extends AnyData,
-  N extends ModelInstanceData<M> = ModelInstanceData<M>,
-  F extends ModelFnType<M> = ModelFnType<M>,
+  D extends AnyData,
+  Q extends AnyData,
+  ModelFunc extends (data: ModelInstance<M>) => any,
 >(
-  ModelFn: F,
-  options: UseServiceOptions<N>,
-) => {
-  // adds `item.__Model` so it's available in the ModelFn.
-  const fn = ((data: N) => {
-    Object.defineProperty(data, '__Model', {
+  options: UseFeathersModelOptions,
+  ModelFn: ModelFunc,
+): {
+  (data: ModelInstanceData<M>): InferReturn<ModelFunc> & FeathersInstanceMethods<M, Q>
+} & EventEmitter &
+  FeathersModelStatic<M, D, Q, ModelFunc> => {
+  // Wrapper function adds BaseModel props to instance data
+  const fn = (data: ModelInstanceData<M>) => {
+    const _data = data as typeof data & { __Model: typeof fn }
+    Object.defineProperty(_data, '__Model', {
       configurable: true,
       enumerable: false,
       value: fn,
     })
-    return ModelFn(data)
-  }) as any as ModelFnTypeExtended<N>
+    const asModelInstance = useModelInstance<M>(_data, options)
+    const asFeathersInstance = useModelInstanceFeathers(asModelInstance, { service: options.service })
+    return ModelFn(asFeathersInstance)
+  }
 
-  const StoreModel = wrapModelFeathers<N, ModelFnTypeExtended<N>>(fn, options)
-  const EventModel = useModelEvents(StoreModel)
-  return EventModel as any as ModelFnTypeExtended<M>
+  // const WrappedBaseModel = wrapModelBase<M, Q, typeof fn>(options, fn)
+  const WrappedFeathersModel = wrapModelFeathers<M, D, Q, typeof fn>(options, fn)
+  const WrappedEventModel = useModelEvents(WrappedFeathersModel)
+
+  return WrappedEventModel as ModelFunc & typeof fn & FeathersModelStatic<M, D, Q, any> & EventEmitter
 }

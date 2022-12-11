@@ -38,9 +38,9 @@ export type UseServiceOptions<M extends AnyData> = {
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
 }
-export interface UseServiceOptionsExtended<M extends AnyData, Func extends (data: ModelInstance<M>) => any>
+export interface UseServiceOptionsExtended<M extends AnyData, ModelFunc extends (data: ModelInstance<M>) => any>
   extends UseServiceOptions<M> {
-  ModelFn: Func
+  ModelFn: ModelFunc
 }
 
 const makeDefaultOptions = () => ({
@@ -51,9 +51,9 @@ export const useService = <
   M extends AnyData,
   D extends AnyData,
   Q extends AnyData,
-  Func extends (data: ModelInstance<M>) => any,
+  ModelFunc extends (data: ModelInstance<M>) => any,
 >(
-  _options: UseServiceOptionsExtended<M, Func>,
+  _options: UseServiceOptionsExtended<M, ModelFunc>,
 ) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const ModelFn = _options.ModelFn
@@ -69,7 +69,7 @@ export const useService = <
 
   // storage
   const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, removeFromStore, addToStore, clearAll } =
-    useAllStorageTypes<M, Func>({
+    useAllStorageTypes<M, ModelFunc>({
       ModelFn,
       afterClear: () => {
         pendingState.clearAllPending()

@@ -16,14 +16,14 @@ import EventEmitter from 'events'
  * @param ModelFn
  * @returns wrapped ModelFn
  */
-export const useBaseModel = <M extends AnyData, Q extends AnyData, Func extends (data: ModelInstance<M>) => any>(
+export const useBaseModel = <M extends AnyData, Q extends AnyData, ModelFunc extends (data: ModelInstance<M>) => any>(
   options: UseBaseModelOptions,
-  ModelFn: Func,
+  ModelFn: ModelFunc,
 ): {
-  (data: ModelInstanceData<M>): InferReturn<Func>
-} & BaseModelStatic<M> &
+  (data: ModelInstanceData<M>): InferReturn<ModelFunc>
+} & BaseModelStatic<M, Q> &
   EventEmitter => {
-  // adds `item.__Model` so it's available in the ModelFn.
+  // Wrapper function adds BaseModel props to instance data
   const fn = (data: ModelInstanceData<M>) => {
     const _data = data as typeof data & { __Model: typeof fn }
     Object.defineProperty(_data, '__Model', {
@@ -37,5 +37,5 @@ export const useBaseModel = <M extends AnyData, Q extends AnyData, Func extends 
 
   const WrappedBaseModel = wrapModelBase<M, Q, typeof fn>(options, fn)
   const WrappedEventModel = useModelEvents(WrappedBaseModel)
-  return WrappedEventModel as typeof fn & BaseModelStatic<M> & EventEmitter
+  return WrappedEventModel as ModelFunc & typeof fn & BaseModelStatic<M, Q> & EventEmitter
 }

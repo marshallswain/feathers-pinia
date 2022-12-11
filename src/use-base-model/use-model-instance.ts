@@ -1,4 +1,4 @@
-import type { BaseModelData, BaseModelInstanceProps, WithModel } from './types'
+import type { BaseModelData, BaseModelInstanceProps, ModelInstanceData, WithModel } from './types'
 import type { AnyData, CloneOptions } from '../use-service'
 import { reactive } from 'vue'
 import ObjectID from 'isomorphic-mongo-objectid'
@@ -9,10 +9,7 @@ interface UseModelInstanceOptions {
   idField: string
 }
 
-export const useModelInstance = <M extends AnyData>(
-  data: Partial<M & BaseModelData>,
-  options: UseModelInstanceOptions,
-) => {
+export const useModelInstance = <M extends AnyData>(data: ModelInstanceData<M>, options: UseModelInstanceOptions) => {
   const { name, idField } = options
   const __isClone = data.__isClone || false
 

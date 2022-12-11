@@ -116,19 +116,23 @@ export const useServiceEvents = <C extends AnyData, Func extends (data: ModelIns
 
   // Listen to socket events when available.
   service.on('created', (item: any) => {
-    handleEvent('created', item)
-    ModelFn?.emit && ModelFn.emit('created', item)
+    const instance = ModelFn(item)
+    handleEvent('created', instance)
+    ModelFn?.emit && ModelFn.emit('created', instance)
   })
   service.on('updated', (item: any) => {
-    handleEvent('updated', item)
-    ModelFn?.emit && ModelFn.emit('updated', item)
+    const instance = ModelFn(item)
+    handleEvent('updated', instance)
+    ModelFn?.emit && ModelFn.emit('updated', instance)
   })
   service.on('patched', (item: any) => {
-    handleEvent('patched', item)
-    ModelFn?.emit && ModelFn.emit('patched', item)
+    const instance = ModelFn(item)
+    handleEvent('patched', instance)
+    ModelFn?.emit && ModelFn.emit('patched', instance)
   })
   service.on('removed', (item: any) => {
-    handleEvent('removed', item)
-    ModelFn?.emit && ModelFn.emit('removed', item)
+    const instance = ModelFn(item)
+    handleEvent('removed', instance)
+    ModelFn?.emit && ModelFn.emit('removed', instance)
   })
 }

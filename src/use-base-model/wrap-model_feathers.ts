@@ -1,130 +1,85 @@
-import { UseServiceOptions, useService } from '../use-service'
 import type { AnyData } from '../service-store'
-import type { ModelFnTypeExtended } from './types'
+import type { FeathersModelStatic, ModelInstanceData, UseFeathersModelOptions } from './types'
+import { useService } from '../use-service'
 
 /**
  * Adds the useService utilities to the ModelFn
  * @param ModelFn
  * @returns ModelFn
  */
-export const wrapModelFeathers = <M extends AnyData, F extends ModelFnTypeExtended<M>>(
-  ModelFn: F,
-  options: UseServiceOptions<M>,
+export const wrapModelFeathers = <
+  M extends AnyData,
+  D extends AnyData,
+  Q extends AnyData,
+  ModelFunc extends (data: ModelInstanceData<M>) => any,
+>(
+  options: UseFeathersModelOptions,
+  ModelFn: ModelFunc,
 ) => {
-  const _ModelFn = ModelFn as F & { setStore: (store: any) => void; store: any }
+  const _ModelFn = ModelFn as ModelFunc & FeathersModelStatic<M, D, Q, ModelFunc>
 
   // Add a `setStore` property to the ModelFn
-  const setStore = (store: any) => {
-    Object.defineProperty(_ModelFn, 'store', {
-      configurable: true,
-      value: store,
-    })
-  }
-  Object.defineProperties(_ModelFn, {
-    setServiceProps: {
-      configurable: true,
-      value: setStore,
-    },
-  })
+  const setStore = (store: any) => (_ModelFn.store = store)
+  Object.assign(_ModelFn, { setStore })
 
   // Initialize `useService` as the default store. It can be replaced by calling `ModelFn.setStore(store)`
-  const store = useService({ ...options, ModelFn: _ModelFn })
+  const store = useService<M, D, Q, typeof _ModelFn>({ ...options, ModelFn: _ModelFn })
   _ModelFn.setStore(store)
 
-  // Create getters for renamed fields
-  const renamedFields = {
-    itemsById() {
-      return _ModelFn.store.itemStorage.byId
+  // Add getters for key methods
+  Object.assign(ModelFn, {
+    get findInStore() {
+      return _ModelFn.store.findInStore
     },
-    items() {
-      return _ModelFn.store.itemStorage.list
+    get countInStore() {
+      return _ModelFn.store.countInStore
     },
-    itemIds() {
-      return _ModelFn.store.itemStorage.ids
+    get getFromStore() {
+      return _ModelFn.store.getFromStore
     },
-    tempsById() {
-      return _ModelFn.store.tempStorage.byId
+    get addToStore() {
+      return _ModelFn.store.addToStore
     },
-    temps() {
-      return _ModelFn.store.tempStorage.list
+    get removeFromStore() {
+      return _ModelFn.store.removeFromStore
     },
-    tempIds() {
-      return _ModelFn.store.tempStorage.ids
+    get find() {
+      return _ModelFn.store.find
     },
-    clonesById() {
-      return _ModelFn.store.cloneStorage.byId
+    get count() {
+      return _ModelFn.store.count
     },
-    clones() {
-      return _ModelFn.store.cloneStorage.list
+    get get() {
+      return _ModelFn.store.get
     },
-    cloneIds() {
-      return _ModelFn.store.cloneStorage.ids
+    get create() {
+      return _ModelFn.store.create
     },
-  }
-  Object.entries(renamedFields).forEach(([key, value]) => {
-    Object.defineProperty(_ModelFn, key, { get: value })
+    get update() {
+      return _ModelFn.store.update
+    },
+    get patch() {
+      return _ModelFn.store.patch
+    },
+    get remove() {
+      return _ModelFn.store.remove
+    },
+    get useFind() {
+      return _ModelFn.store.useFind
+    },
+    get useGet() {
+      return _ModelFn.store.useGet
+    },
+    get useGetOnce() {
+      return _ModelFn.store.useGetOnce
+    },
+    get useFindWatched() {
+      return _ModelFn.store.useFindWatched
+    },
+    get useGetWatched() {
+      return _ModelFn.store.useGetWatched
+    },
   })
 
-  // create getter fields for other store fields
-  const fieldNames = [
-    'additionalFields',
-    'whitelist',
-    'paramsForServer',
-    'skipRequestIfExists',
-    'isSsr',
-    'idField',
-    'clone',
-    'commit',
-    'reset',
-    'pagination',
-    'updatePaginationForQuery',
-    'unflagSsr',
-    'findInStore',
-    'countInStore',
-    'getFromStore',
-    'removeFromStore',
-    'addToStore',
-    'clearAll',
-    'isPending',
-    'createPendingById',
-    'updatePendingById',
-    'patchPendingById',
-    'removePendingById',
-    'isFindPending',
-    'isCountPending',
-    'isGetPending',
-    'isCreatePending',
-    'isUpdatePending',
-    'isPatchPending',
-    'isRemovePending',
-    'setPending',
-    'setPendingById',
-    'unsetPendingById',
-    'clearAllPending',
-    'eventLocks',
-    'toggleEventLock',
-    'clearEventLock',
-    'find',
-    'count',
-    'get',
-    'create',
-    'update',
-    'patch',
-    'remove',
-    'useFind',
-    'useGet',
-    'useGetOnce',
-    'useFindWatched',
-    'useGetWatched',
-  ]
-  fieldNames.forEach((field) => {
-    Object.defineProperty(_ModelFn, field, {
-      configurable: true,
-      get() {
-        return _ModelFn.store[field]
-      },
-    })
-  })
-
-  return ModelFn as F & { setStore: typeof setStore; store: ReturnType<typeof useService> }
+  return ModelFn as ModelFunc & FeathersModelStatic<M, D, Q, ModelFunc>
 }

@@ -1,28 +1,35 @@
 import type { Tasks, TasksData, TasksQuery } from '../feathers-schema-tasks'
-import { useBaseModel, useInstanceDefaults, type ModelInstance } from '../../src/use-base-model/index'
+import {
+  useBaseModel,
+  useInstanceDefaults,
+  useModelInstanceFeathers,
+  type ModelInstance,
+} from '../../src/use-base-model/index'
 import { useService } from '../../src'
 import { api } from '../feathers'
 import { createPinia, defineStore } from 'pinia'
 import { feathersPiniaHooks } from '../../src/hooks'
 
 const pinia = createPinia()
+const service = api.service('tasks')
 
 const ModelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ test: true, foo: 'bar' }, data)
-  return withDefaults
+  const asFeathersInstance = useModelInstanceFeathers(withDefaults, { service })
+  return asFeathersInstance
 }
 const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 type TaskInstance = ReturnType<typeof Task>
 
 // passing the ModelFn into `useService` overwrites the model's feathers methods to proxy through the store.
 const useTaskStore = defineStore('counter', () => {
-  const service = useService<TaskInstance, TasksData, TasksQuery, typeof Task>({
-    service: api.service('messages'),
+  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof Task>({
+    service,
     idField: '_id',
     ModelFn: Task,
   })
 
-  return { ...service }
+  return { ...serviceUtils }
 })
 const taskStore = useTaskStore(pinia)
 
@@ -32,7 +39,7 @@ api.service('tasks').hooks({
   },
 })
 
-describe('useInstanceFeathers with store', () => {
+describe('useBaseModel with useInstanceFeathers', () => {
   test('has methods', async () => {
     const task = taskStore.Model({})
     expect(typeof task.save).toBe('function')

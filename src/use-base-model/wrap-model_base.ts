@@ -1,9 +1,8 @@
-// import { useService } from '../use-service'
+import type { BaseModelStatic, InferReturn, ModelInstanceData, UseBaseModelOptions } from './types'
 import type { AnyData } from '../service-store'
 import { useServiceLocal } from '../use-service'
 import { useAllStorageTypes } from '../use-service/use-all-storage-types'
 import { ref } from 'vue-demi'
-import type { InferReturn, ModelInstanceData, UseBaseModelOptions } from './types'
 
 /**
  * Adds the useService utilities to the ModelFn
@@ -15,8 +14,8 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
   ModelFn: Func,
 ): {
   (data: ModelInstanceData<M>): InferReturn<Func>
-} => {
-  const _ModelFn = ModelFn as Func & { setStore: (store: any) => void; store: any }
+} & BaseModelStatic<M, Q> => {
+  const _ModelFn = ModelFn as Func & BaseModelStatic<M, Q>
 
   // Add a `setStore` property to the ModelFn
   const setStore = (store: any) => (_ModelFn.store = store)
@@ -76,5 +75,5 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     },
   })
 
-  return ModelFn
+  return ModelFn as Func & BaseModelStatic<M, Q>
 }
