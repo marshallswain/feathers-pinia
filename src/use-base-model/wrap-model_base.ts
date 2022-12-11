@@ -1,5 +1,8 @@
 // import { useService } from '../use-service'
 import type { AnyData } from '../service-store'
+import { useServiceLocal } from '../use-service'
+import { useAllStorageTypes } from '../use-service/use-all-storage-types'
+import { ref } from 'vue-demi'
 import type { InferReturn, ModelInstanceData, UseBaseModelOptions } from './types'
 
 /**
@@ -7,7 +10,7 @@ import type { InferReturn, ModelInstanceData, UseBaseModelOptions } from './type
  * @param ModelFn
  * @returns ModelFn
  */
-export const wrapModelBase = <M extends AnyData, Func extends (data: ModelInstanceData<M>) => any>(
+export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends (data: ModelInstanceData<M>) => any>(
   options: UseBaseModelOptions,
   ModelFn: Func,
 ): {
@@ -17,60 +20,63 @@ export const wrapModelBase = <M extends AnyData, Func extends (data: ModelInstan
   const _ModelFn = ModelFn as Func & { setStore: (store: any) => void; store: any }
 
   // Add a `setStore` property to the ModelFn
-  const setStore = (store: any) => {
-    Object.defineProperty(_ModelFn, 'store', {
-      configurable: true,
-      value: store,
-    })
-  }
-  Object.defineProperties(_ModelFn, {
-    setServiceProps: {
-      configurable: true,
-      value: setStore,
-    },
+  const setStore = (store: any) => (_ModelFn.store = store)
+  Object.assign(_ModelFn, { setStore })
+
+  const storage = useAllStorageTypes<M, Func>({ ModelFn })
+
+  // local data filtering
+  const { findInStore, countInStore, getFromStore } = useServiceLocal<M, Q>({
+    idField: ref(options.idField),
+    itemStorage: storage.itemStorage,
+    tempStorage: storage.tempStorage,
+    whitelist: ref(options.whitelist || []),
+    paramsForServer: ref(options.paramsForServer || []),
   })
 
-  // Initialize `useService` as the default store. It can be replaced by calling `ModelFn.setStore(store)`
-  const store: any = {}
-  // const store = useService({ ...options, ModelFn: _ModelFn })
+  // Setup the default store.
+  const store = {
+    ...storage,
+    findInStore,
+    countInStore,
+    getFromStore,
+  }
   _ModelFn.setStore(store)
 
   // Create getters for renamed fields
   const renamedFields = {
-    itemsById() {
+    get itemsById() {
       return _ModelFn.store.itemStorage.byId
     },
-    items() {
+    get items() {
       return _ModelFn.store.itemStorage.list
     },
-    itemIds() {
+    get itemIds() {
       return _ModelFn.store.itemStorage.ids
     },
-    tempsById() {
+    get tempsById() {
       return _ModelFn.store.tempStorage.byId
     },
-    temps() {
+    get temps() {
       return _ModelFn.store.tempStorage.list
     },
-    tempIds() {
+    get tempIds() {
       return _ModelFn.store.tempStorage.ids
     },
-    clonesById() {
+    get clonesById() {
       return _ModelFn.store.cloneStorage.byId
     },
-    clones() {
+    get clones() {
       return _ModelFn.store.cloneStorage.list
     },
-    cloneIds() {
+    get cloneIds() {
       return _ModelFn.store.cloneStorage.ids
     },
   }
-  Object.entries(renamedFields).forEach(([key, value]) => {
-    Object.defineProperty(_ModelFn, key, { get: value })
-  })
+  Object.assign(ModelFn, renamedFields)
 
   // create getters for other store properties
-  const fieldNames = ['additionalFields', 'clone', 'commit', 'reset', 'addToStore', 'clearAll']
+  const fieldNames = ['additionalFields', 'clone', 'commit', 'reset', 'addToStore', 'removeFromStore', 'clearAll']
   fieldNames.forEach((field) => {
     Object.defineProperty(_ModelFn, field, {
       configurable: true,
@@ -84,5 +90,5 @@ export const wrapModelBase = <M extends AnyData, Func extends (data: ModelInstan
     setStore: typeof setStore
     store: any
     // ReturnType<typeof useService>
-  }
+  } & typeof renamedFields
 }

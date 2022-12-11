@@ -1,4 +1,4 @@
-import type { BaseModelData, ModelFnType, ModelFnTypeExtended } from './types'
+import type { ModelFnType, ModelFnTypeExtended, ModelInstanceData } from './types'
 import type { AnyData, UseServiceOptions } from '../use-service'
 
 import { wrapModelFeathers } from './wrap-model_feathers'
@@ -11,7 +11,7 @@ import { useModelEvents } from './wrap-model_events'
  */
 export const useFeathersModel = <
   M extends AnyData,
-  N extends Partial<M & BaseModelData> = Partial<M & BaseModelData>,
+  N extends ModelInstanceData<M> = ModelInstanceData<M>,
   F extends ModelFnType<M> = ModelFnType<M>,
 >(
   ModelFn: F,

@@ -7,9 +7,6 @@ export const useInstanceFeathers = <M extends AnyData, S extends Service = Servi
   service: S,
 ) => {
   const methods = {
-    merge: function (data: M): M {
-      return Object.assign(this, data)
-    },
     save: function (this: M, params?: P) {
       const id = this[this.__idField]
       return id ? this.patch(params) : this.create(params)

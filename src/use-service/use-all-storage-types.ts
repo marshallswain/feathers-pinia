@@ -1,6 +1,5 @@
 import type { MakeCopyOptions, ModelInstance } from '../use-base-model'
-import type { MaybeArray } from '../utility-types'
-import type { AnyData, AnyDataOrArray } from './types'
+import type { AnyData } from './types'
 import { useServiceTemps } from './use-service-temps'
 import { useServiceClones } from './use-service-clones'
 import { useServiceStorage } from './use-service-storage'
@@ -73,7 +72,7 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
    * If an item has both an id and a tempId, it gets moved from tempStorage to itemStorage.
    * Private
    */
-  const addToStorage = (item: M) => {
+  const addItemToStorage = (item: M) => {
     if (item.__isClone) {
       return cloneStorage.merge(item)
     } else if (item[item.__idField] != null && item.__tempId != null) {
@@ -83,6 +82,7 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
     } else if (tempStorage && item.__tempId != null) {
       return tempStorage?.merge(item)
     }
+    return itemStorage.merge(item)
   }
 
   /**
@@ -90,14 +90,12 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
    * @param data a single record or array of records.
    * @returns data added or modified in the store. If you pass an array, you get an array back.
    */
-  function addToStore<N extends M>(data: M): N
-  function addToStore<N extends M>(data: N[]): N[]
-  function addToStore<N extends M>(data: AnyDataOrArray<N>): MaybeArray<N> {
+  function addToStore(data: M | M[]) {
     const { items, isArray } = getArray(data)
 
-    const _items = items.map((item: N) => {
-      const stored = addToStorage(item)
-      return stored as N
+    const _items = items.map((item: M) => {
+      const stored = addItemToStorage(item)
+      return stored
     })
 
     return isArray ? _items : _items[0]
