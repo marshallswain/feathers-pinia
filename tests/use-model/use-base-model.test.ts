@@ -7,9 +7,6 @@ const ModelFn = (data: ModelInstance<Tasks>) => {
 }
 const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 
-const task = Task({})
-console.log(task)
-
 describe('useInstanceModel props', () => {
   beforeEach(() => {
     Task.store.clearAll()
