@@ -1,15 +1,15 @@
-import type { Tasks } from '../feathers-schema-tasks'
-import { useInstanceModel, type BaseModelData, useModelBase } from '../../src/use-base-model/index'
+import type { Tasks, TasksQuery } from '../feathers-schema-tasks'
+import { useBaseModel, useInstanceDefaults, type ModelInstance } from '../../src/use-base-model/index'
 
-const Task = useModelBase<Partial<Tasks & BaseModelData>>((data) => {
-  const asModel = useInstanceModel(data, { name: 'Task', idField: '_id' })
-
-  return asModel
-})
+const ModelFn = (data: ModelInstance<Tasks>) => {
+  const withDefaults = useInstanceDefaults({}, data)
+  return withDefaults
+}
+const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 
 describe('useModelInstance temps', () => {
   beforeEach(() => {
-    Task.clearAll()
+    Task.store.clearAll()
   })
 
   test('assigns tempid when no id provided', async () => {
@@ -24,32 +24,32 @@ describe('useModelInstance temps', () => {
 
   test('not added to Model store by default', () => {
     Task({ description: 'foo', isComplete: true })
-    expect(Task.items.value.length).toBe(0)
-    expect(Task.temps.value.length).toBe(0)
-    expect(Task.clones.value.length).toBe(0)
+    expect(Task.store.items.value.length).toBe(0)
+    expect(Task.store.temps.value.length).toBe(0)
+    expect(Task.store.clones.value.length).toBe(0)
   })
 
   test('call addToStore without id to add to tempStore', () => {
     const task = Task({ description: 'foo', isComplete: true }).addToStore()
-    expect(Task.temps.value.length).toBe(1)
-    expect(Task.temps.value[0]).toBe(task)
+    expect(Task.store.temps.value.length).toBe(1)
+    expect(Task.store.temps.value[0]).toBe(task)
   })
 
   test('call addToStore with id to add to itemStore', () => {
     const task = Task({ _id: '1', description: 'foo', isComplete: true }).addToStore()
-    expect(Task.items.value.length).toBe(1)
-    expect(Task.items.value[0]).toBe(task)
+    expect(Task.store.items.value.length).toBe(1)
+    expect(Task.store.items.value[0]).toBe(task)
   })
 
   test('call removeFromStore on temp', () => {
     const task = Task({ description: 'foo', isComplete: true }).addToStore()
     task.removeFromStore()
-    expect(Task.temps.value.length).toBe(0)
+    expect(Task.store.temps.value.length).toBe(0)
   })
 
   test('call removeFromStore on item', () => {
     const task = Task({ _id: '1', description: 'foo', isComplete: true }).addToStore()
     task.removeFromStore()
-    expect(Task.items.value.length).toBe(0)
+    expect(Task.store.items.value.length).toBe(0)
   })
 })

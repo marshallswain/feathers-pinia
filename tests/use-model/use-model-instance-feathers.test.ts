@@ -1,13 +1,12 @@
-import type { Tasks } from '../feathers-schema-tasks'
-import { useInstanceModel, useInstanceFeathers, type BaseModelData } from '../../src/use-base-model/index'
+import type { Tasks, TasksQuery } from '../feathers-schema-tasks'
+import { useBaseModel, useInstanceDefaults, type ModelInstance } from '../../src/use-base-model/index'
 import { api } from '../feathers'
 
-const Task = (data: Partial<Tasks & BaseModelData>) => {
-  const withModel = useInstanceModel(data, { name: 'Task', idField: '_id' })
-  const withFeathers = useInstanceFeathers(withModel, api.service('tasks'))
-
-  return withFeathers
+const ModelFn = (data: ModelInstance<Tasks>) => {
+  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar', description: 'default' }, data)
+  return withDefaults
 }
+const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 
 describe('useInstanceFeathers', () => {
   test('has methods', async () => {

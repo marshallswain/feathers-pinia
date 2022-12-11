@@ -9,7 +9,7 @@ const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idF
 
 describe('useModelInstance clones', () => {
   beforeEach(() => {
-    Task.clearAll()
+    Task.store.clearAll()
   })
 
   test('clone an item', async () => {
@@ -33,7 +33,7 @@ describe('useModelInstance clones', () => {
   test('clone a non-stored temp adds it to temps with __isClone set to false', () => {
     const task = Task({ description: 'test' })
     task.clone()
-    const storedTemp = Task.tempsById[task.__tempId as string]
+    const storedTemp = Task.store.tempsById[task.__tempId as string]
     expect(storedTemp).toBe(task)
     expect(storedTemp.__isClone).toBe(false)
   })
@@ -76,7 +76,7 @@ describe('useModelInstance clones', () => {
     const task = Task({ description: 'test' })
     const resetted = task.reset()
 
-    const storedClone = Task.clonesById[task.__tempId]
+    const storedClone = Task.store.clonesById[task.__tempId]
     expect(storedClone).toBe(resetted)
   })
 

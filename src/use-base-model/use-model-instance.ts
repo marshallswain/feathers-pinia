@@ -26,13 +26,13 @@ export const useModelInstance = <M extends AnyData>(
     __idField: idField,
     __tempId: data[idField] == null && data.__tempId == null ? new ObjectID().toString() : data.__tempId || undefined,
     clone(this: M, data: Partial<M> = {}, options: CloneOptions = {}) {
-      return this.__Model.clone(this, data, options)
+      return this.__Model.store.clone(this, data, options)
     },
     commit(this: M, data: Partial<M> = {}) {
-      return this.__Model.commit(this, data, options)
+      return this.__Model.store.commit(this, data, options)
     },
     reset(this: M, data: Partial<M> = {}) {
-      return this.__Model.reset(this, data, options)
+      return this.__Model.store.reset(this, data, options)
     },
     addToStore(this: M) {
       return this.__Model.addToStore(this)

@@ -1,12 +1,11 @@
-import type { Tasks } from '../feathers-schema-tasks'
-import { useInstanceModel, type BaseModelData, useInstanceDefaults, useModelBase } from '../../src/use-base-model/index'
+import type { Tasks, TasksQuery } from '../feathers-schema-tasks'
+import { useBaseModel, useInstanceDefaults, type ModelInstance } from '../../src/use-base-model/index'
 
-const Task = useModelBase((data: Partial<Tasks & BaseModelData>) => {
-  const asModel = useInstanceModel(data, { name: 'Task', idField: '_id' })
-  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar', description: 'default' }, asModel)
-
+const ModelFn = (data: ModelInstance<Tasks>) => {
+  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar', description: 'default' }, data)
   return withDefaults
-})
+}
+const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 
 describe('useInstanceDefaults', () => {
   test('has defaults', async () => {
