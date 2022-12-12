@@ -74,29 +74,29 @@ export type BaseModelInstanceProps<M extends AnyData = AnyData> = {
    * @param data
    * @param options
    */
-  clone(this: M, data?: Partial<M>, options?: CloneOptions): M
+  clone(this: ModelInstance<M>, data?: Partial<M>, options?: CloneOptions): ModelInstance<M>
   /**
    * Copies a clone's data onto the original item or temp record.
    * @param data
    * @param options
    */
-  commit(this: M, data?: Partial<M>, options?: CloneOptions): M
+  commit(this: ModelInstance<M>, data?: Partial<M>, options?: CloneOptions): ModelInstance<M>
   /**
    * Resets a clone's data to match the original item or temp record. If additional properties were added to the clone,
    * they will be removed to exactly match the original.
    * @param data
    * @param options
    */
-  reset(this: M, data?: Partial<M>, options?: CloneOptions): M
+  reset(this: ModelInstance<M>, data?: Partial<M>, options?: CloneOptions): ModelInstance<M>
   /**
    * Adds the current instance to the appropriate store. If the instance is a clone, it will be added to `clones`. If it
    * has an `idField`, it will be added to items, otherwise it will be added to temps.
    */
-  addToStore(this: M): M
+  addToStore(this: ModelInstance<M>): ModelInstance<M>
   /**
    * Removes the current instance from items, temps, and clones.
    */
-  removeFromStore(this: M): M
+  removeFromStore(this: ModelInstance<M>): ModelInstance<M>
 } & WithModel<M>
 
 export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
