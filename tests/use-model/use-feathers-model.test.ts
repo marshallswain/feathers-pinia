@@ -19,7 +19,7 @@ const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
 type TaskInstance = ReturnType<typeof Task>
 
 // passing the ModelFn into `useService` overwrites the model's feathers methods to proxy through the store.
-const useTaskStore = defineStore('counter', () => {
+const useTaskStore = defineStore('tasks', () => {
   const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof Task>({
     service,
     idField: '_id',
@@ -75,5 +75,65 @@ describe('useFeathersModel', () => {
       expect(error.message).toBe("No record found for id '1'")
     }
     expect.assertions(2)
+  })
+
+  test('Model.find', async () => {
+    expect(typeof Task.find).toBe('function')
+  })
+
+  test('Model.count', async () => {
+    expect(typeof Task.count).toBe('function')
+  })
+
+  test('Model.get', async () => {
+    expect(typeof Task.get).toBe('function')
+  })
+
+  test('Model.create', async () => {
+    expect(typeof Task.create).toBe('function')
+  })
+
+  test('Model.update', async () => {
+    expect(typeof Task.update).toBe('function')
+  })
+
+  test('Model.patch', async () => {
+    expect(typeof Task.patch).toBe('function')
+  })
+
+  test('Model.remove', async () => {
+    expect(typeof Task.remove).toBe('function')
+  })
+
+  test('Model.findInStore', async () => {
+    expect(typeof Task.findInStore).toBe('function')
+  })
+
+  test('Model.countInStore', async () => {
+    expect(typeof Task.countInStore).toBe('function')
+  })
+
+  test('Model.getFromStore', async () => {
+    expect(typeof Task.getFromStore).toBe('function')
+  })
+
+  test('Model.useFind', async () => {
+    expect(typeof Task.useFind).toBe('function')
+  })
+
+  test('Model.useGet', async () => {
+    expect(typeof Task.useGet).toBe('function')
+  })
+
+  test('Model.useGetOnce', async () => {
+    expect(typeof Task.useGetOnce).toBe('function')
+  })
+
+  test('Model.useFindWatched', async () => {
+    expect(typeof Task.useFindWatched).toBe('function')
+  })
+
+  test('Model.useGetWatched', async () => {
+    expect(typeof Task.useGetWatched).toBe('function')
   })
 })

@@ -1,6 +1,7 @@
 import type { AnyData } from '../service-store'
 import type { FeathersModelStatic, ModelInstanceData, UseFeathersModelOptions } from './types'
 import { useService } from '../use-service'
+import { reactive } from 'vue-demi'
 
 /**
  * Adds the useService utilities to the ModelFn
@@ -24,7 +25,7 @@ export const wrapModelFeathers = <
 
   // Initialize `useService` as the default store. It can be replaced by calling `ModelFn.setStore(store)`
   const store = useService<M, D, Q, typeof _ModelFn>({ ...options, ModelFn: _ModelFn })
-  _ModelFn.setStore(store)
+  _ModelFn.setStore(reactive(store))
 
   // Add getters for key methods
   Object.assign(ModelFn, {

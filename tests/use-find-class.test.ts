@@ -1,98 +1,80 @@
-import type { Tasks, TasksData, TasksQuery } from './feathers-schema-tasks'
-import { ModelInstance, useInstanceDefaults, useService } from '../src'
-import { createPinia, defineStore } from 'pinia'
+import { setupFeathersPinia, BaseModel } from '../src/index' // from 'feathers-pinia'
+import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
-import { useFind } from '../src/use-find'
+import { Find, useFind } from '../src/use-find-class'
 import { computed, ref } from 'vue-demi'
-import { useFeathersModel } from '../src/use-base-model'
-import { feathersPiniaHooks } from '../src/hooks'
 
 const pinia = createPinia()
-const service = api.service('tasks')
+const { defineStore } = setupFeathersPinia({ clients: { api } })
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
-  const withDefaults = useInstanceDefaults({}, data)
-  return withDefaults
+export class Message extends BaseModel {
+  id: number
+  text: string
+
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
-  { name: 'Task', idField: '_id', service },
-  ModelFn,
-)
-type TaskInstance = ReturnType<typeof Task>
 
-// passing the ModelFn into `useService` overwrites the model's feathers methods to proxy through the store.
-const useTaskStore = defineStore('counter', () => {
-  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof Task>({
-    service,
-    idField: '_id',
-    ModelFn: Task,
-  })
-
-  return { ...serviceUtils }
-})
-const taskStore = useTaskStore(pinia)
-Task.setStore(taskStore)
-
-service.hooks({
-  around: {
-    all: [...feathersPiniaHooks(Task, taskStore)],
-  },
-})
+const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
+const messageStore = useMessagesService(pinia)
 
 const reset = () => {
-  resetStores(service, taskStore)
+  resetStores(api.service('messages'), messageStore)
 }
 
 beforeEach(async () => {
   reset()
-  service.store = {
-    1: { _id: 1, text: 'Moose' },
-    2: { _id: 2, text: 'moose' },
-    3: { _id: 3, text: 'Goose' },
-    4: { _id: 4, text: 'Loose' },
-    5: { _id: 5, text: 'Marshall' },
-    6: { _id: 6, text: 'David' },
-    7: { _id: 7, text: 'Beau' },
-    8: { _id: 8, text: 'Batman' },
-    9: { _id: 9, text: 'Flash' },
-    10: { _id: 10, text: 'Wolverine' },
-    11: { _id: 11, text: 'Rogue' },
-    12: { _id: 12, text: 'Jubilee' },
+  api.service('messages').store = {
+    1: { id: 1, text: 'Moose' },
+    2: { id: 2, text: 'moose' },
+    3: { id: 3, text: 'Goose' },
+    4: { id: 4, text: 'Loose' },
+    5: { id: 5, text: 'Marshall' },
+    6: { id: 6, text: 'David' },
+    7: { id: 7, text: 'Beau' },
+    8: { id: 8, text: 'Batman' },
+    9: { id: 9, text: 'Flash' },
+    10: { id: 10, text: 'Wolverine' },
+    11: { id: 11, text: 'Rogue' },
+    12: { id: 12, text: 'Jubilee' },
   }
 })
 afterEach(() => reset())
 
-describe('useFind Factory Function', () => {
+describe('useFind with Find class', () => {
   test('can use `useFind` to get a Find instance', async () => {
-    const params = {
+    const params: any = {
       query: { text: 'Moose' },
-      store: taskStore,
+      store: messageStore,
     }
     const returned = useFind(params)
+    expect(returned instanceof Find).toBeTruthy()
     expect(returned.data.value).toBeDefined()
   })
 })
 
-describe('useFind', () => {
+describe('Find Class', () => {
   beforeEach(async () => {
-    await taskStore.find({ query: { $limit: 20 } })
+    await messageStore.find({ query: { $limit: 20 } })
   })
   test('can pass plain params', async () => {
     const params = {
       query: { text: 'Moose' },
-      store: taskStore,
+      store: messageStore,
     }
-    const returned = useFind(params)
+    const returned = new Find(params)
     expect(returned.data.value).toBeDefined()
   })
 
   test('changing returned params updates data', async () => {
     const _params = {
       query: { text: 'Moose' },
-      store: taskStore,
+      store: messageStore,
     }
-    const { params, data, total } = useFind(_params)
+    const { params, data, total } = new Find(_params)
     expect(data.value.length).toBe(1)
     expect(total.value).toBe(1)
     expect(data.value[0].text).toBe('Moose')
@@ -105,9 +87,9 @@ describe('useFind', () => {
 
 describe('queryWhen', () => {
   test('use `queryWhen` to control queries', async () => {
-    const { request, currentQuery, requestCount, queryWhen, next, prev } = useFind({
+    const { request, currentQuery, requestCount, queryWhen, next, prev } = new Find({
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
       qid: 'test',
     })
@@ -137,9 +119,9 @@ describe('queryWhen', () => {
   })
 
   test('does not make pagination requests when queryWhen is false', async () => {
-    const { request, requestCount, queryWhen, next, prev } = useFind({
+    const { request, requestCount, queryWhen, next, prev } = new Find({
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
       qid: 'test',
       immediate: false,
@@ -169,14 +151,14 @@ describe('queryWhen', () => {
 
 describe('External Control With Provided Params', () => {
   beforeEach(async () => {
-    await taskStore.find({ query: { $limit: 20 } })
+    await messageStore.find({ query: { $limit: 20 } })
   })
   test('changing provided params updates data', async () => {
     const _params = ref({
       query: { text: 'Moose' },
-      store: taskStore,
+      store: messageStore,
     })
-    const { data, total } = useFind(_params)
+    const { data, total } = new Find(_params)
     expect(data.value.length).toBe(1)
     expect(total.value).toBe(1)
 
@@ -188,33 +170,33 @@ describe('External Control With Provided Params', () => {
 
 describe('Pagination Attributes', () => {
   beforeEach(async () => {
-    await taskStore.find({ query: { $limit: 20 } })
+    await messageStore.find({ query: { $limit: 20 } })
   })
   test('limit and skip are undefined if pagination is not provided in the query', async () => {
     // Turn off service's pagination
-    const oldPaginate = service.options.paginate
-    service.options.paginate = false
+    const oldPaginate = messageStore.service.options.paginate
+    messageStore.service.options.paginate = false
 
     const _params = {
       query: { text: 'Moose' },
-      store: taskStore,
+      store: messageStore,
     }
-    const findData = useFind(_params)
+    const findData = new Find(_params)
 
     expect(findData.limit.value).toBeUndefined()
     expect(findData.skip.value).toBeUndefined()
     expect(findData.total.value).toBe(1)
 
     // Re-enable service's pagination
-    service.options.paginate = oldPaginate
+    messageStore.service.options.paginate = oldPaginate
   })
 
   test('pagination attributes enabled on the store', async () => {
     const _params = {
       query: { text: 'Moose' },
-      store: taskStore,
+      store: messageStore,
     }
-    const findData = useFind(_params)
+    const findData = new Find(_params)
 
     expect(findData.limit).toBeDefined()
     expect(findData.skip).toBeDefined()
@@ -223,50 +205,50 @@ describe('Pagination Attributes', () => {
 
   test('pagination attributes enabled in the query', async () => {
     // Turn off service's pagination
-    const oldPaginate = service.options.paginate
-    service.options.paginate = false
+    const oldPaginate = messageStore.service.options.paginate
+    messageStore.service.options.paginate = false
 
     const _params = {
       query: { text: 'Moose', $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
     }
-    const findData = useFind(_params)
+    const findData = new Find(_params)
 
     expect(findData.limit).toBeDefined()
     expect(findData.skip).toBeDefined()
     expect(findData.total).toBeDefined()
 
     // Re-enable service's pagination
-    service.options.paginate = oldPaginate
+    messageStore.service.options.paginate = oldPaginate
   })
 })
 
 describe('Local Pagination', () => {
   beforeEach(async () => {
-    await taskStore.find({ query: { $limit: 20 } })
+    await messageStore.find({ query: { $limit: 20 } })
   })
   test('query without $limit or $skip returns all data', async () => {
     const params = {
       query: {},
-      store: taskStore,
+      store: messageStore,
     }
-    const { data } = useFind(params)
+    const { data } = new Find(params)
     expect(data.value.length).toBe(12)
   })
 
   test('can page local data', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
     }
-    const { data, next } = useFind(params)
+    const { data, next } = new Find(params)
     expect(data.value.length).toBe(3)
-    expect(data.value.map((i) => i._id)).toEqual([1, 2, 3])
+    expect(data.value.map((i) => i.id)).toEqual([1, 2, 3])
 
     await next()
 
     expect(data.value.length).toBe(3)
-    expect(data.value.map((i) => i._id)).toEqual([4, 5, 6])
+    expect(data.value.map((i) => i.id)).toEqual([4, 5, 6])
   })
 })
 
@@ -274,10 +256,10 @@ describe('Server Pagination', () => {
   test('passing `onServer` enables server pagination', async () => {
     const params = {
       query: {},
-      store: taskStore,
+      store: messageStore,
       onServer: true,
     }
-    const query = useFind(params)
+    const query = new Find(params)
     expect(query.data.value.length).toBe(0)
     expect(query.onServer).toBeTruthy()
   })
@@ -285,23 +267,23 @@ describe('Server Pagination', () => {
   test('onServer with `immediate` immediately fetches data', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
     }
-    const { request, requestCount } = useFind(params)
+    const { request, requestCount } = new Find(params)
     const response = await request.value
-    expect(response?.data.length).toBe(3)
+    expect(response.data.length).toBe(3)
     expect(requestCount.value).toBe(1)
   })
 
   test('onServer, immediate: false does not immediately fetch data', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
       immediate: false,
     }
-    const { request, requestCount } = useFind(params)
+    const { request, requestCount } = new Find(params)
     expect(request.value).toBe(null)
     expect(requestCount.value).toBe(0)
   })
@@ -309,10 +291,10 @@ describe('Server Pagination', () => {
   test('server fetch without limit or skip sets both values based on the response', async () => {
     const params = {
       query: {},
-      store: taskStore,
+      store: messageStore,
       onServer: true,
     }
-    const { request, requestCount, limit, skip } = useFind(params)
+    const { request, requestCount, limit, skip } = new Find(params)
     await request.value
     expect(requestCount.value).toBe(1)
     expect(limit.value).toBe(10)
@@ -325,14 +307,14 @@ describe('Server Pagination', () => {
   test('paginate on server, immediate: false, passing no params uses the pagination params', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
       immediate: false,
     }
-    const { data, requestCount, limit, skip, next, toEnd, pageCount, find } = useFind(params)
+    const { data, requestCount, limit, skip, next, toEnd, pageCount, find } = new Find(params)
     await find()
 
-    expect(data.value.map((i) => i._id)).toEqual([1, 2, 3])
+    expect(data.value.map((i) => i.id)).toEqual([1, 2, 3])
     expect(requestCount.value).toBe(1)
     expect(limit.value).toBe(3)
     expect(skip.value).toBe(0)
@@ -343,23 +325,23 @@ describe('Server Pagination', () => {
 
     // Make sure a second request was sent
     expect(requestCount.value).toBe(2)
-    expect(data.value.map((i) => i._id)).toEqual([4, 5, 6])
+    expect(data.value.map((i) => i.id)).toEqual([4, 5, 6])
 
     await toEnd()
     expect(skip.value).toBe(9)
 
     // Make sure a third request was sent
     expect(requestCount.value).toBe(3)
-    expect(data.value.map((i) => i._id)).toEqual([10, 11, 12])
+    expect(data.value.map((i) => i.id)).toEqual([10, 11, 12])
   })
 
   test('loading indicators during server pagination', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
     }
-    const { isPending, haveBeenRequested, haveLoaded, request, skip, next } = useFind(params)
+    const { isPending, haveBeenRequested, haveLoaded, request, skip, next } = new Find(params)
     expect(isPending.value).toBe(true)
     expect(haveLoaded.value).toBe(false)
     expect(haveBeenRequested.value).toBe(true)
@@ -383,16 +365,16 @@ describe('Server Pagination', () => {
         throw new Error('fail')
       }
     }
-    service.hooks({ before: { find: [hook] } })
+    api.service('messages').hooks({ before: { find: [hook] } })
 
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
       immediate: false,
     }
 
-    const { error, clearError, find } = useFind(params)
+    const { error, clearError, find } = new Find(params)
     expect(error.value).toBe(null)
     try {
       expect(await find()).toThrow()
@@ -415,15 +397,15 @@ describe('Server Pagination', () => {
         throw new Error('fail')
       }
     }
-    service.hooks({ before: { find: [hook] } })
+    api.service('messages').hooks({ before: { find: [hook] } })
 
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
       immediate: false,
     }
-    const { error, find } = useFind(params)
+    const { error, find } = new Find(params)
     expect(error.value).toBe(null)
 
     try {
@@ -440,18 +422,18 @@ describe('Server Pagination', () => {
 
   test('onServer when server pagination is turned off', async () => {
     // Turn off service's pagination
-    const oldPaginate = service.options.paginate
-    service.options.paginate = false
+    const oldPaginate = messageStore.service.options.paginate
+    messageStore.service.options.paginate = false
 
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
     }
-    const { data, request, requestCount, limit, skip, next, toEnd, pageCount } = useFind(params)
+    const { data, request, requestCount, limit, skip, next, toEnd, pageCount } = new Find(params)
     await request.value
 
-    expect(data.value.map((i) => i._id)).toEqual([1, 2, 3])
+    expect(data.value.map((i) => i.id)).toEqual([1, 2, 3])
     expect(requestCount.value).toBe(1)
     expect(limit.value).toBe(3)
     expect(skip.value).toBe(0)
@@ -463,7 +445,7 @@ describe('Server Pagination', () => {
 
     // Make sure a second request was sent
     expect(requestCount.value).toBe(2)
-    expect(data.value.map((i) => i._id)).toEqual([4, 5, 6])
+    expect(data.value.map((i) => i.id)).toEqual([4, 5, 6])
 
     await toEnd()
     expect(skip.value).toBe(9)
@@ -471,10 +453,10 @@ describe('Server Pagination', () => {
 
     // Make sure a third request was sent
     expect(requestCount.value).toBe(3)
-    expect(data.value.map((i) => i._id)).toEqual([10, 11, 12])
+    expect(data.value.map((i) => i.id)).toEqual([10, 11, 12])
 
     // Re-enable service's pagination
-    service.options.paginate = oldPaginate
+    messageStore.service.options.paginate = oldPaginate
   })
 })
 
@@ -482,11 +464,11 @@ describe('latestQuery and previousQuery', () => {
   test('onServer stores latestQuery and previousQuery', async () => {
     const params = {
       query: { $limit: 3, $skip: 0 },
-      store: taskStore,
+      store: messageStore,
       onServer: true,
       immediate: false,
     }
-    const { latestQuery, previousQuery, find, next } = useFind(params)
+    const { latestQuery, previousQuery, find, next } = new Find(params)
 
     expect(latestQuery.value).toBe(null)
 
@@ -505,9 +487,9 @@ describe('latestQuery and previousQuery', () => {
       queryParams: {},
       response: {
         data: [
-          { _id: 1, text: 'Moose' },
-          { _id: 2, text: 'moose' },
-          { _id: 3, text: 'Goose' },
+          { id: 1, text: 'Moose' },
+          { id: 2, text: 'moose' },
+          { id: 3, text: 'Goose' },
         ],
         limit: 3,
         skip: 0,
@@ -532,9 +514,9 @@ describe('latestQuery and previousQuery', () => {
       queryParams: {},
       response: {
         data: [
-          { _id: 4, text: 'Loose' },
-          { _id: 5, text: 'Marshall' },
-          { _id: 6, text: 'David' },
+          { id: 4, text: 'Loose' },
+          { id: 5, text: 'Marshall' },
+          { id: 6, text: 'David' },
         ],
         limit: 3,
         skip: 3,
@@ -550,10 +532,10 @@ describe('latestQuery and previousQuery', () => {
     test('allData contains all stored data', async () => {
       const _params = {
         query: { $limit: 4, $skip: 0 },
-        store: taskStore,
+        store: messageStore,
         onServer: true,
       }
-      const { allData, find, next } = useFind(_params)
+      const { allData, find, next } = useFind(_params as any)
       await find()
       await next()
       expect(allData.value.length).toBe(8)
@@ -568,18 +550,18 @@ describe('latestQuery and previousQuery', () => {
           await timeout(50)
         }
       }
-      service.hooks({ before: { find: [hook] } })
+      api.service('messages').hooks({ before: { find: [hook] } })
 
       const _params = {
         query: { $limit: 4, $skip: 0 },
-        store: taskStore,
+        store: messageStore,
         onServer: true,
         immediate: false,
       }
-      const { data, find, next, request, isPending } = useFind(_params)
+      const { data, find, next, request, isPending } = useFind(_params as any)
       await find()
 
-      const idsFromFirstPage = data.value.map((i) => i._id)
+      const idsFromFirstPage = data.value.map((i: any) => i.id)
       expect(idsFromFirstPage).toEqual([1, 2, 3, 4])
 
       next()
@@ -588,12 +570,12 @@ describe('latestQuery and previousQuery', () => {
 
       expect(isPending.value).toBe(true)
 
-      const idsWhilePending = data.value.map((i) => i._id)
+      const idsWhilePending = data.value.map((i: any) => i.id)
       expect(idsWhilePending).toEqual(idsFromFirstPage)
 
       await request.value
 
-      const idsAfterRequest = data.value.map((i) => i._id)
+      const idsAfterRequest = data.value.map((i: any) => i.id)
       expect(idsAfterRequest).not.toEqual(idsFromFirstPage)
       expect(idsAfterRequest).not.toEqual(idsWhilePending)
     })
@@ -606,11 +588,11 @@ describe('Computed Params', () => {
     const params = computed(() => {
       return {
         query: { text: text.value },
-        store: taskStore,
+        store: messageStore,
         onServer: true,
       }
     })
-    const { data, total, requestCount, request } = useFind(params)
+    const { data, total, requestCount, request } = useFind(params as any)
 
     await request.value
 
@@ -627,19 +609,19 @@ describe('Computed Params', () => {
     // request was sent after computed params changed
     expect(requestCount.value).toBe(2)
     expect(total.value).toBe(1)
-    expect(data.value[0].text).toBe('Goose')
+    expect((data.value[0] as any).text).toBe('Goose')
   })
 
   test('computed params can start with limit and skip', async () => {
     const ids = ref([1, 2, 3, 4, 5, 6])
     const params = computed(() => {
       return {
-        query: { _id: { $in: ids.value }, $limit: 10, $skip: 0 },
-        store: taskStore,
+        query: { id: { $in: ids.value }, $limit: 10, $skip: 0 },
+        store: messageStore,
         onServer: true,
       }
     })
-    const { params: _params, data, total, requestCount, request } = useFind(params)
+    const { params: _params, data, total, requestCount, request } = useFind(params as any)
 
     expect(_params.value.query.$limit).toBe(10)
     expect(_params.value.query.$skip).toBe(0)
@@ -667,12 +649,12 @@ describe('Computed Params', () => {
       // if (shouldQuery.value)
       return {
         query: { text: 'Moose' },
-        store: taskStore,
+        store: messageStore,
         onServer: true,
       }
       // else return null
     })
-    const { data, total, requestCount, request } = useFind(params)
+    const { data, total, requestCount, request } = useFind(params as any)
 
     await request.value
 
@@ -687,6 +669,6 @@ describe('Computed Params', () => {
     // request was sent after computed params changed
     expect(requestCount.value).toBe(2)
     expect(total.value).toBe(1)
-    expect(data.value[0].text).toBe('Goose')
+    expect((data.value[0] as any).text).toBe('Goose')
   })
 })

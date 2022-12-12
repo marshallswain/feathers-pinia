@@ -1,22 +1,14 @@
 import type { MaybeRef } from '../utility-types'
 import type { ModelInstance } from '../use-base-model'
 import type { Id } from '@feathersjs/feathers'
-import type {
-  UseFindWatchedOptions,
-  UseGetOptions,
-  FindClassParams,
-  FindClassParamsStandalone,
-  GetClassParams,
-  HandleEvents,
-  AnyData,
-} from './types'
+import type { UseFindWatchedOptions, UseGetOptions, GetClassParams, HandleEvents, AnyData } from './types'
 
 import { Service } from '@feathersjs/feathers'
 import { ref, computed, unref } from 'vue-demi'
-import { useFind as _useFind } from '../use-find'
-import { useGet as _useGet } from '../use-get'
-import { useFindWatched as _useFindWatched } from '../use-find-watched'
-import { useGetWatched as _useGetWatched } from '../use-get-watched'
+import { useFind as useFind, UseFindParams } from '../use-find'
+import { useGet as useGet } from '../use-get'
+import { useFindWatched as useFindWatched } from '../use-find-watched'
+import { useGetWatched as useGetWatched } from '../use-get-watched'
 import { useServiceLocal } from './use-service-local-queries'
 import { useServiceEvents } from './use-service-events'
 
@@ -120,15 +112,15 @@ export const useService = <
   })
 
   const serviceUtils = {
-    useFind: function (_params: MaybeRef<FindClassParams>) {
+    useFind: function (_params: MaybeRef<UseFindParams>) {
       const params: any = unref(_params)
       params.store = this
-      return _useFind(params as MaybeRef<FindClassParamsStandalone>)
+      return useFind(params)
     },
     useGet: function (_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
       const params: any = unref(_params)
       params.store = this
-      return _useGet(_id as Id, _params as MaybeRef<any>)
+      return useGet(_id as Id, _params as MaybeRef<any>)
     },
     useGetOnce: function (_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
       const params = unref(_params)
@@ -139,11 +131,11 @@ export const useService = <
       return results
     },
     useFindWatched: function (options: UseFindWatchedOptions) {
-      return _useFindWatched({ model: ModelFn, ...(options as any) })
+      return useFindWatched({ model: ModelFn, ...(options as any) })
     },
     // alias to useGetWatched, doesn't require passing the model
     useGetWatched: function (options: UseGetOptions) {
-      return _useGetWatched({ model: ModelFn as any, ...options })
+      return useGetWatched({ model: ModelFn as any, ...options })
     },
   }
 
@@ -188,16 +180,9 @@ export const useService = <
     addToStore,
     clearAll,
 
-    // pending (conditional based on if service was provided)
     ...pendingState,
-
-    // event locks
     ...eventLocks,
-
-    // service actions (conditional based on if service was provided)
     ...serviceMethods,
-
-    // service utils
     ...serviceUtils,
   }
 

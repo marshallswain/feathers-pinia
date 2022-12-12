@@ -1,122 +1,103 @@
-import type { Tasks, TasksData, TasksQuery } from './feathers-schema-tasks'
-import { type ModelInstance, useInstanceDefaults, useService } from '../src'
-import { createPinia, defineStore } from 'pinia'
+import { setupFeathersPinia, BaseModel, Get, useGetClass } from '../src/index' // from 'feathers-pinia'
+import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
-import { useGet } from '../src/use-get'
 import { ref } from 'vue-demi'
-import { useFeathersModel } from '../src/use-base-model'
-import { feathersPiniaHooks } from '../src/hooks'
 import { vi } from 'vitest'
 
 const pinia = createPinia()
-const service = api.service('tasks')
+const { defineStore } = setupFeathersPinia({ clients: { api } })
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
-  const withDefaults = useInstanceDefaults({}, data)
-  return withDefaults
+export class Message extends BaseModel {
+  id: number
+  text: string
+
+  constructor(data: Partial<Message>, options: Record<string, any> = {}) {
+    super(data, options)
+    this.init(data)
+  }
 }
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
-  { name: 'Task', idField: '_id', service },
-  ModelFn,
-)
-type TaskInstance = ReturnType<typeof Task>
 
-// passing the ModelFn into `useService` overwrites the model's feathers methods to proxy through the store.
-const useTaskStore = defineStore('counter', () => {
-  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof Task>({
-    service,
-    idField: '_id',
-    ModelFn: Task,
-  })
-
-  return { ...serviceUtils }
-})
-const taskStore = useTaskStore(pinia)
-Task.setStore(taskStore)
-
-service.hooks({
-  around: {
-    all: [...feathersPiniaHooks(Task, taskStore)],
-  },
-})
+const useMessagesService = defineStore({ servicePath: 'messages', Model: Message })
+const messageStore = useMessagesService(pinia)
 
 const reset = () => {
-  resetStores(service, taskStore)
+  resetStores(api.service('messages'), messageStore)
 }
 
 beforeEach(async () => {
   reset()
-  service.store = {
-    1: { _id: '1', text: 'Moose' },
-    2: { _id: '2', text: 'moose' },
-    3: { _id: '3', text: 'Goose' },
-    4: { _id: '4', text: 'Loose' },
-    5: { _id: '5', text: 'Marshall' },
-    6: { _id: '6', text: 'David' },
-    7: { _id: '7', text: 'Beau' },
-    8: { _id: '8', text: 'Batman' },
-    9: { _id: '9', text: 'Flash' },
-    10: { _id: '10', text: 'Wolverine' },
-    11: { _id: '11', text: 'Rogue' },
-    12: { _id: '12', text: 'Jubilee' },
+  api.service('messages').store = {
+    1: { id: 1, text: 'Moose' },
+    2: { id: 2, text: 'moose' },
+    3: { id: 3, text: 'Goose' },
+    4: { id: 4, text: 'Loose' },
+    5: { id: 5, text: 'Marshall' },
+    6: { id: 6, text: 'David' },
+    7: { id: 7, text: 'Beau' },
+    8: { id: 8, text: 'Batman' },
+    9: { id: 9, text: 'Flash' },
+    10: { id: 10, text: 'Wolverine' },
+    11: { id: 11, text: 'Rogue' },
+    12: { id: 12, text: 'Jubilee' },
   }
 })
 afterEach(() => reset())
 
-describe('Factory Function', () => {
+describe('useGetClass Factory Function', () => {
   test('can use `useGet` to get a Get instance', async () => {
-    const returned = useGet(1, { store: taskStore })
+    const returned = useGetClass(1, { store: messageStore } as any)
+    expect(returned instanceof Get).toBeTruthy()
     expect(returned.data.value).toBeDefined()
   })
 })
 
-describe('Manual Get with Ref', () => {
+describe('useGetClass Manual Get with Ref', () => {
   test('can update ref and manually get correct data', async () => {
-    const id = ref('1')
-    const { data, get } = useGet(id, { store: taskStore, immediate: false })
+    const id = ref(1)
+    const { data, get } = new Get(id, { store: messageStore, immediate: false })
     expect(data.value).toBeNull()
 
     await get()
-    expect(data.value?._id).toBe('1')
+    expect(data.value?.id).toBe(1)
 
-    id.value = '2'
+    id.value = 2
     expect(data.value).toBeNull()
 
     await get()
-    expect(data.value?._id).toBe('2')
+    expect(data.value?.id).toBe(2)
   })
 })
 
 describe('Get Class', () => {
   beforeEach(async () => {
-    await taskStore.find({ query: { $limit: 20 } })
+    await messageStore.find({ query: { $limit: 20 } })
   })
 
   test('can pass a primitive id', async () => {
-    const { data, requestCount } = useGet('1', { store: taskStore })
-    expect(data.value?._id).toBe('1')
+    const { data, requestCount } = new Get(1, { store: messageStore })
+    expect(data.value?.id).toBe(1)
     expect(requestCount.value).toBe(0)
   })
 
   test('can pass a ref id', async () => {
-    const id = ref('1')
-    const { data } = useGet(id, { store: taskStore })
-    expect(data.value?._id).toBe('1')
+    const id = ref(1)
+    const { data } = new Get(id, { store: messageStore })
+    expect(data.value?.id).toBe(1)
   })
 
   test('updating returned id updates data', async () => {
-    const { id, data } = useGet('1', { store: taskStore })
-    expect(id.value).toBe('1')
-    expect(data.value?._id).toBe('1')
+    const { id, data } = new Get(1, { store: messageStore })
+    expect(id.value).toBe(1)
+    expect(data.value?.id).toBe(1)
 
-    id.value = '2'
+    id.value = 2
 
-    expect(data.value?._id).toBe('2')
+    expect(data.value?.id).toBe(2)
   })
 
   test('id can be null from store', async () => {
-    const { id, data } = useGet(null, { store: taskStore })
+    const { id, data } = new Get(null, { store: messageStore })
     expect(id.value).toBe(null)
     expect(data.value).toBe(null)
   })
@@ -124,39 +105,39 @@ describe('Get Class', () => {
 
 describe('Service Store', () => {
   beforeEach(async () => {
-    await taskStore.find({ query: { $limit: 20 } })
+    await messageStore.find({ query: { $limit: 20 } })
   })
 
   test('works as client-only useGet', async () => {
-    const id = ref('1')
-    const { data, request, requestCount } = taskStore.useGet(id)
+    const id = ref(1)
+    const { data, request, requestCount } = messageStore.useGet(id)
     await request.value
-    expect(data.value?._id).toBe('1')
+    expect(data.value?.id).toBe(1)
     expect(requestCount.value).toBe(0)
   })
 
   test('works with onServer', async () => {
-    const id = ref('1')
-    const { data, request, requestCount } = taskStore.useGet(id, { onServer: true })
+    const id = ref(1)
+    const { data, request, requestCount } = messageStore.useGet(id, { onServer: true })
     await request.value
-    expect(data.value?._id).toBe('1')
+    expect(data.value?.id).toBe(1)
     expect(requestCount.value).toBe(1)
   })
 })
 
 describe('With onServer', () => {
   test('can fetch data from the server', async () => {
-    const id = ref('1')
-    const { data, request, requestCount } = useGet(id, { store: taskStore, onServer: true })
+    const id = ref(1)
+    const { data, request, requestCount } = new Get(id, { store: messageStore, onServer: true })
     await request.value
-    expect(data.value?._id).toBe('1')
+    expect(data.value?.id).toBe(1)
     expect(requestCount.value).toBe(1)
   })
 
   test('watches id', async () => {
-    const id = ref('1')
-    const { data, request, isPending, hasLoaded, hasBeenRequested } = useGet(id, {
-      store: taskStore,
+    const id = ref(1)
+    const { data, request, isPending, hasLoaded, hasBeenRequested } = new Get(id, {
+      store: messageStore,
       onServer: true,
     })
     expect(isPending.value).toBe(true)
@@ -166,17 +147,17 @@ describe('With onServer', () => {
     await request.value
 
     expect(isPending.value).toBe(false)
-    expect(data.value?._id).toBe('1')
+    expect(data.value?.id).toBe(1)
 
-    id.value = '2'
+    id.value = 2
     await timeout(20)
     await request.value
 
-    expect(data.value?._id).toBe('2')
+    expect(data.value?.id).toBe(2)
   })
 
   test('id can be null with onServer', async () => {
-    const { id, data, requestCount, get } = useGet(null, { store: taskStore, immediate: false, onServer: true })
+    const { id, data, requestCount, get } = new Get(null, { store: messageStore, immediate: false, onServer: true })
     expect(id.value).toBe(null)
     expect(data.value).toBe(null)
     expect(requestCount.value).toBe(0)
@@ -197,33 +178,33 @@ describe('With onServer', () => {
         await timeout(50)
       }
     }
-    service.hooks({ before: { get: [hook] } })
+    api.service('messages').hooks({ before: { get: [hook] } })
 
-    const id = ref('1')
-    const { data, request, isPending } = useGet(id, { store: taskStore, onServer: true })
+    const id = ref(1)
+    const { data, request, isPending } = new Get(id, { store: messageStore, onServer: true })
 
     await request.value
 
     expect(isPending.value).toBe(false)
-    expect(data.value?._id).toBe('1')
+    expect(data.value?.id).toBe(1)
 
-    id.value = '2'
+    id.value = 2
 
     await timeout(20)
 
     expect(isPending.value).toBe(true)
-    expect(data.value?._id).toBe('1')
+    expect(data.value?.id).toBe(1)
 
     await request.value
 
     expect(isPending.value).toBe(false)
-    expect(data.value?._id).toBe('2')
+    expect(data.value?.id).toBe(2)
   })
 
   test('can prevent a query with queryWhen', async () => {
-    const id = ref('1')
-    const { data, get, requestCount, queryWhen, request } = useGet(id, {
-      store: taskStore,
+    const id = ref(1)
+    const { data, get, requestCount, queryWhen, request } = new Get(id, {
+      store: messageStore,
       onServer: true,
       immediate: false,
     })
@@ -239,13 +220,13 @@ describe('With onServer', () => {
     expect(queryWhenFn).toHaveBeenCalled()
     expect(requestCount.value).toBe(1)
 
-    id.value = '2'
+    id.value = 2
     await timeout(20)
     await request.value
 
     expect(requestCount.value).toBe(2)
 
-    id.value = '1'
+    id.value = 1
     await timeout(20)
     await request.value
 
@@ -254,8 +235,8 @@ describe('With onServer', () => {
   })
 
   test('store.useGetOnce only queries once per id', async () => {
-    const id = ref('1')
-    const { data, get, requestCount, request } = taskStore.useGetOnce(id)
+    const id = ref(1)
+    const { data, get, requestCount, request } = messageStore.useGetOnce(id)
     expect(requestCount.value).toBe(1)
     expect(data.value).toBe(null)
 
@@ -267,13 +248,13 @@ describe('With onServer', () => {
     // queryWhen is called even when manually calling `get`
     expect(requestCount.value).toBe(1)
 
-    id.value = '2'
+    id.value = 2
     await timeout(20)
     await request.value
 
     expect(requestCount.value).toBe(2)
 
-    id.value = '1'
+    id.value = 1
     await timeout(20)
     await request.value
 
@@ -281,9 +262,9 @@ describe('With onServer', () => {
   })
 
   test('can disable watch', async () => {
-    const id = ref('1')
-    const { get, requestCount, request } = useGet(id, {
-      store: taskStore,
+    const id = ref(1)
+    const { get, requestCount, request } = new Get(id, {
+      store: messageStore,
       onServer: true,
       watch: false,
     })
@@ -293,13 +274,13 @@ describe('With onServer', () => {
 
     expect(requestCount.value).toBe(1)
 
-    id.value = '2'
+    id.value = 2
     await timeout(20)
     await request.value
 
     expect(requestCount.value).toBe(1)
 
-    id.value = '1'
+    id.value = 1
     await timeout(20)
     await request.value
 
@@ -317,9 +298,9 @@ describe('Errors', () => {
         throw new Error('fail')
       }
     }
-    service.hooks({ before: { get: [hook] } })
+    api.service('messages').hooks({ before: { get: [hook] } })
 
-    const { error, clearError, get } = useGet('1', { store: taskStore, onServer: true, immediate: false })
+    const { error, clearError, get } = new Get(1, { store: messageStore, onServer: true, immediate: false })
     expect(error.value).toBe(null)
     try {
       expect(await get()).toThrow()
@@ -334,7 +315,7 @@ describe('Errors', () => {
   })
 
   test('receives 404 from service if not found', async () => {
-    const { data, error, clearError, get } = taskStore.useGet('A', { onServer: true, immediate: false })
+    const { data, error, clearError, get } = messageStore.useGet('A', { onServer: true, immediate: false })
 
     try {
       expect(await get()).toThrow()

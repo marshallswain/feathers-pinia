@@ -1,7 +1,9 @@
 import type { Id, Service } from '@feathersjs/feathers/lib'
-import type { ComputedRef } from 'vue-demi'
+import type { ComputedRef, UnwrapNestedRefs } from 'vue-demi'
 import type { Params } from '../types'
 import { type AnyData, type CloneOptions, useService, useServiceApiFeathers } from '../use-service'
+import { useFind } from '../use-find'
+import { useGet } from '../use-get'
 
 export interface UseBaseModelOptions {
   name: string
@@ -126,9 +128,9 @@ export interface SharedModelStoreMethods<M extends AnyData, Q extends AnyData> {
   addToStore(data: ModelInstance<M>[]): ModelInstance<M>[]
   removeFromStore(data: ModelInstance<M>): ModelInstance<M>
   removeFromStore(data: ModelInstance<M>[]): ModelInstance<M>[]
-  findInStore: ComputedRef<(params: Params<Q>) => { total: number; limit: number; skip: number; data: M[] }>
-  countInStore: ComputedRef<(params: Params<Q>) => number>
-  getFromStore: ComputedRef<(id: Id | null, params?: Params<Q> | undefined) => M | null>
+  findInStore: (params: Params<Q>) => { total: number; limit: number; skip: number; data: M[] }
+  countInStore: (params: Params<Q>) => number
+  getFromStore: (id: Id | null, params?: Params<Q> | undefined) => M | null
 }
 
 /**
@@ -151,12 +153,14 @@ export interface BaseModelStore<M extends AnyData, Q extends AnyData> extends Sh
   clearAll(): void
 }
 
-export type FeathersPiniaServiceStore<
+export type BaseModelStoreUnwrapped<M extends AnyData, Q extends AnyData> = UnwrapNestedRefs<BaseModelStore<M, Q>>
+
+export type UseServiceStore<
   M extends AnyData,
   D extends AnyData,
   Q extends AnyData,
-  Func extends (data: ModelInstance<M>) => any,
-> = ReturnType<typeof useService<M, D, Q, Func>>
+  ModelFunc extends (data: ModelInstance<M>) => any,
+> = ReturnType<typeof useService<M, D, Q, ModelFunc>>
 
 // export interface FeathersModelStore<M extends AnyData, Q extends AnyData> extends BaseModelStore<M, Q> {
 //   find: (_params?: MaybeRef<Params<Q>> | undefined) => Promise<FindResponseAlwaysData<M>>
@@ -166,7 +170,7 @@ export type FeathersPiniaServiceStore<
  * Types for `Model` (useBaseModel)
  */
 export interface BaseModelStatic<M extends AnyData, Q extends AnyData> extends SharedModelStoreMethods<M, Q> {
-  store: BaseModelStore<M, Q>
+  store: BaseModelStoreUnwrapped<M, Q>
   setStore: (store: any) => void
 }
 
@@ -182,6 +186,11 @@ export interface FeathersModelStatic<
   ModelFunc extends (data: ModelInstance<M>) => any,
 > extends SharedModelStoreMethods<M, Q>,
     ApiFeathers {
-  store: FeathersPiniaServiceStore<M, D, Q, ModelFunc>
+  store: UseServiceStore<M, D, Q, ModelFunc>
   setStore: (store: any) => void
+  useFind: typeof useFind
+  useGet: typeof useGet
+  useGetOnce: typeof useGet
+  useFindWatched: any
+  useGetWatched: any
 }

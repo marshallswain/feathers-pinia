@@ -2,7 +2,7 @@ import type { BaseModelStatic, InferReturn, ModelInstanceData, UseBaseModelOptio
 import type { AnyData } from '../service-store'
 import { useServiceLocal } from '../use-service'
 import { useAllStorageTypes } from '../use-service/use-all-storage-types'
-import { ref } from 'vue-demi'
+import { reactive, ref } from 'vue-demi'
 
 /**
  * Adds the useService utilities to the ModelFn
@@ -33,7 +33,7 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
   })
 
   // Setup the default store, matching a subset of the pinia store structure
-  const store = {
+  const store = reactive({
     additionalFields: [],
     itemsById: storage.itemStorage.byId,
     items: storage.itemStorage.list,
@@ -53,7 +53,7 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     findInStore,
     countInStore,
     getFromStore,
-  }
+  })
   _ModelFn.setStore(store)
 
   // Add getters for key methods

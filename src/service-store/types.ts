@@ -4,9 +4,8 @@ import type { Id, Query, NullableId, Application as FeathersClient } from '@feat
 import type { StateTree, Store as _Store, StoreDefinition, _GettersTree, DefineStoreOptionsBase } from 'pinia'
 import type { MaybeArray, MaybeRef, TypedActions, TypedGetters } from '../utility-types'
 import { BaseModel } from './base-model'
-import { Find } from '../use-find'
+import { Find } from '../use-find-class'
 import { Get } from '../use-get'
-import { ModelFn } from '../use-base-model'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
@@ -651,7 +650,7 @@ export interface UseGetOptions {
   immediate?: boolean
 }
 export interface UseGetOptionsStandalone<M extends BaseModel> extends UseGetOptions {
-  model: ModelStatic<M> | ModelFn<M>
+  model: ModelStatic<M>
 }
 export interface UseGetState {
   isPending: boolean

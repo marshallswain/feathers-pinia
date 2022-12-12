@@ -6,24 +6,29 @@ export { defineAuthStore } from './define-auth-store'
 export { useAuth } from './use-auth'
 export {
   useService,
-  useServiceClones,
-  useServiceStorage,
-  useLocal,
-  useServiceApiFeathers,
-  useServiceEvents,
+  type UseServiceOptions,
+  type UseServiceOptionsExtended,
   useServiceLocal,
-  useServicePagination,
-  useServicePending,
   useServiceTemps,
+  useServiceEvents,
+  useServiceClones,
+  useServicePending,
+  useServiceStorage,
+  useAllStorageTypes,
+  useServiceEventLocks,
+  useServicePagination,
+  useServiceApiFeathers,
 } from './use-service/'
 
 // Composition Models
 export {
-  useModelStore,
+  useBaseModel,
+  useFeathersModel,
   useModelEvents,
-  useInstanceModel,
+  wrapModelFeathers,
+  useModelInstance,
   useInstanceDefaults,
-  useInstanceFeathers,
+  useModelInstanceFeathers,
 } from './use-base-model'
 
 // Hooks for Composition Models and Stores
@@ -38,8 +43,10 @@ export { models } from './models'
 export { clients, registerClient } from './clients'
 
 // Utils
-export { Find, useFind } from './use-find'
-export { Get, useGet } from './use-get'
+export { useFind } from './use-find'
+export { Find, useFindClass } from './use-find-class'
+export { useGet } from './use-get'
+export { Get, useGetClass } from './use-get-class'
 export { useFindWatched } from './use-find-watched'
 export { useGetWatched } from './use-get-watched'
 export { usePagination } from './use-pagination'
