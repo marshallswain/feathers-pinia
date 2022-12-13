@@ -1,9 +1,7 @@
 import type { Tasks, TasksData, TasksQuery } from '../feathers-schema-tasks'
-import { useFeathersModel, useInstanceDefaults, type ModelInstance } from '../../src/use-base-model/index'
+import { type ModelInstance, useFeathersModel, useInstanceDefaults, useService, feathersPiniaHooks } from '../../src'
 import { api } from '../feathers'
 import { createPinia, defineStore } from 'pinia'
-import { useService } from '../../src'
-import { feathersPiniaHooks } from '../../src/hooks'
 
 const pinia = createPinia()
 const service = api.service('tasks')
@@ -33,7 +31,7 @@ Task.setStore(taskStore)
 
 api.service('tasks').hooks({
   around: {
-    all: [...feathersPiniaHooks(Task, taskStore)],
+    all: [...feathersPiniaHooks(Task, Task.store)],
   },
 })
 

@@ -24,32 +24,32 @@ describe('useModelInstance temps', () => {
 
   test('not added to Model store by default', () => {
     Task({ description: 'foo', isComplete: true })
-    expect(Task.store.items.value.length).toBe(0)
-    expect(Task.store.temps.value.length).toBe(0)
-    expect(Task.store.clones.value.length).toBe(0)
+    expect(Task.store.items.length).toBe(0)
+    expect(Task.store.temps.length).toBe(0)
+    expect(Task.store.clones.length).toBe(0)
   })
 
   test('call addToStore without id to add to tempStore', () => {
     const task = Task({ description: 'foo', isComplete: true }).addToStore()
-    expect(Task.store.temps.value.length).toBe(1)
-    expect(Task.store.temps.value[0]).toBe(task)
+    expect(Task.store.temps.length).toBe(1)
+    expect(Task.store.temps[0]).toBe(task)
   })
 
   test('call addToStore with id to add to itemStore', () => {
     const task = Task({ _id: '1', description: 'foo', isComplete: true }).addToStore()
-    expect(Task.store.items.value.length).toBe(1)
-    expect(Task.store.items.value[0]).toBe(task)
+    expect(Task.store.items.length).toBe(1)
+    expect(Task.store.items[0]).toBe(task)
   })
 
   test('call removeFromStore on temp', () => {
     const task = Task({ description: 'foo', isComplete: true }).addToStore()
     task.removeFromStore()
-    expect(Task.store.temps.value.length).toBe(0)
+    expect(Task.store.temps.length).toBe(0)
   })
 
   test('call removeFromStore on item', () => {
     const task = Task({ _id: '1', description: 'foo', isComplete: true }).addToStore()
     task.removeFromStore()
-    expect(Task.store.items.value.length).toBe(0)
+    expect(Task.store.items.length).toBe(0)
   })
 })

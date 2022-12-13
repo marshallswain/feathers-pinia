@@ -1,6 +1,5 @@
 import type { Tasks, TasksQuery } from '../feathers-schema-tasks'
-import { ModelInstanceData, useInstanceDefaults } from '../../src/use-base-model/index'
-import { wrapModelBase } from '../../src/use-base-model/wrap-model_base'
+import { type ModelInstanceData, useInstanceDefaults, wrapModelBase } from '../../src'
 
 const ModelFn = (data: ModelInstanceData<Tasks>) => {
   const withDefaults = useInstanceDefaults({ isComplete: false }, data)
@@ -20,11 +19,11 @@ describe('useModelBase Model.store properties', () => {
   })
 
   test('items property', () => {
-    expect(Array.isArray(Task.store.items.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.items)).toBeTruthy()
   })
 
   test('itemIds property', () => {
-    expect(Array.isArray(Task.store.itemIds.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.itemIds)).toBeTruthy()
   })
 
   test('tempsById property', () => {
@@ -33,11 +32,11 @@ describe('useModelBase Model.store properties', () => {
   })
 
   test('temps property', () => {
-    expect(Array.isArray(Task.store.temps.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.temps)).toBeTruthy()
   })
 
   test('tempIds property', () => {
-    expect(Array.isArray(Task.store.tempIds.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.tempIds)).toBeTruthy()
   })
 
   test('clonesById property', () => {
@@ -46,11 +45,11 @@ describe('useModelBase Model.store properties', () => {
   })
 
   test('clones property', () => {
-    expect(Array.isArray(Task.store.clones.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.clones)).toBeTruthy()
   })
 
   test('cloneIds property', () => {
-    expect(Array.isArray(Task.store.cloneIds.value)).toBeTruthy()
+    expect(Array.isArray(Task.store.cloneIds)).toBeTruthy()
   })
 
   test('clone property', () => {

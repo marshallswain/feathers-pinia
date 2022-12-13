@@ -25,6 +25,7 @@ export {
   useBaseModel,
   useFeathersModel,
   useModelEvents,
+  wrapModelBase,
   wrapModelFeathers,
   useModelInstance,
   useInstanceDefaults,
@@ -32,7 +33,15 @@ export {
 } from './use-base-model'
 
 // Hooks for Composition Models and Stores
-export { syncStore, setPending, normalizeFind, eventLocks, skipGetIfExists, makeModelInstances } from './hooks'
+export {
+  syncStore,
+  setPending,
+  normalizeFind,
+  eventLocks,
+  skipGetIfExists,
+  makeModelInstances,
+  feathersPiniaHooks,
+} from './hooks'
 
 // Associations
 export { associateFind } from './associate-find'
