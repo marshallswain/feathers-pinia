@@ -115,7 +115,7 @@ export function cleanData<T = AnyDataOrArray>(data: T, tempIdField: string): T {
  * @param data item(s) before being passed to the server
  * @param responseData items(s) returned from the server
  */
-export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray, tempIdField: string) {
+export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray, tempIdField = 'tempId') {
   const { items: sourceItems, isArray } = getArray(data)
   const { items: responseItems } = getArray(resData)
 
