@@ -2,7 +2,7 @@ import { setupFeathersPinia, BaseModel } from '../src/index' // from 'feathers-p
 import { createPinia } from 'pinia'
 import { api } from './feathers'
 import { resetStores, timeout } from './test-utils'
-import { Find, useFind } from '../src/use-find-class'
+import { Find, useFindClass } from '../src/use-find-class'
 import { computed, ref } from 'vue-demi'
 
 const pinia = createPinia()
@@ -50,7 +50,7 @@ describe('useFind with Find class', () => {
       query: { text: 'Moose' },
       store: messageStore,
     }
-    const returned = useFind(params)
+    const returned = useFindClass(params)
     expect(returned instanceof Find).toBeTruthy()
     expect(returned.data.value).toBeDefined()
   })
@@ -535,7 +535,7 @@ describe('latestQuery and previousQuery', () => {
         store: messageStore,
         onServer: true,
       }
-      const { allData, find, next } = useFind(_params as any)
+      const { allData, find, next } = useFindClass(_params as any)
       await find()
       await next()
       expect(allData.value.length).toBe(8)
@@ -558,7 +558,7 @@ describe('latestQuery and previousQuery', () => {
         onServer: true,
         immediate: false,
       }
-      const { data, find, next, request, isPending } = useFind(_params as any)
+      const { data, find, next, request, isPending } = useFindClass(_params as any)
       await find()
 
       const idsFromFirstPage = data.value.map((i: any) => i.id)
@@ -592,7 +592,7 @@ describe('Computed Params', () => {
         onServer: true,
       }
     })
-    const { data, total, requestCount, request } = useFind(params as any)
+    const { data, total, requestCount, request } = useFindClass(params as any)
 
     await request.value
 
@@ -621,7 +621,7 @@ describe('Computed Params', () => {
         onServer: true,
       }
     })
-    const { params: _params, data, total, requestCount, request } = useFind(params as any)
+    const { params: _params, data, total, requestCount, request } = useFindClass(params as any)
 
     expect(_params.value.query.$limit).toBe(10)
     expect(_params.value.query.$skip).toBe(0)
@@ -654,7 +654,7 @@ describe('Computed Params', () => {
       }
       // else return null
     })
-    const { data, total, requestCount, request } = useFind(params as any)
+    const { data, total, requestCount, request } = useFindClass(params as any)
 
     await request.value
 

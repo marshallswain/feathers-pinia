@@ -1,9 +1,10 @@
 import type { MaybeRef } from '../utility-types'
-import type { ModelInstance } from '../use-base-model'
-import type { Id } from '@feathersjs/feathers'
+import type { FeathersInstance, ModelInstance } from '../use-base-model'
+import type { Id, Query } from '@feathersjs/feathers'
+import type { Params } from '../types'
 import type { UseFindWatchedOptions, UseGetOptions, GetClassParams, HandleEvents, AnyData } from './types'
 
-import { Service } from '@feathersjs/feathers'
+import { ClientService } from '@feathersjs/feathers'
 import { ref, computed, unref } from 'vue-demi'
 import { useFind as useFind, UseFindParams } from '../use-find'
 import { useGet as useGet } from '../use-get'
@@ -15,12 +16,11 @@ import { useServiceEvents } from './use-service-events'
 import { useServicePending } from './use-service-pending'
 import { useServicePagination } from './use-service-pagination'
 import { useServiceApiFeathers } from './use-service-api-feathers'
-// import EventEmitter from 'events'
 import { useServiceEventLocks } from './use-service-event-locks'
 import { useAllStorageTypes } from './use-all-storage-types'
 
-export type UseServiceOptions<M extends AnyData> = {
-  service: Service
+export type UseServiceOptions<M extends AnyData, D extends AnyData, Q extends Query> = {
+  service: ClientService<FeathersInstance<M, Q>, D, Params<Q>>
   idField: string
   whitelist?: string[]
   paramsForServer?: string[]
@@ -30,8 +30,12 @@ export type UseServiceOptions<M extends AnyData> = {
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
 }
-export interface UseServiceOptionsExtended<M extends AnyData, ModelFunc extends (data: ModelInstance<M>) => any>
-  extends UseServiceOptions<M> {
+export interface UseServiceOptionsExtended<
+  M extends AnyData,
+  D extends AnyData,
+  Q extends Query,
+  ModelFunc extends (data: ModelInstance<M>) => any,
+> extends UseServiceOptions<M, D, Q> {
   ModelFn: ModelFunc
 }
 
@@ -42,10 +46,10 @@ const makeDefaultOptions = () => ({
 export const useService = <
   M extends AnyData,
   D extends AnyData,
-  Q extends AnyData,
+  Q extends Query,
   ModelFunc extends (data: ModelInstance<M>) => any,
 >(
-  _options: UseServiceOptionsExtended<M, ModelFunc>,
+  _options: UseServiceOptionsExtended<M, D, Q, ModelFunc>,
 ) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const ModelFn = _options.ModelFn
@@ -89,10 +93,7 @@ export const useService = <
   })
 
   // feathers service
-  const serviceMethods = useServiceApiFeathers<M, D, Q>({
-    service: options.service,
-    addToStore,
-  })
+  const serviceMethods = useServiceApiFeathers<M, D, Q>({ service: options.service })
 
   // event locks
   const eventLocks = useServiceEventLocks()

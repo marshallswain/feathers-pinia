@@ -1,4 +1,4 @@
-import type { Id, Service } from '@feathersjs/feathers/lib'
+import type { Id, Service } from '@feathersjs/feathers'
 import type { ComputedRef, UnwrapNestedRefs } from 'vue-demi'
 import type { Params } from '../types'
 import { type AnyData, type CloneOptions, useService, useServiceApiFeathers } from '../use-service'
@@ -69,44 +69,53 @@ export type BaseModelInstanceProps<M extends AnyData = AnyData> = {
   // see `BaseModelData.__tempId`
   readonly __tempId: string
   /**
+   * A boolean indicating if the instance is a temp. Will be `true` if the instance does not have an idField. This is
+   * the only reliable way to determine if a record is a temp or not, since after calling `temp.save`, the temp will
+   * have both a `__tempId` and a real idField value.
+   */
+  readonly __isTemp: boolean
+  /**
    * Creates a copy of an item or temp record. The copy will have `__isClone` set to `true` and will be added to the
    * Model's clone storage. If not already stored, the original item  will be added to the appropriate store.
    * @param data
    * @param options
    */
-  clone(this: ModelInstance<M>, data?: Partial<M>, options?: CloneOptions): ModelInstance<M>
+  clone<N extends ModelInstance<M>>(this: N, data?: Partial<M>, options?: CloneOptions): N
   /**
    * Copies a clone's data onto the original item or temp record.
    * @param data
    * @param options
    */
-  commit(this: ModelInstance<M>, data?: Partial<M>, options?: CloneOptions): ModelInstance<M>
+  commit<N extends ModelInstance<M>>(this: N, data?: Partial<M>, options?: CloneOptions): N
   /**
    * Resets a clone's data to match the original item or temp record. If additional properties were added to the clone,
    * they will be removed to exactly match the original.
    * @param data
    * @param options
    */
-  reset(this: ModelInstance<M>, data?: Partial<M>, options?: CloneOptions): ModelInstance<M>
+  reset<N extends ModelInstance<M>>(this: N, data?: Partial<M>, options?: CloneOptions): N
   /**
    * Adds the current instance to the appropriate store. If the instance is a clone, it will be added to `clones`. If it
    * has an `idField`, it will be added to items, otherwise it will be added to temps.
    */
-  addToStore(this: ModelInstance<M>): ModelInstance<M>
+  addToStore<N extends ModelInstance<M>>(this: N): N
   /**
    * Removes the current instance from items, temps, and clones.
    */
-  removeFromStore(this: ModelInstance<M>): ModelInstance<M>
+  removeFromStore<N extends ModelInstance<M>>(this: N): N
 } & WithModel<M>
 
 export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
 export type ModelInstance<M extends AnyData> = ModelInstanceData<M> & BaseModelInstanceProps<M>
 export type FeathersInstanceMethods<M extends AnyData, Q extends AnyData, P extends Params<Q> = Params<Q>> = {
-  save: (this: ModelInstance<M>, params?: P) => any
+  save: <N extends AnyData>(this: N, params?: P) => Promise<N>
   create: (this: ModelInstance<M>, params?: P) => Promise<M>
   patch: (this: ModelInstance<M>, params?: P) => Promise<M>
   remove: (this: ModelInstance<M>, params?: P) => Promise<M>
 }
+export type FeathersInstance<M extends AnyData, Q extends AnyData> = ModelInstanceData<M> &
+  BaseModelInstanceProps<M> &
+  FeathersInstanceMethods<M, Q>
 
 /**
  * The basic Model function definition which gets passed to `useModelBase`. It gets extended by `useModelBase` and
@@ -124,13 +133,13 @@ export type ModelFnTypeExtended<M extends AnyData, Q extends AnyData> = {
 } & BaseModelStatic<M, Q>
 
 export interface SharedModelStoreMethods<M extends AnyData, Q extends AnyData> {
-  addToStore(data: ModelInstance<M>): ModelInstance<M>
-  addToStore(data: ModelInstance<M>[]): ModelInstance<M>[]
-  removeFromStore(data: ModelInstance<M>): ModelInstance<M>
-  removeFromStore(data: ModelInstance<M>[]): ModelInstance<M>[]
-  findInStore: (params: Params<Q>) => { total: number; limit: number; skip: number; data: M[] }
-  countInStore: (params: Params<Q>) => number
-  getFromStore: (id: Id | null, params?: Params<Q> | undefined) => M | null
+  addToStore<N extends ModelInstance<M>>(data: N): N
+  addToStore<N extends ModelInstance<M>>(data: N[]): N[]
+  removeFromStore<N extends ModelInstance<M>>(data: N): N
+  removeFromStore<N extends ModelInstance<M>>(data: N[]): N[]
+  findInStore<N extends ModelInstance<M>>(params: Params<Q>): { total: number; limit: number; skip: number; data: N[] }
+  countInStore(params: Params<Q>): number
+  getFromStore<N extends ModelInstance<M>>(id: Id | null, params?: Params<Q> | undefined): N | null
 }
 
 /**
@@ -174,7 +183,9 @@ export interface BaseModelStatic<M extends AnyData, Q extends AnyData> extends S
   setStore: (store: any) => void
 }
 
-type ApiFeathers = ReturnType<typeof useServiceApiFeathers>
+type ApiFeathers<M extends AnyData, D extends AnyData, Q extends AnyData> = ReturnType<
+  typeof useServiceApiFeathers<M, D, Q>
+>
 
 /**
  * Types for `FeathersModel` (useFeathersModel)
@@ -185,7 +196,7 @@ export interface FeathersModelStatic<
   Q extends AnyData,
   ModelFunc extends (data: ModelInstance<M>) => any,
 > extends SharedModelStoreMethods<M, Q>,
-    ApiFeathers {
+    ApiFeathers<M, D, Q> {
   store: UseServiceStore<M, D, Q, ModelFunc>
   setStore: (store: any) => void
   useFind: typeof useFind

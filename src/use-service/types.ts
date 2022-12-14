@@ -5,7 +5,7 @@ import type { MaybeArray, MaybeRef } from '../utility-types'
 import { BaseModelInstanceProps } from '../use-base-model'
 
 export interface FindResponseAlwaysData<M extends AnyData> {
-  data: M[]
+  data: M | M[]
   limit?: number
   skip?: number
   total?: number

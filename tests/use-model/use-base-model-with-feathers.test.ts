@@ -14,16 +14,15 @@ const pinia = createPinia()
 const service = api.service('tasks')
 
 const ModelFn = (data: ModelInstance<Tasks>) => {
-  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar' }, data)
+  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   const asFeathersInstance = useModelInstanceFeathers(withDefaults, { service })
   return asFeathersInstance
 }
 const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
-type TaskInstance = ReturnType<typeof Task>
 
 // passing the ModelFn into `useService` overwrites the model's feathers methods to proxy through the store.
 const useTaskStore = defineStore('counter', () => {
-  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof Task>({
+  const serviceUtils = useService<Tasks, TasksData, TasksQuery, typeof Task>({
     service,
     idField: '_id',
     ModelFn: Task,
@@ -32,15 +31,27 @@ const useTaskStore = defineStore('counter', () => {
   return { ...serviceUtils }
 })
 const taskStore = useTaskStore(pinia)
+Task.setStore(taskStore)
 
 api.service('tasks').hooks({
   around: {
-    all: [...feathersPiniaHooks(Task, taskStore)],
+    all: [...feathersPiniaHooks(Task)],
   },
 })
 
 describe('useBaseModel with useInstanceFeathers', () => {
-  test('has methods', async () => {
+  test('no model methods', () => {
+    const keys = Object.keys(Task)
+    expect(keys.includes('find')).toBeFalsy()
+    expect(keys.includes('count')).toBeFalsy()
+    expect(keys.includes('get')).toBeFalsy()
+    expect(keys.includes('create')).toBeFalsy()
+    expect(keys.includes('update')).toBeFalsy()
+    expect(keys.includes('patch')).toBeFalsy()
+    expect(keys.includes('remove')).toBeFalsy()
+  })
+
+  test('instances have methods', async () => {
     const task = taskStore.Model({})
     expect(typeof task.save).toBe('function')
     expect(typeof task.create).toBe('function')
@@ -58,26 +69,31 @@ describe('useBaseModel with useInstanceFeathers', () => {
 
   test('instance.patch', async () => {
     const task = taskStore.Model({ _id: '1' })
+    expect(task.description).toEqual('')
+    expect(task.isComplete).toEqual(false)
+
     await task.create()
+
     task.description = 'do the dishes'
+
     const result = await task.patch()
-    expect(result.description).toBe('do the dishes')
     expect(task.description).toBe('do the dishes')
+    expect(result.description).toBe('do the dishes')
   })
 
   test('instance.remove', async () => {
-    const task = taskStore.Model({ _id: '1', description: 'test' })
-    await task.save()
+    const task = taskStore.Model({ description: 'test' })
+    const saved = await task.save()
 
-    const stored = await api.service('tasks').get('1')
+    expect(saved._id).toBe(0)
+    expect(saved.description).toBe('test')
+
+    const stored = await api.service('tasks').get(0)
+
     expect(stored.description).toBe('test')
 
     await task.remove()
-    try {
-      await api.service('tasks').get('1')
-    } catch (error) {
-      expect(error.message).toBe("No record found for id '1'")
-    }
-    expect.assertions(2)
+
+    await expect(api.service('tasks').get(0)).rejects.toThrow("No record found for id '0'")
   })
 })

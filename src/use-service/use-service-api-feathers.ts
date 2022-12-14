@@ -1,12 +1,16 @@
-import type { Id, NullableId, Query, Service } from '@feathersjs/feathers'
+import type { Id, NullableId, Query, ClientService } from '@feathersjs/feathers'
 import type { Params } from '../types'
 import type { MaybeRef } from '../utility-types'
-import type { AnyData, AnyDataOrArray, FindResponseAlwaysData } from './types'
+import type {
+  AnyData,
+  AnyDataOrArray,
+  // FindResponseAlwaysData
+} from './types'
 import { cleanData, getSaveParams } from '../utils'
+import { FeathersInstance } from '../use-base-model'
 
 interface UseServiceFeathersOptions<M extends AnyData, D extends AnyData, Q extends Query> {
-  service: Service<M, D, Params<Q>>
-  addToStore: any
+  service: ClientService<FeathersInstance<M, Q>, D, Params<Q>>
 }
 
 export const useServiceApiFeathers = <M extends AnyData, D extends AnyData, Q extends Query>(
@@ -14,9 +18,11 @@ export const useServiceApiFeathers = <M extends AnyData, D extends AnyData, Q ex
 ) => {
   const { service } = options
 
-  async function find(_params?: MaybeRef<Params<Q>>): Promise<FindResponseAlwaysData<M>> {
+  async function find(_params?: MaybeRef<Params<Q>>) {
     const params = getSaveParams(_params)
-    return service.find(params as Params<Q>) as any as Promise<FindResponseAlwaysData<M>>
+    const result = await service.find(params as Params<Q>)
+    // as FindResponseAlwaysData<N>
+    return result
   }
 
   async function count(_params?: MaybeRef<Params<Q>>) {
@@ -26,33 +32,45 @@ export const useServiceApiFeathers = <M extends AnyData, D extends AnyData, Q ex
     return await service.find(params as Params<Q>)
   }
 
-  async function get(id: Id, _params?: MaybeRef<Params<Q>>): Promise<M> {
+  async function get(id: Id, _params?: MaybeRef<Params<Q>>) {
     const params = getSaveParams(_params) as Params<Q>
     return await service.get(id, params)
   }
 
-  async function create(data: D, _params?: MaybeRef<Params<Q>>): Promise<D>
-  async function create(data: D[], _params?: MaybeRef<Params<Q>>): Promise<D[]>
-  async function create(data: AnyDataOrArray<D>, _params?: MaybeRef<Params<Q>>): Promise<AnyDataOrArray<D>> {
+  async function create(data: D, _params?: MaybeRef<Params<Q>>): Promise<FeathersInstance<M, Q>>
+  async function create(data: D[], _params?: MaybeRef<Params<Q>>): Promise<FeathersInstance<M, Q>[]>
+  async function create(
+    data: AnyDataOrArray<D>,
+    _params?: MaybeRef<Params<Q>>,
+  ): Promise<AnyDataOrArray<FeathersInstance<M, Q>>> {
     const params = getSaveParams(_params) as Params<Q>
-    return service.create(data as any, params) as Promise<typeof data>
+    return service.create(data as any, params)
   }
 
-  async function update(id: Id, data: AnyData, _params?: MaybeRef<Params<Q>>) {
+  async function update(
+    id: Id | undefined,
+    data: AnyData,
+    _params?: MaybeRef<Params<Q>>,
+  ): Promise<FeathersInstance<M, Q>> {
     const params = getSaveParams(_params)
-    return service.update(id, cleanData(data as any, '__tempId'), params as Params<Q>)
+    return service.update(id as any, cleanData(data as any, '__tempId'), params as Params<Q>) as unknown as Promise<
+      FeathersInstance<M, Q>
+    >
   }
 
-  async function patch(id: Id, data: AnyData, _params?: MaybeRef<Params<Q>>): Promise<AnyData>
-  async function patch(id: null, data: AnyData, _params?: MaybeRef<Params<Q>>): Promise<AnyData[]>
-  async function patch(id: NullableId, data: AnyData, _params?: MaybeRef<Params<Q>>): Promise<AnyData | AnyData[]> {
+  async function patch(id: Id, data: AnyData, _params?: MaybeRef<Params<Q>>): Promise<FeathersInstance<M, Q>>
+  async function patch(id: null, data: AnyData, _params?: MaybeRef<Params<Q>>): Promise<FeathersInstance<M, Q>[]>
+  async function patch(id: NullableId, data: AnyData, _params?: MaybeRef<Params<Q>>) {
     const params = getSaveParams(_params)
     return service.patch(id, data as any, params as Params<Q>)
   }
 
-  async function remove(id: Id, _params?: MaybeRef<Params<Q>>): Promise<M>
-  async function remove(id: null, _params?: MaybeRef<Params<Q>>): Promise<M[]>
-  async function remove(id: NullableId, _params?: MaybeRef<Params<Q>>): Promise<M | M[]> {
+  async function remove(id: Id, _params?: MaybeRef<Params<Q>>): Promise<FeathersInstance<M, Q>>
+  async function remove(id: null, _params?: MaybeRef<Params<Q>>): Promise<FeathersInstance<M, Q>[]>
+  async function remove(
+    id: NullableId,
+    _params?: MaybeRef<Params<Q>>,
+  ): Promise<FeathersInstance<M, Q> | FeathersInstance<M, Q>[]> {
     const params = getSaveParams(_params)
     return service.remove(id, params as Params<Q>)
   }

@@ -1,55 +1,50 @@
 import type { Tasks, TasksData, TasksQuery } from '../feathers-schema-tasks'
 import { useService } from '../../src'
-import {
-  useInstanceDefaults,
-  // useInstanceFeathers,
-  useBaseModel,
-  ModelInstance,
-} from '../../src/use-base-model/index'
+import { useInstanceDefaults, useBaseModel, ModelInstance } from '../../src/use-base-model/index'
 import { api } from '../feathers'
 import { defineStore, createPinia } from 'pinia'
 import { feathersPiniaHooks } from '../../src/hooks'
 import { resetStores } from '../test-utils'
 
+const pinia = createPinia()
+const service = api.service('tasks')
 const ModelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ test: true, foo: 'bar' }, data)
-  // const withFeathers = useInstanceFeathers(withDefaults, api.service('tasks'))
   return withDefaults
-  // return withFeathers
 }
 const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 export type TaskInstance = ReturnType<typeof Task>
 
 export const useTaskStore = defineStore('counter', () => {
-  const service = useService<TaskInstance, TasksData, TasksQuery, typeof ModelFn>({
-    service: api.service('tasks'),
+  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof ModelFn>({
+    service,
     idField: '_id',
     ModelFn: Task,
   })
 
-  return { ...service }
+  return { ...serviceUtils }
 })
-const pinia = createPinia()
 const taskStore = useTaskStore(pinia)
+Task.setStore(taskStore)
 
 const task = Task({})
 console.log(Task)
 console.log(task)
 
-api.service('tasks').hooks({
+service.hooks({
   around: {
-    all: [...feathersPiniaHooks(Task, taskStore)],
+    all: [...feathersPiniaHooks(Task)],
   },
 })
 
 const reset = () => {
-  resetStores(api.service('tasks'), taskStore)
+  resetStores(service, taskStore)
 }
 
 describe('use-service', () => {
   beforeEach(async () => {
     reset()
-    api.service('tasks').store = {
+    service.store = {
       1: { _id: '1', description: 'Moose' },
       2: { _id: '2', description: 'moose' },
       3: { _id: '3', description: 'Goose' },
