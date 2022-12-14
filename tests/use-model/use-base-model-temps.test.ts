@@ -15,7 +15,7 @@ const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
 
 api.service('tasks').hooks({
   around: {
-    all: [...feathersPiniaHooks(Task, Task.store)],
+    all: [...feathersPiniaHooks(Task)],
   },
 })
 

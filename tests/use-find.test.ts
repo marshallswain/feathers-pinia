@@ -36,7 +36,7 @@ Task.setStore(taskStore)
 
 service.hooks({
   around: {
-    all: [...feathersPiniaHooks(Task, taskStore)],
+    all: [...feathersPiniaHooks(Task)],
   },
 })
 
