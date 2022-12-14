@@ -1,7 +1,7 @@
 import type { FindClassParams, FindClassParamsStandalone, AssociateFindUtils, ModelStatic } from './service-store/types'
 import { BaseModel } from './service-store/base-model'
 import { getParams, setupAssociation } from './associate-utils'
-import { Find, useFind } from './use-find'
+import { Find, useFindClass } from './use-find-class'
 import { MaybeRef } from './utility-types'
 
 interface AssociateFindOptions<M extends BaseModel> {
@@ -32,9 +32,9 @@ export function associateFind<M extends BaseModel>(
     const _params = getParams(instance, Model.store as any, makeParams)
     _utils = new Find(_params as FindClassParamsStandalone<M>) as any
     _utils.useFind = (params: MaybeRef<FindClassParams>): Find<M> => {
-      const _params = params.value || params
+      const _params = (params as any).value || params
       _params.store = Model.store
-      return useFind(params as MaybeRef<FindClassParamsStandalone<M>>)
+      return useFindClass(params as MaybeRef<FindClassParamsStandalone<M>>)
     }
   }
 
