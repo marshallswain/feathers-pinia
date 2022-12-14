@@ -16,6 +16,15 @@ export const useModelInstance = <M extends AnyData>(data: ModelInstanceData<M>, 
   // The `__Model` property was added by the `useModelBase` wrapper in `use-model-base.ts`.
   const _data = data as M & WithModel<M>
 
+  // instance.__isTemp
+  Object.defineProperty(_data, '__isTemp', {
+    configurable: true,
+    enumerable: false,
+    get() {
+      return this[this.__idField] == null
+    },
+  })
+
   // setup baseModel properties
   const asBaseModel = defineProperties(_data, {
     __modelName: name,
