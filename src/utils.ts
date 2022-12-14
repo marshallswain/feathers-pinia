@@ -8,6 +8,7 @@ import ObjectID from 'isomorphic-mongo-objectid'
 import fastCopy from 'fast-copy'
 import { computed, Ref, unref } from 'vue-demi'
 import isEqual from 'fast-deep-equal'
+import { defineProperties } from './use-base-model/utils'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -115,14 +116,14 @@ export function cleanData<T = AnyDataOrArray>(data: T, tempIdField: string): T {
  * @param data item(s) before being passed to the server
  * @param responseData items(s) returned from the server
  */
-export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray, tempIdField = 'tempId') {
+export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray, tempIdField = '__tempId') {
   const { items: sourceItems, isArray } = getArray(data)
   const { items: responseItems } = getArray(resData)
 
   responseItems.forEach((item: any, index: number) => {
     const tempId = sourceItems[index][tempIdField]
     if (tempId) {
-      item[tempIdField] = tempId
+      defineProperties(item, { [tempIdField]: tempId })
     }
   })
 

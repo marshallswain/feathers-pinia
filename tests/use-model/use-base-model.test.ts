@@ -71,4 +71,9 @@ describe('useInstanceModel props', () => {
     const task = Task({ _id: '1', description: 'test' })
     expect(typeof task.removeFromStore).toBe('function')
   })
+
+  test('instances are still instances after addToStore', async () => {
+    const task = Task({ _id: '1', description: 'test' }).addToStore()
+    expect(task.__Model)
+  })
 })

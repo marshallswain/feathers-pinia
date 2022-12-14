@@ -5,7 +5,6 @@ import { useServiceClones } from './use-service-clones'
 import { useServiceStorage } from './use-service-storage'
 import { getArray } from '../utils'
 import fastCopy from 'fast-copy'
-import { del } from 'vue-demi'
 
 interface UseAllStorageOptions<M extends AnyData, Func extends (data: ModelInstance<M>) => any> {
   ModelFn: Func
@@ -49,7 +48,6 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
   // temp item storage
   const { tempStorage, moveTempToItems } = useServiceTemps<M>({
     getId: (item) => item.__tempId,
-    removeId: (item) => del(item, '__tempId'),
     itemStorage,
     onRead: assureInstance,
     beforeWrite: assureInstance,
