@@ -15,7 +15,7 @@ export const syncStore = (store: any) => async (context: HookContext, next: Next
       store.removeFromStore(context.result)
     } else if (method === 'create') {
       const restoredTempIds = restoreTempIds(context.data, context.result)
-      context.result.data = store.addToStore(restoredTempIds)
+      context.result = store.addToStore(restoredTempIds)
     } else if (method === 'find' && Array.isArray(context.result.data)) {
       context.result.data = store.addToStore(context.result.data)
     } else {
