@@ -5,7 +5,7 @@ import type { StateTree, Store as _Store, StoreDefinition, _GettersTree, DefineS
 import type { MaybeArray, MaybeRef, TypedActions, TypedGetters } from '../utility-types'
 import { BaseModel } from './base-model'
 import { Find } from '../use-find-class'
-import { Get } from '../use-get'
+import { Get } from '../use-get-class'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
