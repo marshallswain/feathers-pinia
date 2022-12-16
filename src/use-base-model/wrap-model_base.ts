@@ -16,6 +16,8 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
   (data: ModelInstanceData<M>): InferReturn<Func>
 } & BaseModelStatic<M, Q> => {
   const _ModelFn = ModelFn as Func & BaseModelStatic<M, Q>
+  const whitelist = ref(options.whitelist || [])
+  const paramsForServer = ref(options.paramsForServer || [])
 
   // Add a `setStore` property to the ModelFn
   const setStore = (store: any) => (_ModelFn.store = store)
@@ -28,8 +30,8 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     idField: ref(options.idField),
     itemStorage: storage.itemStorage,
     tempStorage: storage.tempStorage,
-    whitelist: ref(options.whitelist || []),
-    paramsForServer: ref(options.paramsForServer || []),
+    whitelist,
+    paramsForServer,
   })
 
   // Setup the default store, matching a subset of the pinia store structure
@@ -53,6 +55,8 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     findInStore,
     countInStore,
     getFromStore,
+    whitelist,
+    paramsForServer,
   })
   _ModelFn.setStore(store)
 
