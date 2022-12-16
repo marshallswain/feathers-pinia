@@ -1,7 +1,8 @@
 import { HookContext, NextFunction } from '@feathersjs/feathers'
 import { restoreTempIds } from '../utils'
 
-export const syncStore = (store: any) => async (context: HookContext, next: NextFunction) => {
+export const syncStore = (Model: any) => async (context: HookContext, next: NextFunction) => {
+  const { store } = Model
   const { method, params } = context
 
   if (method === 'patch' && params.data) {

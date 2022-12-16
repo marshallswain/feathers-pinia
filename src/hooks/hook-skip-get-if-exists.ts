@@ -1,7 +1,9 @@
 import { HookContext, NextFunction } from '@feathersjs/feathers'
 
-export const skipGetIfExists = (store: any) => async (context: HookContext, next: NextFunction) => {
+export const skipGetIfExists = (Model: any) => async (context: HookContext, next: NextFunction) => {
+  const { store } = Model
   const { params, id } = context
+
   if (context.method === 'get' && id != null) {
     const skipIfExists = params.skipRequestIfExists || store.skipRequestIfExists
     delete params.skipRequestIfExists

@@ -1,6 +1,7 @@
 import { HookContext, NextFunction } from '@feathersjs/feathers'
 
-export const setPending = (store: any) => async (context: HookContext, next: NextFunction) => {
+export const setPending = (Model: any) => async (context: HookContext, next: NextFunction) => {
+  const { store } = Model
   const method = context.method === 'find' ? (context.params.query?.$limit === 0 ? 'count' : 'find') : context.method
 
   store.setPending(method, true)
