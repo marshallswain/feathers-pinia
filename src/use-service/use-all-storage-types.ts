@@ -88,11 +88,12 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
    * @param data a single record or array of records.
    * @returns data added or modified in the store. If you pass an array, you get an array back.
    */
-  function addToStore(data: M | M[]) {
+  function addToStore(data: M | M[]): M | M[] {
     const { items, isArray } = getArray(data)
 
     const _items = items.map((item: M) => {
-      const stored = addItemToStorage(item)
+      const asModel = item.__Model ? item : ModelFn(item as any)
+      const stored = addItemToStorage(asModel)
       return stored
     })
 

@@ -133,8 +133,8 @@ export type ModelFnTypeExtended<M extends AnyData, Q extends AnyData> = {
 } & BaseModelStatic<M, Q>
 
 export interface SharedModelStoreMethods<M extends AnyData, Q extends AnyData> {
-  addToStore<N extends ModelInstance<M>>(data: N): N
-  addToStore<N extends ModelInstance<M>>(data: N[]): N[]
+  addToStore<N extends ModelInstance<M>>(data: AnyData[]): N[]
+  addToStore<N extends ModelInstance<M>>(data: AnyData): N
   removeFromStore<N extends ModelInstance<M>>(data: N): N
   removeFromStore<N extends ModelInstance<M>>(data: N[]): N[]
   findInStore<N extends ModelInstance<M>>(params: Params<Q>): { total: number; limit: number; skip: number; data: N[] }
