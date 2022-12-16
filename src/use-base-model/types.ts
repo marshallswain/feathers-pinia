@@ -1,6 +1,6 @@
 import type { Id, Service } from '@feathersjs/feathers'
 import type { ComputedRef, UnwrapNestedRefs } from 'vue-demi'
-import type { Params } from '../types'
+import type { Params, PatchParams } from '../types'
 import { type AnyData, type CloneOptions, useService, useServiceApiFeathers } from '../use-service'
 import { useFind } from '../use-find'
 import { useGet } from '../use-get'
@@ -107,7 +107,7 @@ export type BaseModelInstanceProps<M extends AnyData = AnyData> = {
 
 export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
 export type ModelInstance<M extends AnyData> = ModelInstanceData<M> & BaseModelInstanceProps<M>
-export type FeathersInstanceMethods<M extends AnyData, Q extends AnyData, P extends Params<Q> = Params<Q>> = {
+export type FeathersInstanceMethods<M extends AnyData, Q extends AnyData, P extends PatchParams<Q> = PatchParams<Q>> = {
   save: <N extends AnyData>(this: N, params?: P) => Promise<N>
   create: (this: ModelInstance<M>, params?: P) => Promise<M>
   patch: (this: ModelInstance<M>, params?: P) => Promise<M>

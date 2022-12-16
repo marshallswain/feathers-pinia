@@ -36,9 +36,34 @@ export interface Params<Q extends Query> extends FeathersParams<Q> {
   preserveSsr?: boolean
 }
 export interface PatchParams<Q extends Query> extends Params<Q> {
+  /**
+   * For `create` and `patch`, only. Provide `params.data` to specify exactly which data should be passed to the API
+   * server. This will disable the built-in diffing that normally happens before `patch` requests.
+   */
   data?: Partial<AnyData>
+  /**
+   * For `patch` with clones, only. When you call patch (or save) on a clone, the data will be diffed before sending
+   * it to the API server. If no data has changed, the request will be resolve without making a request. The `diff`
+   * param lets you control which data gets diffed:
+   *
+   *   - `diff: string` will only include the prop matching the provided string.
+   *   - `diff: string[]` will only include the props matched in the provided array of strings
+   *   - `diff: object` will compare the provided `diff` object with the original.
+   */
   diff?: DiffDefinition
+  /**
+   * For `patch` with clones, only. When you call patch (or save) on a clone, after the data is diffed, any data matching the `with`
+   * param will also be included in the request.
+   *
+   *   - `with: string` will include the prop matchin the provided string.
+   *   - `with: string[]` will include the props that match any string in the provided array.
+   *   - `with: object` will include the exact object along with the request.
+   */
   with?: DiffDefinition
+  /**
+   * For `patch` with clones, only. Set `params.eager` to false to prevent eager updates during patch requests. This behavior is enabled on patch
+   * requests, by default.
+   */
   eager?: boolean
 }
 
