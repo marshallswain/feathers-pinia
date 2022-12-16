@@ -39,10 +39,10 @@ import {
 import { unref, set } from 'vue-demi'
 import { StateTree, _GettersTree } from 'pinia'
 import { BaseModel } from './base-model'
-import { useFind } from '../use-find'
-import { useGet } from '../use-get'
 import { useFindWatched } from '../use-find-watched'
 import { useGetWatched } from '../use-get-watched'
+import { useFindClass } from '../use-find-class'
+import { useGetClass } from '../use-get-class'
 
 type ServiceStoreTypedActions<M extends BaseModel = BaseModel> = TypedActions<
   ServiceStoreDefaultState<M>,
@@ -475,21 +475,21 @@ export function makeActions<
     useFind(_params: MaybeRef<FindClassParams>) {
       const params: Params<Query> = unref(_params)
       Object.assign(params, { store: this })
-      return useFind(params as MaybeRef<FindClassParamsStandalone<M>>)
+      return useFindClass(params as MaybeRef<FindClassParamsStandalone<M>>)
     },
 
     // alias to useGet, doesn't require passing the store
     useGet(_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
       const params = unref(_params) as GetClassParamsStandalone<any>
       params.store = this
-      return useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
+      return useGetClass(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
     },
 
     // Retrieves a record only once.
     useGetOnce(_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
       const params: Params<Query> = unref(_params)
       Object.assign(params, { store: this, immediate: false, onServer: true })
-      const results = useGet(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
+      const results = useGetClass(_id as Id, _params as MaybeRef<GetClassParamsStandalone<M>>)
       results.queryWhen(() => !results.data.value)
       results.get()
       return results
