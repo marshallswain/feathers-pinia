@@ -15,7 +15,7 @@ export const useModelInstanceFeathers = <M extends AnyData, S extends Service = 
   const methods = {
     save: function (this: M, params?: P) {
       const id = this[this.__idField]
-      return id ? this.patch(params) : this.create(params)
+      return id != null ? this.patch(params) : this.create(params)
     },
     create: function (this: M, params?: P): Promise<M> {
       return service.create(this, params).then((result) => merge(this, result))
