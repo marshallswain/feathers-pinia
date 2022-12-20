@@ -26,7 +26,7 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
   const storage = useAllStorageTypes<M, Func>({ ModelFn })
 
   // local data filtering
-  const { findInStore, countInStore, getFromStore } = useServiceLocal<M, Q>({
+  const { findInStore, countInStore, getFromStore, associations } = useServiceLocal<M, Q>({
     idField: ref(options.idField),
     itemStorage: storage.itemStorage,
     tempStorage: storage.tempStorage,
@@ -55,6 +55,7 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     findInStore,
     countInStore,
     getFromStore,
+    associations,
     whitelist,
     paramsForServer,
   })
@@ -78,6 +79,8 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
       return _ModelFn.store.removeFromStore
     },
   })
+
+  _ModelFn.associations = {}
 
   return ModelFn as Func & BaseModelStatic<M, Q>
 }

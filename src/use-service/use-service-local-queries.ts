@@ -97,9 +97,12 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     return item || null
   })
 
+  const associations = {}
+
   return {
     findInStore,
     countInStore,
     getFromStore,
+    associations,
   }
 }

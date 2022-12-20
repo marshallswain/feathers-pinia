@@ -21,6 +21,6 @@ export const normalizeFind = () => async (context: HookContext, next?: NextFunct
   if (next) await next()
 
   if (context.method === 'find' && !context.result.data) {
-    context.result = { data: context.result.data }
+    // context.result = { data: context.result }
   }
 }

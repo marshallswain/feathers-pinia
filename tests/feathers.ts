@@ -48,6 +48,8 @@ api.use('messages', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$
 api.use('alt-ids', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'], id: '_id' }))
 api.use('custom-ids', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'], id: 'my-id' }))
 api.use('todos', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
+api.use('authors', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
+api.use('posts', memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 
 const hooks = {
   before: {

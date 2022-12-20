@@ -6,6 +6,7 @@ import type { MaybeArray, MaybeRef, TypedActions, TypedGetters } from '../utilit
 import { BaseModel } from './base-model'
 import { Find } from '../use-find-class'
 import { Get } from '../use-get-class'
+import { ModelInstance } from '../use-base-model'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
@@ -240,12 +241,12 @@ export type MakeServiceActionsOptions<
   A = {},
 > = Pick<ServiceOptions<any, M, S, G, A>, 'Model' | 'getters' | 'clients' | 'ssr' | 'actions'>
 
-export interface Association {
+export interface Association<M extends AnyData> {
   name: string
-  Model: ModelStatic<BaseModel>
+  Model: (data: ModelInstance<M>) => any
   type: 'find' | 'get'
 }
-export type BaseModelAssociations = Record<string, Association>
+export type BaseModelAssociations<M extends AnyData> = Record<string, Association<M>>
 
 /** Model instance interface */
 // export interface Model {

@@ -4,6 +4,9 @@ import type { Params } from './types'
 import type { Id } from '@feathersjs/feathers'
 import { BaseModel } from './service-store/base-model'
 import { getParams, setupAssociation } from './associate-utils'
+import { AnyData } from './use-service'
+
+type AnyParams = Params<AnyData>
 
 interface AssociateGetOptions<M extends BaseModel> {
   Model: ModelStatic<BaseModel>
@@ -29,12 +32,12 @@ export function associateGet<M extends BaseModel>(
   )
 
   const utils = {
-    get(id?: Id | null, params?: Params) {
+    get(id?: Id | null, params?: AnyParams) {
       const _id = getId(instance) || id
       const _params = getParams(instance, Model.store as any, makeParams) || params
       return Model.get(_id as Id, _params)
     },
-    getFromStore(id?: Id | null, params?: Params) {
+    getFromStore(id?: Id | null, params?: AnyParams) {
       const _id = instance.getId() || id
       const _params = getParams(instance, Model.store as any, makeParams) || params
       return Model.getFromStore(_id, _params)

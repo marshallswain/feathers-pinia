@@ -3,6 +3,7 @@ import type { Ref, ComputedRef } from 'vue-demi'
 import type { Id, Query } from '@feathersjs/feathers'
 import type { MaybeArray, MaybeRef } from '../utility-types'
 import { BaseModelInstanceProps } from '../use-base-model'
+import { useFind } from '../use-find'
 
 export interface FindResponseAlwaysData<M extends AnyData> {
   data: M | M[]
@@ -244,8 +245,7 @@ export interface UseGetComputed {
   isSsr: ComputedRef<boolean>
 }
 
-export interface AssociateFindUtils {
-  // extends Find<C, M>
+export interface AssociateFindUtils extends ReturnType<typeof useFind> {
   useFind: (params: MaybeRef<FindClassParams>) => any
 }
 

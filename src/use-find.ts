@@ -2,7 +2,7 @@ import type { ModelInstance, UseServiceStore } from './use-base-model'
 import type { Paginated, Params, Query, QueryInfo } from './types'
 import type { MaybeRef } from './utility-types'
 import type { AnyData, PaginationStateQuery } from './use-service'
-import { computed, isReadonly, isRef, type Ref, ref, unref, watch, UnwrapNestedRefs } from 'vue-demi'
+import { computed, isReadonly, isRef, type Ref, ref, unref, watch, UnwrapNestedRefs, reactive } from 'vue-demi'
 import { usePageData } from './utils-pagination'
 import {
   computedAttr,
@@ -234,13 +234,13 @@ export const useFind = <
 
       // Set limit and skip if missing
       if ((hasOwn(response, 'limit') && limit.value == null) || skip.value == null) {
-        const res = response as Paginated<M>
+        const res = response
         if (limit.value === undefined) limit.value = res.limit
         if (skip.value === undefined) skip.value = res.skip
       }
       // Keep the two most-recent queries
-      if ((response as Paginated<M>).total) {
-        const res = response as Paginated<M>
+      if (response.total) {
+        const res = response
         const queryInfo = getQueryInfo(paramsWithPagination, res)
         queries.value.push(queryInfo)
         if (queries.value.length > 2) queries.value.shift()

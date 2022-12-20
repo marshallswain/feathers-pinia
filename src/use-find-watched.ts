@@ -3,7 +3,10 @@ import type { Params, Paginated } from './types'
 import { computed, reactive, Ref, unref, toRefs, watch } from 'vue-demi'
 import debounce from 'just-debounce'
 import { getQueryInfo, makeUseFindItems } from './utils'
-import { BaseModel } from './service-store'
+import { AnyData, BaseModel } from './service-store'
+import { MaybeRef } from './utility-types'
+
+type AnyParams = Params<AnyData> & { debounce?: number }
 
 export function useFindWatched<M extends BaseModel = BaseModel>({
   model,
@@ -18,7 +21,7 @@ export function useFindWatched<M extends BaseModel = BaseModel>({
     throw new Error(`No model provided for useFind(). Did you define and register it with FeathersPinia?`)
   }
 
-  const getParamsForFetch = (providedParams?: Params | Ref<Params>): Params | null => {
+  const getParamsForFetch = (providedParams?: MaybeRef<AnyParams>): AnyParams | null => {
     const provided = unref(providedParams)
     const forFetch = unref(fetchParams)
 
@@ -56,7 +59,7 @@ export function useFindWatched<M extends BaseModel = BaseModel>({
    * @param params
    * @returns boolean
    */
-  function handleQueryWhen(queryWhen: any, params: Params | Ref<Params>): boolean {
+  function handleQueryWhen(queryWhen: any, params: MaybeRef<AnyParams>): boolean {
     const val = unref(queryWhen)
     // If queryWhen returns a function, call it with a context
     if (typeof val === 'function') {
@@ -86,7 +89,7 @@ export function useFindWatched<M extends BaseModel = BaseModel>({
    * @param params
    * @returns query results
    */
-  function find(params: Params | Ref<Params>): Promise<M[] | Paginated<M>> | void {
+  function find(params: MaybeRef<AnyParams>): Promise<M[] | Paginated<M>> | void {
     if (state.isLocal) return
 
     params = unref(params)
@@ -109,12 +112,12 @@ export function useFindWatched<M extends BaseModel = BaseModel>({
     return request
   }
   const methods = {
-    findDebounced(params: Params) {
+    findDebounced(params: MaybeRef<AnyParams>) {
       return find(params)
     },
   }
-  function findProxy(params?: Params | Ref<Params>) {
-    const paramsToUse = getParamsForFetch(params)
+  function findProxy(params?: MaybeRef<AnyParams>) {
+    const paramsToUse = getParamsForFetch(params) as AnyParams
 
     if (paramsToUse && paramsToUse.debounce) {
       if (paramsToUse.debounce !== state.debounceTime) {
@@ -132,7 +135,7 @@ export function useFindWatched<M extends BaseModel = BaseModel>({
   const wrappedQueryWhen = computed(() => {
     const params = getParamsForFetch()
     if (typeof queryWhen.value === 'function') {
-      return handleQueryWhen(queryWhen.value, params as Params)
+      return handleQueryWhen(queryWhen.value, params as AnyParams)
     } else {
       return queryWhen.value
     }
@@ -141,7 +144,7 @@ export function useFindWatched<M extends BaseModel = BaseModel>({
   watch(
     () => [getParamsForFetch(), wrappedQueryWhen.value],
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ([params, queryWhen]: (boolean | Params | null)[]) => {
+    ([params, queryWhen]: (boolean | Params<AnyData> | null)[]) => {
       if (queryWhen) {
         findProxy()
       }

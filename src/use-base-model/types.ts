@@ -113,7 +113,7 @@ export type FeathersInstanceMethods<M extends AnyData, Q extends AnyData, P exte
   patch: (this: ModelInstance<M>, params?: P) => Promise<M>
   remove: (this: ModelInstance<M>, params?: P) => Promise<M>
 }
-export type FeathersInstance<M extends AnyData, Q extends AnyData> = ModelInstanceData<M> &
+export type FeathersInstance<M extends AnyData, Q extends AnyData = AnyData> = ModelInstanceData<M> &
   BaseModelInstanceProps<M> &
   FeathersInstanceMethods<M, Q>
 
@@ -133,8 +133,8 @@ export type ModelFnTypeExtended<M extends AnyData, Q extends AnyData> = {
 } & BaseModelStatic<M, Q>
 
 export interface SharedModelStoreMethods<M extends AnyData, Q extends AnyData> {
-  addToStore<N extends ModelInstance<M>>(data: Partial<M>[]): N[]
-  addToStore<N extends ModelInstance<M>>(data: Partial<M>): N
+  addToStore<N extends ModelInstance<M>>(data: AnyData[]): N[]
+  addToStore<N extends ModelInstance<M>>(data: AnyData): N
   removeFromStore<N extends ModelInstance<M>>(data: N): N
   removeFromStore<N extends ModelInstance<M>>(data: N[]): N[]
   findInStore<N extends ModelInstance<M>>(params: Params<Q>): { total: number; limit: number; skip: number; data: N[] }
@@ -183,6 +183,7 @@ export type UseServiceStore<
 export interface BaseModelStatic<M extends AnyData, Q extends AnyData> extends SharedModelStoreMethods<M, Q> {
   store: BaseModelStoreUnwrapped<M, Q>
   setStore: (store: any) => void
+  associations: Record<string, AnyData>
 }
 
 type ApiFeathers<M extends AnyData, D extends AnyData, Q extends AnyData> = ReturnType<
@@ -201,6 +202,7 @@ export interface FeathersModelStatic<
     ApiFeathers<M, D, Q> {
   store: UseServiceStore<M, D, Q, ModelFunc>
   setStore: (store: any) => void
+  associations: Record<string, AnyData>
   useFind: typeof useFind
   useGet: typeof useGet
   useGetOnce: typeof useGet

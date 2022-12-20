@@ -1,52 +1,41 @@
-import type {
-  Association,
-  BaseModelAssociations,
-  FindClassParams,
-  FindClassParamsStandalone,
-  ModelStatic,
-  ServiceStoreDefault,
-} from './service-store/types'
-import { BaseModel } from './service-store'
+import type { Association, BaseModelAssociations } from './service-store/types'
+import { AnyData } from './use-service'
+import { ModelInstance } from './use-base-model'
+import {
+  UseFindParams,
+  // UseFindParamsStandalone
+} from './use-find'
 
 export type HandleSetInstance<M> = (this: M, associatedRecord: M) => void
 
-export function getParams<M extends BaseModel>(
-  instance: any,
-  store: ServiceStoreDefault<M>,
-  makeParams?: (instance: M) => FindClassParams,
-): FindClassParamsStandalone<M> | void {
-  if (makeParams) {
-    const params = makeParams(instance)
-    if (params.temps !== false) params.temps = true
-    const _params = Object.assign({}, params, { store })
-    return _params
-  }
+export function getParams<
+  M extends AnyData,
+  // D extends AnyData,
+  // Q extends AnyData,
+  // ModelFunc extends (data: ModelInstance<M>) => any,
+>(instance: M, store: any, makeParams: (instance: M) => UseFindParams) {
+  const params = makeParams(instance)
+  if (params.temps !== false) params.temps = true
+  const _params = Object.assign({}, params, { store })
+  return _params
 }
 
-function defaultHandleSetInstance<M>(associatedRecord: M) {
-  return associatedRecord
-}
-
-export function setupAssociation<M extends BaseModel>(
-  instance: M,
-  handleSetInstance: any,
-  prop: string,
-  Model: ModelStatic<BaseModel>,
-  propUtilsPrefix: string,
-) {
+export function setupAssociation<
+  M extends AnyData,
+  RM extends AnyData,
+  ModelFunc extends (data: ModelInstance<RM>) => any,
+>(instance: M, prop: string, Model: ModelFunc, propUtilsPrefix: string) {
   // Define the association
-  const def: Association = { name: prop, Model, type: 'get' }
-
-  const _handleSetInstance = handleSetInstance || defaultHandleSetInstance
+  const def: Association<RM> = { name: prop, Model, type: 'get' }
 
   // Register the association on the instance.Model
-  if (!instance.Model.associations[prop]) {
-    const _associations = instance.Model.associations as BaseModelAssociations
+  if (!instance.__Model.associations[prop]) {
+    const _associations = instance.__Model.associations as BaseModelAssociations<RM>
     _associations[prop] = def
   }
 
   // prefix the prop name with the `propUtilsPrefix`, which is `_`, by default.
   const propUtilName = `${propUtilsPrefix}${prop}`
 
-  return { _handleSetInstance, propUtilName }
+  return { propUtilName }
 }

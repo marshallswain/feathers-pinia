@@ -86,5 +86,7 @@ export const wrapModelFeathers = <
     },
   })
 
+  _ModelFn.associations = {}
+
   return ModelFn as ModelFunc & FeathersModelStatic<M, D, Q, ModelFunc>
 }
