@@ -7,6 +7,8 @@ export const commentsSchema = Type.Object(
     text: Type.String(),
     authorId: Type.Number(),
     postId: Type.Number(),
+    // populated
+    author: Type.Optional(Type.Any()),
   },
   { $id: 'Comments', additionalProperties: false },
 )

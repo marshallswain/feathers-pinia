@@ -12,16 +12,8 @@ export interface UseGetParams extends Params<Query> {
   watch?: boolean
 }
 
-export interface UseGetParamsStandalone
-  // <
-  // M extends AnyData,
-  // D extends AnyData,
-  // Q extends AnyData,
-  // ModelFunc extends (data: ModelInstance<M>) => any,
-  // >
-  extends UseGetParams {
+export interface UseGetParamsStandalone extends UseGetParams {
   store: any
-  // store: UseServiceStore<M, D, Q, ModelFunc>
 }
 
 export const useGet = <
