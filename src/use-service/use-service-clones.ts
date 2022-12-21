@@ -21,7 +21,10 @@ export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOpt
   const makeCopy = options.makeCopy || defaultMakeCopy
 
   const cloneStorage = useServiceStorage({
-    getId: (item) => itemStorage.getId(item as M) || tempStorage.getId(item),
+    getId: (item) => {
+      const id = itemStorage.getId(item as M)
+      return id != null ? id : tempStorage.getId(item)
+    },
     onRead,
     beforeWrite,
   })
@@ -31,6 +34,14 @@ export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOpt
    * Private
    */
   const assureOriginalIsStored = (item: M): M => {
+    // Make sure the stored version is always up to date with the latest instance data. (the instance used to call instance.clone)
+    if (!item.__isClone) {
+      if (itemStorage.has(item)) {
+        itemStorage.merge(item)
+      } else if (tempStorage.has(item)) {
+        tempStorage.merge(item)
+      }
+    }
     const existingItem = itemStorage.get(item) || tempStorage.get(item)
     if (!existingItem) {
       if (itemStorage.getId(item) != null) {
