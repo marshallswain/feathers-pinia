@@ -176,7 +176,7 @@ export function markAsClone<T>(item: T) {
  * @param dest destination instance
  * @param associations {BaseModelAssociations} from Model.associations
  */
-export function copyAssociations<M>(src: M, dest: M, associations: BaseModelAssociations) {
+export function copyAssociations<M>(src: M, dest: M, associations: BaseModelAssociations<AnyData>) {
   Object.keys(associations).forEach((key: string) => {
     const desc = Object.getOwnPropertyDescriptor(src, key)
     Object.defineProperty(dest, key, desc as PropertyDescriptor)

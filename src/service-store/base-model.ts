@@ -22,7 +22,7 @@ export class BaseModel implements AnyData {
   static idField = ''
   static modelName = ''
   static tempIdField = ''
-  static associations: BaseModelAssociations = {}
+  static associations: BaseModelAssociations<AnyData> = {}
 
   public __isClone!: boolean
 
