@@ -9,7 +9,6 @@ export interface UseBaseModelOptions {
   name: string
   idField: string
   whitelist?: string[]
-  paramsForServer?: string[]
 }
 export interface UseFeathersModelOptions extends UseBaseModelOptions {
   service: Service
@@ -107,7 +106,11 @@ export type BaseModelInstanceProps<M extends AnyData = AnyData> = {
 
 export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
 export type ModelInstance<M extends AnyData> = ModelInstanceData<M> & BaseModelInstanceProps<M>
-export type FeathersInstanceMethods<M extends AnyData, Q extends AnyData, P extends PatchParams<Q> = PatchParams<Q>> = {
+export type FeathersInstanceProps<M extends AnyData, Q extends AnyData, P extends PatchParams<Q> = PatchParams<Q>> = {
+  readonly isSavePending: boolean
+  readonly isCreatePending: boolean
+  readonly isPatchPending: boolean
+  readonly isRemovePending: boolean
   save: <N extends AnyData>(this: N, params?: P) => Promise<N>
   create: (this: ModelInstance<M>, params?: P) => Promise<M>
   patch: (this: ModelInstance<M>, params?: P) => Promise<M>
@@ -115,7 +118,7 @@ export type FeathersInstanceMethods<M extends AnyData, Q extends AnyData, P exte
 }
 export type FeathersInstance<M extends AnyData, Q extends AnyData = AnyData> = ModelInstanceData<M> &
   BaseModelInstanceProps<M> &
-  FeathersInstanceMethods<M, Q>
+  FeathersInstanceProps<M, Q>
 
 /**
  * The basic Model function definition which gets passed to `useModelBase`. It gets extended by `useModelBase` and
@@ -146,7 +149,6 @@ export interface SharedModelStoreMethods<M extends AnyData, Q extends AnyData> {
  * Types for `Model.store`
  */
 export interface BaseModelStore<M extends AnyData, Q extends AnyData> extends SharedModelStoreMethods<M, Q> {
-  additionalFields: string[]
   itemsById: ById<ModelInstance<M>>
   items: ComputedRef<ModelInstance<M>[]>
   itemIds: ComputedRef<Id[]>

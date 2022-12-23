@@ -1,5 +1,5 @@
 import type {
-  FeathersInstanceMethods,
+  FeathersInstanceProps,
   FeathersModelStatic,
   InferReturn,
   ModelInstance,
@@ -27,7 +27,7 @@ export const useFeathersModel = <
   options: UseFeathersModelOptions,
   ModelFn: ModelFunc,
 ): {
-  (data: ModelInstanceData<M>): InferReturn<ModelFunc> & FeathersInstanceMethods<M, Q>
+  (data: ModelInstanceData<M>): InferReturn<ModelFunc> & FeathersInstanceProps<M, Q>
 } & EventEmitter &
   FeathersModelStatic<M, D, Q, ModelFunc> => {
   // Wrapper function adds BaseModel props to instance data
