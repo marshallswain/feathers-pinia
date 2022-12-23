@@ -13,11 +13,7 @@ const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
   ModelFn,
 )
 
-api.service('tasks').hooks({
-  around: {
-    all: [...feathersPiniaHooks(Task)],
-  },
-})
+service.hooks({ around: { all: [...feathersPiniaHooks(Task)] } })
 
 describe('useFeathersModel', () => {
   test('Model.find returns feathers instances', async () => {
