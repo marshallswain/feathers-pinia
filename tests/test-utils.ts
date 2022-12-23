@@ -11,3 +11,7 @@ export function resetServiceStore(service: any) {
 export function timeout(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
+export const timeoutHook = (ms: number) => async () => {
+  await timeout(ms)
+}
