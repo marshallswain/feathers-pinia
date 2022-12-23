@@ -9,6 +9,7 @@ import { useService } from '../../src'
 import { api } from '../feathers'
 import { createPinia, defineStore } from 'pinia'
 import { feathersPiniaHooks } from '../../src/hooks'
+import { resetServiceStore, timeout, timeoutHook } from '../test-utils'
 
 const pinia = createPinia()
 const service = api.service('tasks')
@@ -33,10 +34,10 @@ const useTaskStore = defineStore('counter', () => {
 const taskStore = useTaskStore(pinia)
 Task.setStore(taskStore)
 
-api.service('tasks').hooks({
-  around: {
-    all: [...feathersPiniaHooks(Task)],
-  },
+api.service('tasks').hooks({ around: { all: [...feathersPiniaHooks(Task)] } })
+
+beforeEach(() => {
+  resetServiceStore(service)
 })
 
 describe('useBaseModel with useInstanceFeathers', () => {
@@ -49,6 +50,55 @@ describe('useBaseModel with useInstanceFeathers', () => {
     expect(keys.includes('update')).toBeFalsy()
     expect(keys.includes('patch')).toBeFalsy()
     expect(keys.includes('remove')).toBeFalsy()
+  })
+
+  test('instances have pending state', async () => {
+    const task = taskStore.Model({})
+    expect(task.isSavePending).toBeDefined()
+    expect(task.isCreatePending).toBeDefined()
+    expect(task.isPatchPending).toBeDefined()
+    expect(task.isRemovePending).toBeDefined()
+  })
+
+  test('isSavePending with isCreatePending state properly updates', async () => {
+    service.hooks({ before: { all: [timeoutHook(20)] } })
+    const task = Task({})
+
+    const request = task.save()
+    await timeout(0)
+    expect(task.isSavePending).toBeTruthy()
+    expect(task.isCreatePending).toBeTruthy()
+
+    await request
+    expect(task.isSavePending).toBeFalsy()
+    expect(task.isCreatePending).toBeFalsy()
+  })
+
+  test('isSavePending with isPatchPending state properly updates', async () => {
+    service.hooks({ before: { all: [timeoutHook(20)] } })
+    const task = await Task({}).save()
+    task.description = 'foo'
+
+    const request = task.save()
+    await timeout(0)
+    expect(task.isSavePending).toBeTruthy()
+    expect(task.isPatchPending).toBeTruthy()
+
+    await request
+    expect(task.isSavePending).toBeFalsy()
+    expect(task.isPatchPending).toBeFalsy()
+  })
+
+  test('isRemovePending properly updates', async () => {
+    service.hooks({ before: { all: [timeoutHook(20)] } })
+    const task = await Task({}).save()
+
+    const request = task.remove()
+    await timeout(0)
+    expect(task.isRemovePending).toBeTruthy()
+
+    await request
+    expect(task.isRemovePending).toBeFalsy()
   })
 
   test('instances have methods', async () => {
