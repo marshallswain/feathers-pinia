@@ -18,7 +18,6 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
   options: UseAllStorageOptions<M, Func>,
 ) => {
   const { ModelFn, afterClear } = options
-  const additionalFields: string[] = []
 
   // Make sure the provided item is a model "instance" (in quotes because it's not a class)
   const assureInstance = (item: AnyData) =>
@@ -123,7 +122,6 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
   }
 
   return {
-    additionalFields,
     itemStorage,
     tempStorage,
     cloneStorage,

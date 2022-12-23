@@ -27,10 +27,6 @@ export const wrapModelFeathers = <
   const store = useService<M, D, Q, typeof _ModelFn>({ ...options, ModelFn: _ModelFn })
   _ModelFn.setStore(reactive(store))
 
-  // store.find({ query: {} }).then((result) => {
-  //   result.data[0]
-  // })
-
   // Add getters for key methods
   Object.assign(ModelFn, {
     get findInStore() {

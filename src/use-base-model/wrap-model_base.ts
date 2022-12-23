@@ -17,7 +17,7 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
 } & BaseModelStatic<M, Q> => {
   const _ModelFn = ModelFn as Func & BaseModelStatic<M, Q>
   const whitelist = ref(options.whitelist || [])
-  const paramsForServer = ref(options.paramsForServer || [])
+  const idField = ref(options.idField)
 
   // Add a `setStore` property to the ModelFn
   const setStore = (store: any) => (_ModelFn.store = store)
@@ -27,16 +27,14 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
 
   // local data filtering
   const { findInStore, countInStore, getFromStore, associations } = useServiceLocal<M, Q>({
-    idField: ref(options.idField),
+    idField,
     itemStorage: storage.itemStorage,
     tempStorage: storage.tempStorage,
     whitelist,
-    paramsForServer,
   })
 
   // Setup the default store, matching a subset of the pinia store structure
   const store = reactive({
-    additionalFields: [],
     itemsById: storage.itemStorage.byId,
     items: storage.itemStorage.list,
     itemIds: storage.itemStorage.ids,
@@ -55,9 +53,9 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     findInStore,
     countInStore,
     getFromStore,
+    idField,
     associations,
     whitelist,
-    paramsForServer,
   })
   _ModelFn.setStore(store)
 
