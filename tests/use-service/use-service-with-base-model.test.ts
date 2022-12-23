@@ -15,7 +15,7 @@ const ModelFn = (data: ModelInstance<Tasks>) => {
 const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
 export type TaskInstance = ReturnType<typeof Task>
 
-export const useTaskStore = defineStore('counter', () => {
+export const useTaskStore = defineStore('tasks', () => {
   const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof ModelFn>({
     service,
     idField: '_id',
