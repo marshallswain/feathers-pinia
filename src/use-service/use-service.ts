@@ -142,15 +142,15 @@ export const useService = <
 
   const store = {
     // service
-    ...(service.value ? { service } : {}),
+    service,
     Model: computed(() => ModelFn),
+    idField,
     whitelist,
     paramsForServer,
     skipRequestIfExists,
     isSsr,
 
     // items
-    idField,
     itemsById: itemStorage.byId,
     items: itemStorage.list,
     itemIds: itemStorage.ids,
