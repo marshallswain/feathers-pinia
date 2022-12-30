@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# Migration from Feathers-Pinia v0.x
+# Migrate from Feathers-Pinia v0.x
 
 <script setup>
 import BlockQuote from '../components/BlockQuote.vue'

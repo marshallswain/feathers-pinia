@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# 🚧 Migration from Vuex ≤ 4 🚧
+# 🚧 Migrate from Vuex ≤ 4 🚧
 
 > 🚧 This page is a work in progress. If something needs more clarity, [open an issue](https://github.com/marshallswain/feathers-pinia/issues). 🚧
 
