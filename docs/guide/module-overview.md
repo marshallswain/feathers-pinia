@@ -11,20 +11,33 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
-The main module features the following exports:
+<BlockQuote label="Pending Removal in 2.0" type="danger">
+
+These APIs will be removed before publishing version 2.0:
+
+- `setupFeathersPinia` formerly used for global configuration. It has no replacement since it's no longer necessary with the new `useService` API.
+- [defineStore](/guide/service-stores) formerly used to create Pinia stores. Replaced with the `useService` API.
+- [BaseModel classes](/guide/base-model) was formerly the base class for data modeling. It's replaced by `useFeathersModel` and `useBaseModel` and Model Functions.
+- `defineAuthStore` formerly for creating auth stores. Replaced by `useAuth`.
+- global `clients` export
+- global `models` export
+
+</BlockQuote>
 
 ## Setup & Store Creation
 
+These are the primary utilities for creating stores.
+
 ```ts
 // Setup & Store Creation
-export { setupFeathersPinia } from './setup'
-export { defineStore } from './service-store'
+export { useService } from './use-service'
 export { useAuth } from './use-auth'
+export { feathersPiniaHooks } from './hooks'
 ```
 
-- **`setupFeathersPinia`** allows global configuration of `clients` for all apps. It can also be used to support a common set of options for the returned, wrapped `defineStore` function. Right now it's not that useful for SSR apps, which require an alternative configuration.
-- [defineStore](/guide/service-stores) sets up a Pinia store for a Feathers service.
+- [useService](/guide/use-service) is a composition for creating service stores.
 - [useAuth](/guide/use-auth) is a composition utility which allows you to create a highly-flexible setup stores for auth.
+- [feathersPiniaHooks](/guide/hooks) adds feathers-pinia hooks to a Feathers Client service.
 
 ## Composition API Utils
 
@@ -32,27 +45,28 @@ export { useAuth } from './use-auth'
 
 ```ts
 // Composition API Utils
-export { useFind, Find } from './use-find'
-export { useGet, Get } from './use-get'
-export { useClones } from './use-clones'
+export { useFind } from './use-find'
+export { useGet } from './use-get'
 export { useClone } from './use-clone'
+export { useClones } from './use-clones'
 ```
 
 - [useFind](/guide/use-find) is a utility that assists you in implementing the Live Query pattern. Give it a set of params and you'll get back live-updating lists of `data`, as well as pagination utilities like `next`, and `prev`. It's super versatile, handling declarative and imperative workflows that support both the client- and server-side pagination. It's similar to SWR but far more intelligent, being able to reuse data between different queries.
 - [useGet](/guide/use-get) is similar to `useFind` but for the `get` method.
-- [useClones](/guide/use-clones) removes boilerplate from the [clone and commit pattern](/guide/common-patterns.html#clone-and-commit-pattern). It automatically clones all component props containing a `feathers-pinia` instance.
 - [useClone](/guide/use-clones) is like `useClones` but for a single prop.
+- [useClones](/guide/use-clones) removes boilerplate from the [clone and commit pattern](/guide/common-patterns.html#clone-and-commit-pattern). It automatically clones all component props containing a `feathers-pinia` instance.
 
 ## Data Modeling & Associations
 
 ```ts
 // Data Modeling & Associations
-export { BaseModel } from './service-store'
+export { useBaseModel, useFeathersModel } from './use-base-model'
 export { associateFind } from './associate-find'
 export { associateGet } from './associate-get'
 ```
 
-- [BaseModel](/guide/base-model) is the base class for working with [Data Modeling](./model-classes).
+- [useFeathersModel](/guide/use-feathers-model) creates Model functions fully connected to a Feathers service.
+- [useBaseModel](/guide/use-base-model) creates Model functions for standalone data, optionally connected to a Feathers service.
 - [associateFind](/guide/associate-find) creates an array-based relationship with another Model class
 - [associateGet](/guide/associate-get) creates a single-object-based relationship with another Model class
 
@@ -71,35 +85,10 @@ export { clearStorage } from './clear-storage'
 
 Learn more about these utilities in [syncWithStorage](./storage-sync)
 
-## Global Reference Objects
-
-```ts
-// Global Reference Objects
-export { models } from './models'
-export { clients, registerClient } from './clients'
-```
-
-- **`clients`** stores a reference to every Feathers client provided to either `setupFeathersPinia` or `defineStore`.
-
-  - After setup, you can reference a `FeathersClient` at any time as shown below. This might come in handy if you need to fetch data that you don't want to be reactive. That data also won't end up in the store, so it would require refetching if not manually stored somewhere. You could use this with [swrv](https://docs-swrv.netlify.app/).
-
-  ```ts
-  import { clients } from 'feathers-pinia'
-  const { api } = clients
-
-  const result = await api.service('items').find({ query: {} })
-  ```
-
-- If you call your default client `api`, you won't have to provide a custom `clientAlias` option to the `defineStore` function. Learn about setting up FeathersClient instances in [Setup](./setup).
-- **`registerClient`** adds a client by name to the `clients` object.  `registerClient('api', feathersClientInstance)`.
-
-- **`models`** stores a reference to every custom model provided to `defineStore`.
-
 ## Feathers-Vuex Migration Utils
 
 ```ts
 // Feathers-Vuex Migration Utils
-export { defineAuthStore } from './define-auth-store'
 export { useFindWatched } from './use-find-watched'
 export { useGetWatched } from './use-get-watched'
 export { usePagination } from './use-pagination'
@@ -107,7 +96,6 @@ export { usePagination } from './use-pagination'
 
 These utilities exist to assist with migration from Feathers-Vuex. Use them for migrating existing Feathers-Vuex code, but not for new development. Use the new `useFind` and `useGet` utilities for new development.
 
-- **`defineAuthStore`** sets up a single Pinia store for an authentication service. See [Auth Stores](./auth-stores)
 - **`useFindWatched`** is the equivalent to Feathers-Vuex's `useFind` utility. See [useFindWatched](./use-find-watched)
 - **`useGetWatched`** is the equivalent to Feathers-Vuex's `useGet` utility. See [useGetWatched](./use-get-watched).
 - **`usePagination`** is a composition api utility that handles typical pagination logic. See [usePagination](./use-pagination)
