@@ -1,4 +1,4 @@
-import type { Id, Service } from '@feathersjs/feathers'
+import type { ClientService, Id, ServiceAddons } from '@feathersjs/feathers'
 import type { ComputedRef, UnwrapNestedRefs } from 'vue-demi'
 import type { Params, PatchParams } from '../types'
 import { type AnyData, type CloneOptions, useService, useServiceApiFeathers } from '../use-service'
@@ -11,7 +11,7 @@ export interface UseBaseModelOptions {
   whitelist?: string[]
 }
 export interface UseFeathersModelOptions extends UseBaseModelOptions {
-  service: Service
+  service: ClientService
 }
 
 export interface MakeCopyOptions {
@@ -211,3 +211,10 @@ export interface FeathersModelStatic<
   useFindWatched: any
   useGetWatched: any
 }
+
+export type FeathersPiniaService<M extends AnyData, Q extends AnyData> = ClientService<
+  FeathersInstance<M, Q>,
+  M,
+  Params<Q>
+> &
+  ServiceAddons
