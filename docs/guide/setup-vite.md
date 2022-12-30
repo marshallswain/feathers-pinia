@@ -332,7 +332,7 @@ There are multiple ways to secure your app. If you need help, please [contact a 
 
 ### 6.1 Auth Store
 
-Feathers-Pinia 1.0 uses a `setup` store for the auth store. The new `useAuth` utility is a composition API utility which
+Feathers-Pinia 2.0 uses a `setup` store for the auth store. The new `useAuth` utility is a composition API utility which
 contains all of the logic for authentication in most apps. Using the composition API this way allows more simplicity
 while also allowing more flexibility for custom scenarios. We'll keep this example simple. To implement auth, create the
 file below:
@@ -363,7 +363,7 @@ if (import.meta.hot) {
 
 Notice that we've called `useAuth` by providing the `api` and `userStore`. By providing the `userStore`, it will
 automatically add a returned `user` to the store after succesful login. The above example also calls `reAuthenticate`,
-which available starting with Feathers-Pinia 1.0, as well. The `reAuthenticate` utility will check for a valid, non-expiring
+which available starting with Feathers-Pinia 2.0, as well. The `reAuthenticate` utility will check for a valid, non-expiring
 accessToken in the Feathers Client and automatically authenticate if one is found. It will fail silently to avoid the
 need to catch errors during app initialization
 
