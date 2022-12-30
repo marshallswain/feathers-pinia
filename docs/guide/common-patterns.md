@@ -15,45 +15,47 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 When setting up a service, it's recommended that you declare hooks for the service next to the store. As per the Pinia docs, since we're using the store outside of a component context, the original `pinia` instance will need to be provided when calling `useUsers`, as shown here:
 
+<!--@include: ./types-notification.md-->
+
 ```ts
 // src/store/users.ts
-import type { HookContext, NextFunction } from '@feathersjs/feathers'
-import { defineStore, BaseModel, pinia } from './store.pinia'
-import { api } from '../feathers'
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { useService } from 'feathers-pinia'
+import { pinia } from '../plugins/pinia'
+import { User } from '../models'
 
-// create a data model
-export class User extends BaseModel {
-  id?: number | string
-  name: string = ''
-  email: string = ''
-  password: string = ''
+export const useUserStore = defineStore('users', () => {
+  const { $api } = useFeathers()
+  const service = $api.service('messages')
 
-  // Minimum required constructor
-  constructor(data: Partial<User> = {}, options: Record<string, any> = {}) {
-    super(data, options)
-    this.init(data)
-  }
+  const utils = useService({
+    service,
+    idField: 'id',
+    ModelFn: Task,
+  })
+  const myCustomState = false
 
-  // optional for setting up data objects and/or associations
-  static setupInstance(message: Partial<Message>) {
-    const { store, models } = this
-  }
+  return { ...utils, myCustomState }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot))
 }
 
-const servicePath = 'users'
-export const useUsers = defineStore({ servicePath, Model: User })
+// register the store on the User model.
+const userStore = useUserStore(pinia)
+Model.setStore(userStore)
 
-api.service(servicePath).hooks({
+service.hooks({
   around: {
     find: [
-      async (context: HookContext, next: NextFunction) => {
-        const userStore = useUsers(pinia)
-
-        // Do something with the store before sending the request or...
+      async (context, next) => {
+      
+        // Do something with the userStore before sending the request or...
 
         await next()
 
-        // Do something with the store after the response comes back.
+        // Do something with the userStore after the response comes back.
       }
     ]
   }
@@ -62,41 +64,8 @@ api.service(servicePath).hooks({
 
 ## Handle Custom Server Response
 
-Sometimes your server response may contain more attributes than just `data`, `limit`, `skip`, and `sort`.  Maybe your API response include a `summary` field, and you need access to that. You could process this directly in a component, if it's only needed in that one component,  But, if you need it in multiple components, there are better options.
-
-Depending on what you need to do, you may be able to solve this by [accessing the store from hooks](#accessing-a-store-from-hooks).  But that doesn't work if you need reactive data from the store.
-
-To get the data into the store, you can use the [`afterFind` action](./service-stores#afterfindresponse).  Here's what it looks like:
-
-```js
-import { defineStore, BaseModel } from '../pinia'
-
-class SpeedingTicket extends BaseModel {
-  vin = ''
-  plateState = ''
-
-  constructor(data: Partial<SpeedingTicket> = {}) {
-    super(data, options)
-    this.init(data)
-  }
-}
-
-const servicePath = 'speeding-tickets'
-export const useSpeedingTickets = defineStore({
-  servicePath,
-  Model: SpeedingTicket,
-  actions: {
-    afterFind (response: any) {
-      if (response.summary) {
-        this.handleSummary(response)
-      }
-    },
-    handleSummaryData(response: any) {
-      // Handle summary data
-    }
-  },
-})
-```
+Now that Feathers-Pinia is fully integrated into hooks, custom server responses should be handled in hooks. See the
+previous example, above.
 
 ## Reactive Lists with Live Queries
 
@@ -122,7 +91,11 @@ const { data: pastAppointments } = appointmentStore.useFind(pastParams)
 
 in the above example of component code, the `future` and `pastAppointments` will automatically update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.  `feathers-pinia` listens to socket events automatically, so you don't have to manually wire any of this up!
 
-## Manually-Query Once Per Record
+## Query Once Per Record
+
+To prevent making extra `get` requests, you can use one of the following queryOnce patterns:
+
+### Query Once Manual
 
 <BlockQuote>
 
@@ -155,7 +128,7 @@ await get()                   // (3)
 
 The above example also shows why `queryWhen` is no longer passed as an argument. It's most common that `queryWhen` needs values returned by `useGet`, but those values aren't available until after `useGet` runs, making them unavailable to `queryWhen` as an argument. In short, moving `queryWhen` to the returned object gives us access to everything we need to productively prevent queries.
 
-## Auto-Query Once Per Record
+### Query Once Auto
 
 The previous pattern of only querying once is so common for real-time apps that we've built a shortcut for it at `store.useGetOnce`. It uses the same code as above, but built into the store method.
 
@@ -177,22 +150,34 @@ Now the same record will only be retrieved once.
 
 The best solution is to simply refresh to clear memory.  If you're using localStorage, clear the localStorage, then refresh. The alternative to refreshing would be to perform manual cleanup of the service stores. Refreshing is much simpler and more practical, so it's the official solution.
 
-## Server-Side Rendering (SSR)
-
-See the SSR example on the [Getting Started](./setup.md#server-side-rendering-ssr) page.
-
-## Directly Using Action Results
-
-Actions return reactive store records.
-
-## Handling Non-Reactive Data
-
-https://vuex.feathersjs.com/common-patterns.html#handling-non-reactive-data
-
-
 ## Model-Level Computed Props
 
-https://vuex.feathersjs.com/common-patterns.html#model-specific-computed-properties
+You can define model-level computed properties by using `Object.defineProperty` to create a non-enumerable,
+configurable, ES5 getter. Note that when you use `defineProperty`, you have to manually specify a union type. The line
+`return withDefaults as typeof withDefaults & { fullName: string }` lets TypeScript know that the `fullName` property
+exists.
+
+```ts
+import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
+import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
+
+const ModelFn = (data: ModelInstance<Users>) => {
+  const withDefaults = useInstanceDefaults({ firstName: '', lastName: '' }, data)
+
+  // Define a non-enumerable, configurable property
+  Object.defineProperty(withDefaults, 'fullName', {
+    enumerable: false,
+    configurable: true,
+    get() {
+      return `${this.firstName} ${this.lastName}`
+    }
+  })
+  return withDefaults as typeof withDefaults & { fullName: string }
+}
+const User = useBaseModel<Users, UsersQuery, typeof ModelFn>({ name: 'User', idField: '_id' }, ModelFn)
+```
+
+<https://vuex.feathersjs.com/common-patterns.html#model-specific-computed-properties>
 
 ## Relationships Between Services
 
