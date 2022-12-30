@@ -6,25 +6,200 @@ outline: deep
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# What's New in 1.0
+# What's New in 2.0
 
-Feathers-Pinia 1.0 is a huge update with some great new features.  This page will go over some of the highlights.
+Feathers-Pinia 2.0 is a huge update with some great new features.  This page will go over some of the highlights.
 
 [[toc]]
 
-## Huge Performance Boost 🎉
+## Huge Performance Boost 🚀
 
-Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benefits from the faster reactive types under the hood of Pinia and Vue 3. But we've gone a step further and fine-tuned and tested Feathers-Pinia to never perform extra work.  Some of the biggest improvements are:
+Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benefits from the faster reactive types under
+the hood of Pinia and Vue 3. But we've gone a step further and fine-tuned and tested Feathers-Pinia to never perform
+extra work. Some of the biggest improvements are:
 
-- No unnecessary stack frames happen under the hood. We've even written tests to assure that Model constructors only run a single time. We stand firmly against wasted CPU cycles!
+- No unnecessary stack frames happen under the hood. We stand firmly against wasted CPU cycles!
 - As from the beginning, you still have full control over adding instances to the store with `new User().addToStore()`.
-- For the features that require objects to be in the store (for example, `handleClones`) feathers-pinia will implicitly add items to the store when needed.
+- For the features that require objects to be in the store (for example, `handleClones`) feathers-pinia will implicitly
+add items to the store when needed.
+
+## Composition API Stores 🎉
+
+Feathers-Pinia has been completely rewritten as a set of Composition API utilities for creating Pinia
+[setup stores](https://pinia.vuejs.org/core-concepts/#setup-stores). The advantages include a better TypeScript
+experience, cleaner customization, and fewer limitations.
+
+### useService 🎁
+
+The new `useService` utility takes the place of the Feathers-Pinia `defineStore` utility (not to be confused Pinia's
+`defineStore` utility)  and gives you a starting point for defining your own setup store for each service. The object
+returned from calling `useService` has the same shape as service stores from older versions.
+
+The `useService` utility only requires a Feathers service and not the full Feathers client instance, anymore. It also
+requires the use of a Model Function, which is covered further down this page and not shown in this example. This
+example shows the creation and instantiation of a setup store with `userService`:
+
+```ts
+import { defineStore, createPinia } from 'pinia'
+
+const pinia = createPinia()
+
+// Create a tasks store
+export const useTaskStore = defineStore('tasks', () => {
+  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof ModelFn>({
+    service,
+    idField: '_id',
+    ModelFn: Task, // see the section on Model Functions
+  })
+
+  return { ...serviceUtils }
+})
+
+const taskStore = useTaskStore(pinia)
+```
+
+To customize a `setup` store, you declare additional variables, computed properties, and functions inside of the call to
+`defineStore`.
+
+### useAuth 🎁
+
+Create ultra-flexible `setup stores` with the new [useAuth](/guide/use-auth) utility:
+
+```ts
+// src/store/store.auth.ts
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { useAuth } from 'feathers-pinia'
+
+export const useAuthStore = defineStore('auth', () => {
+  const { userStore } = useUserStore()
+  const { $api } = useFeathers()
+
+  const auth = useAuth({
+    api: $api,
+    userStore,
+  })
+
+  auth.reAuthenticate()
+
+  return auth
+})
+```
+
+## Feathers v5 Dove TS Support 🎉
+
+The new utilities in Feathers-Pinia 2.0 bring support for the new TypeScript enhancements in Feathers v5 Dove. Now you
+can directly import the types from your backend and use them in your Feathers-Pinia frontend. The types integrate
+directly into the new Model Functions, as well.
+
+## Model Functions, not Classes 🔮
+
+Data modeling is one of the most-loved features in Feathers-Pinia. In Feathers-Pinia 2.0, we replace Model Classes
+with Model Functions. The developer experience just go so much better! You just create a function that receives an
+object, performs modifications to it, then returns it. There are two utilities for wrapping Model Functions:
+`useFeathersModel` and `useBaseModel`.
+
+### useFeathersModel 🎁
+
+The `useFeathersModel` utility is most similar to the old BaseModel class from FeathersVuex and previous versions of
+Feathers-Pinia. You get the full Feathers service experience.  Feathers Models have Feathers-related methods, like
+`find`, `count`, `get`, etc., directly on the model interface.
+
+<!--@include: ./types-notification.md-->
+
+```ts
+import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
+import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
+import { api } from '../feathers'
+
+const ModelFn = (data: ModelInstance<Tasks>) => {
+  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
+  return withDefaults
+}
+const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
+  { name: 'Task', idField: '_id', service },
+  ModelFn,
+)
+```
+
+Models now come with a lightweight, built-in store. This means that they work without a Pinia store, but you give up the
+Pinia devtools compatibility. To upgrade to a full Pinia store, use the `setStore` method to provide the instantiated
+pinia store:
+
+```ts
+// upgrading the Task Model's store to be a Pinia store
+Task.setStore(taskStore)
+```
+
+To create a model "instance" you just call the function WITHOUT the `new` operator:
+
+```ts
+const task = Task({ description: 'Do the dishes' })
+```
+
+### useBaseModel 🎁
+
+The `useBaseModel` utility gives you all of the BaseModel functionality without the Feathers parts. This means you can
+work with non-service data using the same APIs. Base model functions also come with a built-in store, and you can even
+perform queries on the data with store getters.  Also, `useBaseModel` instances come with `clone`, `commit` and `reset`
+methods.
+
+<!--@include: ./types-notification.md-->
+
+```ts
+import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
+import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
+
+const ModelFn = (data: ModelInstance<Tasks>) => {
+  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
+  return withDefaults
+}
+const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+```
+
+BaseModel functions also have a store, which can be upgraded to a full Pinia store using the `setStore` method:
+
+```ts
+// upgrading the Task Model's store to be a Pinia store
+Task.setStore(taskStore)
+```
+
+To create a model "instance" you just call the function WITHOUT the `new` operator:
+
+```ts
+const task = Task({ description: 'Do the dishes' })
+```
+
+### useFeathersInstance 🎁
+
+There's also a `useFeathersInstance` utility which you can use with `useBaseModel`. It's used inside of your Model
+function to update a model instance to support Feathers-related methods.
+
+## Feathers Client Hooks 🪝
+
+Feathers-Pinia now fully integrates with the Feathers Client through a new set of `feathersPiniaHooks`. The majority of
+the store logic was moved into the hooks, so you get the same experience whether you use the Feathers client, the Model
+Functions, or the store methods.  The hooks are required in order for Feathers-connected Models or stores to work.
+
+The above example builds on the Model function that was created in the previous `useFeathersModel` example. For an
+all-in-one example, see one of the setup pages.
+
+```ts
+import { feathersPiniaHooks } from 'feathers-pinia'
+import { api } from '../feathers'
+
+/* setup the Model function as shown earlier */
+
+// Pass the model function to the utility in the `around all` hooks.
+api.service('tasks').hooks({ around: { all: [...feathersPiniaHooks(Task)] } })
+```
 
 ## Support SQL `$like` Operators 🎁
 
-The most-requested feature has finally landed: built-in support for SQL `LIKE`. This means the queries made to the store will **finally** automatically match the queries made to your SQL-backed API.
+The most-requested feature has finally landed: built-in support for SQL `LIKE`. This means the queries made to the store
+will match the queries made to your SQL-backed API. This brings querying features up to parity with the built-in MongoDB
+support which uses the `$regex` key.
 
-These are the supported operators:
+These are the newly-supported SQL operators:
 
 - `$like` and `$notLike` for case-sensitive matches
 - `$ilike`, `$iLike`, and `$notILike` for case-insensitive matches
@@ -47,41 +222,42 @@ import { useMessages } from '../stores/messages'
 const messageStore = useMessages
 
 // $like
-const { data: $like } = messageStore.findInStore({
+const { data: data1 } = messageStore.findInStore({
   query: { text: { $like: '%Mo%' } }
 })
-expect($like.map((m) => m.id)).toEqual([1])
+expect(data1.map((m) => m.id)).toEqual([1])
 
 // $notLike
-const { data: $notLike } = messageStore.findInStore({
+const { data: data2 } = messageStore.findInStore({
   query: { text: { $notLike: '%Mo%' } }
 })
-expect($notLike.map((m) => m.id)).toEqual([2, 3, 4])
+expect(data2.map((m) => m.id)).toEqual([2, 3, 4])
 
 // $ilike
-const { data: $ilike } = messageStore.findInStore({
+const { data: data3 } = messageStore.findInStore({
   query: { text: { $ilike: '%Mo%' } }
 })
-expect($ilike.map((m) => m.id)).toEqual([1, 2])
+expect(data3.map((m) => m.id)).toEqual([1, 2])
 
 // $iLike
-const { data: $iLike } = messageStore.findInStore({
+const { data: data4 } = messageStore.findInStore({
   query: { text: { $iLike: '%Mo%' } }
 })
-expect($iLike.map((m) => m.id)).toEqual([1, 2])
+expect(data4.map((m) => m.id)).toEqual([1, 2])
 
 // $notILike
-const { data: $notILike } = messageStore.findInStore({
+const { data: data5 } = messageStore.findInStore({
   query: { text: { $notILike: '%Mo%' } }
 })
-expect($notILike.map((m) => m.id)).toEqual([3, 4])
+expect(data5.map((m) => m.id)).toEqual([3, 4])
 ```
 
-These new operators support queries made with SQL-backed adapters like the official, core SQL service adapter in Feathers v5 Dove:
+These new operators support queries made with SQL-backed adapters like the official, core SQL service adapter in
+Feathers v5 Dove:
 
 - [@feathersjs/knex](https://dove.feathersjs.com/api/databases/knex.html)
 
-These adapters for are also supported:
+These adapters will also work:
 
 - [feathers-knex](https://github.com/feathersjs-ecosystem/feathers-knex), the Feathers v4 Crow version of `@feathersjs/knex`, above
 - [feathers-objection](https://github.com/feathersjs-ecosystem/feathers-objection)
@@ -89,141 +265,28 @@ These adapters for are also supported:
 
 If you use any of the above database adapters, give the new query operators a try!  Enjoy your new superpowers!
 
-## New `useAuth` for Setup Stores 🎁
-
-Create ultra-flexible `setup stores` with the new [useAuth](/guide/use-auth) utility:
-
-```ts
-// src/store/store.auth.ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
-import { useAuth } from 'feathers-pinia'
-
-export const useAuthStore = defineStore('auth', () => {
-  const { userStore } = useUserStore()
-  const { $api } = useFeathers()
-
-  const auth = useAuth({
-    api: $api,
-    userStore,
-  })
-
-  auth.reAuthenticate()
-
-  return auth
-})
-
-if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-}
-```
-
-## Class Definition Defaults 🎁
-
-[Small breaking change]
-
-Defaults values can now be specified directly on the Model interface. Custom constructors have been made much cleaner due to the new `instance.init()` BaseModel method.  After calling `super(data, options)` to initialize the BaseModel, the `init` method can be called from `this`:
-
-```ts
-// Minimum required constructor
-constructor(data: Partial<Message> = {}, options: Record<string, any> = {}) {
-  super(data, options)
-  this.init(data)
-}
-```
-
-Here are the technical details of how the new Model behavior works.  For the TLDR version, just make your Model classes look like next example.
-
-- BaseModel no longer calls `setupInstance`, internally.  If you use a custom constructor together with `instanceDefaults` and `setupInstance`, the two methods are run twice, wasting cycles.
-- BaseModel still calls `instanceDefaults` internally, which means it runs twice.  If you are using `instanceDefaults` only for default values, as documented, then the performance impact will be negligible, even when ingesting large amounts of data from the API server.  No complex logic should run in `instanceDefaults`.  It has two purposes. Any use outside of these two purposes should be refactored into `setupInstance`:
-  - Allow specifying default values with low boilerplate.
-  - Allow conditional defaults values to be assigned based on incoming data.
-- Calling `new User(data)` without a custom constructor results in Model interface defaults always overwriting `data`.
-- Having a custom constructor allows Model instance default values to initialize as one would expect: not overwriting any other values.
-- Calling `this.init(data)` runs the `instanceDefaults` again and also runs `setupInstance`.
-
-```ts
-// Define the interface and defaults directly on the Model instead of `instanceDefaults`.
-export class Message extends BaseModel {
-  _id: number
-  text = ''
-  userId: null | number = null
-  createdAt: Date | null = null
-
-  // This is the minimum required constructor
-  constructor(data: Partial<Message> = {}, options: Record<string, any> = {}) {
-    super(data, options)
-    this.init(data)
-  }
-
-  static setupInstance(message: Partial<Message>) {
-    // access `store` and `models` from this
-    const { store, models } = this
-  }
-}
-```
-
 ## Built-in Patch Diffing 🎁
 
-<BlockQuote label="PRODUCTIVITY TIP">
+<!--@include: ./patch-diffing.md-->
 
-Don't waste bandwidth! Just send the props that change!
+## Reactive Model Instances ➕
 
-</BlockQuote>
-
-Patch diffing from Feathers-Vuex is now back in Feathers-Pinia with a smarter, faster algorithm that will work for any scenario you can dream up.
-
-Diffing only occurs on `patch` requests and `save` requests that call a `patch`.
+Thanks to the Model Function API, all Model instances are now always reactive, even when not added to the store.
 
 ```ts
-// clone a record
-const clone = user.clone()
-// make changes
-clone.name = 'Feathers is Amazing!'
-// save
-await clone.save(). // --> Only the changed props go to the server!
+import { Task } from '../models/task'
+
+const task = Task({ description: 'Bind me to a template. I am ready.' })
 ```
 
-<BlockQuote label="How It Works" type="info">
+Read more about [Model Instances](/guide/model-instances).
 
-- By default, all keys are deep-compared between the original record and the clone.
-- Once all changes are found, only the top-level keys are sent to the server.
+## No `instance.update()` method ➖
 
-Diffing will work on all databases without data loss. It will be extensible in the future to support databases that allow patching of deeply-nested values in sub-documents or embedded JSON.
-
-</BlockQuote>
-
-### Customize the Diff
-
-You can use the `diff` option to customize which values are compared.  Only props that have changed will be sent to the server.
-
-```ts
-// string: diff only this prop
-await clone.save({ diff: 'teamId' )
-
-// array: diff only these props
-await clone.save({ diff: ['teamId', 'username'] )
-
-// object: merge and diff these props
-await clone.save({ diff: {teamId: 1, username: 'foo' } )
-
-// or turn off diffing and send everything
-await clone.save({ diff: false })
-```
-
-### Always Save Certain Props
-
-If there are certain props that need to always go with the request, use the `with` option:
-
-```ts
-// string: always include this prop
-await clone.save({ with: 'teamId' )
-
-// array: always include these props
-await clone.save({ with: ['teamId', 'username'] )
-
-// object: merge and include these props
-await clone.save({ with: {teamId: 1, username: 'foo' } )
-```
+The rarely-used `update` method has been removed from the instance interface. Use the patch method, instead, to take
+advantage of patch diffing and partial updates.  You can still replace an entire object by just sending all of the data
+through `patch`. The Model Functions and Feathers-connected stores continue to have an `update` method, which an also
+be used.
 
 ## Handle Associations
 
@@ -231,40 +294,52 @@ Two new utilities make it easier to add relationships between records without de
 
 ### `associateFind` 🎁
 
-The `associateFind` utility allows you to define one-to-many relationships on your Model classes.
+The `associateFind` utility allows you to define one-to-many relationships on your Model functions. The `makeParams` property allows you to specify the query that defines the relationship. This example is truncated. For a full example, see the "Start a Project" pages.
 
 ```ts
-import { BaseModel, associateFind } from 'feathers-pinia'
+import type { Users } from 'my-feathers-api'
+import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
+import { Message } from './message'
 
-export class User extends BaseModel {
-  _id: string
-  email = ''
-  userId: null | number = null
-  createdAt: Date | null = null
-
-  // Values added in `setupInstance` can be added to the interface for type friendliness.
-  messages?: Array<Partial<User>>
-
-  constructor(data?: Partial<Message>, options: Record<string, any> = {}) {
-    super(data, options)
-    this.init(data)
-  }
-
-  static setupInstance(user: Partial<Message>) {
-    // access to `store` and `models` is from `this`.
-    const { store, models } = this
-
-    associateFind(user, 'messages', {
-      Model: models.api.Message,
-      makeParams: (user) => {
-        return { query: { id: user._id } }
-      },
-    })
-  }
+const ModelFnUser = (data: ModelInstance<Users>) => {
+  const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)
+  const withMessages = associateFind(withDefaults, 'messages', {
+    Model: Message,
+    makeParams: (data) => ({ query: { userId: data.id } }),
+    handleSetInstance(message) {
+      message.userId = data.id
+    },
+  })
+  return withMessages
 }
 ```
 
+The `handleSetInstance` function allows you to write data to the `messages` property and make sure each record becomes
+properly associated.
+
+Read more about [associateFind](/guide/associate-find)
+
 ### `associateGet` 🎁
+
+The `associateGet` utility allows you to define `one-to-one` relationships on your Model functions. The `getId` property
+allows you to specify the id to use to get the related data.
+
+```ts
+import type { Messages } from 'my-feathers-api'
+import { type ModelInstance, useInstanceDefaults, associateGet } from 'feathers-pinia'
+import { User } from './user'
+
+const ModelFnMessage = (data: ModelInstance<Messages>) => {
+  const withDefaults = useInstanceDefaults({ text: '', userId: null }, data)
+  const withUser = associateFind(withDefaults, 'user', {
+    Model: User,
+    getId: (data) => data.messageId
+  })
+  return withUser
+}
+```
+
+Read more about [associateGet](/guide/associate-get)
 
 ## New `useFind` API 🎁
 
@@ -274,50 +349,6 @@ The `useFind` API has been completely rewritten from scratch. A couple of its be
 - **Pagination Support** - Built in, sharing the same logic with `usePagination`.
 
 See all of the features on the [`useFind` page](./use-find).
-
-### Client Paging, Manual Fetch
-
-Let's look at the two most-common use cases. This example shows client-side pagination with manual fetch:
-
-```ts
-import usePosts from '../stores/posts'
-
-const postStore = usePosts()
-
-const { data, next, prev, find } = postStore.useFind({ query: {} })
-
-// fetch data
-await find()
-
-// move to the next page
-await next()
-
-// move to the previous page
-await prev()
-```
-
-See the component example of client-side pagination on the [`useFind` page](./use-find).
-
-### Server Paging, Auto Fetch
-
-Another common use case is server-side pagination. Enable it by passing `onServer` in the params. You can also pull out `isPending` to show a status indicator when a request is pending. That's it!
-
-```ts
-import usePosts from '../stores/posts'
-
-const postStore = usePosts()
-
-const { data, next, prev, isPending } = postStore.useFind({ 
-  query: {}, 
-  onServer: true 
-})
-
-// move to the next page
-await next()
-
-// move to the previous page
-await prev()
-```
 
 See the component example of server-side pagination on the [`useFind` page](./use-find).
 
