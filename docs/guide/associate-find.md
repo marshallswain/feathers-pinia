@@ -11,41 +11,34 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
-The `associateFind` utility allows you to setup a one-to-many assocation inside of a Model class's `setupInstance` method.
+The `associateFind` utility uses the Feathers Query syntax to establish one-to-many relationships with associated data.
 
 ```ts
-import { BaseModel, associateFind, type AssociateFindUtils } from 'feathers-pinia'
+import type { Users } from 'my-feathers-api'
+import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
+import { Message } from './message'
 
-export class User extends BaseModel {
-  _id: string
-  email = ''
-  userId: null | number = null
-  createdAt: Date | null = null
-
-  // These are added by associateFind
-  messages?: Array<Partial<User>> // reactive list of messages.
-  _messages?: AssociateFindUtils<User> // Tools for querying and paginating messages.
-
-  constructor(data?: Partial<Message>, options: Record<string, any> = {}) {
-    super(data, options)
-    this.init(data)
-  }
-
-  static setupInstance(user: Partial<Message>) {
-    // access to `store` and `models` is from `this`.
-    const { store, models } = this
-
-    // adds a `messages` computed property and `_messages` utility object.
-    associateFind(user, 'messages', {
-      Model: models.api.Message,
-      makeParams: (user) => {
-        return { query: { id: user._id } }
-      },
-      handleSetInstance(user) {
-        const id = user.getAnyId()
-        if (id && !this.stargazerIds.includes(id)) this.stargazerIds.push(id)
-      },
-    })
-  }
+const ModelFnUser = (data: ModelInstance<Users>) => {
+  const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)
+  const withMessages = associateFind(withDefaults, 'messages', {
+    Model: Message,
+    makeParams: (data) => ({ query: { userId: data.id } }),
+    handleSetInstance(message) {
+      message.userId = data.id
+    },
+  })
+  return withMessages
 }
 ```
+
+## associateFind(data, prop, options)
+
+- `data {Object}` is the record that will contain the association.
+- `prop {string}` is the name of the property that will hold the related data.
+- `options {Object}`
+  - `Model` is the Model Function for the related record. **Required**
+  - `makeParams` is a function that receives the `data` and must return a params object containing the `query` used to
+  create the association. **Required**
+  - `handleSetInstance` is a function that receives the related object and can use it to update properties on `data` or
+  the related object in order to establish a relationship when assigning data to the `prop`. **Optional** In the above
+  example, if you assign an array of messages to `user.messages`, the message's `userId` prop will be set automatically.
