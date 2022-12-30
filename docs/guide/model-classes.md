@@ -4,4 +4,4 @@ outline: deep
 
 # Model Classes
 
-See [Model Functions](/guides/model-functions)
+See [Model Functions](/guide/model-functions)

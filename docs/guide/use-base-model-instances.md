@@ -173,7 +173,7 @@ task.removeFromStore()
 
 ## Clone Methods
 
-Model instance "clone and commit" is [one of the best patterns](guide/common-patterns.html#clone-and-commit-pattern) in
+Model instance "clone and commit" is [one of the best patterns](/guide/common-patterns.html#clone-and-commit-pattern) in
 Feathers-Pinia for keeping store code lean and clean.
 
 ### `clone(params)`
