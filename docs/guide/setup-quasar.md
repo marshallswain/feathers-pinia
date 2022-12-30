@@ -12,6 +12,6 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 <BlockQuote>
 
-We will work on Quasar setup as soon as we can. If you have a working Quasar setup, please contribute! Thank you!
+We need contributions for a Quasar guide. If you have a working app, please contribute! 🙏
 
 </BlockQuote>
