@@ -16,8 +16,8 @@ hooks are only required when using Feathers service connectivity.
 ## Registering Hooks
 
 Since all hooks are required, a utility named `feathersPiniaHooks` is provided for registering the hooks in the correct
-order. The utility requires that you pass a Model function then spread the returned array into the `around all` hooks, as
-demonstrated here.
+order. The utility requires that you pass a Model function then spread the returned array into the `around all` hooks,
+as demonstrated here. Hooks must be registered as service-level hooks and not app-level hooks.
 
 <!--@include: ./types-notification.md-->
 
