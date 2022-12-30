@@ -2,7 +2,7 @@ import type { Tasks, TasksData, TasksQuery } from '../feathers-schema-tasks'
 import {
   useBaseModel,
   useInstanceDefaults,
-  useModelInstanceFeathers,
+  useFeathersInstance,
   type ModelInstance,
 } from '../../src/use-base-model/index'
 import { useService } from '../../src'
@@ -16,7 +16,7 @@ const service = api.service('tasks')
 
 const ModelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
-  const asFeathersInstance = useModelInstanceFeathers(withDefaults, { service })
+  const asFeathersInstance = useFeathersInstance({ service }, withDefaults)
   return asFeathersInstance
 }
 const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
