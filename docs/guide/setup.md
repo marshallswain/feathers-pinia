@@ -14,10 +14,10 @@ Pinia's well-designed architecture allows it to be modular while also functionin
 
 ## Pinia and Feathers-Pinia
 
-Install these packages using your preferred package manager.  Until version 1.0.0, it's recommended that you add a `~` in front of the version number for Feathers-Pinia to only get patch releases.
+Install these packages using your preferred package manager.  Until version 2.0, it's recommended that you add a `~` in front of the version number for Feathers-Pinia to only get patch releases.
 
 ```bash
-npm i pinia feathers-pinia
+npm i pinia feathers-pinia@pre
 ```
 
 ## Feathers
@@ -32,34 +32,4 @@ If your app will use feathers-rest (no realtime connection), install these packa
 
 ```bash
 npm i @feathersjs/feathers@pre @feathersjs/authentication-client@pre @feathersjs/rest-client@pre
-```
-
-## TypeScript
-
-By default, TypeScript will expect you to strictly identify properties on Model classes.  See the `!` in the following example:
-
-```ts
-class User extends BaseModel {
-  foo!: string
-  bar!: number
-}
-```
-
-You can optionally configure `tsconfig.json` to not require the `!` on every property. Add the `strictPropertyInitialization` property to the `compilerOptions`:
-
-```json
-{
-  "compilerOptions": {
-    "strictPropertyInitialization": false,
-  },
-}
-```
-
-With `strictPropertyInitialization` turned off, you can declare class properties as normal:
-
-```ts
-class User extends BaseModel {
-  foo: string // No `!` needed after every property
-  bar: number
-}
 ```
