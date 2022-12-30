@@ -8,6 +8,14 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 # Starting a Vite Project
 
+<BlockQuote type="danger" label="Outdated Content">
+
+🚧 Not updated for v2, yet. 🚧
+
+This page is currently being updated.
+
+</BlockQuote>
+
 [[toc]]
 
 ## Overview

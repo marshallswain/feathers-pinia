@@ -8,6 +8,14 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 # Nuxt 3
 
+<BlockQuote type="danger" label="Outdated Content">
+
+🚧 Not updated for v2, yet. 🚧
+
+This page is currently being updated.
+
+</BlockQuote>
+
 [[toc]]
 
 Take advantage of Nuxt 3's auto-imports and enjoy the best developer experience with Feathers-Pinia by following these instructions. For the TLDR (Too Long, Didn't Read) version, you can take a look at the [feathers-pinia-nuxt3 repo](https://github.com/marshallswain/feathers-pinia-nuxt3).
