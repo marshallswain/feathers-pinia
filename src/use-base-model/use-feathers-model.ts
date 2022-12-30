@@ -7,11 +7,11 @@ import type {
   UseFeathersModelOptions,
 } from '../use-base-model/types'
 import type { AnyData } from '../use-service'
-import { useModelEvents } from './wrap-model_events'
+import { useModelEvents } from './wrap-model-events'
 import { useModelInstance } from './use-model-instance'
 import { useFeathersInstance } from './use-feathers-instance'
 import EventEmitter from 'events'
-import { wrapModelFeathers } from './wrap-model_feathers'
+import { wrapModelFeathers } from './wrap-feathers-model'
 
 /**
  * Enables Model cloning and events on the provided ModelFn
@@ -30,6 +30,7 @@ export const useFeathersModel = <
   (data: ModelInstanceData<M>): InferReturn<ModelFunc> & FeathersInstanceProps<M, Q>
 } & EventEmitter &
   FeathersModelStatic<M, D, Q, ModelFunc> => {
+  const { service } = options
   // Wrapper function adds BaseModel props to instance data
   const fn = (data: ModelInstanceData<M>) => {
     const _data = data as typeof data & { __Model: typeof fn }
@@ -39,11 +40,10 @@ export const useFeathersModel = <
       value: fn,
     })
     const asModelInstance = useModelInstance<M>(_data, options)
-    const asFeathersInstance = useFeathersInstance({ service: options.service }, asModelInstance)
+    const asFeathersInstance = useFeathersInstance({ service }, asModelInstance)
     return ModelFn(asFeathersInstance)
   }
 
-  // const WrappedBaseModel = wrapModelBase<M, Q, typeof fn>(options, fn)
   const WrappedFeathersModel = wrapModelFeathers<M, D, Q, typeof fn>(options, fn)
   const WrappedEventModel = useModelEvents(WrappedFeathersModel)
 

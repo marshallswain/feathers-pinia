@@ -18,6 +18,9 @@ export const wrapModelFeathers = <
   ModelFn: ModelFunc,
 ) => {
   const _ModelFn = ModelFn as ModelFunc & FeathersModelStatic<M, D, Q, ModelFunc>
+  const { service } = options
+
+  Object.assign(ModelFn, { service })
 
   // Add a `setStore` property to the ModelFn
   const setStore = (store: any) => (_ModelFn.store = store)

@@ -6,8 +6,8 @@ import type {
   UseBaseModelOptions,
 } from '../use-base-model/types'
 import type { AnyData } from '../use-service'
-import { useModelEvents } from './wrap-model_events'
-import { wrapModelBase } from './wrap-model_base'
+import { useModelEvents } from './wrap-model-events'
+import { wrapModelBase } from './wrap-base-model'
 import { useModelInstance } from './use-model-instance'
 import EventEmitter from 'events'
 
