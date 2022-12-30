@@ -3,7 +3,7 @@ import type { AnyData } from './use-service'
 import type { FeathersInstance, ModelInstance } from './use-base-model'
 import { getParams, setupAssociation } from './associate-utils'
 import { useFind, UseFindParams } from './use-find'
-import { UnwrapNestedRefs } from 'vue'
+import { UnwrapNestedRefs } from 'vue-demi'
 
 interface AssociateFindOptions<
   M extends AnyData,

@@ -1,6 +1,6 @@
 import type { BaseModelData, BaseModelInstanceProps, ModelInstanceData, WithModel } from './types'
 import type { AnyData, CloneOptions } from '../use-service'
-import { reactive } from 'vue'
+import { reactive } from 'vue-demi'
 import ObjectID from 'isomorphic-mongo-objectid'
 import { defineProperties } from './utils'
 

@@ -4,7 +4,7 @@ import type { FeathersInstance, ModelInstance } from './use-base-model'
 import type { UseFindParams } from './use-find'
 import { getParams, setupAssociation } from './associate-utils'
 import { useGet } from './use-get'
-import { UnwrapNestedRefs } from 'vue'
+import { UnwrapNestedRefs } from 'vue-demi'
 
 interface AssociateGetOptions<
   M extends ModelInstance<AnyData>,

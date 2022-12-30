@@ -1,4 +1,4 @@
-import { computed, Ref, ref } from 'vue'
+import { computed, Ref, ref } from 'vue-demi'
 import { BadRequest } from '@feathersjs/errors'
 import decode from 'jwt-decode'
 import type { NullableId } from '@feathersjs/feathers'
