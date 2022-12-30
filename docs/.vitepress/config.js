@@ -42,47 +42,86 @@ function getGuideSidebar() {
     {
       text: 'Start a Project',
       items: [
+        { text: 'Overview', link: '/guide/get-started' },
         { text: 'Install Modules', link: '/guide/setup' },
-        { text: 'with Vite', link: '/guide/setup-vite' },
-        { text: 'with Nuxt 3', link: '/guide/setup-nuxt3' },
+        { text: 'with Vite 🚧', link: '/guide/setup-vite' },
+        { text: 'with Nuxt 3 🚧', link: '/guide/setup-nuxt3' },
         { text: 'with Quasar 🚧', link: '/guide/setup-quasar' },
         { text: 'Example Apps', link: '/guide/example-apps' },
         { text: 'Other Setup Examples', link: '/guide/setup-other' },
       ],
     },
     {
-      text: 'Migration Guides 🚧',
+      text: 'Migration Guides',
       items: [
-        { text: 'Migrate from Vuex', link: '/guide/migrate-from-feathers-vuex' },
+        { text: 'Migrate Models', link: '/guide/migrate-models' },
+        { text: 'Migrate handleClones', link: '/guide/migrate-handle-clones' },
+        { text: 'Migrate from Vuex 🚧', link: '/guide/migrate-from-feathers-vuex' },
         { text: 'Migrate from 0.x', link: '/guide/migrate-from-v0' },
-      ],
-    },
-    {
-      text: 'Pinia Stores',
-      items: [
-        { text: 'Service Stores', link: '/guide/service-stores' },
-        { text: 'Auth Stores (useAuth)', link: '/guide/use-auth' },
-        { text: 'defineAuthStore⚠️', link: '/guide/auth-stores' },
       ],
     },
     {
       text: 'Data Modeling',
       items: [
-        { text: 'Model Classes', link: '/guide/model-classes' },
-        { text: 'BaseModel', link: '/guide/base-model' },
-        { text: 'Model Instances', link: '/guide/model-instances' },
-        { text: 'Model Associations', link: '/guide/model-associations' },
+        { text: 'Overview', link: '/guide/modeling-overview' },
+        {
+          text: 'Model Functions',
+          link: '/guide/model-functions',
+          items: [
+            { text: 'BaseModel', link: '/guide/use-base-model' },
+            { text: 'FeathersModel', link: '/guide/use-feathers-model' },
+            { text: 'Shared Utils', link: '/guide/model-functions-shared' },
+          ],
+        },
+        {
+          text: 'Model Instances',
+          link: '/guide/model-instances',
+          items: [
+            { text: 'BaseModel Instances', link: '/guide/use-base-model-instances' },
+            { text: 'FeathersModel Instances', link: '/guide/use-feathers-model-instances' },
+          ],
+        },
+        {
+          text: 'Model Associations',
+          link: '/guide/model-associations',
+          items: [
+            { text: 'associateFind', link: '/guide/associate-find' },
+            { text: 'associateGet', link: '/guide/associate-get' },
+          ],
+        },
         { text: 'Common Patterns', link: '/guide/common-patterns' },
+      ],
+    },
+    {
+      text: 'Stores',
+      items: [
+        { text: 'Overview', link: '/guide/stores-overview' },
+        {
+          text: 'Model Stores',
+          link: '/guide/model-stores',
+          items: [
+            { text: 'BaseModel Stores', link: '/guide/use-base-model-stores' },
+            { text: 'FeathersModel Stores', link: '/guide/use-feathers-model-stores' },
+          ],
+        },
+        {
+          text: 'Pinia Stores',
+          link: '/guide/pinia-stores',
+          items: [
+            { text: 'Service Stores - useService', link: '/guide/use-service' },
+            { text: 'Auth Stores - useAuth', link: '/guide/use-auth' },
+          ],
+        },
       ],
     },
     {
       text: 'Common Tools',
       items: [
+        { text: 'Feathers Client Hooks', link: '/guide/hooks' },
         { text: 'useFind', link: '/guide/use-find' },
         { text: 'useGet', link: '/guide/use-get' },
+        { text: 'useClone', link: '/guide/use-clone' },
         { text: 'useClones', link: '/guide/use-clones' },
-        { text: 'associateFind', link: '/guide/associate-find' },
-        { text: 'associateGet', link: '/guide/associate-get' },
       ],
     },
     {
@@ -90,6 +129,13 @@ function getGuideSidebar() {
       items: [
         { text: 'OFetch', link: '/guide/ofetch' },
         { text: 'syncWithStorage', link: '/guide/storage-sync' },
+      ],
+    },
+    {
+      text: 'Pending Removal in 2.0',
+      items: [
+        { text: 'defineStore ⚠️', link: '/guide/define-store' },
+        { text: 'defineAuthStore ⚠️', link: '/guide/auth-stores' },
         { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
         { text: 'useGetWatched ⚠️', link: '/guide/use-get-watched' },
         { text: 'usePagination ⚠️', link: '/guide/use-pagination' },
