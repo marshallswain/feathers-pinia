@@ -60,7 +60,7 @@ postService.hooks({ around: { all: [...feathersPiniaHooks(Post)] } })
  * Comment Model - where each has an `authorId` and a `postId`
  */
 const ModelFnComment = (data: ModelInstance<Comments>) => {
-  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar', description: 'default' }, data)
+  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
 const Comment = useFeathersModel<Comments, CommentsData, CommentsQuery, typeof ModelFnComment>(

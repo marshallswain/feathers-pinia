@@ -7,7 +7,7 @@ const pinia = createPinia()
 const service = api.service('tasks')
 
 const ModelFn = (data: ModelInstance<Tasks>) => {
-  const withDefaults = useInstanceDefaults({ test: true, foo: 'bar', description: 'default' }, data)
+  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
 const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
