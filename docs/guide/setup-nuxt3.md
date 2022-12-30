@@ -25,7 +25,7 @@ Take advantage of Nuxt 3's auto-imports and enjoy the best developer experience 
 Follow these steps to get started with a new single-page Vite app:
 
 1. Create a Nuxt app
-   - [Use the starter project]() and read the below as reference.
+   - [Use the starter project](https://github.com/marshallswain/feathers-pinia-nuxt3) and read the below as reference.
    - [Start a new Nuxt app](https://v3.nuxtjs.org/getting-started/installation) and follow the below as instructions.
 2. [Install Feathers-Pinia](./setup),
 3. Follow the instructions, below.
