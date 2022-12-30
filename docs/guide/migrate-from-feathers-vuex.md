@@ -4,7 +4,7 @@ outline: deep
 
 # 🚧 Migration from Vuex ≤ 4 🚧
 
-> 🚧 This page is a work in progress. If you see something that needs more clarity, please open an issue. 🚧
+> 🚧 This page is a work in progress. If something needs more clarity, [open an issue](https://github.com/marshallswain/feathers-pinia/issues). 🚧
 
 <script setup>
 import BlockQuote from '../components/BlockQuote.vue'
@@ -76,28 +76,47 @@ Note also that re-exporting files from a single file like shown above should not
 
 ## Setup
 
-For a more detailed walkthrough refer to the [setup guide](/guide/setup).
+For a detailed walkthrough refer to the [setup guide](/guide/setup) that most matches your chosen framework.
 
-```javascript
-// src/stores/store.js
-import { createPinia } from 'pinia'
-import { setupFeathersPinia } from 'feathers-pinia'
-import { api } from '@/feathers'
-
-export const pinia = createPinia()
-
-export const { defineStore, BaseModel } = setupFeathersPinia({ clients: { api } })
-```
-
-## Usage
+## Configuration
 
 Stores in pinia should be imported whenever they are to be used. You don't have to worry about performance optimizations, pinia does this under-the-hood for you.
 
-### Usage in Components (.vue)
+### Configuration for use in Components (.vue)
+
+🚧 This section is outdated and requires updating after app examples are completed. 🚧
 
 Within components, you can instantiate stores directly with `const store = useStore()`.
 
 ```javascript
+// src/stores/todos.js
+import { pinia } from 'pinia'
+import { defineStore, BaseModel } from 'feathers-pinia'
+
+// avoid export Model to prevent accessing it directly and enforce access through store.Model
+class Todo extends BaseModel {}
+
+const servicePath = 'todos'
+
+// could also directly provide the id within the options
+// e.g. defineStore({ id: 'todos', ... }) or skip it and let
+// feathers-pinia apply the default `service.${servicePath}`
+const useTodosStore = defineStore('todos', {
+  servicePath,
+  model: Todo,
+  state: () => ({}),
+  getters: {},
+  actions: {}
+})
+```
+
+### Configuration for use outside of components (.js or .ts)
+
+🚧 This section is outdated and requires updating after app examples are completed. 🚧
+
+Outside of components pinia might not be registered yet, so instantiating stores require binding the pinia instance created above with `const store = useStore(pinia)`. This is especially problematic with Vue 2 which relies on `Vue.use()` and the order of the ES imports/exports.
+
+```ts
 // src/stores/todos.js
 import { pinia } from 'pinia'
 import { defineStore, BaseModel } from './store.js'
@@ -127,32 +146,6 @@ if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useTodosStore as any, import.meta.hot))
 ```
 
-### Usage outside of components (.js or .ts)
-
-Outside of components pinia might not be registered yet, so instantiating stores require binding the pinia instance created above with `const store = useStore(pinia)`. This is especially problematic with Vue 2 which relies on `Vue.use()` and the order of the ES imports/exports.
-
-```javascript
-// src/stores/todos.js
-import { pinia } from 'pinia'
-import { defineStore, BaseModel } from 'feathers-pinia'
-
-// avoid export Model to prevent accessing it directly and enforce access through store.Model
-class Todo extends BaseModel {}
-
-const servicePath = 'todos'
-
-// could also directly provide the id within the options
-// e.g. defineStore({ id: 'todos', ... }) or skip it and let
-// feathers-pinia apply the default `service.${servicePath}`
-const useTodosStore = defineStore('todos', {
-  servicePath,
-  model: Todo,
-  state: () => ({}),
-  getters: {},
-  actions: {}
-})
-```
-
 **Important:** feathers-pinia will default to an id of `service.${servicePath}` if no id is provided to `defineStore`.
 This makes it easy to distinguish regular pinia stores from those created with feathers-pinia.
 
@@ -161,6 +154,10 @@ This makes it easy to distinguish regular pinia stores from those created with f
 **If you haven't completed the initial [setup](./setup), please do so first.**
 
 The following steps outline the specific migration steps to apply to your codebase. The list might not be exhaustive, be sure to apply these concepts to any custom implmentation or variation you might have.
+
+### Convert your Models
+
+See the section on [converting from Model Classes to Model Functions](/guide/migrate-models).
 
 #### Imports
 
@@ -257,3 +254,12 @@ Since `state`, `getters`, and `actions` all live inside the same Pinia store obj
 - **`commit`**
 - **`reset`**
 - **`hydrateAll`** might be deprecated. Hydration with Pinia is as simple as `Object.assign(store, data)`.
+
+## No `preferUpdate` option
+
+Feathers-Pinia does not have a `preferUpdate` option, which was available for Feathers-Vuex model instances. You can
+either call `.update()` instead of `save()`. Feel free to open a PR or issue if you need the feature.
+
+## Migrate `handleClones`
+
+The `handleClones` utility is now `useClones` and has a cleaner API. See the page on [Migrating handleClones](/guide/migrate-handle-clones)
