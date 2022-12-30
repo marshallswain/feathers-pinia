@@ -3,17 +3,24 @@ import { AnyData } from '../use-service'
 import { FeathersInstanceProps } from './types'
 import { defineProperties } from './utils'
 
-export interface UseModelInstanceFeathersOptions<S extends Service> {
+export interface useFeathersInstanceOptions<S extends Service> {
   service: S
 }
 
-export const useModelInstanceFeathers = <M extends AnyData, S extends Service = Service, P extends Params = Params>(
+export const useFeathersInstance = <M extends AnyData, S extends Service = Service, P extends Params = Params>(
+  options: useFeathersInstanceOptions<S>,
   data: M,
-  options: UseModelInstanceFeathersOptions<S>,
 ) => {
   const service = options.service
   const merge = (data: M, toMerge: AnyData) => Object.assign(data, toMerge)
   Object.defineProperties(data, {
+    isPending: {
+      enumerable: false,
+      configurable: true,
+      get() {
+        return this.isCreatePending || this.isPatchPending || this.isRemovePending
+      },
+    },
     isSavePending: {
       enumerable: false,
       configurable: true,

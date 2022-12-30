@@ -9,7 +9,7 @@ import type {
 import type { AnyData } from '../use-service'
 import { useModelEvents } from './wrap-model_events'
 import { useModelInstance } from './use-model-instance'
-import { useModelInstanceFeathers } from './use-model-instance-feathers'
+import { useFeathersInstance } from './use-feathers-instance'
 import EventEmitter from 'events'
 import { wrapModelFeathers } from './wrap-model_feathers'
 
@@ -39,7 +39,7 @@ export const useFeathersModel = <
       value: fn,
     })
     const asModelInstance = useModelInstance<M>(_data, options)
-    const asFeathersInstance = useModelInstanceFeathers(asModelInstance, { service: options.service })
+    const asFeathersInstance = useFeathersInstance({ service: options.service }, asModelInstance)
     return ModelFn(asFeathersInstance)
   }
 

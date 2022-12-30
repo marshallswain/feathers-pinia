@@ -29,7 +29,7 @@ export {
   wrapModelFeathers,
   useModelInstance,
   useInstanceDefaults,
-  useModelInstanceFeathers,
+  useFeathersInstance,
 } from './use-base-model'
 
 // Hooks for Composition Models and Stores
