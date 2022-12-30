@@ -6,11 +6,11 @@ outline: deep
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# The `useAuth` Utility
+# Service Stores - useAuth
 
 [[toc]]
 
-In Feathers-Pinia 1.0, the `defineAuthStore` utility has been replaced by a new `useAuth` composition utility which
+In Feathers-Pinia 2.0, the `defineAuthStore` utility has been replaced by a new `useAuth` composition utility which
 allows you to create a highly-flexible [setup store](https://pinia.vuejs.org/core-concepts/#setup-stores). This both
 makes the API more flexible while also keeping it easy to use for simple authentication requirements.
 
@@ -41,13 +41,13 @@ import { useAuth } from 'feathers-pinia'
 export const useAuthStore = defineStore('auth', () => {
   const { $api } = useFeathers()
 
-  const auth = useAuth({
+  const utils = useAuth({
     api: $api,
   })
 
-  auth.reAuthenticate()
+  utils.reAuthenticate()
 
-  return auth
+  return { ...utils }
 })
 
 if (import.meta.hot) {
@@ -72,14 +72,14 @@ export const useAuthStore = defineStore('auth', () => {
   const { userStore } = useUserStore()
   const { $api } = useFeathers()
 
-  const auth = useAuth({
+  const utils = useAuth({
     api: $api,
     userStore,
   })
 
-  auth.reAuthenticate()
+  utils.reAuthenticate()
 
-  return auth
+  return { ...utils }
 })
 
 if (import.meta.hot) {
@@ -233,7 +233,7 @@ router.beforeEach(async (to, from) => {
 ## Store Data Differences
 
 In previous versions, the authenticate method stored the `accessToken` and `payload` information inside the store. In
-version 1.0, that information has been removed from the store since it is stored in the Feathers Client. You can
+version 2.0, that information has been removed from the store since it is stored in the Feathers Client. You can
 retrieve the `accessToken` as shown in the example, below. The example assumes you've used the [Nuxt](/guide/setup-nuxt3)
 or [Vite](/guide/setup-vite) setup instructions.
 
@@ -255,19 +255,19 @@ response in a ref:
     export const useAuthStore = defineStore('auth', () => {
       const { $api } = useFeathers()
 
-      const authData = ref<null | Record<string, any>>(null)
+      const authResponse = ref<null | Record<string, any>>(null)
       const auth = useAuth({
         api: $api,
         onSuccess: async(result: any) => {
-          response.value = result
+          authResponse.value = result
         },
         onInitSuccess: async(result: any) => {
-          response.value = result
+          authResponse.value = result
         }
       })
 
       return {
-        authData,
+        authResponse,
         ...auth,
       }
     })
@@ -457,7 +457,7 @@ export const useAuthStore = defineStore('auth', () => {
     // handle the error as you see fit.
   }
 
-  const auth = useAuth({
+  const utils = useAuth({
     api: $api,
     userStore,
     onSuccess: async (result) => {
@@ -484,9 +484,9 @@ export const useAuthStore = defineStore('auth', () => {
     },
   })
 
-  auth.reAuthenticate()
+  utils.reAuthenticate()
 
-  return { ...auth }
+  return { ...utils }
 })
 
 if (import.meta.hot) {
@@ -575,13 +575,13 @@ interface AuthenticateData {
 export const useAuthStore = defineStore('auth', () => {
   const { $api } = useFeathers()
 
-  const auth = useAuth<AuthenticateData>({
+  const utils = useAuth<AuthenticateData>({
     api: $api,
   })
 
-  auth.reAuthenticate()
+  utils.reAuthenticate()
 
-  return auth
+  return { ...utils }
 })
 
 if (import.meta.hot) {
@@ -623,16 +623,16 @@ export const useAuthStore = defineStore('auth', () => {
   const { $api } = useFeathers()
   const router = useRouter()
 
-  const auth = useAuth({
+  const utils = useAuth({
     api: $api,
   })
 
-  auth.reAuthenticate()
+  utils.reAuthenticate()
 
   return {
-    ...auth,
+    ...utils,
     logout: async () => {
-      await auth.logout()
+      await utils.logout()
       router.push('/')
     }
   }
