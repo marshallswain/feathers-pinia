@@ -16,9 +16,13 @@ hero:
       link: /guide/
 
 features:
+  - icon: 🕊️
+    title: FeathersJS v5 Dove Support
+    details: Feathers-Pinia has been completely rewritten with the Vue Composition API. Use types directly from your backend API.
+
   - icon: 🍍
     title: Powered by Pinia
-    details: Pinia is Vuex 5. It's a joy to use with a clean API and memorable syntax. 
+    details: It's a joy to use with a clean API and memorable syntax. It's also crazy fast. Really, the speed difference is ludicrous. ➳
 
   - icon: 🧁
     title: Best Practices Baked In
@@ -32,13 +36,9 @@ features:
     title: SWR with more Cowbell
     details: Feathers-Pinia can intelligently re-use data across different queries, making apps feel faster. Or go realtime and make SWR obsolete.
 
-  - icon: ➳
-    title: Super Speedy Fast
-    details: When paired with Vue 3, you'll enjoy a massive speed increase over the same app built with Feathers-Vuex. Really, it's huge.
-
   - icon: 🥷
-    title: Powerful Data Modeling
-    details: Define data structures. Write cleaner code with model-level computed properties.
+    title: Data Modeling Beyond Class
+    details: v2.0 has all-new Functional Data Modeling. We've ditched classes for functions and we're all happier. Write cleaner code.
 
 ---
 
