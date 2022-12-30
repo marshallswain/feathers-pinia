@@ -42,13 +42,13 @@ features:
 
 ---
 
-<script setup lang="ts">
+<script setup>
 import Badge from './components/Badge.vue'
 import pkg from '../package.json'
 </script>
 
 <div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
-  <Badge :text="`v${pkg.version}`" />
+  <Badge :label="`v${pkg.version}`" />
 </div>
 
 <style>
