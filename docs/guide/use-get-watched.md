@@ -2,7 +2,14 @@
 outline: deep
 ---
 
-# useGet
+# The `useGetWatched` Utility ⚠️
+
+<BlockQuote type="warning" label="⚠️ warning ⚠️">
+
+This API has been replaced by the new [`useGet`](./use-get) API. To make the migration process easier, the old `useGet`
+is now provided as `useGetWatched`. This API will likely be removed in the future.
+
+</BlockQuote>
 
 [[toc]]
 
