@@ -331,7 +331,7 @@ import { User } from './user'
 
 const ModelFnMessage = (data: ModelInstance<Messages>) => {
   const withDefaults = useInstanceDefaults({ text: '', userId: null }, data)
-  const withUser = associateFind(withDefaults, 'user', {
+  const withUser = associateGet(withDefaults, 'user', {
     Model: User,
     getId: (data) => data.messageId
   })
