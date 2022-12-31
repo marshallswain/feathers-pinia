@@ -23,7 +23,12 @@ export const wrapModelFeathers = <
   Object.assign(Model, { service })
 
   // Add a `setStore` property to the Model
-  const setStore = (store: any) => (_Model.store = store)
+  const setStore = (store: any) => {
+    _Model.store = store
+    if (store.setModel) {
+      store.setModel(_Model)
+    }
+  }
   Object.assign(_Model, { setStore })
 
   // Initialize `useService` as the default store. It can be replaced by calling `Model.setStore(store)`

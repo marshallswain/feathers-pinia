@@ -20,12 +20,13 @@ const useTaskStore = defineStore('tasks', () => {
   const serviceUtils = useService<Tasks, TasksData, TasksQuery, typeof Task>({
     service,
     idField: '_id',
-    Model: Task,
+    // Model doesn't have to be passed if you're going to call `Model.setStore`
   })
 
   return { ...serviceUtils }
 })
 const taskStore = useTaskStore(pinia)
+// Calling setStore also calls `store.setModel`
 Task.setStore(taskStore)
 
 api.service('tasks').hooks({
