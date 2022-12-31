@@ -64,7 +64,8 @@ const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>(
 The following static attributes exist directly on FeathersModel Functions:
 
 - `store` the internal Model store, which can be replaced by using `setStore`.
-- `setStore(store)` allow replacing the internal Model.store.
+- `setStore(store)` allows replacing the internal Model.store. If the store has a `setModel` function, the model will
+call it with itself as the argument.
 
 See [Model Stores](/guide/model-stores) for more information.
 
