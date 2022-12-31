@@ -20,7 +20,12 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
   const idField = ref(options.idField)
 
   // Add a `setStore` property to the Model
-  const setStore = (store: any) => (_Model.store = store)
+  const setStore = (store: any) => {
+    _Model.store = store
+    if (store.setModel) {
+      store.setModel(_Model)
+    }
+  }
   Object.assign(_Model, { setStore })
 
   const storage = useAllStorageTypes<M, Func>({ getModel: () => Model })
