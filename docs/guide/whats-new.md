@@ -46,10 +46,10 @@ const pinia = createPinia()
 
 // Create a tasks store
 export const useTaskStore = defineStore('tasks', () => {
-  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof ModelFn>({
+  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof modelFn>({
     service,
     idField: '_id',
-    ModelFn: Task, // see the section on Model Functions
+    Model: Task, // see the section on Model Functions
   })
 
   return { ...serviceUtils }
@@ -111,13 +111,13 @@ import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
+const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>(
   { name: 'Task', idField: '_id', service },
-  ModelFn,
+  modelFn,
 )
 ```
 
@@ -149,11 +149,11 @@ methods.
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 ```
 
 BaseModel functions also have a store, which can be upgraded to a full Pinia store using the `setStore` method:
@@ -301,7 +301,7 @@ import type { Users } from 'my-feathers-api'
 import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
 import { Message } from './message'
 
-const ModelFnUser = (data: ModelInstance<Users>) => {
+const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)
   const withMessages = associateFind(withDefaults, 'messages', {
     Model: Message,
@@ -329,7 +329,7 @@ import type { Messages } from 'my-feathers-api'
 import { type ModelInstance, useInstanceDefaults, associateGet } from 'feathers-pinia'
 import { User } from './user'
 
-const ModelFnMessage = (data: ModelInstance<Messages>) => {
+const modelFn = (data: ModelInstance<Messages>) => {
   const withDefaults = useInstanceDefaults({ text: '', userId: null }, data)
   const withUser = associateGet(withDefaults, 'user', {
     Model: User,

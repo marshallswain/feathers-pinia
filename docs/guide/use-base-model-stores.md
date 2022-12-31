@@ -24,11 +24,11 @@ default store is found at `Model.store`:
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 
 console.log(Task.store) // --> See API, below
 ```

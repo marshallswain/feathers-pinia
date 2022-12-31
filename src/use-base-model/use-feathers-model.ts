@@ -14,9 +14,9 @@ import EventEmitter from 'events'
 import { wrapModelFeathers } from './wrap-feathers-model'
 
 /**
- * Enables Model cloning and events on the provided ModelFn
- * @param ModelFn
- * @returns wrapped ModelFn
+ * Enables Model cloning and events on the provided Model
+ * @param Model
+ * @returns wrapped Model
  */
 export const useFeathersModel = <
   M extends AnyData,
@@ -25,7 +25,7 @@ export const useFeathersModel = <
   ModelFunc extends (data: ModelInstance<M>) => any,
 >(
   options: UseFeathersModelOptions,
-  ModelFn: ModelFunc,
+  Model: ModelFunc,
 ): {
   (data: ModelInstanceData<M>): InferReturn<ModelFunc> & FeathersInstanceProps<M, Q>
 } & EventEmitter &
@@ -41,7 +41,7 @@ export const useFeathersModel = <
     })
     const asModelInstance = useModelInstance<M>(_data, options)
     const asFeathersInstance = useFeathersInstance({ service }, asModelInstance)
-    return ModelFn(asFeathersInstance)
+    return Model(asFeathersInstance)
   }
 
   const WrappedFeathersModel = wrapModelFeathers<M, D, Q, typeof fn>(options, fn)

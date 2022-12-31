@@ -30,7 +30,7 @@ If you want TypeScript types to work, you must provide the generics in this orde
 
 - ServiceResult
 - ServiceQuery
-- `typeof ModelFn`
+- `typeof Model`
 
 <!--@include: ./types-notification.md-->
 
@@ -38,20 +38,20 @@ If you want TypeScript types to work, you must provide the generics in this orde
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 ```
 
-### useBaseModel(options, ModelFn)
+### useBaseModel(options, Model)
 
 - `options {Object}`
   - `name {string}` the name of the Model function. Best to make it unique. **Required**
   - `idField {string}` the name of the field containing each instance's unique identifier. **Required**
   - `whitelist {string[]}` extra query params to be allowed when querying the local data store.
-- `ModelFn` a function that receives a `ModelInstance`object and returns a modified version of that object.
+- `modelFn` a function that receives a `ModelInstance`object and returns a modified version of that object.
 
 ## Model Store
 
@@ -92,11 +92,11 @@ Here’s an example of how to use it:
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 
 const handleTodoCreated = (todo) => {
   console.log(todo)

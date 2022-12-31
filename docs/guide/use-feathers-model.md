@@ -31,7 +31,7 @@ If you want TypeScript types to work, you must provide the generics in this orde
 - ServiceResult
 - ServiceData
 - ServiceQuery
-- `typeof ModelFn`
+- `typeof modelFn`
 
 <!--@include: ./types-notification.md-->
 
@@ -40,24 +40,24 @@ import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
+const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>(
   { name: 'Task', idField: '_id', service },
-  ModelFn,
+  modelFn,
 )
 ```
 
-### useFeathersModel(options, ModelFn)
+### useFeathersModel(options, modelFn)
 
 - `options {Object}`
   - `name {string}` the name of the Model function. Best to make it unique. **Required**
   - `idField {string}` the name of the field containing each instance's unique identifier. **Required**
   - `service {FeathersClientService}` a Feathers Client service, like `api.service('tasks')`. **Required**
   - `whitelist {string[]}` extra query params to be allowed when querying the local data store.
-- `ModelFn` a function that receives a `ModelInstance`object and returns a modified version of that object.
+- `modelFn` a function that receives a `ModelInstance`object and returns a modified version of that object.
 
 ## Model Store
 

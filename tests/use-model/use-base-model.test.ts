@@ -1,11 +1,11 @@
 import type { Tasks, TasksQuery } from '../feathers-schema-tasks'
 import { type ModelInstance, useBaseModel, useInstanceDefaults } from '../../src'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 
 describe('useInstanceModel props', () => {
   beforeEach(() => {

@@ -5,9 +5,9 @@ import { del, ref, set } from 'vue-demi'
 import _debounce from 'just-debounce'
 import EventEmitter from 'events'
 
-type UseServiceStoreEventsOptions<M extends AnyData, Func extends (data: ModelInstance<M>) => any> = {
+type UseServiceStoreEventsOptions<M extends AnyData, ModelFunc extends (data: ModelInstance<M>) => any> = {
   service: any
-  ModelFn?: Func
+  getModel: () => ModelFunc
   idField: string
   debounceEventsTime?: number
   onAddOrUpdate: (item: any) => void
@@ -24,7 +24,6 @@ export const useServiceEvents = <C extends AnyData, Func extends (data: ModelIns
   if (!options.service || options.handleEvents === false) {
     return
   }
-  const ModelFn = options.ModelFn as Func & EventEmitter
   const service = options.service
 
   const addOrUpdateById = ref({})
@@ -101,7 +100,8 @@ export const useServiceEvents = <C extends AnyData, Func extends (data: ModelIns
     }
 
     if (handler) {
-      const handled = handler(item, { model: ModelFn })
+      const Model = options.getModel() as Func & EventEmitter
+      const handled = handler(item, { model: Model })
       if (!handled) {
         return
       }
@@ -116,23 +116,27 @@ export const useServiceEvents = <C extends AnyData, Func extends (data: ModelIns
 
   // Listen to socket events when available.
   service.on('created', (item: any) => {
-    const instance = ModelFn(item)
+    const Model = options.getModel() as Func & EventEmitter
+    const instance = Model(item)
     handleEvent('created', instance)
-    ModelFn?.emit && ModelFn.emit('created', instance)
+    Model?.emit && Model.emit('created', instance)
   })
   service.on('updated', (item: any) => {
-    const instance = ModelFn(item)
+    const Model = options.getModel() as Func & EventEmitter
+    const instance = Model(item)
     handleEvent('updated', instance)
-    ModelFn?.emit && ModelFn.emit('updated', instance)
+    Model?.emit && Model.emit('updated', instance)
   })
   service.on('patched', (item: any) => {
-    const instance = ModelFn(item)
+    const Model = options.getModel() as Func & EventEmitter
+    const instance = Model(item)
     handleEvent('patched', instance)
-    ModelFn?.emit && ModelFn.emit('patched', instance)
+    Model?.emit && Model.emit('patched', instance)
   })
   service.on('removed', (item: any) => {
-    const instance = ModelFn(item)
+    const Model = options.getModel() as Func & EventEmitter
+    const instance = Model(item)
     handleEvent('removed', instance)
-    ModelFn?.emit && ModelFn.emit('removed', instance)
+    Model?.emit && Model.emit('removed', instance)
   })
 }

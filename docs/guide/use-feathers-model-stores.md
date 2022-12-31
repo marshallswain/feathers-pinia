@@ -26,13 +26,13 @@ import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
+const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>(
   { name: 'Task', idField: '_id', service },
-  ModelFn,
+  modelFn,
 )
 
 console.log(Task.store) // --> See API, below

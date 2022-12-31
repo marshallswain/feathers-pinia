@@ -9,13 +9,13 @@ const pinia = createPinia()
 const service = api.service('tasks')
 
 // Create a Model Function
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '' }, data)
   return withDefaults
 }
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
+const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>(
   { name: 'Task', idField: '_id', service },
-  ModelFn,
+  modelFn,
 )
 
 // register hooks in the `around all` array
@@ -23,10 +23,10 @@ service.hooks({ around: { all: [...feathersPiniaHooks(Task)] } })
 
 // Create a store
 export const useTaskStore = defineStore('tasks', () => {
-  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof ModelFn>({
+  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof modelFn>({
     service,
     idField: '_id',
-    ModelFn: Task,
+    Model: Task,
   })
 
   return { ...serviceUtils }

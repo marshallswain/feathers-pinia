@@ -36,7 +36,7 @@ export interface UseServiceOptionsExtended<
   Q extends Query,
   ModelFunc extends (data: ModelInstance<M>) => any,
 > extends UseServiceOptions<M, D, Q> {
-  ModelFn: ModelFunc
+  Model?: ModelFunc
 }
 
 const makeDefaultOptions = () => ({
@@ -52,7 +52,12 @@ export const useService = <
   _options: UseServiceOptionsExtended<M, D, Q, ModelFunc>,
 ) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const ModelFn = _options.ModelFn
+
+  let Model = options.Model || (((val: any) => val) as ModelFunc)
+  const getModel = () => Model
+  const setModel = (model: ModelFunc) => {
+    Model = model
+  }
 
   const service = computed(() => options.service)
   const whitelist = ref(options.whitelist ?? [])
@@ -66,7 +71,7 @@ export const useService = <
   // storage
   const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, removeFromStore, addToStore, clearAll } =
     useAllStorageTypes<M, ModelFunc>({
-      ModelFn,
+      getModel,
       afterClear: () => {
         pendingState.clearAllPending()
       },
@@ -101,7 +106,7 @@ export const useService = <
   // events
   useServiceEvents({
     idField: idField.value,
-    ModelFn: ModelFn,
+    getModel,
     onAddOrUpdate: addToStore,
     onRemove: removeFromStore,
     service: service.value,
@@ -132,18 +137,21 @@ export const useService = <
       return results
     },
     useFindWatched: function (options: UseFindWatchedOptions) {
-      return useFindWatched({ model: ModelFn, ...(options as any) })
+      const Model = getModel()
+      return useFindWatched({ model: Model, ...(options as any) })
     },
     // alias to useGetWatched, doesn't require passing the model
     useGetWatched: function (options: UseGetOptions) {
-      return useGetWatched({ model: ModelFn as any, ...options })
+      const Model = getModel()
+      return useGetWatched({ model: Model as any, ...options })
     },
   }
 
   const store = {
     // service
     service,
-    Model: computed(() => ModelFn),
+    Model,
+    setModel,
     idField,
     whitelist,
     paramsForServer,

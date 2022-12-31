@@ -11,22 +11,22 @@ import { feathersPiniaHooks } from '../src/hooks'
 const pinia = createPinia()
 const service = api.service('tasks')
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({}, data)
   return withDefaults
 }
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof ModelFn>(
+const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>(
   { name: 'Task', idField: '_id', service },
-  ModelFn,
+  modelFn,
 )
 type TaskInstance = ReturnType<typeof Task>
 
-// passing the ModelFn into `useService` overwrites the model's feathers methods to proxy through the store.
+// passing the Model into `useService` overwrites the model's feathers methods to proxy through the store.
 const useTaskStore = defineStore('counter', () => {
   const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof Task>({
     service,
     idField: '_id',
-    ModelFn: Task,
+    Model: Task,
   })
 
   return { ...serviceUtils }

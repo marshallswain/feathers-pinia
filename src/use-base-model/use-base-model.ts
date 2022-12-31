@@ -12,13 +12,13 @@ import { useModelInstance } from './use-model-instance'
 import EventEmitter from 'events'
 
 /**
- * Enables Model cloning and events on the provided ModelFn
- * @param ModelFn
- * @returns wrapped ModelFn
+ * Enables Model cloning and events on the provided Model
+ * @param Model
+ * @returns wrapped Model
  */
 export const useBaseModel = <M extends AnyData, Q extends AnyData, ModelFunc extends (data: ModelInstance<M>) => any>(
   options: UseBaseModelOptions,
-  ModelFn: ModelFunc,
+  Model: ModelFunc,
 ): {
   (data: ModelInstanceData<M>): InferReturn<ModelFunc>
 } & BaseModelStatic<M, Q> &
@@ -32,7 +32,7 @@ export const useBaseModel = <M extends AnyData, Q extends AnyData, ModelFunc ext
       value: fn,
     })
     const asModel = useModelInstance<M>(_data, options)
-    return ModelFn(asModel)
+    return Model(asModel)
   }
 
   const WrappedBaseModel = wrapModelBase<M, Q, typeof fn>(options, fn)

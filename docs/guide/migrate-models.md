@@ -85,13 +85,13 @@ import { api } from '../feathers'
 
 const service = api.service('users')
 
-const ModelFn = (data: ModelInstance<Users>) => {
+const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
   return withDefaults
 }
-const User = useFeathersModel<Users, UsersData, UsersQuery, typeof ModelFn>(
+const User = useFeathersModel<Users, UsersData, UsersQuery, typeof modelFn>(
   { name: 'User', idField: '_id', service },
-  ModelFn,
+  modelFn,
 )
 ```
 

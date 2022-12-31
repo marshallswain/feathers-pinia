@@ -19,7 +19,7 @@ const commentService = api.service('comments')
 /**
  * Author Model
  */
-const ModelFnAuthor = (data: ModelInstance<Authors>) => {
+const modelFnAuthor = (data: ModelInstance<Authors>) => {
   const withDefaults = useInstanceDefaults({ setInstanceRan: false }, data)
   const withPosts = associateFind(withDefaults, 'posts', {
     Model: Post,
@@ -33,16 +33,16 @@ const ModelFnAuthor = (data: ModelInstance<Authors>) => {
   })
   return withPosts
 }
-const Author = useFeathersModel<Authors, AuthorsData, AuthorsQuery, typeof ModelFnAuthor>(
+const Author = useFeathersModel<Authors, AuthorsData, AuthorsQuery, typeof modelFnAuthor>(
   { name: 'Author', idField: 'id', service: authorService },
-  ModelFnAuthor,
+  modelFnAuthor,
 )
 authorService.hooks({ around: { all: [...feathersPiniaHooks(Author)] } })
 
 /**
  * Post Model - where each has `authorIds`
  */
-const ModelFnPost = (data: ModelInstance<Posts>) => {
+const modelFnPost = (data: ModelInstance<Posts>) => {
   const withDefaults = useInstanceDefaults({ authorIds: [] }, data)
   const withAuthors = associateFind(withDefaults, 'authors', {
     Model: Author,
@@ -50,22 +50,22 @@ const ModelFnPost = (data: ModelInstance<Posts>) => {
   })
   return withAuthors
 }
-const Post = useFeathersModel<Posts, PostsData, PostsQuery, typeof ModelFnPost>(
+const Post = useFeathersModel<Posts, PostsData, PostsQuery, typeof modelFnPost>(
   { name: 'Post', idField: 'id', service: postService },
-  ModelFnPost,
+  modelFnPost,
 )
 postService.hooks({ around: { all: [...feathersPiniaHooks(Post)] } })
 
 /**
  * Comment Model - where each has an `authorId` and a `postId`
  */
-const ModelFnComment = (data: ModelInstance<Comments>) => {
+const modelFnComment = (data: ModelInstance<Comments>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Comment = useFeathersModel<Comments, CommentsData, CommentsQuery, typeof ModelFnComment>(
+const Comment = useFeathersModel<Comments, CommentsData, CommentsQuery, typeof modelFnComment>(
   { name: 'Comment', idField: 'id', service: commentService },
-  ModelFnComment,
+  modelFnComment,
 )
 commentService.hooks({ around: { all: [...feathersPiniaHooks(Comment)] } })
 

@@ -5,25 +5,25 @@ import { useAllStorageTypes } from '../use-service/use-all-storage-types'
 import { reactive, ref } from 'vue-demi'
 
 /**
- * Adds the useService utilities to the ModelFn
- * @param ModelFn
- * @returns ModelFn
+ * Adds the useService utilities to the Model
+ * @param Model
+ * @returns Model
  */
 export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends (data: ModelInstanceData<M>) => any>(
   options: UseBaseModelOptions,
-  ModelFn: Func,
+  Model: Func,
 ): {
   (data: ModelInstanceData<M>): InferReturn<Func>
 } & BaseModelStatic<M, Q> => {
-  const _ModelFn = ModelFn as Func & BaseModelStatic<M, Q>
+  const _Model = Model as Func & BaseModelStatic<M, Q>
   const whitelist = ref(options.whitelist || [])
   const idField = ref(options.idField)
 
-  // Add a `setStore` property to the ModelFn
-  const setStore = (store: any) => (_ModelFn.store = store)
-  Object.assign(_ModelFn, { setStore })
+  // Add a `setStore` property to the Model
+  const setStore = (store: any) => (_Model.store = store)
+  Object.assign(_Model, { setStore })
 
-  const storage = useAllStorageTypes<M, Func>({ ModelFn })
+  const storage = useAllStorageTypes<M, Func>({ getModel: () => Model })
 
   // local data filtering
   const { findInStore, countInStore, getFromStore, associations } = useServiceLocal<M, Q>({
@@ -57,28 +57,28 @@ export const wrapModelBase = <M extends AnyData, Q extends AnyData, Func extends
     associations,
     whitelist,
   })
-  _ModelFn.setStore(store)
+  _Model.setStore(store)
 
   // Add getters for key methods
-  Object.assign(ModelFn, {
+  Object.assign(Model, {
     get findInStore() {
-      return _ModelFn.store.findInStore
+      return _Model.store.findInStore
     },
     get countInStore() {
-      return _ModelFn.store.countInStore
+      return _Model.store.countInStore
     },
     get getFromStore() {
-      return _ModelFn.store.getFromStore
+      return _Model.store.getFromStore
     },
     get addToStore() {
-      return _ModelFn.store.addToStore
+      return _Model.store.addToStore
     },
     get removeFromStore() {
-      return _ModelFn.store.removeFromStore
+      return _Model.store.removeFromStore
     },
   })
 
-  _ModelFn.associations = {}
+  _Model.associations = {}
 
-  return ModelFn as Func & BaseModelStatic<M, Q>
+  return Model as Func & BaseModelStatic<M, Q>
 }

@@ -7,7 +7,7 @@ import { getArray } from '../utils'
 import fastCopy from 'fast-copy'
 
 interface UseAllStorageOptions<M extends AnyData, Func extends (data: ModelInstance<M>) => any> {
-  ModelFn: Func
+  getModel: () => Func
   /**
    * A callback after clearing the store. Allows loose coupling of other functionality, like clones.
    */
@@ -17,11 +17,13 @@ interface UseAllStorageOptions<M extends AnyData, Func extends (data: ModelInsta
 export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelInstance<M>) => any>(
   options: UseAllStorageOptions<M, Func>,
 ) => {
-  const { ModelFn, afterClear } = options
+  const { getModel, afterClear } = options
 
   // Make sure the provided item is a model "instance" (in quotes because it's not a class)
-  const assureInstance = (item: AnyData) =>
-    item.__modelName ? item : ModelFn ? ModelFn(item as ModelInstance<M>) : item
+  const assureInstance = (item: AnyData) => {
+    const Model = getModel()
+    return item.__modelName ? item : Model ? Model(item as ModelInstance<M>) : item
+  }
 
   /**
    * Makes a copy of the Model instance with __isClone properly set
@@ -91,7 +93,8 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
     const { items, isArray } = getArray(data)
 
     const _items = items.map((item: M) => {
-      const asModel = item.__Model ? item : ModelFn(item as any)
+      const Model = getModel()
+      const asModel = item.__Model ? item : Model(item as any)
       const stored = addItemToStorage(asModel)
       return stored
     })

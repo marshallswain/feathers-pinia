@@ -1,4 +1,5 @@
 import { eventLocks } from './hook-event-locks'
+import { handleFindSsr } from './hook-handle-find-ssr'
 import { makeModelInstances } from './hook-model-instances'
 import { normalizeFind } from './hook-normalize-find'
 import { patchDiffing } from './hook-patch-diffs'
@@ -8,12 +9,13 @@ import { syncStore } from './hook-sync-store'
 
 export { syncStore, setPending, eventLocks, normalizeFind, skipGetIfExists, makeModelInstances }
 
-export const feathersPiniaHooks = (ModelFn: any) => [
-  setPending(ModelFn),
-  eventLocks(ModelFn),
-  syncStore(ModelFn),
-  makeModelInstances(ModelFn),
+export const feathersPiniaHooks = (Model: any) => [
+  setPending(Model),
+  eventLocks(Model),
+  syncStore(Model),
+  makeModelInstances(Model),
+  handleFindSsr(Model),
   normalizeFind(),
-  skipGetIfExists(ModelFn),
-  patchDiffing(ModelFn),
+  skipGetIfExists(Model),
+  patchDiffing(Model),
 ]

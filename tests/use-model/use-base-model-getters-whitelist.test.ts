@@ -10,26 +10,26 @@ interface TasksQuery {
 
 describe('whitelist', () => {
   test('adds whitelist to the state', async () => {
-    const ModelFn = (data: ModelInstance<Tasks>) => {
+    const modelFn = (data: ModelInstance<Tasks>) => {
       const withDefaults = useInstanceDefaults({ isComplete: false }, data)
       return withDefaults
     }
-    const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>(
+    const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>(
       { name: 'Task', idField: '_id', whitelist: ['$regex'] },
-      ModelFn,
+      modelFn,
     )
 
     expect(Task.store.whitelist[0]).toBe('$regex')
   })
 
   test('find getter fails without whitelist', async () => {
-    const ModelFn = (data: ModelInstance<Tasks>) => {
+    const modelFn = (data: ModelInstance<Tasks>) => {
       const withDefaults = useInstanceDefaults({ isComplete: false }, data)
       return withDefaults
     }
-    const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>(
+    const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>(
       { name: 'Task', idField: '_id', whitelist: [] },
-      ModelFn,
+      modelFn,
     )
 
     const fn = () => Task.findInStore({ query: { $regex: 'test' } } as any)
@@ -41,13 +41,13 @@ describe('whitelist', () => {
    * This is skipped because it's testing operators and not filter. The whitelist only applies to filters.
    */
   test.skip('enables custom query params for the find getter', async () => {
-    const ModelFn = (data: ModelInstance<Tasks>) => {
+    const modelFn = (data: ModelInstance<Tasks>) => {
       const withDefaults = useInstanceDefaults({ isComplete: false }, data)
       return withDefaults
     }
-    const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>(
+    const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>(
       { name: 'Task', idField: '_id', whitelist: [] },
-      ModelFn,
+      modelFn,
     )
     Task.addToStore({ _id: '0', description: 'test' })
     Task.addToStore({ _id: '1', description: 'yo!' })
@@ -63,13 +63,13 @@ describe('whitelist', () => {
    */
   test.skip('retrieves custom query params ($options) from the service options', async () => {
     // The $options param is defined on the service in feathers.ts
-    const ModelFn = (data: ModelInstance<Tasks>) => {
+    const modelFn = (data: ModelInstance<Tasks>) => {
       const withDefaults = useInstanceDefaults({ isComplete: false }, data)
       return withDefaults
     }
-    const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>(
+    const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>(
       { name: 'Task', idField: '_id', whitelist: [] },
-      ModelFn,
+      modelFn,
     )
     Task.addToStore({ _id: '0', description: 'test' })
     Task.addToStore({ _id: '1', description: 'yo!' })

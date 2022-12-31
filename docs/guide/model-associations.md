@@ -125,7 +125,7 @@ if it holds a `user` object, the `user` will be moved into the `users` store whi
 ```ts
 import { User } from './users'
 
-const ModelFn = (data: ModelInstance<Messages>) => {
+const modelFn = (data: ModelInstance<Messages>) => {
   if (data.user) {
     data.user = User(data.user).addToStore()
   }
@@ -147,7 +147,7 @@ relationship. They have the benefit of being lazily evaluated when read, which p
 ```ts
 import { User } from './users'
 
-const ModelFn = (data: ModelInstance<Messages>) => {
+const modelFn = (data: ModelInstance<Messages>) => {
   if (message.user) {
     // convert a plain `user` object into a `User` instance and add to store
     User(message.user).addToStore()
@@ -224,7 +224,7 @@ import type { Messages } from 'my-feathers-api'
 import { type ModelInstance, useInstanceDefaults, associateGet } from 'feathers-pinia'
 import { User } from './user'
 
-const ModelFnMessage = (data: ModelInstance<Messages>) => {
+const modelFn = (data: ModelInstance<Messages>) => {
   const withDefaults = useInstanceDefaults({ text: '', userId: null }, data)
   const withUser = associateFind(withDefaults, 'user', {
     Model: User,
@@ -241,7 +241,7 @@ import type { Users } from 'my-feathers-api'
 import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
 import { Message } from './message'
 
-const ModelFnUser = (data: ModelInstance<Users>) => {
+const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)
   const withMessages = associateFind(withDefaults, 'messages', {
     Model: Message,

@@ -13,11 +13,11 @@ interface TasksQuery {
   }
 }
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ isComplete: false }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 
 describe('Custom Getter Operators', () => {
   test('can implement custom operator', () => {

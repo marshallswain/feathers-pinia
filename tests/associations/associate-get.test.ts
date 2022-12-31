@@ -17,21 +17,21 @@ const commentService = api.service('comments')
 /**
  * Author Model
  */
-const ModelFnAuthor = (data: ModelInstance<Authors>) => {
+const modelFnAuthor = (data: ModelInstance<Authors>) => {
   const withDefaults = useInstanceDefaults({}, data)
 
   return withDefaults
 }
-const Author = useFeathersModel<Authors, AuthorsData, AuthorsQuery, typeof ModelFnAuthor>(
+const Author = useFeathersModel<Authors, AuthorsData, AuthorsQuery, typeof modelFnAuthor>(
   { name: 'Author', idField: 'id', service: authorService },
-  ModelFnAuthor,
+  modelFnAuthor,
 )
 authorService.hooks({ around: { all: [...feathersPiniaHooks(Author)] } })
 
 /**
  * Comment Model - where each has an `authorId` and a `postId`
  */
-const ModelFnComment = (data: ModelInstance<Comments>) => {
+const modelFnComment = (data: ModelInstance<Comments>) => {
   const withDefaults = useInstanceDefaults({ setInstanceRan: false }, data)
   const withAuthor = associateGet(withDefaults, 'author', {
     Model: Author,
@@ -47,9 +47,9 @@ const ModelFnComment = (data: ModelInstance<Comments>) => {
   })
   return withAuthor
 }
-const Comment = useFeathersModel<Comments, CommentsData, CommentsQuery, typeof ModelFnComment>(
+const Comment = useFeathersModel<Comments, CommentsData, CommentsQuery, typeof modelFnComment>(
   { name: 'Comment', idField: 'id', service: commentService },
-  ModelFnComment,
+  modelFnComment,
 )
 commentService.hooks({ around: { all: [...feathersPiniaHooks(Comment)] } })
 

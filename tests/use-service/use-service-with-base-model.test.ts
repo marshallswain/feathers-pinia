@@ -8,18 +8,18 @@ import { resetStores } from '../test-utils'
 
 const pinia = createPinia()
 const service = api.service('tasks')
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ test: true, foo: 'bar' }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 export type TaskInstance = ReturnType<typeof Task>
 
 export const useTaskStore = defineStore('tasks', () => {
-  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof ModelFn>({
+  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof modelFn>({
     service,
     idField: '_id',
-    ModelFn: Task,
+    Model: Task,
   })
 
   return { ...serviceUtils }

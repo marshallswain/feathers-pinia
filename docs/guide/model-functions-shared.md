@@ -25,13 +25,13 @@ import { api } from '../feathers'
 
 const service = api.service('users')
 
-const ModelFn = (data: ModelInstance<Users>) => {
+const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
   return withDefaults
 }
-const User = useFeathersModel<Users, UsersData, UsersQuery, typeof ModelFn>(
+const User = useFeathersModel<Users, UsersData, UsersQuery, typeof modelFn>(
   { name: 'User', idField: '_id', service },
-  ModelFn,
+  modelFn,
 )
 ```
 
@@ -67,12 +67,12 @@ should only be used in [BaseModel Functions](/guide/use-base-model).
 ```ts
 import { type ModelInstance, useInstanceDefaults, useFeathersInstance, useBaseModel } from 'feathers-pinia'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   const asFeathersInstance = useFeathersInstance({ service }, withDefaults)
   return asFeathersInstance
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 ```
 
 The difference between `FeathersModel` and `BaseModel` + FeathersModel Instances is only in the Model's static methods.

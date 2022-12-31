@@ -3,23 +3,24 @@ import { api } from '../feathers'
 import type { Tasks, TasksQuery } from '../feathers-schema-tasks'
 import { useBaseModel, useInstanceDefaults, type ModelInstance } from '../../src/use-base-model/index'
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   return withDefaults
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 
 describe('use service', () => {
   test('setup', () => {
     const service = useService({
       service: api.service('messages'),
       idField: 'id',
-      ModelFn: Task,
+      Model: Task,
     })
 
     expect(Object.keys(service)).toEqual([
       'service',
       'Model',
+      'setModel',
       'idField',
       'whitelist',
       'paramsForServer',
@@ -96,5 +97,13 @@ describe('use service', () => {
       'useGetWatched',
     ])
     expect(service).toBeTruthy()
+  })
+
+  test('Model can be set later', () => {
+    const service = useService({
+      service: api.service('messages'),
+      idField: 'id',
+    })
+    service.setModel(Task)
   })
 })

@@ -31,7 +31,7 @@ export const useUserStore = defineStore('users', () => {
   const utils = useService({
     service,
     idField: 'id',
-    ModelFn: Task,
+    Model: Task,
   })
   const myCustomState = false
 
@@ -161,7 +161,7 @@ exists.
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
 import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
 
-const ModelFn = (data: ModelInstance<Users>) => {
+const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ firstName: '', lastName: '' }, data)
 
   // Define a non-enumerable, configurable property
@@ -174,7 +174,7 @@ const ModelFn = (data: ModelInstance<Users>) => {
   })
   return withDefaults as typeof withDefaults & { fullName: string }
 }
-const User = useBaseModel<Users, UsersQuery, typeof ModelFn>({ name: 'User', idField: '_id' }, ModelFn)
+const User = useBaseModel<Users, UsersQuery, typeof modelFn>({ name: 'User', idField: '_id' }, modelFn)
 ```
 
 <https://vuex.feathersjs.com/common-patterns.html#model-specific-computed-properties>

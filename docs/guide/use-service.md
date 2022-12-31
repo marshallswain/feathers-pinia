@@ -29,7 +29,7 @@ export const useUserStore = defineStore('users', () => {
   const utils = useService({
     service,
     idField: 'id',
-    ModelFn: Task,
+    Model: User,
   })
 
   return { ...utils }
@@ -55,7 +55,7 @@ interface UseServiceOptions<
 > {
   service: FeathersClientService<FeathersInstance<M, Q>, D, Params<Q>>
   idField: string
-  ModelFn: ModelFunction
+  Model: ModelFunction
   whitelist?: string[]
   paramsForServer?: string[]
   skipRequestIfExists?: boolean
@@ -78,7 +78,7 @@ Here are a few more details about each option:
 - **`service {FeathersClientService}`** the Feathers Client service object. **_required_**
 - **`idField {String}`** is the attribute on the record that will serve as the unique identifier or "primary key" in the
 database.
-- **`ModelFn {ModelFunction}`** is the class to use for each instance. See [Model Functions](/guide/model-functions)
+- **`Model {ModelFunction}`** is the class to use for each instance. See [Model Functions](/guide/model-functions)
 - **`whitelist`** is an array of keys to allow in the `findInStore` getter's `params.query` object.
 - **`paramsForServer`** is an array of query keys for `findInStore` to ignore and pass to the `find` action's query.
 - **`skipRequestIfExists {Boolean}`** when enabled will cause a `.get` request to automatically resolve with the stored
@@ -251,7 +251,7 @@ export const useUserStore = defineStore('users', () => {
   const utils = useService({
     service,
     idField: 'id',
-    ModelFn: Task,
+    Model: Task,
   })
   const myCustomState = false
 
@@ -316,7 +316,7 @@ export const useUserStore = defineStore('users', () => {
   const utils = useService({
     service,
     idField: 'id',
-    ModelFn: Task,
+    Model: Task,
     ssr: !!process.server
   })
 

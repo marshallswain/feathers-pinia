@@ -18,7 +18,7 @@ import type { Users } from 'my-feathers-api'
 import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
 import { Message } from './message'
 
-const ModelFnUser = (data: ModelInstance<Users>) => {
+const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)
   const withMessages = associateFind(withDefaults, 'messages', {
     Model: Message,

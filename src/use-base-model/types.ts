@@ -45,7 +45,7 @@ export type WithModel<M extends AnyData> = {
   /**
    * This instance's Model function.
    */
-  readonly __Model: ModelFnTypeExtended<M, AnyData>
+  readonly __Model: ModelTypeExtended<M, AnyData>
 }
 
 export type BaseModelInstanceProps<M extends AnyData = AnyData> = {
@@ -122,16 +122,16 @@ export type FeathersInstance<M extends AnyData, Q extends AnyData = AnyData> = M
 
 /**
  * The basic Model function definition which gets passed to `useModelBase`. It gets extended by `useModelBase` and
- * becomes a type of `ModelFnTypeExtended`.
+ * becomes a type of `ModelTypeExtended`.
  */
-export type ModelFnType<M extends AnyData> = {
+export type ModelType<M extends AnyData> = {
   (data: ModelInstanceData<M>): M & BaseModelInstanceProps<M>
 }
 
 /**
  * The extended Model function definition, which includes storage-related properties.
  */
-export type ModelFnTypeExtended<M extends AnyData, Q extends AnyData> = {
+export type ModelTypeExtended<M extends AnyData, Q extends AnyData> = {
   (data: ModelInstance<M>): ModelInstance<M>
 } & BaseModelStatic<M, Q>
 

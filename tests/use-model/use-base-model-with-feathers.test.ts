@@ -14,19 +14,19 @@ import { resetServiceStore, timeout, timeoutHook } from '../test-utils'
 const pinia = createPinia()
 const service = api.service('tasks')
 
-const ModelFn = (data: ModelInstance<Tasks>) => {
+const modelFn = (data: ModelInstance<Tasks>) => {
   const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
   const asFeathersInstance = useFeathersInstance({ service }, withDefaults)
   return asFeathersInstance
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof ModelFn>({ name: 'Task', idField: '_id' }, ModelFn)
+const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
 
-// passing the ModelFn into `useService` overwrites the model's feathers methods to proxy through the store.
+// passing the Model into `useService` overwrites the model's feathers methods to proxy through the store.
 const useTaskStore = defineStore('counter', () => {
   const serviceUtils = useService<Tasks, TasksData, TasksQuery, typeof Task>({
     service,
     idField: '_id',
-    ModelFn: Task,
+    Model: Task,
   })
 
   return { ...serviceUtils }
