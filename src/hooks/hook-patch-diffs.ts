@@ -2,7 +2,7 @@ import { HookContext, NextFunction } from '@feathersjs/feathers'
 import { diff, pickDiff } from '../utils'
 import fastCopy from 'fast-copy'
 
-export const patchDiffing = (Model: any) => async (context: HookContext, next: NextFunction) => {
+export const patchDiffing = (store: any) => async (context: HookContext, next: NextFunction) => {
   const { method, data, params, id } = context
   let rollbackData: any
   let clone: any
@@ -10,7 +10,7 @@ export const patchDiffing = (Model: any) => async (context: HookContext, next: N
 
   if (shouldRun) {
     clone = data
-    const original = Model.store.getFromStore(id)
+    const original = store.getFromStore(id)
     const diffedData = diff(original, clone, params.diff)
     rollbackData = fastCopy(original)
 

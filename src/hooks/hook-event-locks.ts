@@ -1,7 +1,6 @@
 import { HookContext, NextFunction } from '@feathersjs/feathers'
 
-export const eventLocks = (Model: any) => async (context: HookContext, next: NextFunction) => {
-  const { store } = Model
+export const eventLocks = (store: any) => async (context: HookContext, next: NextFunction) => {
   const { id, method } = context
   const isLockableMethod = ['update', 'patch', 'remove'].includes(method)
   const eventNames: any = {

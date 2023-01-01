@@ -10,12 +10,12 @@ import { syncStore } from './hook-sync-store'
 export { syncStore, setPending, eventLocks, normalizeFind, skipGetIfExists, makeModelInstances }
 
 export const feathersPiniaHooks = (Model: any) => [
-  setPending(Model),
-  eventLocks(Model),
-  syncStore(Model),
+  setPending(Model.store),
+  eventLocks(Model.store),
+  syncStore(Model.store),
   makeModelInstances(Model),
-  handleFindSsr(Model),
+  handleFindSsr(Model.store),
   normalizeFind(),
-  skipGetIfExists(Model),
-  patchDiffing(Model),
+  skipGetIfExists(Model.store),
+  patchDiffing(Model.store),
 ]
