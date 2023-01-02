@@ -1,16 +1,17 @@
 {
   "name": "feathers-pinia",
   "version": "2.0.0-pre.5",
+  "type": "module",
   "files": [
     "dist",
     "src"
   ],
-  "main": "./dist/feathers-pinia.umd.js",
-  "module": "./dist/feathers-pinia.mjs",
+  "main": "./dist/feathers-pinia.umd.cjs",
+  "module": "./dist/feathers-pinia.js",
   "exports": {
     ".": {
-      "import": "./dist/feathers-pinia.mjs",
-      "require": "./dist/feathers-pinia.umd.js"
+      "import": "./dist/feathers-pinia.js",
+      "require": "./dist/feathers-pinia.umd.cjs"
     }
   },
   "types": "dist/",
