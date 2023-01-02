@@ -3,8 +3,11 @@ outline: deep
 ---
 
 <script setup>
-import Badge from '../components/Badge.vue'
+  import Badge from '../components/Badge.vue'
+import V2Block from '../components/V2Block.vue'
 </script>
+
+<V2Block />
 
 # useFind
 
