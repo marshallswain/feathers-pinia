@@ -127,6 +127,7 @@ function getGuideSidebar() {
     {
       text: 'Other Tools',
       items: [
+        { text: 'Nuxt Module', link: '/guide/nuxt-module' },
         { text: 'OFetch', link: '/guide/ofetch' },
         { text: 'syncWithStorage', link: '/guide/storage-sync' },
       ],
