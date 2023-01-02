@@ -2,6 +2,13 @@
 outline: deep
 ---
 
+<script setup>
+import BlockQuote from '../components/BlockQuote.vue'
+import V2Block from '../components/V2Block.vue'
+</script>
+
+<V2Block />
+
 # Sync with Storage
 
 [[toc]]

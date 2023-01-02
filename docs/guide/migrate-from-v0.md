@@ -2,13 +2,16 @@
 outline: deep
 ---
 
+<script setup>
+import BlockQuote from '../components/BlockQuote.vue'
+import V2Block from '../components/V2Block.vue'
+</script>
+
+<V2Block />
+
 # Migration from Feathers-Pinia v0.x
 
 > 🚧 Since version 1.0 is in Pre-release, this page is a work in progress. If you see something that needs more clarity, please open an issue. 🚧
-
-<script setup>
-import BlockQuote from '../components/BlockQuote.vue'
-</script>
 
 <BlockQuote type="danger" label="🚧 CAUTION 🚧">
 

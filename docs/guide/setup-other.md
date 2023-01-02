@@ -4,12 +4,14 @@ outline: deep
 
 <script setup>
 import BlockQuote from '../components/BlockQuote.vue'
+import V2Block from '../components/V2Block.vue'
 </script>
+
+<V2Block />
 
 # Other Setup Examples
 
 [[toc]]
-
 
 ## With `@feathersjs/memory`
 
@@ -74,7 +76,6 @@ api.use(servicePath, memory({
 ```
 
 The same data can be written at any time during runtime by setting `api.service('users').options.store` to the new object, keyed by id.
-
 
 ## Server-Side Rendering (SSR)
 

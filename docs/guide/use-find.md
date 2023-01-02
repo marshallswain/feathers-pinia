@@ -5,7 +5,10 @@ outline: deep
 <script setup>
 import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
+import V2Block from '../components/V2Block.vue'
 </script>
+
+<V2Block />
 
 # The `useFind` Utility
 
@@ -167,8 +170,7 @@ The `useFind` function is actually a factory function that returns an instance o
 - **`prev` {Function}** moves to the previous page of data.
 - **`toStart` {Function}** moves to the first page of data.
 - **`toEnd` {Function}** moves to the last page of data.
-- **`toPage(pageNumber)` {Function}** 
-
+- **`toPage(pageNumber)` {Function}**
 
 ## Declarative vs. Imperative Flow
 

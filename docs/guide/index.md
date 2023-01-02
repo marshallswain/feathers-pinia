@@ -1,6 +1,13 @@
 ---
 outline: deep
 ---
+
+<script setup>
+import V2Block from '../components/V2Block.vue'
+</script>
+
+<V2Block />
+
 # Introduction
 
 [[toc]]

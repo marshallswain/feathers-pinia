@@ -2,6 +2,12 @@
 outline: deep
 ---
 
+<script setup>
+import V2Block from '../components/V2Block.vue'
+</script>
+
+<V2Block />
+
 # 🚧 Migration from Vuex ≤ 4 🚧
 
 > 🚧 This page is a work in progress. If you see something that needs more clarity, please open an issue. 🚧

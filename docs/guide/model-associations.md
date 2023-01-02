@@ -5,9 +5,12 @@ outline: deep
 <script setup>
 import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
+import V2Block from '../components/V2Block.vue'
 </script>
 
-# Model Assocations <Badge>New in 1.0</Badge> 
+<V2Block />
+
+# Model Assocations <Badge>New in 1.0</Badge>
 
 [[toc]]
 
@@ -27,7 +30,7 @@ Learn about **one-to-one** relationships on the [associateGet](./associate-get.m
 
 ## Problems With Assocations
 
-Almost every application requires associating data between services. The relationship between data from the `/posts` service and from the `/users` service will be based on the "business" logic.  In other words, **business logic creates relevance for associations**. 
+Almost every application requires associating data between services. The relationship between data from the `/posts` service and from the `/users` service will be based on the "business" logic.  In other words, **business logic creates relevance for associations**.
 
 ### Mixed Concerns
 
@@ -149,7 +152,7 @@ Another problem with enumerable properties is that they get serialized into requ
 
 ### New Association Utils
 
-<Badge>New in 1.0</Badge> 
+<Badge>New in 1.0</Badge>
 
 The [associateFind](./associate-find.md) and [associateGet](./associate-get.md) utilities offer a consistent way to keep data in the appropriate store. They use a combination of all of the above solutions with some magic of their own to provide the following automatic benefits:
 
