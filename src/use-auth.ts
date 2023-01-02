@@ -78,7 +78,7 @@ export const useAuth = <d extends AuthenticateData = AuthenticateData>(options: 
     const entity = result[entityKey]
     if (userStore && entity) {
       const stored = userStore.addToStore(entity)
-      userId.value = stored.getId()
+      userId.value = stored[stored.__idField] || stored.__tempId
     }
     isAuthenticated.value = true
     return result
