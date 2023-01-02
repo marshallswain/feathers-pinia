@@ -1,6 +1,5 @@
 export { setupFeathersPinia } from './setup'
 export { defineStore, BaseModel } from './service-store'
-export { defineAuthStore } from './define-auth-store'
 export { Find, useFindClass } from './use-find-class'
 export { Get, useGetClass } from './use-get-class'
 export * from './service-store/types'
