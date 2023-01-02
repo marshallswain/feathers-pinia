@@ -212,7 +212,7 @@ import { useTodos } from '../stores/todos'
 
 const todoStore = useTodos()
 
-const todo = new todoStore.Model({
+const todo = todoStore.Model({
   description: 'Plant the garden',
   isComplete: false
 })
