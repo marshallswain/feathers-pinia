@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   title: 'Feathers-Pinia',
   description: 'Connect Feathers.',
   lang: 'en-US',
