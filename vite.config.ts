@@ -50,5 +50,8 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    deps: {
+      interopDefault: true,
+    },
   },
 })

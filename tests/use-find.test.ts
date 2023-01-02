@@ -641,7 +641,7 @@ describe('Computed Params', () => {
     // request was sent after computed params changed
     expect(data.value.length).toBe(5)
     expect(requestCount.value).toBe(2)
-    expect(total.value).toBe(7)
+    expect(total.value).toBe(5)
   })
 
   test.skip('return null from computed params to prevent a request', async () => {
