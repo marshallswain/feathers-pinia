@@ -3,6 +3,7 @@ outline: deep
 ---
 
 <script setup>
+import BlockQuote from '../components/BlockQuote.vue'
 import V2Block from '../components/V2Block.vue'
 </script>
 
@@ -11,10 +12,6 @@ import V2Block from '../components/V2Block.vue'
 # Model Instances
 
 [[toc]]
-
-<script setup>
-import BlockQuote from '../components/BlockQuote.vue'
-</script>
 
 Using model instances enables some of the most-useful code patterns in Feathers-Pinia. Instances provide easy access to common methods **directly at the data level**. Essentially, each record has a common interface that allows you to write more succinct and useful code.
 
