@@ -3,6 +3,7 @@ outline: deep
 ---
 
 <script setup>
+import BlockQuote from '../components/BlockQuote.vue'
 import V2Block from '../components/V2Block.vue'
 </script>
 
@@ -11,10 +12,6 @@ import V2Block from '../components/V2Block.vue'
 # 🚧 Migration from Vuex ≤ 4 🚧
 
 > 🚧 This page is a work in progress. If you see something that needs more clarity, please open an issue. 🚧
-
-<script setup>
-import BlockQuote from '../components/BlockQuote.vue'
-</script>
 
 Despite the structure of Vuex and Pinia stores being different, a lot of the logic can be re-used. This guide serves to outline the basic steps required for migrating a project using Vuex and FeathersVuex to Pinia and FeathersPinia.
 
