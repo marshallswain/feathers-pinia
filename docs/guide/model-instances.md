@@ -2,13 +2,19 @@
 outline: deep
 ---
 
+<script setup>
+import Badge from '../components/Badge.vue'
+import pkg from '../../package.json'
+import BlockQuote from '../components/BlockQuote.vue'
+</script>
+
+<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
+  <Badge :label="`v${pkg.version}`" />
+</div>
+
 # Model Instances
 
 [[toc]]
-
-<script setup>
-import BlockQuote from '../components/BlockQuote.vue'
-</script>
 
 Each [Model Function](/guide/model-functions) receives an object and upgrades it to be a model instance. The instance
 API will be different depending on the type of Model Function used.

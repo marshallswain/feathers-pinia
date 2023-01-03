@@ -2,13 +2,19 @@
 outline: deep
 ---
 
+<script setup>
+import Badge from '../components/Badge.vue'
+import pkg from '../../package.json'
+import BlockQuote from '../components/BlockQuote.vue'
+</script>
+
+<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
+  <Badge :label="`v${pkg.version}`" />
+</div>
+
 # 🚧 Migrate from Vuex ≤ 4 🚧
 
 > 🚧 This page is a work in progress. If something needs more clarity, [open an issue](https://github.com/marshallswain/feathers-pinia/issues). 🚧
-
-<script setup>
-import BlockQuote from '../components/BlockQuote.vue'
-</script>
 
 Despite the structure of Vuex and Pinia stores being different, a lot of the logic can be re-used. This guide serves to outline the basic steps required for migrating a project using Vuex and FeathersVuex to Pinia and FeathersPinia.
 
