@@ -1,11 +1,27 @@
-import { useServiceLocal, useServiceStorage, useServiceTemps } from '../../src'
-import { del, ref } from 'vue-demi'
+import { useServiceLocal, useServiceStorage, useServiceTemps, useBaseModel, type ModelInstance } from '../../src'
+import { ref } from 'vue-demi'
+import { AnyData } from '../../src/use-service'
 
-const itemStorage = useServiceStorage({ getId: (item) => item.id })
+interface Items {
+  id: number
+  name: string
+}
+
+const modelFn = (data: ModelInstance<Items>) => {
+  return data
+}
+const Item = useBaseModel<Items, Items, typeof modelFn>({ name: 'Item', idField: '_id' }, modelFn)
+
+
+// Make sure the provided item is a model "instance" (in quotes because it's not a class)
+const assureInstance = (item: AnyData) => {
+  const Model = Item
+  return item.__modelName ? item : Model ? Model(item) : item
+}
+const itemStorage = useServiceStorage({ getId: (item) => item.id, onRead: assureInstance, beforeWrite: assureInstance })
 // temp item storage
 const { tempStorage } = useServiceTemps({
   getId: (item) => item.__tempId,
-  removeId: (item) => del(item, '__tempId'),
   itemStorage,
 })
 
@@ -43,6 +59,27 @@ describe('use-service-local', () => {
     expect(results.data.length).toBe(3)
   })
 
+  test('findInStore with params.clones', () => {
+    const results = findInStore.value({ query: {}, clones: true })
+    results.data.forEach(item => {
+      expect(item.__isClone).toBeTruthy()
+    })
+    expect(results.data.length).toBe(5)
+  })
+
+  test('findInStore with params.clones reuses clones', () => {
+    const results = findInStore.value({ query: {}, clones: true })
+    results.data[1].name = 'Harvey'
+
+    const results2 = findInStore.value({ query: {}, clones: true })
+    expect(results2.data[1].name).toBe('Harvey')
+
+    results.data.forEach(item => {
+      expect(item.__isClone).toBeTruthy()
+    })
+    expect(results.data.length).toBe(5)
+  })
+
   test('countInStore', () => {
     const result = countInStore.value({ query: {} })
     expect(result).toBe(5)
@@ -61,6 +98,12 @@ describe('use-service-local', () => {
   test('getFromStore', () => {
     const item = getFromStore.value(1)
     expect(item?.id).toBe(1)
+  })
+
+  test('getFromStore with params.clones', () => {
+    const item = getFromStore.value(1, { clones: true })
+    expect(item?.id).toBe(1)
+    expect(item?.__isClone).toBe(true)
   })
 
   test('getFromStore invalid id', () => {

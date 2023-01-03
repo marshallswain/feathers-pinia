@@ -28,7 +28,7 @@ export interface Params<Q extends Query> extends FeathersParams<Q> {
   route?: Record<string, string>
   headers?: Record<string, any>
   temps?: boolean
-  copies?: boolean
+  clones?: boolean
   qid?: string
   skipRequestIfExists?: boolean
   data?: any

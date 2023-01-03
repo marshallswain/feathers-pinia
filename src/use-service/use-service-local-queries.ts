@@ -69,7 +69,7 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
       total,
       limit: filters.$limit || 0,
       skip: filters.$skip || 0,
-      data: values,
+      data: params.clones ? values.map(v => v.clone ? v.clone(undefined, { useExisting: true }) : v) : values,
     }
   })
 
@@ -94,7 +94,7 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     if (existingItem) item = existingItem
     else if (tempItem) item = tempItem
 
-    return item || null
+    return params.clones && item.clone ? item.clone(undefined, { useExisting: true }) : item || null
   })
 
   const associations = {}
