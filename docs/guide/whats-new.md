@@ -85,6 +85,8 @@ export const useAuthStore = defineStore('auth', () => {
 })
 ```
 
+Learn more about the new [useAuth utility](/guide/use-auth)
+
 ## Feathers v5 Dove TS Support 🎉
 
 The new utilities in Feathers-Pinia 2.0 bring support for the new TypeScript enhancements in Feathers v5 Dove. Now you
@@ -418,4 +420,8 @@ Prior to this version, Feathers-Pinia included a localStorage plugin that used L
 
 Our LocalStorage adapter remains part of the package and is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering.  If you haven't tried it, yet, it's easy to setup and it's worth it!
 
-## Lots of Little Improvments
+## No More `defineAuthStore`
+
+The <a href="#useauth-🎁">useAuth</a> utility takes the place of `defineAuthStore`.
+
+See how to [migrate from defineAuthStore to useAuth](/guide/migrate-from-v0#no-more-defineauthstore)

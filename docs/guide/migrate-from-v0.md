@@ -49,7 +49,7 @@ Any API involving global state has been removed. This includes
 - the `clients` export
 - the `models` export
 
-## Store Changes
+## Service Store Changes
 
 - `clientAlias` has been removed.
 - `servicePath` has been removed. Pass the `service` object, instead.
@@ -64,3 +64,54 @@ Any API involving global state has been removed. This includes
 - `state` has been removed. Use `setup` stores, instead. See [Customize the Store](/guide/use-service#customize-the-store).
 - `methods` has been removed. Use `setup` stores, instead. See [Customize the Store](/guide/use-service#customize-the-store).
 - `actions` has been removed. Use `setup` stores, instead. See [Customize the Store](/guide/use-service#customize-the-store).
+
+## No More `defineAuthStore`
+
+The `useAuth` utility is the replacement for `defineAuthStore`.  It's much more powerful and flexible.
+
+::: code-group
+
+```ts [defineAuthStore (old)]
+// src/stores/auth.ts (old way)
+import { defineAuthStore } from 'feathers-pinia'
+import { api as feathersClient } from '~/feathers'
+
+export const useAuth = defineAuthStore({
+  feathersClient,
+})
+```
+
+```ts [useAuth (new)]
+// src/stores/auth.ts (new way)
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { useAuth } from 'feathers-pinia'
+
+export const useAuthStore = defineStore('auth', () => {
+  const { api } = useFeathers()
+  const userStore = useUserStore()
+
+  const utils = useAuth({ api, userStore })
+
+  utils.reAuthenticate()
+
+  return { ...utils }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
+}
+```
+
+:::
+
+<BlockQuote type="info">
+
+If you're using auto-imports, there's no need to import `useAuth`.
+
+</BlockQuote>
+
+Here are some resources to learn more about the previous example:
+
+- Learn more about [Auth Stores (useAuth)](/guide/use-auth)
+- `useFeathers` comes from a [composable utility pattern](/guide/common-patterns#access-feathers-client)
+- `useUserStore` is a [service store](/guide/use-service)

@@ -68,8 +68,8 @@ function getGuideSidebar() {
           text: 'Model Functions',
           link: '/guide/model-functions',
           items: [
-            { text: 'BaseModel', link: '/guide/use-base-model' },
-            { text: 'FeathersModel', link: '/guide/use-feathers-model' },
+            { text: 'useBaseModel', link: '/guide/use-base-model' },
+            { text: 'useFeathersModel', link: '/guide/use-feathers-model' },
             { text: 'Shared Utils', link: '/guide/model-functions-shared' },
           ],
         },
@@ -108,8 +108,8 @@ function getGuideSidebar() {
           text: 'Pinia Stores',
           link: '/guide/pinia-stores',
           items: [
-            { text: 'Service Stores - useService', link: '/guide/use-service' },
-            { text: 'Auth Stores - useAuth', link: '/guide/use-auth' },
+            { text: 'useService - Service Stores', link: '/guide/use-service' },
+            { text: 'useAuth - Auth Stores', link: '/guide/use-auth' },
           ],
         },
       ],
@@ -136,7 +136,6 @@ function getGuideSidebar() {
       text: 'Pending Removal in 2.0',
       items: [
         { text: 'defineStore ⚠️', link: '/guide/define-store' },
-        { text: 'defineAuthStore ⚠️', link: '/guide/auth-stores' },
         { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
         { text: 'useGetWatched ⚠️', link: '/guide/use-get-watched' },
         { text: 'usePagination ⚠️', link: '/guide/use-pagination' },

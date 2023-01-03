@@ -225,3 +225,30 @@ clone.commit()
 In the example above, modifying the `todo` variable would unsafely modify stored data, which is a generally unsupportive practice when not done consciously. Calling `todo.clone()` returns a reactive clone of the instance.  It's safe to change clones. You can then call `clone.commit()` to update the original record in the store.
 
 The `clone` and `commit` methods are used by [useClone and useClones](./use-clones.md).
+
+## Access Feathers Client
+
+It's certainly possible to continue to import the Feathers Client using the module system, like this:
+
+```ts
+import { api } from '../feathers'
+```
+
+However, thanks to auto-imports, we can decouple from the module path, completely, and define our own composable
+function that returns an object which contains our app's Feathers Client instances:
+
+```ts
+// src/composables/use-feathers.ts
+import { api } from '../feathers'
+
+export const useFeathers = () => {
+  return { api }
+}
+```
+
+And now in our composables and components, we can access the Feathers Client by calling our composable function, no need
+to import it, first (assuming you're using auto-imports as shown in the setup guides).  Here's what it looks like:
+
+```ts
+const { api } = useFeathers()
+```

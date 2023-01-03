@@ -6,13 +6,13 @@ outline: deep
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# Service Stores - useAuth
+# useAuth - Auth Stores
 
 [[toc]]
 
-In Feathers-Pinia 2.0, the `defineAuthStore` utility has been replaced by a new `useAuth` composition utility which
-allows you to create a highly-flexible [setup store](https://pinia.vuejs.org/core-concepts/#setup-stores). This both
-makes the API more flexible while also keeping it easy to use for simple authentication requirements.
+In Feathers-Pinia 2.0, the new `useAuth` composition utility which allows you to create a highly-flexible
+[setup store](https://pinia.vuejs.org/core-concepts/#setup-stores). This both makes the API more flexible while also
+keeping it easy to use for simple authentication requirements. The old `defineAuthStore` utility has been removed.
 
 Note that most of the examples on this page take advantage of auto-imports as explained in the [Vite](/guide/setup-vite)
 and [Nuxt](/guide/setup-nuxt3) guides.
@@ -27,6 +27,11 @@ for consulting services.
 
 </BlockQuote>
 
+The examples that follow feature utilities for which you might need more information:
+
+- `useFeathers` comes from a [composable utility pattern](/guide/common-patterns#access-feathers-client)
+- `useUserStore` is a [service store](/guide/use-service)
+
 ## useAuth
 
 Let's start off with an example of the most basic auth setup with `useAuth`. This example creates a `setup` store called
@@ -34,16 +39,15 @@ Let's start off with an example of the most basic auth setup with `useAuth`. Thi
 so we'll get to that next.
 
 ```ts
-// src/store/store.auth.ts
+// src/stores/auth.ts
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { $api } = useFeathers()
+  const { api } = useFeathers()
+  const userStore = useUserStore()
 
-  const utils = useAuth({
-    api: $api,
-  })
+  const utils = useAuth({ api, userStore })
 
   utils.reAuthenticate()
 
@@ -69,13 +73,10 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
+  const { api } = useFeathers()
   const { userStore } = useUserStore()
-  const { $api } = useFeathers()
 
-  const utils = useAuth({
-    api: $api,
-    userStore,
-  })
+  const utils = useAuth({ api, userStore })
 
   utils.reAuthenticate()
 
@@ -230,7 +231,7 @@ router.beforeEach(async (to, from) => {
 })
 ```
 
-## Store Data Differences
+## Obtaining the Auth Payload
 
 In previous versions, the authenticate method stored the `accessToken` and `payload` information inside the store. In
 version 2.0, that information has been removed from the store since it is stored in the Feathers Client. You can
@@ -238,8 +239,8 @@ retrieve the `accessToken` as shown in the example, below. The example assumes y
 or [Vite](/guide/setup-vite) setup instructions.
 
 ```ts
-const { $api } = useFeathers()
-const accessToken = $api.authentication.getAccessToken()
+const { api } = useFeathers()
+const accessToken = api.authentication.getAccessToken()
 ```
 
 To obtain the payload, you can do one of the following:
@@ -253,11 +254,11 @@ response in a ref:
     import { useAuth } from 'feathers-pinia'
 
     export const useAuthStore = defineStore('auth', () => {
-      const { $api } = useFeathers()
+      const { api } = useFeathers()
 
       const authResponse = ref<null | Record<string, any>>(null)
       const auth = useAuth({
-        api: $api,
+        api,
         onSuccess: async(result: any) => {
           authResponse.value = result
         },
@@ -287,15 +288,15 @@ response in a ref:
 - Get the response directly from the result stored in the Feathers Client:
 
     ```ts
-    const { $api } = useFeathers()
-    const authData = await $api.get('authentication')
+    const { api } = useFeathers()
+    const authData = await api.get('authentication')
     ```
 
 ## API
 
 ### Options
 
-The `useAuth` utility accepts an options object according this interface:
+The `useAuth` utility accepts an options object of this shape:
 
 ```ts
 interface UseAuthOptions {
@@ -444,7 +445,7 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { userStore } = useUserStore()
-  const { $api } = useFeathers()
+  const { api } = useFeathers()
 
   const setup = async ({ user }) => {
     await sleep(500)
@@ -458,7 +459,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const utils = useAuth({
-    api: $api,
+    api,
     userStore,
     onSuccess: async (result) => {
       console.log('onSuccess')
@@ -573,11 +574,9 @@ interface AuthenticateData {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const { $api } = useFeathers()
+  const { api } = useFeathers()
 
-  const utils = useAuth<AuthenticateData>({
-    api: $api,
-  })
+  const utils = useAuth<AuthenticateData>({ api })
 
   utils.reAuthenticate()
 
@@ -620,12 +619,10 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { $api } = useFeathers()
+  const { api } = useFeathers()
   const router = useRouter()
 
-  const utils = useAuth({
-    api: $api,
-  })
+  const utils = useAuth({ api })
 
   utils.reAuthenticate()
 
@@ -681,9 +678,9 @@ return `false` if the token is either successfully decoded and verified to not h
 need to call it manually, but it's available to do so if you find a use case.
 
 ```ts
-const { $api } = useFeathers()
+const { api } = useFeathers()
 const authStore = useAuthStore()
-const accessToken = await $api.authentication.getAccessToken()
+const accessToken = await api.authentication.getAccessToken()
 const isExpired = authStore.isTokenExpired(accessToken)
 ```
 

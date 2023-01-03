@@ -18,7 +18,6 @@ These APIs will be removed before publishing version 2.0:
 - `setupFeathersPinia` formerly used for global configuration. It has no replacement since it's no longer necessary with the new `useService` API.
 - [defineStore](/guide/service-stores) formerly used to create Pinia stores. Replaced with the `useService` API.
 - [BaseModel classes](/guide/base-model) was formerly the base class for data modeling. It's replaced by `useFeathersModel` and `useBaseModel` and Model Functions.
-- `defineAuthStore` formerly for creating auth stores. Replaced by `useAuth`.
 - global `clients` export
 - global `models` export
 
