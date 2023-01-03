@@ -36,6 +36,7 @@ const $notILike = (params: any, ownerQuery: any, options: any) => {
 export const operations = {
   $like,
   $notLike,
+  $notlike: $notLike,
   $ilike,
   $iLike: $ilike,
   $notILike,
