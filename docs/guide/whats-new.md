@@ -324,7 +324,7 @@ Read more about [Model Instances](/guide/model-instances).
 
 Two new utilities make it easier to add relationships between records without depending on associations in-memory.  You can setup associations in both directions between models.
 
-Read more about [Association Patterns](http://localhost:5174/guide/model-associations.html).
+Read more about [Association Patterns](/guide/model-associations.html).
 
 ### `associateFind` 🎁
 
