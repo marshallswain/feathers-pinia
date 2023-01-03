@@ -90,6 +90,7 @@ function getGuideSidebar() {
           ],
         },
         { text: 'Common Patterns', link: '/guide/common-patterns' },
+        { text: 'Querying Data', link: '/guide/querying-data' },
       ],
     },
     {

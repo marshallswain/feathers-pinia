@@ -2,6 +2,10 @@
 outline: deep
 ---
 
+<script setup lang="ts">
+import BlockQuote from '../components/BlockQuote.vue'
+</script>
+
 # BaseModel Stores
 
 [[toc]]
@@ -93,23 +97,3 @@ array of objects.
 - `associations` stores a reference to each `associateFind` or `associateGet` relationship.
 - `whitelist` will match the `whitelist` option that you provided in the Model options. The `whitelist` marks special
 query operators and filters to be allowed in store queries.
-
-## Querying Stored Data
-
-You can query data from the store using the [Feathers Query Syntax](https://feathersjs.com/api/databases/querying.html)
-with the `findInStore` method.
-
-### params.query.$select
-
-The `$select` filter in local queries is ignored. The purpose of `$select` is to choose a subset of keys on the API
-server data to return. The primary goal for this functionality is to reduce the amount of transferred data. In client
-apps, the data is naturally filtered out of the UI through template-specific bindings.
-
-### params.temps
-
-By default, queries do not include temporary records. You can add temporary records to the query results by setting
-`params.temps` to true.
-
-```ts
-const { data } = Model.findInStore({ query: {}, temps: true })
-```
