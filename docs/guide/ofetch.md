@@ -24,40 +24,44 @@ Here's an example of setting up the OFetch adapter to work with Feathers-Client 
 
 ```ts
 // plugins/1.feathers.ts
+import { createClient } from 'feathers-pinia-api'
+
+// rest imports for the server
 import { $fetch } from 'ofetch'
 import rest from '@feathersjs/rest-client'
+import { OFetch } from 'feathers-pinia'
+
+// socket.io imports for the browser
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
-import { feathers } from '@feathersjs/feathers'
-import { OFetch, setupFeathersPinia } from 'feathers-pinia'
 
+/**
+ * Creates a Feathers Rest client for the SSR server and a Socket.io client for the browser.
+ * Also provides a cookie-storage adapter for JWT SSR using Nuxt APIs.
+ */
 export default defineNuxtPlugin(async (_nuxtApp) => {
-  // Creating the Feathers client in a plugin avoids stateful data and
-  // prevents information from leaking between user sessions.
-  const api = feathers()
-  const { defineStore } = setupFeathersPinia({
-    ssr: !!process.server,
-    clients: { api },
-    idField: '_id',
-    // customize every store
-    state: () => ({}),
-    getters: {},
-    actions: {},
-  })
-
   const host = import.meta.env.VITE_MYAPP_API_URL as string || 'http://localhost:3030'
 
-  // Use Rest on the server
-  // Check process.server so the code can be tree shaken out of the client build.
-  if (process.server)
-    api.configure(rest(host).fetch($fetch, OFetch))
+  // Store JWT in a cookie for SSR.
+  const storageKey = 'feathers-jwt'
+  const jwt = useCookie<string | null>(storageKey)
+  const storage = {
+    getItem: () => jwt.value,
+    setItem: (val: string) => jwt.value = val,
+    removeItem: () => jwt.value = null,
+  }
 
-  // Switch to Socket.io on the client
-  else
-    api.configure(socketio(io(host, { transports: ['websocket'] })))
+  // Use Rest for the SSR Server and socket.io for the browser
+  const connection = process.server
+    ? rest(host).fetch($fetch, OFetch)
+    : socketio(io(host, { transports: ['websocket'] }))
+
+  // create the api client
+  const api = createClient(connection, { storage, storageKey })
 
   return {
-    provide: { api, defineStore },
+    provide: { api },
   }
 })
+
 ```
