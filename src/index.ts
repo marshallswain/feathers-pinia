@@ -1,5 +1,3 @@
-export * from './service-store/types'
-
 // Composition Stores
 export { useAuth } from './use-auth'
 export {

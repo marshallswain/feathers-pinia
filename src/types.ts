@@ -1,9 +1,8 @@
 import type { ComputedRef, Ref, UnwrapRef } from 'vue-demi'
 import { DefineStoreOptionsBase, StateTree, Store } from 'pinia'
-import { AnyData, ModelStatic } from './service-store/types'
-import { BaseModel } from './service-store/base-model'
 import { TypedActions, TypedGetters } from './utility-types'
 import type { Params as FeathersParams } from '@feathersjs/feathers'
+import { AnyData } from './use-service'
 
 export interface Filters {
   $sort?: { [prop: string]: -1 | 1 }
@@ -86,15 +85,6 @@ export interface QueryInfo {
   isOutdated: boolean | undefined
 }
 
-export type HandledEvents = 'created' | 'patched' | 'updated' | 'removed'
-export type HandleEventsFunction<M extends BaseModel = BaseModel> = (
-  item: any,
-  ctx: { model: ModelStatic<M>; models: any },
-) => any
-
-export type HandleEvents<M extends BaseModel = BaseModel> = {
-  [event in HandledEvents]: HandleEventsFunction<M>
-}
 
 export interface DefineStoreOptionsWithDefaults<
   Id extends string,

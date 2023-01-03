@@ -1,6 +1,5 @@
-import type { AnyData } from '../service-store'
 import type { FeathersModelStatic, ModelInstanceData, UseFeathersModelOptions } from './types'
-import { useService } from '../use-service'
+import { type AnyData, useService } from '../use-service'
 import { reactive } from 'vue-demi'
 
 /**

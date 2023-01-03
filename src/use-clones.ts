@@ -1,4 +1,4 @@
-import type { UseCloneOptions } from './service-store/types'
+import type { UseCloneOptions } from './use-service'
 import { reactive, toRefs } from 'vue-demi'
 import { useClone } from './use-clone'
 

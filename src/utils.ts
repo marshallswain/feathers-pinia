@@ -1,6 +1,6 @@
 import type { Params, Paginated, QueryInfo, DiffDefinition } from './types'
 import type { MaybeRef } from './utility-types'
-import type { AnyData, AnyDataOrArray, BaseModelAssociations, FindClassParams } from './service-store/types'
+import type { BaseModelAssociations, FindClassParams } from './service-store/new-types'
 import type { Query } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import stringify from 'fast-json-stable-stringify'
@@ -9,6 +9,7 @@ import fastCopy from 'fast-copy'
 import { computed, Ref, unref } from 'vue-demi'
 import isEqual from 'fast-deep-equal'
 import { defineProperties } from './use-base-model/utils'
+import type { AnyData, AnyDataOrArray } from './use-service'
 
 function stringifyIfObject(val: any): string | any {
   if (typeof val === 'object' && val != null) {
@@ -97,7 +98,7 @@ export function assignTempId(item: any, tempIdField?: string) {
  * @param data item or array of items
  * @returns items without private attributes like __isClone and __tempId
  */
-export function cleanData<T = AnyDataOrArray>(data: T, tempIdField: string): T {
+export function cleanData<T = AnyDataOrArray<any>>(data: T, tempIdField: string): T {
   const { items, isArray } = getArray(data)
   const cleaned = items.map((item) => _.omit(item, tempIdField))
 
@@ -116,7 +117,7 @@ export function cleanData<T = AnyDataOrArray>(data: T, tempIdField: string): T {
  * @param data item(s) before being passed to the server
  * @param responseData items(s) returned from the server
  */
-export function restoreTempIds(data: AnyDataOrArray, resData: AnyDataOrArray, tempIdField = '__tempId') {
+export function restoreTempIds(data: AnyDataOrArray<any>, resData: AnyDataOrArray<any>, tempIdField = '__tempId') {
   const { items: sourceItems, isArray } = getArray(data)
   const { items: responseItems } = getArray(resData)
 

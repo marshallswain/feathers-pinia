@@ -1,4 +1,4 @@
-import type { Association, BaseModelAssociations } from './service-store/types'
+import type { Association, BaseModelAssociations } from './service-store/new-types'
 import { AnyData } from './use-service'
 import { ModelInstance } from './use-base-model'
 import {

@@ -1,10 +1,10 @@
-import type { UseGetComputed, UseGetOptionsStandalone, UseGetState } from './service-store/types'
+import type { UseGetComputed, UseGetOptionsStandalone, UseGetState } from './service-store/new-types'
 import type { Id, Query } from '@feathersjs/feathers'
 import type { Params } from './types'
+import type { AnyData } from './use-service'
 import { reactive, computed, toRefs, unref, watch } from 'vue-demi'
-import { BaseModel } from './service-store'
 
-export function useGetWatched<M extends BaseModel = BaseModel>({
+export function useGetWatched<M extends AnyData>({
   model,
   id,
   params = computed(() => ({})),

@@ -1,14 +1,14 @@
-import type { UseFindComputed, UseFindWatchedOptionsStandalone, UseFindState } from './service-store/types'
+import type { UseFindComputed, UseFindWatchedOptionsStandalone, UseFindState } from './service-store/new-types'
 import type { Params, Paginated } from './types'
 import { computed, reactive, Ref, unref, toRefs, watch } from 'vue-demi'
 import debounce from 'just-debounce'
 import { getQueryInfo, makeUseFindItems } from './utils'
-import { AnyData, BaseModel } from './service-store'
 import { MaybeRef } from './utility-types'
+import { AnyData } from './use-service'
 
 type AnyParams = Params<AnyData> & { debounce?: number }
 
-export function useFindWatched<M extends BaseModel = BaseModel>({
+export function useFindWatched<M extends AnyData>({
   model,
   params = computed(() => null),
   fetchParams = computed(() => undefined),
@@ -65,7 +65,6 @@ export function useFindWatched<M extends BaseModel = BaseModel>({
     if (typeof val === 'function') {
       const info = getQueryInfo(params, {})
       const qidData = model.store.pagination[info.qid]
-      // @ts-expect-error fix me ts(7053)
       const queryData = qidData?.[info.queryId]
       const pageData = queryData?.[info.pageId as string]
       const context = {

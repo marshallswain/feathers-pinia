@@ -1,29 +1,15 @@
 import type { Params, Paginated, QueryInfo, HandleEvents } from '../types'
 import type { Ref, ComputedRef } from 'vue-demi'
 import type { Id, Query, NullableId, Application as FeathersClient } from '@feathersjs/feathers'
-import type { StateTree, Store as _Store, StoreDefinition, _GettersTree, DefineStoreOptionsBase } from 'pinia'
+import type { StateTree, Store as _Store, StoreDefinition,_GettersTree, DefineStoreOptionsBase } from 'pinia'
 import type { MaybeArray, MaybeRef, TypedActions, TypedGetters } from '../utility-types'
-import { BaseModel } from './base-model'
-import { Find } from '../use-find-class'
-import { Get } from '../use-get-class'
-import { ModelInstance } from '../use-base-model'
 
 export type RequestTypeById = 'create' | 'patch' | 'update' | 'remove'
 export type RequestTypeModel = 'find' | 'count' | 'get'
 
-type PendingById = {
-  [key in RequestTypeById]: boolean
-}
-type PendingByModel = {
-  [key in RequestTypeModel]: boolean
-}
-
 export type RequestType = RequestTypeModel & RequestTypeById
 
 export type AnyData = Record<string, any>
-export type AnyDataOrArray = MaybeArray<AnyData>
-
-type ModelsById<M> = { [id: string | number]: M }
 
 interface QueryPagination {
   $limit: number
@@ -38,56 +24,6 @@ interface MostRecentQuery {
   queryParams: Query
   total: number
 }
-
-export interface CurrentQuery<M extends BaseModel> extends MostRecentQuery {
-  qid: string
-  ids: number[]
-  items: M[]
-  total: number
-  queriedAt: number
-  queryState: PaginationStateQuery
-}
-
-/**
- * Pagination State Types: below are types for the basic format shown here.
- * I'm surprised that something like the below can't work in TypeScript. Instead,
- * it has to be spread across the jumbled mess of interfaces and types shown below.
- * If somebody has knowledge of a cleaner representation, I'd appreciate a PR. - Marshall
- *
- * interface PaginationState {
- *   [queryId: string]: {
- *     [pageId: string]: {
- *       ids: Id[]
- *       pageParams: QueryPagination
- *       queriedAt: number
- *       ssr: boolean
- *     }
- *     queryParams: Query
- *     total: number
- *   }
- *   mostRecent: MostRecentQuery
- * }
- */
-export interface PaginationPageData {
-  ids: Id[]
-  pageParams: QueryPagination
-  queriedAt: number
-  ssr: boolean
-}
-export type PaginationStatePage = {
-  [pageId: string]: PaginationPageData
-}
-export type PaginationStateQuery =
-  | PaginationStatePage
-  | {
-      queryParams: Query
-      total: number
-    }
-export type PaginationStateQid =
-  | PaginationStateQuery
-  | {
-      mostRecent: MostRecentQuery
-    }
 
 export type ServiceStoreSharedStateDefineOptions = {
   clientAlias: string
@@ -105,26 +41,6 @@ export type ServiceStoreDefault<M extends BaseModel> = _Store<
   ServiceStoreDefaultGetters<M>,
   ServiceStoreDefaultActions<M>
 >
-
-export type ServiceStoreDefaultState<M extends BaseModel = BaseModel> = ServiceStoreSharedStateDefineOptions & {
-  pagination: {
-    [qid: string]: PaginationStateQid
-  }
-  itemsById: ModelsById<M>
-  tempsById: ModelsById<M>
-  clonesById: ModelsById<M>
-  pendingById: {
-    Model: PendingByModel
-    [id: string]: PendingById | PendingByModel
-    [id: number]: PendingById
-  }
-  eventLocksById: {
-    created: ModelsById<M>
-    patched: ModelsById<M>
-    updated: ModelsById<M>
-    removed: ModelsById<M>
-  }
-}
 
 export interface ServiceStoreDefaultGetters<M extends BaseModel = BaseModel> {
   service: () => any
@@ -152,7 +68,7 @@ export type HandleFindErrorOptions = { params: Params<Query>; error: any }
 export type FindFn<M extends BaseModel> = (params?: MaybeRef<Params<Query>>) => Promise<Paginated<M>>
 export type GetFn<M extends BaseModel> = (id?: Id, params?: MaybeRef<Params<Query>>) => Promise<M | undefined>
 export type GetFnWithId<M extends BaseModel> = (id: Id, params?: MaybeRef<Params<Query>>) => Promise<M | undefined>
-export type UseGetFn<M extends BaseModel> = (_id: MaybeRef<Id | null>, _params?: MaybeRef<GetClassParams>) => Get<M>
+export type UseGetFn<M extends BaseModel> = (_id: MaybeRef<Id | null>,_params?: MaybeRef<GetClassParams>) => Get<M>
 
 export interface ServiceStoreDefaultActions<M extends BaseModel = BaseModel> {
   find: FindFn<M>
@@ -241,17 +157,10 @@ export type MakeServiceActionsOptions<
   A = {},
 > = Pick<ServiceOptions<any, M, S, G, A>, 'Model' | 'getters' | 'clients' | 'ssr' | 'actions'>
 
-export interface Association<M extends AnyData> {
-  name: string
-  Model: (data: ModelInstance<M>) => any
-  type: 'find' | 'get'
-}
-export type BaseModelAssociations<M extends AnyData> = Record<string, Association<M>>
-
-/** Model instance interface */
+/**Model instance interface */
 // export interface Model {
 //   /**
-//    * model's temporary ID
+//* model's temporary ID
 //    */
 //   readonly __id?: string
 //   /**
@@ -259,7 +168,7 @@ export type BaseModelAssociations<M extends AnyData> = Record<string, Associatio
 //    */
 //   readonly __isTemp?: boolean
 //   /**
-//    * model is a clone?
+//* model is a clone?
 //    */
 //   readonly __isClone?: boolean
 
@@ -268,24 +177,24 @@ export type BaseModelAssociations<M extends AnyData> = Record<string, Associatio
 //    */
 //   readonly isCreatePending: boolean
 //   /**
-//    * `Update` is currently pending on this model
-//    */
+//    *`Update` is currently pending on this model
+//*/
 //   readonly isUpdatePending: boolean
 //   /**
 //    * `Patch` is currently pending on this model
 //    */
 //   readonly isPatchPending: boolean
 //   /**
-//    * `Remove` is currently pending on this model
-//    */
+//    *`Remove` is currently pending on this model
+//*/
 //   readonly isRemovePending: boolean
 //   /**
 //    * Any of `create`, `update` or `patch` is currently pending on this model
 //    */
 //   readonly isSavePending: boolean
 //   /**
-//    * Any method is currently pending on this model
-//    */
+//    *Any method is currently pending on this model
+//*/
 //   readonly isPending: boolean
 
 //   /**
@@ -297,10 +206,10 @@ export type BaseModelAssociations<M extends AnyData> = Record<string, Associatio
 //    */
 //   clone(data?: AnyData): this
 //   /**
-//    * The create method calls the create action (service method)
-//    * using the instance data.
-//    * @param params Params passed to the Feathers client request
-//    */
+//    *The create method calls the create action (service method)
+//* using the instance data.
+//    *@param params Params passed to the Feathers client request
+//*/
 //   create(params?: Params): Promise<this>
 //   /**
 //    * The patch method calls the patch action (service method)
@@ -314,11 +223,11 @@ export type BaseModelAssociations<M extends AnyData> = Record<string, Associatio
 //    */
 //   patch<D extends AnyData>(params?: PatchParams<D>): Promise<this>
 //   /**
-//    * The remove method calls the remove action (service method)
-//    * using the instance data. The instance's id field is used
-//    * for the remove id.
-//    * @param params Params passed to the Feathers client request
-//    */
+//* The remove method calls the remove action (service method)
+//    *using the instance data. The instance's id field is used
+//* for the remove id.
+//    *@param params Params passed to the Feathers client request
+//*/
 //   remove(params?: Params): Promise<this>
 //   /**
 //    * The update method calls the update action (service method)
@@ -328,11 +237,11 @@ export type BaseModelAssociations<M extends AnyData> = Record<string, Associatio
 //    */
 //   update(params?: Params): Promise<this>
 //   /**
-//    * The save method is a convenience wrapper for the create/patch
-//    * methods, by default. If the records has no id, the
-//    * instance.create() method will be used.
-//    * @param params Params passed to the Feathers client request
-//    */
+//* The save method is a convenience wrapper for the create/patch
+//    *methods, by default. If the records has no id, the
+//* instance.create() method will be used.
+//    *@param params Params passed to the Feathers client request
+//*/
 //   save(params?: Params): Promise<this>
 
 //   /**
@@ -353,10 +262,10 @@ export type ModelStatic<M extends BaseModel = BaseModel> = NonConstructor<typeof
   new (...args: any[]): M
 }
 
-/** Static Model interface */
+/**Static Model interface */
 // export interface ModelStatic extends EventEmitter {
 //   /**
-//    * The path passed to `FeathersClient.service()` to create the service
+//* The path passed to `FeathersClient.service()` to create the service
 //    */
 //   servicePath: string
 
@@ -516,7 +425,8 @@ export interface UpdatePaginationForQueryOptions {
 
 export interface ModelInstanceOptions {
   /**
-   * is creating clone
+
+* is creating clone
    */
   clone?: boolean
 }
@@ -530,35 +440,13 @@ export interface CloneOptions {
   useExisting?: boolean
 }
 
-export interface UseCloneOptions {
-  useExisting?: boolean
-  deep?: boolean
-}
-
-export interface QueryWhenContext {
-  items: ComputedRef<AnyData[]>
-  queryInfo: QueryInfo
-  /**
-   * Pagination data for the current qid
-   */
-  qidData: PaginationStateQid
-  queryData: PaginationStateQuery
-  pageData: PaginationStatePage
-  isPending: ComputedRef<Boolean>
-  haveBeenRequested: ComputedRef<Boolean>
-  haveLoaded: ComputedRef<Boolean>
-  error: any
-}
-
-export type QueryWhenFunction = ComputedRef<(context: QueryWhenContext) => boolean>
-
 export type ServiceStore<
   Id extends string = string,
   M extends BaseModel = BaseModel,
   S extends StateTree = {},
   G extends _GettersTree<S> = {},
   A = {},
-> = _Store<Id, ServiceStoreDefaultState<M> & S, ServiceStoreDefaultGetters<M> & G, ServiceStoreDefaultActions<M> & A>
+> =_Store<Id, ServiceStoreDefaultState<M> & S, ServiceStoreDefaultGetters<M> & G, ServiceStoreDefaultActions<M> & A>
 
 export type ServiceStoreDefinition<
   Id extends string,
@@ -602,69 +490,6 @@ export interface GetClassParams extends Params<Query> {
 }
 export interface GetClassParamsStandalone<M extends BaseModel> extends GetClassParams {
   store: ServiceStoreDefault<M>
-}
-export interface FindClassParams extends Params<Query> {
-  query: Query
-  onServer?: boolean
-  qid?: string
-  immediate?: boolean
-  watch?: boolean
-}
-export interface FindClassParamsStandalone<M extends BaseModel> extends FindClassParams {
-  store: ServiceStoreDefault<M>
-}
-
-export interface UseFindWatchedOptions {
-  params: Params<Query> | ComputedRef<Params<Query> | null>
-  fetchParams?: ComputedRef<Params<Query> | null | undefined>
-  queryWhen?: ComputedRef<boolean> | QueryWhenFunction
-  qid?: string
-  local?: boolean
-  immediate?: boolean
-}
-export interface UseFindWatchedOptionsStandalone<M extends BaseModel> extends UseFindWatchedOptions {
-  model: ModelStatic<M>
-}
-export interface UseFindState {
-  debounceTime: null | number
-  qid: string
-  isPending: boolean
-  haveBeenRequested: boolean
-  haveLoaded: boolean
-  error: null | Error
-  latestQuery: null | object
-  isLocal: boolean
-  request: Promise<any> | null
-}
-export interface UseFindComputed<M> {
-  items: ComputedRef<M[]>
-  servicePath: ComputedRef<string>
-  paginationData: ComputedRef<AnyData>
-  isSsr: ComputedRef<boolean>
-}
-
-export interface UseGetOptions {
-  id: Ref<Id | null> | ComputedRef<Id | null> | null
-  params?: Ref<Params<Query>>
-  queryWhen?: Ref<boolean>
-  local?: boolean
-  immediate?: boolean
-}
-export interface UseGetOptionsStandalone<M extends BaseModel> extends UseGetOptions {
-  model: ModelStatic<M>
-}
-export interface UseGetState {
-  isPending: boolean
-  hasBeenRequested: boolean
-  hasLoaded: boolean
-  error: null | Error
-  isLocal: boolean
-  request: Promise<any> | null
-}
-export interface UseGetComputed<M> {
-  item: ComputedRef<M | null>
-  servicePath: ComputedRef<string>
-  isSsr: ComputedRef<boolean>
 }
 
 export interface AssociateFindUtils<M extends BaseModel> extends Find<M> {

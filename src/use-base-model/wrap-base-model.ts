@@ -1,6 +1,5 @@
 import type { BaseModelStatic, InferReturn, ModelInstanceData, UseBaseModelOptions } from './types'
-import type { AnyData } from '../service-store'
-import { useServiceLocal } from '../use-service'
+import { type AnyData, useServiceLocal } from '../use-service'
 import { useAllStorageTypes } from '../use-service/use-all-storage-types'
 import { reactive, ref } from 'vue-demi'
 

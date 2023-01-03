@@ -1,4 +1,4 @@
-import type { UseCloneOptions } from './service-store/types'
+import type { UseCloneOptions } from './use-service'
 import type { AnyRef } from './types'
 import type { AnyData } from './use-service'
 import type { ModelInstance } from './use-base-model'
