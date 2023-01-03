@@ -7,7 +7,7 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# FeathersModel
+# useFeathersModel
 
 [[toc]]
 

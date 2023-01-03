@@ -7,7 +7,7 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# BaseModel Functions
+# useBaseModel
 
 [[toc]]
 
