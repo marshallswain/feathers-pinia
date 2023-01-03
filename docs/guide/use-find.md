@@ -123,7 +123,7 @@ The `useFind` function is actually a factory function that returns an instance o
 - **`params` {Ref Object}** are an internal, `ref` copy of the initially-provided params.
 - **`store` {Store}** is a reference to the associated store.
 - **`onServer` {boolean}** indicates whether this instance makes requests to the API server. Defaults to `false`.
-- **`isSsr` {Computed boolean}** will be true if `isSsr` was passed into the `defineStore` options for this service
+- **`isSsr` {Computed boolean}** will be true if `isSsr` was passed into the `useService` options for this service
 store. Useful for awaint the `request` during SSR.
 - **`qid` {Ref string}** the query identifier. Causes this query's pagination data to be stored under its own `qid` in
 `store.pagination`.

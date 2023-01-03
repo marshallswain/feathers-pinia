@@ -21,33 +21,6 @@ npm i @feathersjs/memory
 Now you only need to instantiate the memory server on the service. It takes only two lines of code!  See here:
 
 ```ts
-// src/store/users.ts
-import { defineStore, BaseModel } from './store.pinia'
-import { api } from '../feathers'
-import { memory } from '@feathersjs/memory' // import the memory module
-
-// create a data model
-export class User extends BaseModel {
-  id?: number | string
-  name: string = ''
-  email: string = ''
-  password: string = ''
-
-  // Minimum required constructor
-  constructor(data: Partial<User> = {}, options: Record<string, any> = {}) {
-    super(data, options)
-    this.init(data)
-  }
-
-  // optional for setting up data objects and/or associations
-  static setupInstance(message: Partial<Message>) {
-    const { store, models } = this
-  }
-}
-
-const servicePath = 'users'
-export const useUsers = defineStore({ servicePath, Model: User })
-
 // make a memory store for the service
 api.use(servicePath, memory({ paginate: { default: 10, max: 100 }, whitelist: ['$options'] }))
 api.service(servicePath).hooks({})

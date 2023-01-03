@@ -52,7 +52,7 @@ describe.skip('server side rendering', () => {
 
     isSsr.value = false
 
-    const clientResult = (await Message.find(params)) as Paginated<_BaseModel>
+    const clientResult = (await Message.find(params)) as Paginated<_BasaaaeModel>
 
     expect(clientResult.fromSsr).toBeTruthy()
     expect(clientResult.total).toBe(totalItems)
@@ -66,7 +66,7 @@ describe.skip('server side rendering', () => {
     const isSsr = ref(true)
     const pinia = createPinia()
 
-    const { defineStore, BaseModel } = setupFeathersPinia({
+    const { defineStore, BaseModel } = setupFeathersaaaaaPinia({
       ssr: isSsr,
       clients: { api },
     })

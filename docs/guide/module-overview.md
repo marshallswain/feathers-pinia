@@ -11,18 +11,6 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
-<BlockQuote label="Pending Removal in 2.0" type="danger">
-
-These APIs will be removed before publishing version 2.0:
-
-- `setupFeathersPinia` formerly used for global configuration. It has no replacement since it's no longer necessary with the new `useService` API.
-- [defineStore](/guide/service-stores) formerly used to create Pinia stores. Replaced with the `useService` API.
-- [BaseModel classes](/guide/base-model) was formerly the base class for data modeling. It's replaced by `useFeathersModel` and `useBaseModel` and Model Functions.
-- global `clients` export
-- global `models` export
-
-</BlockQuote>
-
 ## Setup & Store Creation
 
 These are the primary utilities for creating stores.
