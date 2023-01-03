@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# Service Stores - useService
+# useService - Service Stores
 
 <script setup>
 import BlockQuote from '../components/BlockQuote.vue'
@@ -104,7 +104,12 @@ The following sections cover additional APIs returned when calling `useService`.
 - **`paramsForServer`**
 - **`skipRequestIfExists`**
 - **`isSsr`**
+
+### Model Config
+
 - **`Model`** gives access to the Model Function provided in the options.
+- **`setModel(Model)`** Allows setting/replacing the Model. This means you can call `useFind` without a Model and set
+the model afterwards.
 
 ### Pagination State
 
