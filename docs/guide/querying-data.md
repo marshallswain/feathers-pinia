@@ -42,6 +42,28 @@ By default, queries do not include temporary records. You can add temporary reco
 const { data } = Model.findInStore({ query: {}, temps: true })
 ```
 
+### params.clones
+
+Store queries normally return data from `items` (or `temps` if `params.temps` is used). If you pass `params.clones` as
+`true` it will return clones of the matching items. This applies to the `findInStore` and `getFromStore` methods on the
+model and store:
+
+```ts
+const { data } = Model.findInStore({ query: {}, clones: true })
+data.forEach(item => {
+  console.log(item.__isClone) // --> true
+})
+```
+
+The `clones` param can be used together with `temps`, as well:
+
+```ts
+const { data } = Model.findInStore({ query: {}, clones: true, temps: true })
+```
+
+Note that any existing clones are re-used, so if you need the clone to match the latest data you need to call
+`clone.reset()`, manually.
+
 ## Query Props Overview
 
 **Feathers-Pinia supports all of the following query props**, however, different filters and operators are supported by

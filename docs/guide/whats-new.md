@@ -438,6 +438,13 @@ Think of all of the extra time you'll have instead of having to write those 1.5 
 The `useGet` utility -- for implementing fall-through-cached `get` requests -- is now available directly on the store,
 further reducing boilerplate.
 
+## params.clones
+
+You can now pass `params.clones` to either `findInStore` or `getFromStore` to return all matching data as clones of the
+original data. This was formerly known as `params.copies` in Feathers-Vuex.
+
+Learn more in the [Querying Data page](/guide/querying-data#params-clones)
+
 ## Smaller Package Size 🎉
 
 When it comes to npm bundles, smaller package size is a good thing.
