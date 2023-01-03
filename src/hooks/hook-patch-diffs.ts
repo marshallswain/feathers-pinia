@@ -45,8 +45,7 @@ export const patchDiffing = (store: any) => async (context: HookContext, next: N
     if (shouldRun) {
       // If saving fails, reverse the eager update
       clone && clone.commit(rollbackData)
-    } else {
-      throw error
-    }
+    } 
+    throw error
   }
 }
