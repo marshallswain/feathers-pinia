@@ -128,7 +128,7 @@ Let's look at the functionality that each one provides:
 - `paginationData` is an object containing all of the pagination data for the current service.
 - `error` is null until an API error occurs. The error object will be serialized into a plain object and available here.
 - `find` is the find method used internally. You can manually make API requests. This is most useful for when you have `paginate: true` in the params. You can manually query refreshed data from the server, when desired. Calling `find` actually calls in the internal `findProxy`, so if you have `debounceTime` set, requests will be debounced.
-- `isSsr` is a boolean that matches the value of the `ssr` option in either `setupFeathersPinia` or `defineStore`. <Badge text="0.27.0+" />
+- `isSsr` is a boolean that matches the value of the `ssr` option in `useService`
 - `request` will contain the promise for any active request. <Badge text="0.27.0+" />
 
 ## Conditionally Running Queries
