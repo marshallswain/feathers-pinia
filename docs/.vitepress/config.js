@@ -136,7 +136,6 @@ function getGuideSidebar() {
     {
       text: 'Pending Removal in 2.0',
       items: [
-        { text: 'defineStore ⚠️', link: '/guide/define-store' },
         { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
         { text: 'useGetWatched ⚠️', link: '/guide/use-get-watched' },
         { text: 'usePagination ⚠️', link: '/guide/use-pagination' },
