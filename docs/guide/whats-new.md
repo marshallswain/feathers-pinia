@@ -61,6 +61,8 @@ const taskStore = useTaskStore(pinia)
 To customize a `setup` store, you declare additional variables, computed properties, and functions inside of the call to
 `defineStore`.
 
+Learn more about the new [useService utility](/guide/use-service).
+
 ### useAuth 🎁
 
 Create ultra-flexible `setup stores` with the new [useAuth](/guide/use-auth) utility:
@@ -93,12 +95,19 @@ The new utilities in Feathers-Pinia 2.0 bring support for the new TypeScript enh
 can directly import the types from your backend and use them in your Feathers-Pinia frontend. The types integrate
 directly into the new Model Functions, as well.
 
+Learn more about Feathers v5 Dove types in the Feathers documentation:
+
+- Creating types [with TypeBox](https://feathersjs.com/api/schema/typebox.html)
+- Reusing server types with [the Feathers Client](https://feathersjs.com/guides/cli/client.html)
+
 ## Model Functions, not Classes 🔮
 
 Data modeling is one of the most-loved features in Feathers-Pinia. In Feathers-Pinia 2.0, we replace Model Classes
 with Model Functions. The developer experience just go so much better! You just create a function that receives an
 object, performs modifications to it, then returns it. There are two utilities for wrapping Model Functions:
 `useFeathersModel` and `useBaseModel`.
+
+Learn more about [Model Functions](/guide/model-functions)
 
 ### useFeathersModel 🎁
 
@@ -138,6 +147,8 @@ To create a model "instance" you just call the function WITHOUT the `new` operat
 const task = Task({ description: 'Do the dishes' })
 ```
 
+Learn more about the new [useFeathersModel utility](/guide/use-feathers-model)
+
 ### useBaseModel 🎁
 
 The `useBaseModel` utility gives you all of the BaseModel functionality without the Feathers parts. This means you can
@@ -171,10 +182,21 @@ To create a model "instance" you just call the function WITHOUT the `new` operat
 const task = Task({ description: 'Do the dishes' })
 ```
 
+Learn more about the new [useBaseModel utility](/guide/use-base-model)
+
+### useInstanceDefaults 🎁
+
+You can define default values for instances using the `useInstanceDefaults`. This takes the place of the former
+BaseModel class's `instanceDefaults` method.
+
+Learn more about the new [useInstanceDefaults utility](/guide/model-functions-shared#useinstancedefaults)
+
 ### useFeathersInstance 🎁
 
 There's also a `useFeathersInstance` utility which you can use with `useBaseModel`. It's used inside of your Model
-function to update a model instance to support Feathers-related methods.
+function to update a model instance to support Feathers-related methods, like `instance.save()`.
+
+Learn more about the new [useFeathersInstance utility](/guide/model-functions-shared#usefeathersinstance)
 
 ## Feathers Client Hooks 🪝
 
@@ -194,6 +216,8 @@ import { api } from '../feathers'
 // Pass the model function to the utility in the `around all` hooks.
 api.service('tasks').hooks({ around: { all: [...feathersPiniaHooks(Task)] } })
 ```
+
+Learn more about the new [hooks for Feathers Client](/guide/hooks).
 
 ## Support SQL `$like` Operators 🎁
 
@@ -267,9 +291,13 @@ These adapters will also work:
 
 If you use any of the above database adapters, give the new query operators a try!  Enjoy your new superpowers!
 
+Read more about all supported query filters and operators on the [Querying Data](/guide/querying-data) page.
+
 ## Built-in Patch Diffing 🎁
 
 <!--@include: ./patch-diffing.md-->
+
+Read more about [FeathersModel Instances](/guide/use-feathers-model-instances)
 
 ## Reactive Model Instances ➕
 
@@ -290,9 +318,13 @@ advantage of patch diffing and partial updates.  You can still replace an entire
 through `patch`. The Model Functions and Feathers-connected stores continue to have an `update` method, which an also
 be used.
 
+Read more about [Model Instances](/guide/model-instances).
+
 ## Handle Associations
 
 Two new utilities make it easier to add relationships between records without depending on associations in-memory.  You can setup associations in both directions between models.
+
+Read more about [Association Patterns](http://localhost:5174/guide/model-associations.html).
 
 ### `associateFind` 🎁
 
@@ -393,11 +425,12 @@ const tutorialsParams = computed(() => {
 const { items: tutorials } = tutorialStore.useFind({ params: tutorialsParams })
 ```
 
-Just think of all of the extra time you'll have instead of having to write those 1.5 lines of code over and over again! 😁
+Think of all of the extra time you'll have instead of having to write those 1.5 lines of code over and over again! 😁
 
 ### `store.useGet` ➕
 
-The `useGet` utility -- for implementing fall-through-cached `get` requests -- is now available directly on the store, further reducing boilerplate.
+The `useGet` utility -- for implementing fall-through-cached `get` requests -- is now available directly on the store,
+further reducing boilerplate.
 
 ## Smaller Package Size 🎉
 
@@ -410,15 +443,19 @@ The overall bundle size has been reduced from around 20kb to 12kb, gzipped.  Thi
 - Replacing hefty dependencies, like lodash's debounce, with smaller equivalents, like [just-debounce](https://npmjs.com/package/just-debounce).
 - Optimizing the Vite build to externalize modules.
 
-Here is the previous output from `npx vite-bundle-visualizer` to compare.  All of the modules highlighted, below, were able to be removed from the package, resulting in a much leaner build:
+Here is the previous output from `npx vite-bundle-visualizer` to compare.  All of the modules highlighted, below, were
+able to be removed from the package, resulting in a much leaner build:
 
 ![Optimized Vite Build](https://user-images.githubusercontent.com/128857/189497860-ea0b5b39-7484-416b-b411-748994e2fc33.png)
 
 ### LZW Storage is Out ➖
 
-Prior to this version, Feathers-Pinia included a localStorage plugin that used LZW compression. It came with the benefit of doubling the amount of data you could put in storage. The downside was that it made the bundle size big, so we removed it.  It will be published as an independent package at a later date.
+Prior to this version, Feathers-Pinia included a localStorage plugin that used LZW compression. It came with the benefit
+of doubling the amount of data you could put in storage. The downside was that it made the bundle size big, so we
+removed it.  It will be published as an independent package at a later date.
 
-Our LocalStorage adapter remains part of the package and is so fast that it makes Single Page Apps feel like they're doing Server Side Rendering.  If you haven't tried it, yet, it's easy to setup and it's worth it!
+Our LocalStorage adapter remains part of the package and is so fast that it makes Single Page Apps feel like they're
+doing Server Side Rendering.  If you haven't tried it, yet, it's easy to setup and it's worth it!
 
 ## No More `defineAuthStore`
 
