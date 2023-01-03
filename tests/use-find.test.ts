@@ -51,7 +51,7 @@ beforeEach(async () => {
     2: { _id: 2, text: 'moose' },
     3: { _id: 3, text: 'Goose' },
     4: { _id: 4, text: 'Loose' },
-    5: { _id: 5, text: 'Marshall' },
+    5: { _id: 5, text: 'Marshall', age: 21 },
     6: { _id: 6, text: 'David' },
     7: { _id: 7, text: 'Beau' },
     8: { _id: 8, text: 'Batman' },
@@ -100,6 +100,20 @@ describe('useFind', () => {
     params.value.query.text = 'Goose'
 
     expect(data.value[0].text).toBe('Goose')
+  })
+
+  test('does not cache values #72', async () => {
+    const _params = {
+      query: { text: 'Moose' },
+      store: taskStore,
+    }
+    const { params, data, total } = useFind(_params)
+    expect(data.value[0].text).toBe('Moose')
+
+    params.value.query = { age: 21 }
+
+    expect(data.value.length).toBe(1)
+    expect(data.value[0].text).toBe('Marshall')
   })
 })
 
@@ -533,7 +547,7 @@ describe('latestQuery and previousQuery', () => {
       response: {
         data: [
           { _id: 4, text: 'Loose' },
-          { _id: 5, text: 'Marshall' },
+          { _id: 5, text: 'Marshall', age: 21 },
           { _id: 6, text: 'David' },
         ],
         limit: 3,
@@ -628,6 +642,35 @@ describe('Computed Params', () => {
     expect(requestCount.value).toBe(2)
     expect(total.value).toBe(1)
     expect(data.value[0].text).toBe('Goose')
+  })
+
+  test('does not cache values #72 with computed params', async () => {
+    const query = ref<Record<string, Number|String>>({ text: 'Moose' })
+    const params = computed(() => {
+      return {
+        query: query.value,
+        store: taskStore,
+        onServer: true,
+      }
+    })
+    const { data, total, requestCount, request } = useFind(params)
+
+    await request.value
+
+    // requests are not sent by default
+    expect(data.value.length).toBe(1)
+    expect(requestCount.value).toBe(1)
+
+    query.value = { age: 21 }
+
+    // Wait for watcher to run and the request to finish
+    await timeout(20)
+    await request.value
+
+    // request was sent after computed params changed
+    expect(requestCount.value).toBe(2)
+    expect(total.value).toBe(1)
+    expect(data.value[0].text).toBe('Marshall')
   })
 
   test('computed params can start with limit and skip', async () => {

@@ -263,9 +263,8 @@ export function makeParamsWithoutPage(params: MaybeRef<FindClassParams>) {
 
 // Updates the _params with everything from _newParams except `$limit` and `$skip`
 export function updateParamsExcludePage(_params: Ref<FindClassParams>, _newParams: MaybeRef<FindClassParams>) {
-  _newParams = unref(_newParams)
-  const query = _.omit(_newParams.query, '$limit', '$skip')
-  const newParams = _.omit(_params.value, 'store', 'query')
-  Object.assign(_params.value.query, query)
-  Object.assign(_params.value, newParams)
+  _params.value.query = {
+    ...unref(_newParams).query,
+    ..._.pick(unref(_params).query, '$limit', '$skip')
+  }
 }
