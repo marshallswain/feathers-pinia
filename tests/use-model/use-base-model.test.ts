@@ -12,6 +12,17 @@ describe('useInstanceModel props', () => {
     Task.store.clearAll()
   })
 
+  test('throws an error when modelFn has no return', () => {
+    const modelFn = (data: ModelInstance<Tasks>) => {
+      const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
+    }
+    const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
+
+    expect(() => Task.addToStore({})).toThrowError(
+      'No model instance was created. Is your modelFn missing a return statement?',
+    )
+  })
+
   test('__Model prop', async () => {
     const task = Task({ description: 'test' })
     expect(typeof task.__Model).toBe('function')

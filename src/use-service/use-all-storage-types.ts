@@ -95,6 +95,9 @@ export const useAllStorageTypes = <M extends AnyData, Func extends (data: ModelI
     const _items = items.map((item: M) => {
       const Model = getModel()
       const asModel = item.__Model ? item : Model(item as any)
+      if (item != null && asModel == null) {
+        throw new Error('No model instance was created. Is your modelFn missing a return statement?')
+      }
       const stored = addItemToStorage(asModel)
       return stored
     })
