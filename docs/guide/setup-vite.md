@@ -486,3 +486,8 @@ Another thing about the above middleware snippet is that, instead of blindly red
 the 404 page to work. It also uses a "login redirect", which means it checks if a non-logged in user tries to access a
 page that requires authentication. It stores the `loginRedireect` so that after successful login the login page can
 redirect the user to the page they were trying access in the first place.
+
+## What's Next?
+
+Check out the full example app: [feathers-pinia-vite](https://www.github.com/marshallswain/feathers-pinia-vite). Check
+out the login component to see an example of signup/login.
