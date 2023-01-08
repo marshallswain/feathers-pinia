@@ -19,7 +19,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 When setting up a service, it's recommended that you declare hooks for the service next to the store. As per the Pinia docs, since we're using the store outside of a component context, the original `pinia` instance will need to be provided when calling `useUsers`, as shown here:
 
-<!--@include: ./types-notification.md-->
+<!--@include: ./feathers-client-notification.md-->
 
 ```ts
 // src/store/users.ts
@@ -230,15 +230,96 @@ In the example above, modifying the `todo` variable would unsafely modify stored
 
 The `clone` and `commit` methods are used by [useClone and useClones](./use-clones.md).
 
-## Access Feathers Client
+## Feathers Client
 
-It's certainly possible to continue to import the Feathers Client using the module system, like this:
+This section reviews how to create and use Feathers Clients
+
+### Feathers Clients Manual Setup
+
+FeathersJS v5 Dove creates a typed client for you, but you can still create Feathers Clients manually.
+
+Here's an example **feathers-socket.io** client:
+
+```ts
+// src/feathers.ts
+import { feathers } from '@feathersjs/feathers'
+import socketio from '@feathersjs/socketio-client'
+import auth from '@feathersjs/authentication-client'
+import io from 'socket.io-client'
+
+const socket = io('http://localhost:3030', { transports: ['websocket'] })
+
+// This variable name becomes the alias for this server.
+export const api = feathers()
+  .configure(socketio(socket))
+  .configure(auth({ storage: window.localStorage }))
+```
+
+### Multiple Feathers Clients
+
+For additional Feathers APIs, export another Feathers client instance with a unique variable name (other than `api`).
+
+Here's an example that exports a couple of **feathers-rest** clients:
+
+```ts
+// src/feathers.ts
+import { feathers } from '@feathersjs/feathers'
+import rest from '@feathersjs/rest-client'
+import auth from '@feathersjs/authentication-client'
+
+const fetch = window.fetch.bind(window)
+
+// The variable name of each client becomes the alias for its server.
+export const api = feathers()
+  .configure(rest('http://localhost:3030').fetch(fetch))
+  .configure(auth())
+
+export const analytics = feathers()
+  .configure(rest('http://localhost:3031').fetch(fetch))
+  .configure(auth())
+```
+
+### SSG-Compatible localStorage
+
+When doing Static Site Generation (SSG), the server doesn't usually have access to the `window` object, which is a
+browser global. Trying to access a non-existent `window` variable will throw an error on the server. The easiest way to
+get around this issue is with [useStorage](https://vueuse.org/core/usestorage/) from the [@vueuse/core package](https://vueuse.org/).
+
+```ts{2,9-18}
+import { createClient } from 'feathers-pinia-api'
+import { useStorage } from '@vueuse/core'
+import socketio from '@feathersjs/socketio-client'
+import io from 'socket.io-client'
+
+const host = import.meta.env.VITE_MYAPP_API_URL as string || 'http://localhost:3030'
+const socket = io(host, { transports: ['websocket'] })
+
+// setup SSG-compatible authentication storage
+const storageKey = 'feathers-jwt'
+const jwt = useStorage(storageKey, '')
+const storage = {
+  getItem: () => jwt.value,
+  setItem: (val: string) => jwt.value = val,
+  removeItem: () => jwt.value = null,
+}
+
+export const api = createClient(socketio(socket), { storage })
+```
+
+### Server-Compatible Fetch
+
+For a fetch adapter that's compatible with Static Site Generation (SSG) and Server-Side Rendering (SSR), check out the
+[OFetch](/guide/ofetch) page.
+
+### Access Feathers Client
+
+While it's possible to manually import the Feathers Client using the module system, like this:
 
 ```ts
 import { api } from '../feathers'
 ```
 
-However, thanks to auto-imports, we can decouple from the module path, completely, and define our own composable
+Thanks to [Auto-Imports](/guide/auto-imports), we can decouple from the module path, completely, and define our own composable
 function that returns an object which contains our app's Feathers Client instances:
 
 ```ts
@@ -256,3 +337,75 @@ to import it, first (assuming you're using auto-imports as shown in the setup gu
 ```ts
 const { api } = useFeathers()
 ```
+
+## Avoid npm Install Errors
+
+If you're using npm to install packages and keep getting errors about `vue-demi` and `peerDependencies`, you can silence
+these errors by creating an `.npmrc` file in the root of your project with the following contents:
+
+```text
+shamefully-hoist=true
+strict-peer-dependencies=false
+legacy-peer-deps=true
+```
+
+## Global Configuration
+
+We can use composables to create a global configuration function for Feathers-Pinia. It's very convenient when paired
+with [Auto-Imports](/guide/auto-imports). Use a global config for consistent Models and stores. This example is found in
+`models/feathers-pinia-config.ts` in the Vite and Nuxt [example applications](/guide/example-apps):
+
+::: code-group
+
+```ts [Vite]
+import { pinia } from '~/modules/pinia'
+
+/**
+ * Returns a configuration object for Feathers-Pinia
+ */
+export const useFeathersPiniaConfig = () => {
+  return {
+    pinia,
+    idField: '_id',
+    whitelist: ['$regex'],
+  }
+}
+```
+
+```ts [Nuxt]
+/**
+ * Returns a global configuration object for Feathers-Pinia
+ */
+export const useFeathersPiniaConfig = () => {
+  const { $pinia: pinia } = useNuxtApp()
+  return {
+    pinia,
+    idField: '_id',
+    whitelist: ['$regex'],
+  }
+}
+```
+
+:::
+
+Now you can use the `useFeathersPiniaConfig` to create service-specific composables to share between the Model and
+store. Place this composable directly above the Model definition (in this case the `User` Model definition):
+
+```ts
+export const useUsersConfig = () => {
+  const { pinia, idField, whitelist } = useFeathersPiniaConfig()
+  const servicePath = 'users'
+  const service = useFeathersService<User, UserQuery>(servicePath)
+  const name = 'User'
+
+  return { pinia, idField, whitelist, servicePath, service, name }
+}
+```
+
+And now you can call `useUsersConfig()` and destructure the variables needed by the Model and store, as shown in the
+[setup examples](/guide/get-started)
+
+<BlockQuote type="info" label="note">
+Before version 2, Feathers-Pinia included the `setupFeathersPinia` utility to enable global configuration. That API has
+been removed in favor of the above solution.
+</BlockQuote>
