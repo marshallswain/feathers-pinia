@@ -89,8 +89,8 @@ function getGuideSidebar() {
             { text: 'associateGet', link: '/guide/associate-get' },
           ],
         },
-        { text: 'Common Patterns', link: '/guide/common-patterns' },
         { text: 'Querying Data', link: '/guide/querying-data' },
+        { text: 'Common Patterns', link: '/guide/common-patterns' },
       ],
     },
     {
@@ -128,6 +128,7 @@ function getGuideSidebar() {
     {
       text: 'Other Tools',
       items: [
+        { text: 'Auto-Imports', link: '/guide/auto-imports' },
         { text: 'Nuxt Module', link: '/guide/nuxt-module' },
         { text: 'OFetch', link: '/guide/ofetch' },
         { text: 'syncWithStorage', link: '/guide/storage-sync' },
