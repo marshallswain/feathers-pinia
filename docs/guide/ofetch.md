@@ -16,6 +16,13 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
+The Nuxt team created a truly universal `fetch` API in the form of [ofetch](https://github.com/unjs/ofetch). It's a
+great replacement for [fetch](https://developer.mozilla.org/en-US/docs/Web/API/fetch) in the browser and Node's
+[undici](https://www.npmjs.com/package/undici) on the server. It has a slightly different response API, eliminating the
+need to `await` the response then also `await` the format (`.text` or `.json`).
+
+Since the API is slightly different than native browser fetch API, we've made a custom adapter for Feathers-Rest.
+
 ## Setup
 
 Follow these setups to get the `OFetch` adapter working with your Nuxt app and the Feathers Client.
