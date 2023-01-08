@@ -118,19 +118,19 @@ export const useService = <
   })
 
   const serviceUtils = {
-    useFind: function (_params: MaybeRef<UseFindParams>) {
-      const params: any = unref(_params)
-      params.store = this
-      return useFind(params)
+    useFind: function (params: MaybeRef<UseFindParams>) {
+      const _params: any = params
+      Object.assign(_params.value || params, { store: this })
+      return useFind(_params)
     },
-    useGet: function (_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
-      const params: any = unref(_params)
-      params.store = this
+    useGet: function (_id: MaybeRef<Id | null>, params: MaybeRef<GetClassParams> = {}) {
+      const _params: any = params
+      Object.assign(_params.value || params, { store: this })
       return useGet(_id as Id, _params as MaybeRef<any>)
     },
-    useGetOnce: function (_id: MaybeRef<Id | null>, _params: MaybeRef<GetClassParams> = {}) {
-      const params = unref(_params)
-      Object.assign(params, { store: this, immediate: false, onServer: true })
+    useGetOnce: function (_id: MaybeRef<Id | null>, params: MaybeRef<GetClassParams> = {}) {
+      const _params: any = params
+      Object.assign(_params.value || params, { store: this, immediate: false, onServer: true })
       const results = this.useGet(_id as Id, _params as MaybeRef<any>)
       results.queryWhen(() => !results.data.value)
       results.get()

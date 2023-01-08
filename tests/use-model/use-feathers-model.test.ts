@@ -172,6 +172,12 @@ describe('useFeathersModel', () => {
     expect(typeof Task.useFind).toBe('function')
   })
 
+  test('Model.useFind returns useFind object', async () => {
+    const params = { query: { $limit: 3, $skip: 0 } }
+    const { data, next } = Task.useFind(params)
+    expect(typeof next).toBe('function')
+  })
+
   test('Model.useGet', async () => {
     expect(typeof Task.useGet).toBe('function')
   })

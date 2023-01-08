@@ -1,6 +1,12 @@
 import type { FeathersModelStatic, ModelInstanceData, UseFeathersModelOptions } from './types'
-import { type AnyData, useService } from '../use-service'
+import { type AnyData, useService, UseFindWatchedOptions, UseGetOptions } from '../use-service'
 import { reactive } from 'vue-demi'
+import type { UseFindParams } from '../use-find'
+import type { UseGetParams } from '../use-get'
+import type { MaybeRef } from '../utility-types'
+import { Id } from '@feathersjs/feathers/lib'
+import { useFindWatched } from '../use-find-watched'
+import { useGetWatched } from '../use-get-watched'
 
 /**
  * Adds the useService utilities to the Model
@@ -72,20 +78,29 @@ export const wrapModelFeathers = <
     get remove() {
       return _Model.store.remove
     },
-    get useFind() {
-      return _Model.store.useFind
+    useFind: function (params: MaybeRef<UseFindParams>) {
+      const _params: any = params
+      Object.assign(_params.value || params, { store: this })
+      return _Model.store.useFind(_params)
     },
-    get useGet() {
-      return _Model.store.useGet
+    useGet: function (_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {
+      const _params: any = params
+      Object.assign(_params.value || params, { store: this })
+      return _Model.store.useGet(_id as Id, _params as MaybeRef<any>)
     },
-    get useGetOnce() {
-      return _Model.store.useGetOnce
+    useGetOnce: function (_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {
+      const _params: any = params
+      Object.assign(_params.value || params, { store: this, immediate: false, onServer: true })
+      const results = _Model.store.useGet(_id as Id, _params as MaybeRef<any>)
+      results.queryWhen(() => !results.data.value)
+      results.get()
+      return results
     },
-    get useFindWatched() {
-      return _Model.store.useFindWatched
+    useFindWatched: function (options: UseFindWatchedOptions) {
+      return useFindWatched({ model: _Model, ...(options as any) })
     },
-    get useGetWatched() {
-      return _Model.store.useGetWatched
+    useGetWatched: function (options: UseGetOptions) {
+      return useGetWatched({ model: _Model, ...options })
     },
   })
 

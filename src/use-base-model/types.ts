@@ -2,8 +2,9 @@ import type { ClientService, Id, ServiceAddons } from '@feathersjs/feathers'
 import type { ComputedRef, UnwrapNestedRefs } from 'vue-demi'
 import type { Params, PatchParams } from '../types'
 import { type AnyData, type CloneOptions, useService, useServiceApiFeathers } from '../use-service'
-import { useFind } from '../use-find'
-import { useGet } from '../use-get'
+import { useFind, type UseFindParams } from '../use-find'
+import { useGet, type UseGetParams } from '../use-get'
+import type { MaybeRef } from '../utility-types'
 
 export interface UseBaseModelOptions {
   name: string
@@ -205,9 +206,9 @@ export interface FeathersModelStatic<
   store: UseServiceStore<M, D, Q, ModelFunc>
   setStore: (store: any) => void
   associations: Record<string, AnyData>
-  useFind: typeof useFind
-  useGet: typeof useGet
-  useGetOnce: typeof useGet
+  useFind: (params: MaybeRef<UseFindParams>) => ReturnType<typeof useFind>
+  useGet: (_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams>) => ReturnType<typeof useGet>
+  useGetOnce: (_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams>) => ReturnType<typeof useGet>
   useFindWatched: any
   useGetWatched: any
 }
