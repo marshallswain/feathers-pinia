@@ -46,7 +46,7 @@ connectivity is optional.
 
 </BlockQuote>
 
-<!--@include: ./types-notification.md-->
+<!--@include: ./feathers-client-notification.md-->
 
 Notice how much cleaner and more concise the new Model Functions than the old Model Classes! The separate places for
 defining defaults and setting up instance data have all been combined into a single function.

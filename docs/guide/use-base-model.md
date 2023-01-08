@@ -37,7 +37,7 @@ If you want TypeScript types to work, you must provide the generics in this orde
 - ServiceQuery
 - `typeof Model`
 
-<!--@include: ./types-notification.md-->
+<!--@include: ./feathers-client-notification.md-->
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
@@ -92,7 +92,7 @@ the app.) BaseModel contains all EventEmitter.prototype properties and methods.
 
 Here’s an example of how to use it:
 
-<!--@include: ./types-notification.md-->
+<!--@include: ./feathers-client-notification.md-->
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'

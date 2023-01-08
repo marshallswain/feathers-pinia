@@ -38,7 +38,7 @@ If you want TypeScript types to work, you must provide the generics in this orde
 - ServiceQuery
 - `typeof modelFn`
 
-<!--@include: ./types-notification.md-->
+<!--@include: ./feathers-client-notification.md-->
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'

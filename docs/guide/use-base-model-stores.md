@@ -28,7 +28,7 @@ Model Functions come with their own built-in stores. The BaseModel store API is 
 BaseModel stores are created only when you create a BaseModel Function using [useBaseModel](/guide/use-base-model). The
 default store is found at `Model.store`:
 
-<!--@include: ./types-notification.md-->
+<!--@include: ./feathers-client-notification.md-->
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
