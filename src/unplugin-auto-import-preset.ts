@@ -1,0 +1,20 @@
+export const feathersPiniaAutoImport = {
+  'feathers-pinia': [
+    'useFeathersModel',
+    'useBaseModel',
+    'useInstanceDefaults',
+    'useFeathersInstance',
+    'associateGet',
+    'associateFind',
+    'useService',
+    'useAuth',
+    'useFind',
+    'useGet',
+    'useClone',
+    'useClones',
+    'feathersPiniaHooks',
+    'useModel',
+    'connectModel',
+    'onModelReady',
+  ],
+}

@@ -54,6 +54,19 @@ export { usePagination } from './use-pagination'
 export { useClones } from './use-clones'
 export { useClone } from './use-clone'
 
+// SPA Model State
+export {
+  type FpModelStorage,
+  type FpSpaStorageFn,
+  type ModelNamespace,
+  useModel,
+  connectModel,
+  onModelReady,
+  setFeathersPiniaSpaState,
+} from './use-feathers-models-spa'
+
+export { feathersPiniaAutoImport } from './unplugin-auto-import-preset'
+
 // Storage Sync
 export { syncWithStorage } from './storage-sync'
 export { clearStorage } from './clear-storage'
@@ -61,3 +74,4 @@ export { clearStorage } from './clear-storage'
 // Types
 export * from './types'
 export * from './use-base-model/types'
+export * from './use-service/types'
