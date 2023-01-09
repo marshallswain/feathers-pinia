@@ -23,8 +23,8 @@ export default defineNuxtPlugin(async (_nuxtApp) => {
   const jwt = useCookie<string | null>(storageKey)
   const storage = {
     getItem: () => jwt.value,
-    setItem: (val: string) => jwt.value = val,
-    removeItem: () => jwt.value = null,
+    setItem: (key: string, val: string) => (jwt.value = val),
+    removeItem: () => (jwt.value = null),
   }
 
   // Use Rest for the SSR Server and socket.io for the browser

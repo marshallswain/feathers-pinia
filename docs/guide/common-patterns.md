@@ -299,8 +299,8 @@ const storageKey = 'feathers-jwt'
 const jwt = useStorage(storageKey, '')
 const storage = {
   getItem: () => jwt.value,
-  setItem: (val: string) => jwt.value = val,
-  removeItem: () => jwt.value = null,
+  setItem: (key: string, val: string) => (jwt.value = val),
+  removeItem: () => (jwt.value = null),
 }
 
 export const api = createClient(socketio(socket), { storage })
