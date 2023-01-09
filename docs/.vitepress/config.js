@@ -45,7 +45,7 @@ function getGuideSidebar() {
         { text: 'Overview', link: '/guide/get-started' },
         { text: 'Install Modules', link: '/guide/setup' },
         { text: 'with Vite', link: '/guide/setup-vite' },
-        { text: 'with Nuxt 3 🚧', link: '/guide/setup-nuxt3' },
+        { text: 'with Nuxt 3', link: '/guide/setup-nuxt3' },
         { text: 'with Quasar 🚧', link: '/guide/setup-quasar' },
         { text: 'Example Apps', link: '/guide/example-apps' },
         { text: 'Other Setup Examples', link: '/guide/setup-other' },

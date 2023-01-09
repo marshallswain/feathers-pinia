@@ -16,6 +16,8 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
+For the TLDR (Too Long, Didn't Read) version, you can take a look at the [feathers-pinia-vite repo](https://github.com/marshallswain/feathers-pinia-vite).
+
 ## Overview
 
 Follow these steps to get started with a new single-page Vite app:
@@ -144,96 +146,14 @@ really cleans things up.
 
 <!--@include: ./feathers-client-notification.md-->
 
-:::code-group
+<!--@include: ./example-user-model.md-->
 
-```ts [With Auto-Imports]
-import type { ModelInstance } from 'feathers-pinia'
-import type { User, UserData, UserQuery } from 'feathers-pinia-api'
+This code does more than setup the Model. It also
 
-export const useUsersConfig = () => {
-  const { pinia, idField, whitelist } = useFeathersPiniaConfig()
-  const servicePath = 'users'
-  const service = useFeathersService<User, UserQuery>(servicePath)
-  const name = 'User'
-
-  return { pinia, idField, whitelist, servicePath, service, name }
-}
-
-export const useUserModel = () => {
-  const { idField, service, name } = useUsersConfig()
-
-  const Model = useModel(name, () => {
-    const modelFn = (data: ModelInstance<User>) => {
-      const defaults = {
-        email: '',
-        password: '',
-      }
-      const withDefaults = useInstanceDefaults(defaults, data)
-      return withDefaults
-    }
-    return useFeathersModel<User, UserData, UserQuery, typeof modelFn>({ name, idField, service }, modelFn)
-  })
-
-  onModelReady(name, () => {
-    service.hooks({ around: { all: [...feathersPiniaHooks(Model)] } })
-  })
-  connectModel(name, () => Model, useUserStore)
-
-  return Model
-}
-```
-
-```ts [With Import Statements]
-import {
-  type ModelInstance,
-  useModel,
-  associateFind,
-  feathersPiniaHooks,
-  useFeathersModel,
-  useInstanceDefaults,
-  onModelReady,
-  connectModel,
-} from 'feathers-pinia'
-import { useFeathersPiniaConfig } from '../feathers-pinia-config'
-import type { User, UserData, UserQuery } from 'feathers-pinia-api'
-
-export const useUsersConfig = () => {
-  const { pinia, idField, whitelist } = useFeathersPiniaConfig()
-  const servicePath = 'users'
-  const service = useFeathersService<User, UserQuery>(servicePath)
-  const name = 'User'
-
-  return { pinia, idField, whitelist, servicePath, service, name }
-}
-
-export const useUserModel = () => {
-  const { idField, service, name } = useUsersConfig()
-
-  const Model = useModel(name, () => {
-    const modelFn = (data: ModelInstance<User>) => {
-      const defaults = {
-        email: '',
-        password: '',
-      }
-      const withDefaults = useInstanceDefaults(defaults, data)
-      return withDefaults
-    }
-    return useFeathersModel<User, UserData, UserQuery, typeof modelFn>({ name, idField, service }, modelFn)
-  })
-
-  onModelReady(name, () => {
-    service.hooks({ around: { all: [...feathersPiniaHooks(Model)] } })
-  })
-  connectModel(name, () => Model, useUserStore)
-
-  return Model
-}
-```
-
-:::
-
-Technically, a Feathers-Pinia Model could be a lot simpler. There are extra utilities in use which allow us keep the
-Model and the store in separate folders. Models can go in `/models` and stores can go in `/stores`.
+- assures the Model is only created once per request, even if you call `useUserModel` multiple times.
+- allows the Model and store to be kept in different folders, keeping Models in `models` and stores in `stores`.
+- assures the Model and store are properly connected.
+- assures hooks are only registered once.
 
 <BlockQuote type="warning" label="Model.store vs store">
 
@@ -249,138 +169,19 @@ This limitation will be fixed in a future release.
 
 ### 4.2. Task Model
 
-Now here's the `Task` Model with the `associateGet` utility:
+Now let's create the `Task` Model:
 
-```ts [With Auto-Imports]
-import type { ModelInstance } from 'feathers-pinia'
-import type { Tasks, TasksData, TasksQuery } from 'feathers-pinia-api'
-
-export const useTasksConfig = () => {
-  const { pinia, idField, whitelist } = useFeathersPiniaConfig()
-  const servicePath = 'tasks'
-  const service = useFeathersService<Tasks, TasksQuery>(servicePath)
-  const name = 'Task'
-
-  return { pinia, idField, whitelist, servicePath, service, name }
-}
-
-export const useTaskModel = () => {
-  const { idField, service, name } = useTasksConfig()
-
-  const Model = useModel(name, () => {
-    const modelFn = (data: ModelInstance<Tasks>) => {
-      const defaults = {
-        description: '',
-        isComplete: false,
-      }
-      const withDefaults = useInstanceDefaults(defaults, data)
-      return withDefaults
-    }
-    return useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>({ name, idField, service }, modelFn)
-  })
-
-  onModelReady(name, () => {
-    service.hooks({ around: { all: [...feathersPiniaHooks(Model)] } })
-  })
-  connectModel(name, () => Model, useTaskStore)
-
-  return Model
-}
-```
-
-Since we wrapped our Models in utility functions, we can use them with auto-imports just like any utility in
-`composables`:
-
-```vue
-<script setup lang="ts">
-const User = useUserModel()
-const Task = useTaskModel()
-</script>
-```
+<!--@include: ./example-task-model.md-->
 
 ## 5. Service Stores
 
-We're now ready to create a store for each Model. We'll create a `users` store for the `User` Model and a `tasks` store
-for the `Task` Model.
-
-### 5.1 Users Store
-
-Unlike previous versions of Feathers-Pinia, version 2.0 lets you use native Pinia functions to build
-[`setup` stores](https://pinia.vuejs.org/core-concepts/#setup-stores). The original "Options stores" are not supported
-since they involve more cognitive overhead and are more difficult to keep organized.
-
-Use the code below to create the `useUserStore` composable in the `stores` folder.
-
-```ts
-// src/stores/service.users.ts
-import { defineStore } from 'pinia'
-
-export const useUserStore = () => {
-  const { pinia, idField, whitelist, servicePath, service, name } = useUsersConfig()
-
-  const useStore = defineStore(servicePath, () => {
-    const utils = useService({ service, idField, whitelist })
-    return { ...utils, test: true }
-  })
-  const store = useStore(pinia)
-
-  connectModel(name, useUserModel, () => store)
-
-  return store
-}
-```
-
-Notice that we're reusing the `useUsersConfig` composable as an auto-import. Other auto-imports in use are `useService`
-and `connectModel`. The `useService` utility returns the default values that are required for a Feathers-Pinia store.
-These stores are [fully customizable](/guide/use-service#customize-the-store). The `connectModel` utility wires up the
-`User` Model with the `users` store.
-
-### 5.2 Tasks Store
-
-Now let's create a `tasks` store and connect it to the `Task` Model.
-
-```ts
-// src/stores/service.tasks.ts
-import { defineStore } from 'pinia'
-import { useService } from 'feathers-pinia'
-
-export const useTaskStore = () => {
-  const { pinia, idField, whitelist, servicePath, service, name } = useTasksConfig()
-
-  const useStore = defineStore(servicePath, () => {
-    const utils = useService({ service, idField, whitelist })
-    return { ...utils }
-  })
-  const store = useStore(pinia)
-
-  connectModel(name, useTaskModel, () => store)
-
-  return store
-}
-```
-
-Since we wrapped our stores in utility functions, we can use them with auto-import just like any utility in `composables`:
-
-```vue
-<script setup lang="ts">
-const userStore = useUserStore()
-const taskStore = useTaskStore()
-</script>
-```
+<!--@include: ./setting-up-service-stores.md-->
 
 ## 6. Authentication
 
 If your app requires user login, the following sections demonstrate how to implement it.
 
-<BlockQuote type="danger" label="Assess Your Risk">
-
-The auth examples on this page will suffice for apps with simple security requirements. If you are building an app with
-privacy requirements, you need something more secure.
-
-There are multiple ways to secure your app. If you need help, please [contact a FeathersHQ member](https://github.com/feathershq/)
-for consulting services.
-
-</BlockQuote>
+<!--@include: ./assess-your-auth-risk.md-->
 
 ### 6.1 Auth Store
 
@@ -389,9 +190,8 @@ authentication in most apps. Using the composition API allows more simplicity an
 We'll keep this example simple. To implement auth, create the file below:
 
 ```ts
-// src/stores/auth.ts
+// stores/auth.ts
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { userStore } = useUserStore()
