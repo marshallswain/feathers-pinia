@@ -17,6 +17,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 [[toc]]
 
 For the TLDR (Too Long, Didn't Read) version, you can take a look at the [feathers-pinia-nuxt3 repo](https://github.com/marshallswain/feathers-pinia-nuxt3).
+For now, the app currently only provides a demo of authentication. More features will be demonstrated at a future time.
 
 ## Overview
 
