@@ -76,21 +76,19 @@ previous example, above.
 Using Live Queries greatly simplifies app development.  The `find` getter enables this feature.  Here is how you might setup a component to take advantage of Live Queries.  The next example shows how to setup two live-query lists using two getters.
 
 ```ts
-import { useAppointments } from '../stores/appointments'
-
-const appointmentStore = useAppointments()
+const Appointment = useAppointmentModel
 
 // fetch past and future appointments
 const params = reactive({ query: {} } })
-const { isPending, find } = appointmentStore.useFind(params)
+const { isPending, find } = Appointment.useFind(params)
 
 // future appointments
 const futureParams = reactive({ query: { date: { $gt: new Date() } } })
-const { data: futureAppointments } = appointmentStore.useFind(futureParams)
+const { data: futureAppointments } = Appointment.useFind(futureParams)
 
 // past appointments
 const pastParams = reactive({ query: { date: { $lt: new Date() } } })
-const { data: pastAppointments } = appointmentStore.useFind(pastParams)
+const { data: pastAppointments } = Appointment.useFind(pastParams)
 ```
 
 in the above example of component code, the `future` and `pastAppointments` will automatically update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.  `feathers-pinia` listens to socket events automatically, so you don't have to manually wire any of this up!
