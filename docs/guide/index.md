@@ -11,29 +11,34 @@ maximize perceived application speed for end users while providing a pleasant de
 
 ## Overview of Features
 
-- **Data Modeling** using pure functions with **stellar TypeScript Support**.
-- **Model Relationships using Queries** with the new [associateFind](/guide/associate-find) and
+- **[Data Modeling](/guide/modeling-overview)** using pure functions with **stellar TypeScript Support**.
+- **[Model Associations](/guide/model-associations)** with the new [associateFind](/guide/associate-find) and
 [associateGet](/guide/associate-get) utilities.
-- **Clone and Commit** support for keeping mutation count low.
-- **Per-Record Defaults** offer a functional way of adding default values to every record.
+- **[Clone and Commit](guide/common-patterns#mutation-multiplicity-pattern)** support for keeping mutation count low.
+- **[Per-Record Defaults](/guide/model-functions-shared#useinstancedefaults)** offer a functional way of adding default
+values to every record.
 - **Realtime by Default**: It's ready for WebSocket-enhanced, multi-user interactivity.
 - **Independently Reactive**: no need to assign records to component or store `data` to enable reactive binding.
-- **Local Queries**: Make requests against locally-cached data as though it was a FeathersJS database, **now with
-support for SQL `$like` operators.**
-- **Live Queries** with client-side pagination allow arrays of data to automatically update as new records are added,
-modified, or removed.
-- **Server-Side Pagination**: alternative to live-list pagination, optionally give all control to the server and perform
-manual fetching.
-- **SSR Support**: optimize server-loaded data on the client without refetching. Full support for the latest Nuxt3 apis.
-- **Fall-Through Cache** like SWR but with built-in, low-memory query intelligence. It knows which records can be
-shared between different queries, which allows relevant records to show immediately while additional data is fetched.
+- **[Local Queries](/guide/querying-data)**: Make requests against locally-cached data as though it was a FeathersJS
+database, **now with support for SQL `$like` operators.**
+- **[Live Queries](/guide/common-patterns.html#reactive-lists-with-live-queries)** with client-side pagination allow
+arrays of data to automatically update as new records are added, modified, or removed.
+- **[Server-Side Pagination](/guide/use-find#server-paging-auto-fetch)**: alternative to live-list pagination,
+optionally give all control to the server and perform manual fetching. In this mode, lists only update when new queries
+are made.
+- **[SSR Support](/guide/use-service#server-side-rendering-ssr)**: optimize server-loaded data on the client without
+refetching. The latest Nuxt APIs are fully supported.
+- **[Fall-Through Cache](/guide/use-find)** like SWR but with built-in, low-memory query intelligence. It knows which
+records can be shared between different queries, which allows relevant records to show immediately while additional data
+is fetched.
 - Flexible code patterns allow developers to work as they wish.
   - **Active Record Pattern**: allows use of utility methods built on each instance. This pattern allows creation of
   loosely-coupled components built around the instance interface.
   - **Data Mapper Pattern**: allows you to use a store-centric workflow where you let store logic perform operations
   on your data.
-- **Flexible Auth Support** with the new `useAuth` composition utility.
-- New utilities for data fetching and working with form data, fully powered by the Vue Composition API.
+- **[Flexible Auth Support](/guide/use-auth)** with the new `useAuth` composition utility.
+- New utilities for data fetching and [working with form data](/guide/use-clones), fully powered by the Vue Composition
+API.
 - Full support for [FeathersJS v5 Dove](https://feathersjs.com).
 
 While built for Pinia, it has evolved to support standalone configurations not requiring Pinia. Both the standalone and
