@@ -24,7 +24,27 @@ A utility for syncing with Storage is included with Feathers-Pinia: `syncWithSto
 
 Here's an example of its use while setting up a store.
 
-<!--@include: ./example-full-feathers-model-with-store.md -->
+```ts
+import { defineStore } from 'pinia'
+import { useService } from 'feathers-pinia'
+
+export const useUserStore = () => {
+  const { pinia, idField, whitelist, servicePath, service, name } = useUsersConfig()
+
+  const useStore = defineStore(servicePath, () => {
+    const utils = useService({ service, idField, whitelist })
+    return { ...utils }
+  })
+  const store = useStore(pinia)
+
+  connectModel(name, useUserModel, () => store)
+  onModelReady(name, () => {
+    syncWithStorage(store, ['ids', 'itemsById'])
+  })
+
+  return store
+}
+```
 
 ## API
 
