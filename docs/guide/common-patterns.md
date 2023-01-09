@@ -17,53 +17,59 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 ## Accessing a Store From Hooks
 
-When setting up a service, it's recommended that you declare hooks for the service next to the store. As per the Pinia docs, since we're using the store outside of a component context, the original `pinia` instance will need to be provided when calling `useUsers`, as shown here:
+You can use [Auto-Imports](/guide/auto-imports) to reference a store from within hooks. This example accesses the
+`userStore` inside of the hooks:
 
 <!--@include: ./feathers-client-notification.md-->
 
-```ts
-// src/store/users.ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
-import { useService } from 'feathers-pinia'
-import { pinia } from '../plugins/pinia'
-import { User } from '../models'
+```ts [With Auto-Imports]
+import type { ModelInstance } from 'feathers-pinia'
+import type { User, UserData, UserQuery } from 'feathers-pinia-api'
 
-export const useUserStore = defineStore('users', () => {
-  const { $api } = useFeathers()
-  const service = $api.service('messages')
+export const useUsersConfig = () => {
+  const { pinia, idField, whitelist } = useFeathersPiniaConfig()
+  const servicePath = 'users'
+  const service = useFeathersService<User, UserQuery>(servicePath)
+  const name = 'User'
 
-  const utils = useService({
-    service,
-    idField: 'id',
-    Model: Task,
-  })
-  const myCustomState = false
-
-  return { ...utils, myCustomState }
-})
-
-if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot))
+  return { pinia, idField, whitelist, servicePath, service, name }
 }
 
-// register the store on the User model.
-const userStore = useUserStore(pinia)
-Model.setStore(userStore)
+export const useUserModel = () => {
+  const { idField, service, name } = useUsersConfig()
 
-service.hooks({
-  around: {
-    find: [
-      async (context, next) => {
-      
-        // Do something with the userStore before sending the request or...
-
-        await next()
-
-        // Do something with the userStore after the response comes back.
+  const Model = useModel(name, () => {
+    const modelFn = (data: ModelInstance<User>) => {
+      const defaults = {
+        email: '',
+        password: '',
       }
-    ]
-  }
-})
+      const withDefaults = useInstanceDefaults(defaults, data)
+      return withDefaults
+    }
+    return useFeathersModel<User, UserData, UserQuery, typeof modelFn>({ name, idField, service }, modelFn)
+  })
+
+  onModelReady(name, () => {
+    service.hooks({ 
+      around: { 
+        all: [...feathersPiniaHooks(Model)],
+        find: [
+          async (context, next) => {
+            // Reference the userStore through auto-imports
+            const userStore = useUserStore()
+            // Do something with the userStore before sending the request
+            await next()
+            // Do something with the userStore after the response comes back.
+          }
+        ]
+      } 
+    })
+  })
+  connectModel(name, () => Model, useUserStore)
+
+  return Model
+}
 ```
 
 ## Handle Custom Server Response
@@ -112,15 +118,14 @@ For real-time apps, it's not necessary to retrieve a single record more than onc
 3. Manually call `get`, which will only trigger an API request if we don't have the record. Woot!
 
 ```ts
-import { useUsers } from '../store/users'
+const User = useUserModel()
 
 interface Props {
   id: string | number
 }
 const props = defineProps<Props>()
-const userStore = useUsers()
 
-const { data: user, queryWhen, get } = userStore.useGet(props.id, { 
+const { data: user, queryWhen, get } = User.useGet(props.id, { 
   onServer: true, 
   immediate: false            // (1)
 })
@@ -135,15 +140,14 @@ The above example also shows why `queryWhen` is no longer passed as an argument.
 The previous pattern of only querying once is so common for real-time apps that we've built a shortcut for it at `store.useGetOnce`. It uses the same code as above, but built into the store method.
 
 ```ts
-import { useUsers } from '../store/users'
+const User = useUserModel()
 
 interface Props {
   id: string | number
 }
 const props = defineProps<Props>()
-const userStore = useUsers()
 
-const { data: user } = userStore.useGetOnce(props.id)
+const { data: user } = User.useGetOnce(props.id)
 ```
 
 Now the same record will only be retrieved once.
@@ -161,7 +165,7 @@ exists.
 
 ```ts
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
-import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
+import { type ModelInstance } from 'feathers-pinia'
 
 const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ firstName: '', lastName: '' }, data)
@@ -210,21 +214,19 @@ The "Clone and Commit" pattern provides an alternative to using a lot of actions
 Sending most edits through a single mutation can really simplify the way you work with store data.  The `BaseModel` class has `clone` and `commit` instance methods. These methods provide a clean API for working with items in the store and not unsafely editing data:
 
 ```ts
-import { useTodos } from '../stores/todos'
+const Task = useTaskModel()
 
-const todoStore = useTodos()
-
-const todo = todoStore.Model({
+const task = Task({
   description: 'Plant the garden',
   isComplete: false
 })
 
-const clone = todo.clone()
+const clone = task.clone()
 clone.description = 'Plant half of the garden."
 clone.commit()
 ```
 
-In the example above, modifying the `todo` variable would unsafely modify stored data, which is a generally unsupportive practice when not done consciously. Calling `todo.clone()` returns a reactive clone of the instance.  It's safe to change clones. You can then call `clone.commit()` to update the original record in the store.
+In the example above, modifying the `task` variable would unsafely modify stored data, which is a generally unsupportive practice when not done consciously. Calling `task.clone()` returns a reactive clone of the instance.  It's safe to change clones. You can then call `clone.commit()` to update the original record in the store.
 
 The `clone` and `commit` methods are used by [useClone and useClones](./use-clones.md).
 
