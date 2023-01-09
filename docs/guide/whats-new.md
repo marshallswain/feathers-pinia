@@ -204,6 +204,26 @@ function to update a model instance to support Feathers-related methods, like `i
 
 Learn more about the new [useFeathersInstance utility](/guide/model-functions-shared#usefeathersinstance)
 
+### New Model Methods
+
+FeathersModels now include methods for [useFind](/guide/use-find), [useGet, and useGetOnce](/guide/use-get).
+
+Learn more on the [useFeathersModel](/guide/use-feathers-model) page.
+
+## Official Nuxt Module 🎁
+
+Feathers-Pinia v2 comes with a module for Nuxt which registers auto-imports and provides Nuxt-specific utilities for
+data modeling.
+
+Learn more about the new [Nuxt Module](/guide/nuxt-module)
+
+## Auto-Imports Support ⚡️
+
+Since Feathers-Pinia v2 is so modular, import statements can be verbose. New Auto-Import support for Nuxt, Vite,
+Webpack, Rollup, and more, is provided through the new `unplugin-auto-imports` preset.
+
+Learn more about the new [Auto-Imports Support](/guide/auto-imports).
+
 ## Feathers Client Hooks 🪝
 
 Feathers-Pinia now fully integrates with the Feathers Client through a new set of `feathersPiniaHooks`. The majority of
@@ -225,7 +245,19 @@ api.service('tasks').hooks({ around: { all: [...feathersPiniaHooks(Task)] } })
 
 Learn more about the new [hooks for Feathers Client](/guide/hooks).
 
-## Support SQL `$like` Operators 🎁
+## Query API Reference 📖
+
+The documentation now includes a page about supported query props. It's a great reference for what query props are
+supported by:
+
+- the Feathers Query Syntax (all adapters)
+- the [@feathersjs/mongodb](https://feathersjs.com/api/databases/mongodb.html) adapter
+- the [@feathersjs/knex](https://feathersjs.com/api/databases/knex.html) adapter
+- other SQL-based adapters
+
+Learn more on the new [Querying Data](/guides/querying-data) page.
+
+### SQL `$like` Operators 🎁
 
 The most-requested feature has finally landed: built-in support for SQL `LIKE`. This means the queries made to the store
 will match the queries made to your SQL-backed API. This brings querying features up to parity with the built-in MongoDB
@@ -299,6 +331,13 @@ If you use any of the above database adapters, give the new query operators a tr
 
 Read more about all supported query filters and operators on the [Querying Data](/guide/querying-data) page.
 
+### params.clones
+
+You can now pass `params.clones` to either `findInStore` or `getFromStore` to return all matching data as clones of the
+original data. This was formerly known as `params.copies` in Feathers-Vuex.
+
+Learn more in the [Querying Data page](/guide/querying-data#params-clones)
+
 ## Built-in Patch Diffing 🎁
 
 <!--@include: ./patch-diffing.md-->
@@ -314,15 +353,6 @@ import { Task } from '../models/task'
 
 const task = Task({ description: 'Bind me to a template. I am ready.' })
 ```
-
-Read more about [Model Instances](/guide/model-instances).
-
-## No `instance.update()` method ➖
-
-The rarely-used `update` method has been removed from the instance interface. Use the patch method, instead, to take
-advantage of patch diffing and partial updates.  You can still replace an entire object by just sending all of the data
-through `patch`. The Model Functions and Feathers-connected stores continue to have an `update` method, which an also
-be used.
 
 Read more about [Model Instances](/guide/model-instances).
 
@@ -438,30 +468,11 @@ Think of all of the extra time you'll have instead of having to write those 1.5 
 The `useGet` utility -- for implementing fall-through-cached `get` requests -- is now available directly on the store,
 further reducing boilerplate.
 
-## params.clones
+## Removals ➖
 
-You can now pass `params.clones` to either `findInStore` or `getFromStore` to return all matching data as clones of the
-original data. This was formerly known as `params.copies` in Feathers-Vuex.
+The following modules are no longer included:
 
-Learn more in the [Querying Data page](/guide/querying-data#params-clones)
-
-## Smaller Package Size 🎉
-
-When it comes to npm bundles, smaller package size is a good thing.
-
-### Optimized Vite Build 💪
-
-The overall bundle size has been reduced from around 20kb to 12kb, gzipped.  This was done through
-
-- Replacing hefty dependencies, like lodash's debounce, with smaller equivalents, like [just-debounce](https://npmjs.com/package/just-debounce).
-- Optimizing the Vite build to externalize modules.
-
-Here is the previous output from `npx vite-bundle-visualizer` to compare.  All of the modules highlighted, below, were
-able to be removed from the package, resulting in a much leaner build:
-
-![Optimized Vite Build](https://user-images.githubusercontent.com/128857/189497860-ea0b5b39-7484-416b-b411-748994e2fc33.png)
-
-### LZW Storage is Out ➖
+### LZW Storage is Out
 
 Prior to this version, Feathers-Pinia included a localStorage plugin that used LZW compression. It came with the benefit
 of doubling the amount of data you could put in storage. The downside was that it made the bundle size big, so we
@@ -470,8 +481,17 @@ removed it.  It will be published as an independent package at a later date.
 Our LocalStorage adapter remains part of the package and is so fast that it makes Single Page Apps feel like they're
 doing Server Side Rendering.  If you haven't tried it, yet, it's easy to setup and it's worth it!
 
-## No More `defineAuthStore`
+### No More `defineAuthStore`
 
 The <a href="#useauth-🎁">useAuth</a> utility takes the place of `defineAuthStore`.
 
 See how to [migrate from defineAuthStore to useAuth](/guide/migrate-from-v0#no-more-defineauthstore)
+
+### No `instance.update()` method
+
+The rarely-used `update` method has been removed from the instance interface. Use the patch method, instead, to take
+advantage of patch diffing and partial updates.  You can still replace an entire object by just sending all of the data
+through `patch`. The Model Functions and Feathers-connected stores continue to have an `update` method, which an also
+be used.
+
+Read more about [Model Instances](/guide/model-instances).
