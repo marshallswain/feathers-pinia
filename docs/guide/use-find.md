@@ -42,32 +42,35 @@ To lighten the burden of migrating from Feathers-Vuex, the old `useFind` utility
 
 ## Usage
 
-There are two ways to use `useFind`: from the store (recommended) or standalone.
+The `useFind` utility can be used from three places:
+
+- As a [FeathersModel](/guide/use-feathers-model) method
+- As a [store method](/guide/use-service)
+- or standalone, as described on this page
 
 ### Recommended
 
-You can call `useFind` directly from the store. the advantage being that you don't have to provide the `store` in the
-params, as shown here:
+You can call `useFind` directly from the Model. avoiding the need to manually pass the `store` in the params, as shown
+here:
 
 ```ts
-import { useMessages } from '../store/messages'
+const Message = useMessageModel()
 
 interface Props {
   userId: string | number
 }
 const props = defineProps<Props>()
-const messageStore = useMessages()
 
 const query = computed(() => ({ userId: props.userId }))
 
 // client-side pagination with manual fetch
-const { data, prev, next, find } = messageStore.useFind({ query })
+const { data, prev, next, find } = Message.useFind({ query })
 await find() // retrieve data for the current query
 await next() // show the next page of results
 await prev() // show the previous page of results
 
 // server-side pagination with auto fetch
-const { data, prev, next } = messageStore.useFind({ query, onServer: true })
+const { data, prev, next } = Message.useFind({ query, onServer: true })
 await next() // retrieve the next page of results
 await prev() // retrieve the previous page of results
 ```
