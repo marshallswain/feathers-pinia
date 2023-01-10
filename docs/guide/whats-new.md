@@ -255,7 +255,7 @@ supported by:
 - the [@feathersjs/knex](https://feathersjs.com/api/databases/knex.html) adapter
 - other SQL-based adapters
 
-Learn more on the new [Querying Data](/guides/querying-data) page.
+Learn more on the new [Querying Data](/guide/querying-data) page.
 
 ### SQL `$like` Operators 🎁
 

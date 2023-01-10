@@ -14,7 +14,7 @@ maximize perceived application speed for end users while providing a pleasant de
 - **[Data Modeling](/guide/modeling-overview)** using pure functions with **stellar TypeScript Support**.
 - **[Model Associations](/guide/model-associations)** with the new [associateFind](/guide/associate-find) and
 [associateGet](/guide/associate-get) utilities.
-- **[Clone and Commit](guide/common-patterns#mutation-multiplicity-pattern)** support for keeping mutation count low.
+- **[Clone and Commit](/guide/common-patterns#mutation-multiplicity-pattern)** support for keeping mutation count low.
 - **[Per-Record Defaults](/guide/model-functions-shared#useinstancedefaults)** offer a functional way of adding default
 values to every record.
 - **Realtime by Default**: It's ready for WebSocket-enhanced, multi-user interactivity.
