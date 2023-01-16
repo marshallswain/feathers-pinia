@@ -25,7 +25,7 @@ the hood of Pinia and Vue 3. But we've gone a step further and fine-tuned and te
 extra work. Some of the biggest improvements are:
 
 - No unnecessary stack frames happen under the hood. We stand firmly against wasted CPU cycles!
-- As from the beginning, you still have full control over adding instances to the store with `new User().addToStore()`.
+- As from the beginning, you still have full control over adding instances to the store with `instance.addToStore()`.
 - For the features that require objects to be in the store (for example, `useClones`) feathers-pinia will implicitly
 add items to the store when needed.
 
