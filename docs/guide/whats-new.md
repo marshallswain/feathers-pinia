@@ -80,10 +80,10 @@ import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { userStore } = useUserStore()
-  const { $api } = useFeathers()
+  const { api } = useFeathers()
 
   const auth = useAuth({
-    api: $api,
+    api,
     userStore,
   })
 
