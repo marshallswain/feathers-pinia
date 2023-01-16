@@ -109,7 +109,7 @@ Learn more about Feathers v5 Dove types in the Feathers documentation:
 ## Model Functions, not Classes 🔮
 
 Data modeling is one of the most-loved features in Feathers-Pinia. In Feathers-Pinia 2.0, we replace Model Classes
-with Model Functions. The developer experience just go so much better! You just create a function that receives an
+with Model Functions. The developer experience is so much better! You just create a function that receives an
 object, performs modifications to it, then returns it. There are two utilities for wrapping Model Functions:
 `useFeathersModel` and `useBaseModel`.
 
