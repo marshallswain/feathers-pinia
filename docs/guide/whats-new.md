@@ -43,7 +43,7 @@ returned from calling `useService` has the same shape as service stores from old
 
 The `useService` utility only requires a Feathers service and not the full Feathers client instance, anymore. It also
 requires the use of a Model Function, which is covered further down this page and not shown in this example. This
-example shows the creation and instantiation of a setup store with `userService`:
+example shows the creation and instantiation of a setup store with `useService`:
 
 ```ts
 import { defineStore, createPinia } from 'pinia'
