@@ -22,27 +22,25 @@ A utility for syncing with Storage is included with Feathers-Pinia: `syncWithSto
 - Only specified keys are saved to localStorage. This makes sure you don't accidentally cache any important loading state, for example.
 - By default, they use `window.localStorage`, while also being compatible with any `Storage` interface. Use the third argument to provide your own storage.
 
-Here's an example of its use while setting up a store.
+Here's an example of its use while setting up the model.
 
 ```ts
-import { defineStore } from 'pinia'
-import { useService } from 'feathers-pinia'
+import { type ModelInstance } from 'feathers-pinia'
+import type { Tasks, TasksData, TasksQuery } from 'feathers-pinia-api'
 
-export const useUserStore = () => {
-  const { pinia, idField, whitelist, servicePath, service, name } = useUsersConfig()
+export const useTasksConfig = () => {...}
 
-  const useStore = defineStore(servicePath, () => {
-    const utils = useService({ service, idField, whitelist })
-    return { ...utils }
-  })
-  const store = useStore(pinia)
+export const useTaskModel = () => {
+  const { name, idField, service } = useTasksConfig()
 
-  connectModel(name, useUserModel, () => store)
+  const Model = useModel(name, () => { ... })
+
   onModelReady(name, () => {
-    syncWithStorage(store, ['ids', 'itemsById'])
+    service.hooks({ around: { all: [...feathersPiniaHooks(Model)] } })
+    syncWithStorage(useTaskStore(), ['ids', 'itemsById'])
   })
-
-  return store
+  connectModel(name, () => Model, useTaskStore)
+  return Model
 }
 ```
 
