@@ -20,7 +20,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 You can use [Auto-Imports](/guide/auto-imports) to reference a store from within hooks. This example accesses the
 `userStore` inside of the hooks:
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 ```ts [With Auto-Imports]
 import type { ModelInstance } from 'feathers-pinia'

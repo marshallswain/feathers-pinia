@@ -44,6 +44,8 @@ Let's start off with an example of the most basic auth setup with `useAuth`. Thi
 `useAuthStore`. It uses `useAuth` inside to retrieve and use the composables. It doesn't automatically handle the `user`,
 so we'll get to that next.
 
+<!--@include: ./notification-access-token.md-->
+
 ```ts
 // src/stores/auth.ts
 import { defineStore, acceptHMRUpdate } from 'pinia'

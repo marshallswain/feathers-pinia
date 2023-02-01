@@ -155,7 +155,7 @@ FeathersJS v5 Dove backend, or you can provide your own types. Let's create two
 Here's the `User` Model. Notice that since Feathers-Pinia v2 is highly modular, using [Auto-Imports](/guide/auto-imports)
 really cleans things up.
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 <!--@include: ./example-user-model.md-->
 
@@ -250,6 +250,8 @@ If your app requires user login, the following sections demonstrate how to imple
 Feathers-Pinia 2.0 uses a `setup` store for the auth store. The new `useAuth` utility contains all of the logic for
 authentication in most apps. Using the composition API allows more simplicity and more flexibility for custom scenarios.
 We'll keep this example simple. To implement auth, create the file below:
+
+<!--@include: ./notification-access-token.md-->
 
 ```ts
 // stores/auth.ts

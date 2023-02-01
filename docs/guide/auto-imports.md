@@ -104,7 +104,7 @@ These are all available as auto-imports:
 Writing composables can be especially tricky when you need to persist state. The `useModel` composable wraps around your
 Model Function creation to assure it never gets overwritten or re-created every time you call its composable function.
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 ```ts
 import { type ModelInstance } from 'feathers-pinia'
@@ -152,7 +152,7 @@ full advantage of Pinia's excellent TypeScript support for stores.
 The following code tabs show how to link a Model and store together using `connectModel`. Note that we called the store
 filename `service.tasks.ts` to differentiate it from other non-service stores.
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 ::: code-group
 
@@ -215,7 +215,7 @@ export const useTaskStore = () => {
 
 :::
 
-<!--@include: ./store-feathers-client-notification.md-->
+<!--@include: ./store-notification-feathers-client.md-->
 
 The `connectModel` utility also utilitizes the internal model storage, so the `name` attribute must match in both the
 Model and store files. The `name` must be unique to avoid overwriting other Models.
@@ -231,7 +231,7 @@ There are times when you only want to run some code after the Model and store ar
 to register the [hooks](/guide/hooks) a single time, not every time the use calls the composable. By wrapping this logic
 inside the `onModelReady` callback function, you can achieve that result
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 ```ts
 import { type ModelInstance } from 'feathers-pinia'

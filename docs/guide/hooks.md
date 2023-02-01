@@ -34,7 +34,7 @@ The utility requires that you pass a Model function then spread the returned arr
 demonstrated in more detail, below. Because they are Model-specific, **hooks must be registered as service-level
 hooks**, not app-level hooks.
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'

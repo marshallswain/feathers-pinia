@@ -121,7 +121,7 @@ The `useFeathersModel` utility is most similar to the old BaseModel class from F
 Feathers-Pinia. You get the full Feathers service experience.  Feathers Models have Feathers-related methods, like
 `find`, `count`, `get`, etc., directly on the model interface.
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
@@ -162,7 +162,7 @@ work with non-service data using the same APIs. Base model functions also come w
 perform queries on the data with store getters.  Also, `useBaseModel` instances come with `clone`, `commit` and `reset`
 methods.
 
-<!--@include: ./feathers-client-notification.md-->
+<!--@include: ./notification-feathers-client.md-->
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
