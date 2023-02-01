@@ -207,8 +207,8 @@ export interface FeathersModelStatic<
   setStore: (store: any) => void
   associations: Record<string, AnyData>
   useFind: (params: MaybeRef<UseFindParams>) => ReturnType<typeof useFind>
-  useGet: (_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams>) => ReturnType<typeof useGet>
-  useGetOnce: (_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams>) => ReturnType<typeof useGet>
+  useGet: (_id: MaybeRef<Id | null>, params?: MaybeRef<UseGetParams>) => ReturnType<typeof useGet>
+  useGetOnce: (_id: MaybeRef<Id | null>, params?: MaybeRef<UseGetParams>) => ReturnType<typeof useGet>
   useFindWatched: any
   useGetWatched: any
 }
