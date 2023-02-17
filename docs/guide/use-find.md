@@ -110,8 +110,10 @@ await prev() // retrieve the previous page of results
 - **`params`** can be a `reactive` a `ref` or a `computed` object of the following structure:
   - **`query` {Object}** <Badge type="danger" label="required" /> a Feathers query object.
   - **`store` {Store}** <Badge type="danger" label="conditionally required" /> a Feathers-Pinia service store. It is
-  required in order to use `useFind` in standalone mode. `useFind` can also be find on any service store by calling
-  `store.useFind(params)`. When called from the store, you do not pass the store object in the params.
+  only needed when using `useFind` in standalone mode. `useFind` can also be find on any service store by calling
+  `store.useFind(params)`. When called from the Model or the store, you do not pass the store object in the params.
+  - **`clones` {Boolean}** returns result as clones. See [Querying Data](/guide/querying-data#local-params-api)
+  - **`temps` {Boolean}** includes temp records in the results. See [Querying Data](/guide/querying-data#local-params-api)
   - **`qid` {string}** an identifier for this query. Allows pagination data to be tracked separately.
   - **`onServer` {boolean}** when enabled, the internal `findInStore` getter will return only the results that match the
   current query in the `pagination` object for this store. Setting `onServer` to true gives up live lists and gives all
