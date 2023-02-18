@@ -106,6 +106,14 @@ describe('use-service-local', () => {
     expect(item?.__isClone).toBe(true)
   })
 
+  test('getFromStore with params.clones and a non-model record in clonesById', () => {
+    (Item.store.clonesById as any)[2] = { id: 2, name: 'Moose' }
+    const item = getFromStore.value(1, { clones: false })
+    const clone = item?.clone()
+    expect(item?.id).toBe(1)
+    expect(item?.__isClone).toBe(true)
+  })
+
   test('getFromStore invalid id', () => {
     const item = getFromStore.value('one')
     expect(item).toBe(null)
