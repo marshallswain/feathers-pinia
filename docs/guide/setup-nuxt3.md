@@ -175,38 +175,25 @@ To setup the `/users` service store, create the following file:
 
 ```ts
 // composables/service.users.ts
-import { User } from '~/models/user'
+import { defineStore } from 'pinia'
+import { useService } from 'feathers-pinia'
 
 export const useUserStore = () => {
-  const { $api, $defineStore, $pinia } = useNuxtApp()
-  const servicePath = 'users'
-  const useStore = $defineStore({
-    servicePath,
-    Model: User,
-    state() {
-      return {}
-    },
-    getters: {} as any,
-    actions: {} as any,
+  const { pinia, idField, whitelist, servicePath, service, name } = useUsersConfig()
+
+  const useStore = defineStore(servicePath, () => {
+    const utils = useService({ service, idField, whitelist })
+    return { ...utils }
   })
-  const store = useStore($pinia)
+  const store = useStore(pinia)
 
-  $api.service(servicePath).hooks({})
+  connectModel(name, useUserModel, () => store)
 
-  return {
-    userStore: store,
-    User: User as typeof store.Model,
-  }
+  return store
 }
 ```
 
-With the above file in place, you can call `const { User, userStore } = useUsers()` from any component to get access to the store.
-
-<BlockQuote>
-
-Note that we have to cast the `User` model into `typeof userStore.Model`. For now, casting is required.
-
-</BlockQuote>
+With the above file in place, you can call `const userStore = useUserStore()` from any component to get the userStore.
 
 ### 5.2 Tasks Service
 
@@ -214,30 +201,25 @@ To setup the `/tasks` service store, create the following file:
 
 ```ts
 // composables/service.tasks.ts
-import { Task } from '~~/models/task'
+import { defineStore } from 'pinia'
+import { useService } from 'feathers-pinia'
 
 export const useTaskStore = () => {
-  const { $api, $defineStore, $pinia } = useNuxtApp()
-  const servicePath = 'tasks'
-  const useStore = $defineStore({
-    servicePath,
-    Model: Task,
-    state() {
-      return {}
-    },
-    getters: {} as any,
-    actions: {} as any,
+  const { pinia, idField, whitelist, servicePath, service, name } = useTasksConfig()
+
+  const useStore = defineStore(servicePath, () => {
+    const utils = useService({ service, idField, whitelist })
+    return { ...utils }
   })
-  const store = useStore($pinia)
+  const store = useStore(pinia)
 
-  $api.service(servicePath).hooks({})
+  connectModel(name, useTaskModel, () => store)
 
-  return {
-    taskStore: store,
-    Task: Task as typeof store.Model,
-  }
+  return store
 }
 ```
+
+Now we can use the `taskStore` by calling `const taskStore = useTaskStore()`.
 
 ## 6. Authentication
 
@@ -255,23 +237,20 @@ We'll keep this example simple. To implement auth, create the file below:
 
 ```ts
 // stores/auth.ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { userStore } = useUserStore()
-  const { $api } = useFeathers()
+  const { api } = useFeathers()
 
-  const auth = useAuth({
-    api: $api,
-    userStore,
-  })
+  const auth = useAuth({ api, userStore })
 
   return auth
 })
 
-if (import.meta.hot) {
+if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-}
+
 ```
 
 Notice that we've called `useAuth` by providing the `api` and `userStore`. By providing the `userStore`, it will
