@@ -88,7 +88,7 @@ describe('Manual Get with Ref', () => {
   })
 })
 
-describe('Get Class', () => {
+describe('Standalone', () => {
   beforeEach(async () => {
     await taskStore.find({ query: { $limit: 20 } })
   })
@@ -122,7 +122,7 @@ describe('Get Class', () => {
   })
 })
 
-describe('Service Store', () => {
+describe('From Store', () => {
   beforeEach(async () => {
     await taskStore.find({ query: { $limit: 20 } })
   })
@@ -141,6 +141,45 @@ describe('Service Store', () => {
     await request.value
     expect(data.value?._id).toBe('1')
     expect(requestCount.value).toBe(1)
+  })
+
+  test('can return clones', async () => {
+    const id = ref('1')
+    const { data, request, requestCount } = taskStore.useGet(id, { onServer: true, clones: true })
+    await request.value
+    expect(data.value?._id).toBe('1')
+    expect(data.value?.__isClone).toBe(true)
+  })
+})
+
+describe('From Model', () => {
+  beforeEach(async () => {
+    await taskStore.find({ query: { $limit: 20 } })
+  })
+
+  test('works as client-only useGet', async () => {
+    const id = ref('1')
+    const { data, request, requestCount } = Task.useGet(id)
+    await request.value
+    expect(data.value?._id).toBe('1')
+    expect(requestCount.value).toBe(0)
+    expect(data.value?.__isClone).toBe(false)
+  })
+
+  test('works with onServer', async () => {
+    const id = ref('1')
+    const { data, request, requestCount } = Task.useGet(id, { onServer: true })
+    await request.value
+    expect(data.value?._id).toBe('1')
+    expect(requestCount.value).toBe(1)
+  })
+
+  test('can return clones', async () => {
+    const id = ref('1')
+    const { data, request, requestCount } = Task.useGet(id, { clones: true })
+    await request.value
+    expect(data.value?._id).toBe('1')
+    expect(data.value?.__isClone).toBe(true)
   })
 })
 
