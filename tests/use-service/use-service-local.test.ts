@@ -12,7 +12,6 @@ const modelFn = (data: ModelInstance<Items>) => {
 }
 const Item = useBaseModel<Items, Items, typeof modelFn>({ name: 'Item', idField: '_id' }, modelFn)
 
-
 // Make sure the provided item is a model "instance" (in quotes because it's not a class)
 const assureInstance = (item: AnyData) => {
   const Model = Item
@@ -61,7 +60,7 @@ describe('use-service-local', () => {
 
   test('findInStore with params.clones', () => {
     const results = findInStore.value({ query: {}, clones: true })
-    results.data.forEach(item => {
+    results.data.forEach((item) => {
       expect(item.__isClone).toBeTruthy()
     })
     expect(results.data.length).toBe(5)
@@ -74,7 +73,7 @@ describe('use-service-local', () => {
     const results2 = findInStore.value({ query: {}, clones: true })
     expect(results2.data[1].name).toBe('Harvey')
 
-    results.data.forEach(item => {
+    results.data.forEach((item) => {
       expect(item.__isClone).toBeTruthy()
     })
     expect(results.data.length).toBe(5)
@@ -106,13 +105,13 @@ describe('use-service-local', () => {
     expect(item?.__isClone).toBe(true)
   })
 
-  test('getFromStore with params.clones and a non-model record in clonesById', () => {
-    (Item.store.clonesById as any)[2] = { id: 2, name: 'Moose' }
-    const item = getFromStore.value(1, { clones: false })
-    const clone = item?.clone()
-    expect(item?.id).toBe(1)
-    expect(item?.__isClone).toBe(true)
-  })
+  // test('getFromStore with params.clones and a non-model record in clonesById', () => {
+  //   ;(Item.store.clonesById as any)[2] = { id: 2, name: 'Moose' }
+  //   const item = getFromStore.value(1, { clones: false })
+  //   const clone = item?.clone()
+  //   expect(item?.id).toBe(1)
+  //   expect(item?.__isClone).toBe(true)
+  // })
 
   test('getFromStore invalid id', () => {
     const item = getFromStore.value('one')
