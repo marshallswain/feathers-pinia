@@ -118,7 +118,9 @@ your package.json:
 }
 ```
 
-## 3. `useFeathers` Composable
+## 3. Composable Utils
+
+### 3.1 `useFeathers` Client Access
 
 Let's create a composable that gives us instant access to the Feathers Client.
 
@@ -143,6 +145,31 @@ const { api } = useFeathers()
 
 Auto-imports decouple our code from module paths and are super convenient. Read more about
 [Auto-Imports in the Nuxt Module](/guide/nuxt-module).
+
+### 3.2 Global Config
+
+Next let's create a global configuration composable, which will give access to the `pinia` instance and other options
+which are shared between services.
+
+```ts
+// src/models/feathers-pinia-config.ts
+/**
+ * Returns a global configuration object for Feathers-Pinia
+ */
+export const useFeathersPiniaConfig = () => {
+  const { $pinia: pinia } = useNuxtApp()
+  return {
+    pinia,
+    idField: '_id',
+    whitelist: ['$regex'],
+  }
+}
+```
+
+The above composable gives us two benefits:
+
+1. DRY code: changing a shared value in one place updates it for all services.
+2. Quick access to the values from anywhere in the app.
 
 ## 4. Model Classes
 
