@@ -44,6 +44,10 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     })
     let values = itemStorage.list.value
 
+    if (filters.$or) query.$or = filters.$or
+
+    if (filters.$and) query.$and = filters.$and
+
     if (tempStorage && params.temps) {
       values.push(...tempStorage.list.value)
     }
@@ -61,15 +65,12 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     if (typeof filters.$limit !== 'undefined') {
       values = values.slice(0, filters.$limit)
     }
-    // if (filters.$select) {
-    //   values = values.map((value) => _.pick(value, ...filters.$select.slice()))
-    // }
 
     return {
       total,
       limit: filters.$limit || 0,
       skip: filters.$skip || 0,
-      data: params.clones ? values.map(v => v.clone ? v.clone(undefined, { useExisting: true }) : v) : values,
+      data: params.clones ? values.map((v) => (v.clone ? v.clone(undefined, { useExisting: true }) : v)) : values,
     }
   })
 
