@@ -11,7 +11,7 @@ export const syncStore = (store: any) => async (context: HookContext, next: Next
   if (next) await next()
 
   if (!context.params.skipStore) {
-    if (method === 'removed') {
+    if (method === 'remove') {
       store.removeFromStore(context.result)
     } else if (method === 'create') {
       const restoredTempIds = restoreTempIds(context.data, context.result)
