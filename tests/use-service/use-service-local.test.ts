@@ -48,6 +48,24 @@ describe('use-service-local', () => {
     expect(results.data.length).toBe(5)
   })
 
+  test('findInStore with $and', () => {
+    const results = findInStore.value({
+      query: {
+        $and: [{ id: 1 }, { name: 'Goose' }],
+      },
+    })
+    expect(results.data.length).toBe(1)
+  })
+
+  test('findInStore with $or', () => {
+    const results = findInStore.value({
+      query: {
+        $or: [{ id: 1 }, { name: 'Moose' }],
+      },
+    })
+    expect(results.data.length).toBe(2)
+  })
+
   test('findInStore with exact filter', () => {
     const results = findInStore.value({ query: { name: 'Juice' } })
     expect(results.data.length).toBe(1)

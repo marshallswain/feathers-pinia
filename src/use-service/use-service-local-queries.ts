@@ -27,7 +27,7 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
   const _filterQueryOperators = computed(() => {
     return additionalOperators
       .concat(whitelist.value || [])
-      .concat(['$regex', '$options'])
+      .concat(['$regex', '$options', '$and', '$or'])
       .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike'])
     // .concat(service.options?.allow || service.options?.whitelist || [])
   })
@@ -51,6 +51,10 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     if (tempStorage && params.temps) {
       values.push(...tempStorage.list.value)
     }
+
+    if (filters.$or) query.$or = filters.$or
+
+    if (filters.$and) query.$and = filters.$and
 
     values = values.filter(sift(query, { operations }))
 
