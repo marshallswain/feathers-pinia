@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "main": "./dist/feathers-pinia.umd.js",
   "module": "./dist/feathers-pinia.mjs",
