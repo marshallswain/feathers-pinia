@@ -66,9 +66,13 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
         const q = _.omit(params.query || {}, ...paramsForServer)
 
         const { query, filters } = filterQuery(q, {
+          filters: {
+            $and: true,
+            $or: true,
+          },
           operators: additionalOperators
             .concat(whitelist || [])
-            .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike', '$or', '$and'])
+            .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike'])
             .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
         if (filters.$or) query.$or = filters.$or
