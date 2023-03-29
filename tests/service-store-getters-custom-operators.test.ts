@@ -121,6 +121,24 @@ describe('Filtering With findInStore', () => {
   })
   afterAll(() => reset())
 
+  test('can use $and', async () => {
+    const { data } = messageStore.findInStore({
+      query: {
+        $and: [{ id: 1 }, { text: 'Moose' }],
+      },
+    })
+    expect(data.length).toEqual(1)
+  })
+
+  test('can use $or', async () => {
+    const { data } = messageStore.findInStore({
+      query: {
+        $or: [{ id: 1 }, { text: 'Goose' }],
+      },
+    })
+    expect(data.length).toEqual(2)
+  })
+
   test('can filter objects by like', async () => {
     const { data: $like } = messageStore.findInStore({ query: { text: { $like: '%Mo%' } } })
     expect($like.map((m) => m.id)).toEqual([1])

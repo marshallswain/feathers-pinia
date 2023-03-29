@@ -68,10 +68,11 @@ export function makeGetters<M extends BaseModel = BaseModel, S extends StateTree
         const { query, filters } = filterQuery(q, {
           operators: additionalOperators
             .concat(whitelist || [])
-            .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike'])
+            .concat(['$like', '$iLike', '$ilike', '$notLike', '$notILike', '$or', '$and'])
             .concat(this.service.options?.allow || this.service.options?.whitelist || []),
         })
         if (filters.$or) query.$or = filters.$or
+        if (filters.$and) query.$and = filters.$and
 
         let values = _.values(itemsById)
 
