@@ -18,7 +18,7 @@ hero:
 features:
   - icon: 🕊️
     title: FeathersJS v5 Dove Support
-    details: Feathers-Pinia has been completely rewritten with the Vue Composition API. Use types directly from your backend API.
+    details: Feathers-Pinia v3 now directly wraps the Feathers Client. Effortlessly use types directly from your backend API.
 
   - icon: 🍍
     title: Powered by Pinia
@@ -26,19 +26,19 @@ features:
 
   - icon: 🧁
     title: Best Practices Baked In
-    details: Vue 3 + Composition API 😎 Common Redux patterns included. SWR Fall-through cache by default. Query the store like a local database.
+    details: Vue 3 + Composition API 😎 Common Redux patterns built in. Intelligent Fall-Through Cache. Query the store like a local database.
 
   - icon: ⚡️
     title: Realtime by Default
-    details: Realtime isn't an afterthought or add-on. With Live Queries, watch your data update as new data arrives from the Feathers server.
+    details: Realtime isn't an afterthought. Live Queries mean your UI updates as new data arrives from the Feathers server. No effort required.
 
   - icon: 🐮
     title: SWR with more Cowbell
-    details: Feathers-Pinia can intelligently re-use data across different queries, making apps feel faster. Or go realtime and make SWR obsolete.
+    details: Feathers-Pinia can intelligently re-use data across different queries, making apps feel faster. Go Realtime and make SWR obsolete!
 
   - icon: 🥷
     title: Data Modeling Beyond Class
-    details: v2.0 has all-new Functional Data Modeling. We've ditched classes for functions and we're all happier. Write cleaner code.
+    details: v3.0 brings simplified setup and implicit Data Modeling. We've ditched classes for functions and baked it into the Feathers Client.
 
 ---
 
