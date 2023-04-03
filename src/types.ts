@@ -1,25 +1,52 @@
-import type { ComputedRef, Ref, UnwrapRef } from 'vue-demi'
-import { DefineStoreOptionsBase, StateTree, Store } from 'pinia'
-import { TypedActions, TypedGetters } from './utility-types'
-import type { Params as FeathersParams } from '@feathersjs/feathers'
-import { AnyData } from './use-service'
+import type { Params as FeathersParams, Id } from '@feathersjs/feathers'
+import type { MaybeRef } from '@vueuse/core'
+import type { FeathersInstance } from './modeling'
+import type { PaginationStateQuery } from './use-service-store'
+
+export type MaybeArray<T> = T | T[]
+export type AnyData = Record<string, any>
+export type AnyDataOrArray<M extends AnyData> = MaybeArray<M>
 
 export interface Filters {
   $sort?: { [prop: string]: -1 | 1 }
-  $limit?: number
-  $skip?: number
+  $limit?: MaybeRef<number>
+  $skip?: MaybeRef<number>
   $select?: string[]
 }
 export interface Query extends Filters, AnyData {}
+
+export interface Paginated<T> {
+  total: number
+  limit: number
+  skip: number
+  data: T[]
+  fromSsr?: true
+}
+
+export interface QueryInfo {
+  qid: string
+  query: Query
+  queryId: string
+  queryParams: Query
+  pageParams: { $limit: MaybeRef<number>; $skip: MaybeRef<number> | undefined } | undefined
+  pageId: string | undefined
+  isExpired: boolean
+}
+
+export interface ExtendedQueryInfo extends QueryInfo {
+  ids: Id[]
+  items: FeathersInstance<AnyData>[]
+  total: number
+  queriedAt: number
+  queryState: PaginationStateQuery
+}
+
+export type DiffDefinition = undefined | string | string[] | Record<string, any> | false
 
 export interface PaginationOptions {
   default?: number | true
   max?: number
 }
-
-export type AnyRef<M> = ComputedRef<M | null> | Ref<UnwrapRef<M> | null>
-
-export type DiffDefinition = undefined | string | string[] | Record<string, any> | false
 
 export interface Params<Q extends Query> extends FeathersParams<Q> {
   query?: Q
@@ -66,38 +93,9 @@ export interface PatchParams<Q extends Query> extends Params<Q> {
   eager?: boolean
 }
 
-export interface Paginated<T> {
-  total: number
-  limit: number
-  skip: number
-  data: T[]
-  fromSsr?: true
+// for cloning
+export interface MakeCopyOptions {
+  isClone: boolean
 }
 
-export interface QueryInfo {
-  qid: string
-  query: Query
-  queryId: string
-  queryParams: Query
-  pageParams: { $limit: number; $skip: number | undefined } | undefined
-  pageId: string | undefined
-  response: Partial<Paginated<any>> | undefined
-  isOutdated: boolean | undefined
-}
-
-
-export interface DefineStoreOptionsWithDefaults<
-  Id extends string,
-  S extends StateTree,
-  G /* extends GettersTree<S> */,
-  A /* extends Record<string, StoreAction> */,
-  DefaultS extends StateTree,
-  DefaultG,
-  DefaultA,
-> extends DefineStoreOptionsBase<S, Store<Id, S, G, A>> {
-  state?: () => S
-
-  getters?: TypedGetters<S, G, DefaultS, DefaultG>
-
-  actions?: TypedActions<S, G, A, DefaultS, DefaultG, DefaultA>
-}
+export type ById<M> = Record<string | number | symbol, M>

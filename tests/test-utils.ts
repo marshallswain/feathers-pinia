@@ -1,16 +1,14 @@
-export function resetStores(service: any, store: any) {
-  resetServiceStore(service)
-  store.clearAll()
+import { timeout } from '../src/utils'
+
+export function resetService(service: any) {
+  // reset the wrapped service's memory store
+  service.service.store = {}
+  service.service._uId = 0
+  // clear the pinia store
+  service.store.clearAll()
 }
 
-export function resetServiceStore(service: any) {
-  service.store = {}
-  service._uId = 0
-}
-
-export function timeout(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+export { timeout }
 
 export const timeoutHook = (ms: number) => async () => {
   await timeout(ms)

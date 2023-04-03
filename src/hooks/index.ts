@@ -1,21 +1,23 @@
-import { eventLocks } from './hook-event-locks'
-import { handleFindSsr } from './hook-handle-find-ssr'
-import { makeModelInstances } from './hook-model-instances'
-import { normalizeFind } from './hook-normalize-find'
-import { patchDiffing } from './hook-patch-diffs'
-import { setPending } from './hook-set-pending'
-import { skipGetIfExists } from './hook-skip-get-if-exists'
-import { syncStore } from './hook-sync-store'
+import { unrefQuery } from './0-unref-query'
+import { setPending } from './1-set-pending'
+import { eventLocks } from './2-event-locks'
+import { syncStore } from './3-sync-store'
+import { makeModelInstances } from './4-model-instances'
+import { handleFindSsr } from './5-handle-find-ssr'
+import { normalizeFind } from './6-normalize-find'
+import { skipGetIfExists } from './7-skip-get-if-exists'
+import { patchDiffing } from './8-patch-diffs'
 
 export { syncStore, setPending, eventLocks, normalizeFind, skipGetIfExists, makeModelInstances }
 
-export const feathersPiniaHooks = (Model: any) => [
-  setPending(Model.store),
-  eventLocks(Model.store),
-  syncStore(Model.store),
-  makeModelInstances(Model),
-  handleFindSsr(Model.store),
+export const feathersPiniaHooks = () => [
+  unrefQuery(),
+  setPending(),
+  eventLocks(),
+  syncStore(),
+  makeModelInstances(),
+  handleFindSsr(),
   normalizeFind(),
-  skipGetIfExists(Model.store),
-  patchDiffing(Model.store),
+  skipGetIfExists(),
+  patchDiffing(),
 ]

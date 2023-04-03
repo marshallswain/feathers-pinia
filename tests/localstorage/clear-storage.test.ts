@@ -1,0 +1,39 @@
+import { syncWithStorage } from '../../src'
+import { clearStorage } from '../../src/index'
+import { api } from '../fixtures'
+import { resetService, timeout } from '../test-utils'
+import { vi } from 'vitest'
+
+const service = api.service('contacts')
+
+const localStorageMock: Storage = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  length: 0,
+  key: vi.fn(),
+  // Dummy key to make sure removeItem is called
+  'service.items': '{"hey": "there"}',
+}
+syncWithStorage(service.store, ['tempsById'], localStorageMock)
+
+const reset = () => resetService(service)
+
+describe('Clear Storage', () => {
+  beforeEach(() => {
+    reset()
+  })
+
+  test('clear storage', async () => {
+    service.createInStore({ name: 'test' })
+    await timeout(600)
+
+    expect(localStorageMock.setItem).toHaveBeenCalled()
+    const [key] = (localStorageMock.setItem as any).mock.calls[0]
+    expect(key).toBe('service:contacts')
+
+    clearStorage(localStorageMock)
+    expect(localStorageMock.removeItem).toHaveBeenCalled()
+  })
+})

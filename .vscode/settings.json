@@ -1,3 +1,12 @@
 {
-  "editor.rulers": [120],
+  "editor.rulers": [
+    120
+  ],
+  "explorer.autoRevealExclude": {
+    // "**/node_modules": false
+  },
+  "vitest.debugExclude": [
+    "<node_internals>/**",
+    "**/node_modules/**"
+  ],
 }
