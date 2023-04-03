@@ -1,5 +1,4 @@
-import { useDataStore } from '../../src/'
-import { api } from '../fixtures'
+import { useDataStore } from '../../src'
 
 describe('use service', () => {
   test('setup', () => {
