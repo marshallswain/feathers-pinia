@@ -12,44 +12,23 @@ import BlockQuote from '../components/BlockQuote.vue'
   <Badge :label="`v${pkg.version}`" />
 </div>
 
-# Migrate to Model Functions
+# Migrate Models to Services
 
 [[toc]]
 
-Model Classes have served us well, but are no more.
+Model Classes and Functions have served us well, but are no more. Every Feathers Service now includes implicit model
+functions which can be extended.
 
-## Why Switch?
+## Why Implicit Models?
 
-Switching to Model Functions provides a number of benefits:
+Rather than having to setup every single model, we can take advantage of Vue 3's `reactive` API, which allows one to
+dynamically add and remove attributes from reactive objects. Feathers-Pinia 3 takes full advantage of this fact and
+automatically assumes that every object needs to be a model. So now there is no need to manually create them.
 
-- You get the latest features of Feathers-Pinia
-  - Cleaner, modular architecture
-  - Smaller bundle size
-  - Fast. Very Fast
-- Reduces lines of code
-- Dramatically improves IDE tooling support, like Intellisense
-- Adds support for FeathersJS v5 Dove.
-- Includes better integration with TypeScript, almost eliminating the need to do manual typing.
-- Maybe most important of all, continued support from the creator of Feathers-Vuex and Feathers-Pinia. 😁 Model Classes
-are more difficult to maintain than Model Functions.
+## Switch to Implicit Modeling
 
-## Switch to Model Functions
-
-Feathers-Pinia no longer depends on JavaScript/TypeScript classes and instead uses a clean, functional API. Each of your
-BaseModel classes will need to be converted to a [FeathersModel](/guide/use-feathers-model) function.
-
-<BlockQuote label="note" type="info">
-
-Note that the concept of BaseModel has changed, FeathersModel has all of the features of the previous BaseModel class.
-The new [BaseModel](/guide/use-base-model) has a core set of features for working with any type of data, FeathersJS
-connectivity is optional.
-
-</BlockQuote>
-
-<!--@include: ./notification-feathers-client.md-->
-
-Notice how much cleaner and more concise the new Model Functions than the old Model Classes! The separate places for
-defining defaults and setting up instance data have all been combined into a single function.
+The below tabs allow you to compare previous modeling examples to the latest API. In Feathers-Pinia modeling happens in
+the `services` config of `createVueClient`.
 
 ::: code-group
 
@@ -83,7 +62,7 @@ export class User extends BaseModel {
 }
 ```
 
-```ts [New Model Function]
+```ts [Old Model Fn]
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
 import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
@@ -100,13 +79,31 @@ const User = useFeathersModel<Users, UsersData, UsersQuery, typeof modelFn>(
 )
 ```
 
+```ts [New API]
+import { createVueClient, useInstanceDefaults } from 'feathers-pinia'
+
+const api = createVueClient(feathersClient, {
+  pinia,
+  idField: 'id',
+  services: {
+    users: {
+      setupInstance(data: any) {
+        const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
+        return withDefaults
+      },
+    },
+  },
+})
+```
+
 :::
 
 ## Important Changes
 
 ### No Model Constructors
 
-The Model constructor is now the model function. If you have any constructor logic, move it into the model function.
+The Model constructor is now the model function. If you have any constructor logic, move it into the `setupInstance`
+method of the service's configuration.
 
 ### `useInstanceDefaults`
 
@@ -114,11 +111,4 @@ The `instanceDefaults` static Model function is replaced by the [useInstanceDefa
 
 ### `setupInstance` Changes
 
-This won't affect most apps, but the first argument to `setupInstance` was previously the passed in `data`. In v1.x, the first argument is the **actual instance**, which is it's no longer required to return a value from `setupInstance`. If you were editing the `data` argument, directly, your app should just work.  If your `setupInstance` just returned a value, you'll need to manually merge it into `data`, now.
-
-### Model Static Attrs Moved
-
-Two of the Model static attributes have moved:
-
-- `Model.idField` is now `Model.store.idField`.
-- `Model.tempIdField` is now `Model.store.tempIdField`.
+You must return the object from the `setupInstance` function. If not, you'll run into errors.
