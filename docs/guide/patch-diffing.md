@@ -66,6 +66,8 @@ When calling `.save()` or `.patch()`, you can provide an object as `params.data`
 patch data. This bypasses the `diff` and `with` params.
 
 ```js
-const task = Task({ description: 'Do Something', isComplete: false })
+const { api } = useFeathers()
+
+const task = api.service('tasks').new({ description: 'Do Something', isComplete: false })
 await task.patch({ data: { isComplete: true } })
 ```
