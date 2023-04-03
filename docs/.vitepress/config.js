@@ -55,7 +55,7 @@ function getGuideSidebar() {
       text: 'Migration Guides',
       items: [
         { text: 'Models to Services', link: '/guide/migrate-models' },
-        { text: 'Migrate handleClones', link: '/guide/migrate-handle-clones' },
+        { text: 'Migrate Clone Handling', link: '/guide/migrate-handle-clones' },
         { text: 'Migrate from Vuex 🚧', link: '/guide/migrate-from-feathers-vuex' },
         { text: 'Migrate from 0.x', link: '/guide/migrate-from-v0' },
       ],
