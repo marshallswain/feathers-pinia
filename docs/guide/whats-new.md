@@ -12,13 +12,62 @@ import BlockQuote from '../components/BlockQuote.vue'
   <Badge :label="`v${pkg.version}`" />
 </div>
 
-# What's New in 2.0
+# What's New in 3.0
 
-Feathers-Pinia 2.0 is a huge update with some great new features.  This page will go over some of the highlights.
+Feathers-Pinia 3.0 finally gives us the magical, implicit API that we enjoyed with Feathers-Vuex, but in a smaller,
+implicitly modular and much faster package. This page will go over some of the highlights.
 
 [[toc]]
 
-## Huge Performance Boost 🚀
+## Full Feathers Client Integration 🎁
+
+Instead of having a bunch of separate modules, the latest version of Feathers-Pinia wraps itself around the Feathers
+Client, reuses its types, and packs all of the functionality into a single location.
+
+Once you've setup your Feathers Client, configuring Feathers-Pinia is this easy:
+
+```ts
+import { createVueClient } from 'feathers-pinia'
+
+const api = createVueClient(feathersClient, { pinia, idField: '_id' })
+```
+
+And this is all of the code required to create a store and fetch data:
+
+```ts
+api.service('tasks').find({ query: {} })
+```
+
+Yep, you just use the Feathers Client and the rest is done for you!
+
+### Feathers Dove TS Support 🎉
+
+The new utilities in Feathers-Pinia 2.0 bring support for the new TypeScript enhancements in Feathers v5 Dove. While
+the Feathers-Pinia client implicitly uses the Dove types, sometimes you'll need to directly import the types from your
+backend and use them in your Feathers-Pinia frontend.
+
+Learn more about Feathers v5 Dove types in the Feathers documentation:
+
+- Creating types [with TypeBox](https://feathersjs.com/api/schema/typebox.html)
+- Reusing server types with [the Feathers Client](https://feathersjs.com/guides/cli/client.html)
+
+### Big Update, Small Footprint 🐾
+
+While Feathers-Pinia v3 is huge update. We've actually kept all of the benefits of previous versions while reducing
+the overall API size. This means higher efficiency, with a 20% smaller footprint than the previous version.
+
+### The One Correct Way 🥇
+
+Version 3 builds from version 2's clean structure. It takes what we learned from v2's flexibility and focuses on a
+single, correct way to do things. There's no confusion and no need to wonder if you're using the correct API.
+
+### Modular, Yet Centralized 📦
+
+Building on the Feathers Client allows us to implicitly create stores only when their associated Feathers services are
+referenced. There's no need to manually create a Pinia store for service data. And there's no need to customize stores.
+Instead, you can take advantage of [Pinia store composition](https://pinia.vuejs.org/cookbook/composing-stores.html).
+
+### Huge Performance Boost 🚀
 
 Feathers-Pinia is SO MUCH faster than its predecessor.  You'll see massive benefits from the faster reactive types under
 the hood of Pinia and Vue 3. But we've gone a step further and fine-tuned and tested Feathers-Pinia to never perform
@@ -26,52 +75,59 @@ extra work. Some of the biggest improvements are:
 
 - No unnecessary stack frames happen under the hood. We stand firmly against wasted CPU cycles!
 - As from the beginning, you still have full control over adding instances to the store with `instance.addToStore()`.
-- For the features that require objects to be in the store (for example, `useClones`) feathers-pinia will implicitly
-add items to the store when needed.
+
+### Efficient Pinia SSR
+
+SSR applications will now be especially fast. In the past, if you had an app with 30 services, you had a Pinia hydration
+bundle that contained 30 services, if you only used a few of them on a page. Since stores are now created only when
+needed, the Pinia bundle contains only the services actually used to render the page.
+
+## Just Use Services ⭐️⭐️⭐️⭐️⭐️
+
+You can think of the Feathers Service as the Model. The Feathers-Pinia Client now replaces the service Models and Stores
+APIs. All of these methods are now available directly on each Feathers Client service.
+
+```ts
+const { api } = useFeathers()
+const service = api.service('users')
+
+// create data instances
+service.new(data)
+
+// service methods
+service.find(params)
+service.findOne(params)
+service.count(params)
+service.get(id, params)
+service.create(id, params)
+service.patch(id, params)
+service.remove(id, params)
+
+// store methods
+service.findInStore(params)
+service.findOneInStore(params)
+service.countInStore(params)
+service.getFromStore(id, params)
+service.createInStore(id, params)
+service.patchInStore(id, params)
+service.removeFromStore(id, params)
+
+// hybrid methods
+service.useFind(params, options)
+service.useGet(id, options)
+service.useGetOnce(id, options)
+```
+
+The Feathers Service is the only place to find these methods, now.
 
 ## Composition API Stores 🎉
 
-Feathers-Pinia has been completely rewritten as a set of Composition API utilities for creating Pinia
-[setup stores](https://pinia.vuejs.org/core-concepts/#setup-stores). The advantages include a better TypeScript
-experience, cleaner customization, and fewer limitations.
+Feathers-Pinia publishes a couple of Composition API utilities for creating Pinia
+[setup stores](https://pinia.vuejs.org/core-concepts/#setup-stores).
 
-### useService 🎁
+### useAuth
 
-The new `useService` utility takes the place of the Feathers-Pinia `defineStore` utility (not to be confused Pinia's
-`defineStore` utility)  and gives you a starting point for defining your own setup store for each service. The object
-returned from calling `useService` has the same shape as service stores from older versions.
-
-The `useService` utility only requires a Feathers service and not the full Feathers client instance, anymore. It also
-requires the use of a Model Function, which is covered further down this page and not shown in this example. This
-example shows the creation and instantiation of a setup store with `useService`:
-
-```ts
-import { defineStore, createPinia } from 'pinia'
-
-const pinia = createPinia()
-
-// Create a tasks store
-export const useTaskStore = defineStore('tasks', () => {
-  const serviceUtils = useService<TaskInstance, TasksData, TasksQuery, typeof modelFn>({
-    service,
-    idField: '_id',
-    Model: Task, // see the section on Model Functions
-  })
-
-  return { ...serviceUtils }
-})
-
-const taskStore = useTaskStore(pinia)
-```
-
-To customize a `setup` store, you declare additional variables, computed properties, and functions inside of the call to
-`defineStore`.
-
-Learn more about the new [useService utility](/guide/use-service).
-
-### useAuth 🎁
-
-Create ultra-flexible `setup stores` with the new [useAuth](/guide/use-auth) utility:
+Create ultra-flexible auth stores with the new [useAuth](/guide/use-auth) utility.
 
 ```ts
 // src/store/store.auth.ts
@@ -79,12 +135,11 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { userStore } = useUserStore()
   const { api } = useFeathers()
 
-  const auth = useAuth({
-    api,
-    userStore,
+  const auth = useAuth({ 
+    api, 
+    servicePath: 'users'
   })
 
   auth.reAuthenticate()
@@ -95,100 +150,20 @@ export const useAuthStore = defineStore('auth', () => {
 
 Learn more about the new [useAuth utility](/guide/use-auth)
 
-## Feathers v5 Dove TS Support 🎉
+### useDataStore
 
-The new utilities in Feathers-Pinia 2.0 bring support for the new TypeScript enhancements in Feathers v5 Dove. Now you
-can directly import the types from your backend and use them in your Feathers-Pinia frontend. The types integrate
-directly into the new Model Functions, as well.
+The `useDataStore` utility allows creating your own data stores with the same shape as service stores. You only need
+this if you want to manage non-Feathers data with the same API.
 
-Learn more about Feathers v5 Dove types in the Feathers documentation:
+Learn more about the new [useDataStore utility](/guide/use-data-store).
 
-- Creating types [with TypeBox](https://feathersjs.com/api/schema/typebox.html)
-- Reusing server types with [the Feathers Client](https://feathersjs.com/guides/cli/client.html)
+## Implicit Data Modeling
 
-## Model Functions, not Classes 🔮
-
-Data modeling is one of the most-loved features in Feathers-Pinia. In Feathers-Pinia 2.0, we replace Model Classes
-with Model Functions. The developer experience is so much better! You just create a function that receives an
-object, performs modifications to it, then returns it. There are two utilities for wrapping Model Functions:
-`useFeathersModel` and `useBaseModel`.
+Data modeling is one of the most-loved features in Feathers-Pinia.  Version 2.x introduced Model Functions instead of
+Classes. Now in v3 model functions are implicitly created for you. You can customize them by providing a `setupInstance`
+function in the individual service options.
 
 Learn more about [Model Functions](/guide/model-functions)
-
-### useFeathersModel 🎁
-
-The `useFeathersModel` utility is most similar to the old BaseModel class from FeathersVuex and previous versions of
-Feathers-Pinia. You get the full Feathers service experience.  Feathers Models have Feathers-related methods, like
-`find`, `count`, `get`, etc., directly on the model interface.
-
-<!--@include: ./notification-feathers-client.md-->
-
-```ts
-import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
-import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
-import { api } from '../feathers'
-
-const modelFn = (data: ModelInstance<Tasks>) => {
-  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
-  return withDefaults
-}
-const Task = useFeathersModel<Tasks, TasksData, TasksQuery, typeof modelFn>(
-  { name: 'Task', idField: '_id', service },
-  modelFn,
-)
-```
-
-Models now come with a lightweight, built-in store. This means that they work without a Pinia store, but you give up the
-Pinia devtools compatibility. To upgrade to a full Pinia store, use the `setStore` method to provide the instantiated
-pinia store:
-
-```ts
-// upgrading the Task Model's store to be a Pinia store
-Task.setStore(taskStore)
-```
-
-To create a model "instance" you just call the function WITHOUT the `new` operator:
-
-```ts
-const task = Task({ description: 'Do the dishes' })
-```
-
-Learn more about the new [useFeathersModel utility](/guide/use-feathers-model)
-
-### useBaseModel 🎁
-
-The `useBaseModel` utility gives you all of the BaseModel functionality without the Feathers parts. This means you can
-work with non-service data using the same APIs. Base model functions also come with a built-in store, and you can even
-perform queries on the data with store getters.  Also, `useBaseModel` instances come with `clone`, `commit` and `reset`
-methods.
-
-<!--@include: ./notification-feathers-client.md-->
-
-```ts
-import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
-import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
-
-const modelFn = (data: ModelInstance<Tasks>) => {
-  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
-  return withDefaults
-}
-const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
-```
-
-BaseModel functions also have a store, which can be upgraded to a full Pinia store using the `setStore` method:
-
-```ts
-// upgrading the Task Model's store to be a Pinia store
-Task.setStore(taskStore)
-```
-
-To create a model "instance" you just call the function WITHOUT the `new` operator:
-
-```ts
-const task = Task({ description: 'Do the dishes' })
-```
-
-Learn more about the new [useBaseModel utility](/guide/use-base-model)
 
 ### useInstanceDefaults 🎁
 
@@ -197,53 +172,19 @@ BaseModel class's `instanceDefaults` method.
 
 Learn more about the new [useInstanceDefaults utility](/guide/model-functions-shared#useinstancedefaults)
 
-### useFeathersInstance 🎁
-
-There's also a `useFeathersInstance` utility which you can use with `useBaseModel`. It's used inside of your Model
-function to update a model instance to support Feathers-related methods, like `instance.save()`.
-
-Learn more about the new [useFeathersInstance utility](/guide/model-functions-shared#usefeathersinstance)
-
-### New Model Methods
-
-FeathersModels now include methods for [useFind](/guide/use-find), [useGet, and useGetOnce](/guide/use-get).
-
-Learn more on the [useFeathersModel](/guide/use-feathers-model) page.
-
-## Official Nuxt Module 🎁
+## Nuxt Module ⚡️
 
 Feathers-Pinia v2 comes with a module for Nuxt which registers auto-imports and provides Nuxt-specific utilities for
 data modeling.
 
 Learn more about the new [Nuxt Module](/guide/nuxt-module)
 
-## Auto-Imports Support ⚡️
+## Auto-Imports ⚡️
 
 Since Feathers-Pinia v2 is so modular, import statements can be verbose. New Auto-Import support for Nuxt, Vite,
 Webpack, Rollup, and more, is provided through the new `unplugin-auto-imports` preset.
 
 Learn more about the new [Auto-Imports Support](/guide/auto-imports).
-
-## Feathers Client Hooks 🪝
-
-Feathers-Pinia now fully integrates with the Feathers Client through a new set of `feathersPiniaHooks`. The majority of
-the store logic was moved into the hooks, so you get the same experience whether you use the Feathers client, the Model
-Functions, or the store methods.  The hooks are required in order for Feathers-connected Models or stores to work.
-
-The above example builds on the Model function that was created in the previous `useFeathersModel` example. For an
-all-in-one example, see one of the setup pages.
-
-```ts
-import { feathersPiniaHooks } from 'feathers-pinia'
-import { api } from '../feathers'
-
-/* setup the Model function as shown earlier */
-
-// Pass the model function to the utility in the `around all` hooks.
-api.service('tasks').hooks({ around: { all: [...feathersPiniaHooks(Task)] } })
-```
-
-Learn more about the new [hooks for Feathers Client](/guide/hooks).
 
 ## Query API Reference 📖
 
@@ -282,38 +223,46 @@ Let's have a look at them in action. First, assume that we have the following me
 Now see the fancy new query operators in action:
 
 ```ts
-import { useMessages } from '../stores/messages'
-const messageStore = useMessages
+const { api } = useFeathers()
 
 // $like
-const { data: data1 } = messageStore.findInStore({
+const { data } = api.service('messages').findInStore({
   query: { text: { $like: '%Mo%' } }
 })
-expect(data1.map((m) => m.id)).toEqual([1])
+expect(data.value.map((m) => m.id)).toEqual([1])
+```
 
+```ts
 // $notLike
-const { data: data2 } = messageStore.findInStore({
+const { data } = api.service('messages').findInStore({
   query: { text: { $notLike: '%Mo%' } }
 })
-expect(data2.map((m) => m.id)).toEqual([2, 3, 4])
+expect(data.value.map((m) => m.id)).toEqual([2, 3, 4])
+```
 
+```ts
 // $ilike
-const { data: data3 } = messageStore.findInStore({
+const { data } = api.service('messages').findInStore({
   query: { text: { $ilike: '%Mo%' } }
 })
-expect(data3.map((m) => m.id)).toEqual([1, 2])
+expect(data.value.map((m) => m.id)).toEqual([1, 2])
 
+```
+
+```ts
 // $iLike
-const { data: data4 } = messageStore.findInStore({
+const { data } = api.service('messages').findInStore({
   query: { text: { $iLike: '%Mo%' } }
 })
-expect(data4.map((m) => m.id)).toEqual([1, 2])
+expect(data.value.map((m) => m.id)).toEqual([1, 2])
+```
 
+```ts
 // $notILike
-const { data: data5 } = messageStore.findInStore({
+const { data } = api.service('messages').findInStore({
   query: { text: { $notILike: '%Mo%' } }
 })
-expect(data5.map((m) => m.id)).toEqual([3, 4])
+expect(data.value.map((m) => m.id)).toEqual([3, 4])
 ```
 
 These new operators support queries made with SQL-backed adapters like the official, core SQL service adapter in
@@ -344,133 +293,78 @@ Learn more in the [Querying Data page](/guide/querying-data#params-clones)
 
 Read more about [FeathersModel Instances](/guide/use-feathers-model-instances)
 
-## Reactive Model Instances ➕
+## Reactive Instances ➕
 
-Thanks to the Model Function API, all Model instances are now always reactive, even when not added to the store.
+Thanks to the built-in modeling API, all instances are now always reactive, even when not added to the store.
 
 ```ts
-import { Task } from '../models/task'
-
-const task = Task({ description: 'Bind me to a template. I am ready.' })
+const { api } = useFeathers()
+const task = api.service('tasks').new({ 
+  description: 'Bind me to a template. I am ready.'
+})
 ```
 
-Read more about [Model Instances](/guide/model-instances).
+Read more about [Modeling](/guide/modeling).
 
 ## Handle Associations
 
-Two new utilities make it easier to add relationships between records without depending on associations in-memory.  You can setup associations in both directions between models.
+<BlockQuote type="warning" label="A Note About Associations">
 
-Read more about [Association Patterns](/guide/model-associations.html).
+Association support will become available after more testing. The current plan is to bring back `associateFind` and
+`associateGet`.
 
-### `associateFind` 🎁
+</BlockQuote>
 
-The `associateFind` utility allows you to define one-to-many relationships on your Model functions. The `makeParams` property allows you to specify the query that defines the relationship. This example is truncated. For a full example, see the "Start a Project" pages.
+## New `service.useFind` API 🎁
 
-```ts
-import type { Users } from 'my-feathers-api'
-import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
-import { Message } from './message'
-
-const modelFn = (data: ModelInstance<Users>) => {
-  const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)
-  const withMessages = associateFind(withDefaults, 'messages', {
-    Model: Message,
-    makeParams: (data) => ({ query: { userId: data.id } }),
-    handleSetInstance(message) {
-      message.userId = data.id
-    },
-  })
-  return withMessages
-}
-```
-
-The `handleSetInstance` function allows you to write data to the `messages` property and make sure each record becomes
-properly associated.
-
-Read more about [associateFind](/guide/associate-find)
-
-### `associateGet` 🎁
-
-The `associateGet` utility allows you to define `one-to-one` relationships on your Model functions. The `getId` property
-allows you to specify the id to use to get the related data.
-
-```ts
-import type { Messages } from 'my-feathers-api'
-import { type ModelInstance, useInstanceDefaults, associateGet } from 'feathers-pinia'
-import { User } from './user'
-
-const modelFn = (data: ModelInstance<Messages>) => {
-  const withDefaults = useInstanceDefaults({ text: '', userId: null }, data)
-  const withUser = associateGet(withDefaults, 'user', {
-    Model: User,
-    getId: (data) => data.messageId
-  })
-  return withUser
-}
-```
-
-Read more about [associateGet](/guide/associate-get)
-
-## New `useFind` API 🎁
-
-The `useFind` API has been completely rewritten from scratch. A couple of its best features include
+The best parts of the former `useFind` and `useFindWatched` APIs have been combined into `service.useFind`. A couple of
+its best features include
 
 - **Intelligent Fall-Through Caching** - Like SWR, but way smarter.
 - **Pagination Support** - Built in, sharing the same logic with `usePagination`.
 
-See all of the features on the [`useFind` page](./use-find).
-
-See the component example of server-side pagination on the [`useFind` page](./use-find).
-
-## `useFindWatched` API ⚠️
-
-To make migration to the new `useFind` API easier, the old `useFind` API has been renamed and is now called [`useFindWatched`](./use-find-watched.md).
-
-Learn more about the old API on the [`useFindWatched` page](./use-find-watched.md).
-
-See the new API on the [`useFind` page](./use-find.md).
-
-## Store API Improvements
-
-The `useFind` utility -- for implementing fall-through-cached `find` requests -- is now available directly on the store, further reducing boilerplate.
-
-### `store.useFind` ➕
-
-With the old way, you have to import `useFind` and provide the model to it from the instantiated store.
-
-```ts
-import { useFind } from 'feathers-pinia'
-import { useTutorials } from '../store/tutorials'
-
-const tutorialStore = useTutorials()
-const tutorialsParams = computed(() => {
-  return { query: {}, }
-})
-const { items: tutorials } = useFind({ model: tutorialStore.Model, params: tutorialsParams })
-```
-
-In the new way, there's no need to import useFind. Call it as a method on the store and don't pass `model`
-
-```ts
-import { useTutorials } from '../store/tutorials'
-
-const tutorialStore = useTutorials()
-const tutorialsParams = computed(() => {
-  return { query: {}, }
-})
-const { items: tutorials } = tutorialStore.useFind({ params: tutorialsParams })
-```
-
-Think of all of the extra time you'll have instead of having to write those 1.5 lines of code over and over again! 😁
-
-### `store.useGet` ➕
-
-The `useGet` utility -- for implementing fall-through-cached `get` requests -- is now available directly on the store,
-further reducing boilerplate.
+See all of the features on the [Service API page](./services).
 
 ## Removals ➖
 
-The following modules are no longer included:
+The following APIs are no longer available:
+
+### No `update` method
+
+The `service.update` method from the Feathers Service Interface is not implemented, since `service.patch` can more
+flexibly handle the same functionality and enables nice features like patching diffing.
+
+### Service Methods out of Store
+
+The service stores are now just data stores. There's no more fetching data through the store. Just use the Feathers
+Client services:
+
+```ts
+const { api } = useFeathers()
+
+api.service('contacts').findInStore({ query: { $limit: 100, $skip: 0 } })
+```
+
+### useFeathersModel
+
+Creating standalone model functions has been replaced by each service's `new` method. You can create instances by calling
+`service.new(data)`.
+
+### useBaseModel
+
+The `useBaseModel` utility has also been removed in favor of the service's `new` method.
+
+### usePagination
+
+This composition API utility is now baked into `service.useFind`.
+
+### useFindWatched
+
+This method has been removed. Use the `service.useFind` API, instead.
+
+### useGetWatched
+
+This method has been removed. Use the `service.useGet` and `service.useGetOnce` APIs, instead.
 
 ### LZW Storage is Out
 
