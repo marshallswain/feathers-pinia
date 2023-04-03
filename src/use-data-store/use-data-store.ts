@@ -27,7 +27,7 @@ const makeDefaultOptions = () => ({
   skipRequestIfExists: false,
 })
 
-export const useServiceStore = <M extends AnyData, Q extends Query>(_options: UseServiceOptions<M>) => {
+export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseServiceOptions<M>) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const { idField, whitelist, paramsForServer, customSiftOperators } = options
 

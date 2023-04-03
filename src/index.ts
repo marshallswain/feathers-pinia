@@ -1,5 +1,5 @@
 export * from './types'
-export * from './use-service-store/types'
+export * from './use-data-store/types'
 export * from './use-find-get/types'
 
 export { createVueClient } from './create-vue-client'
@@ -11,5 +11,5 @@ export * from './localstorage'
 export * from './modeling'
 export * from './use-auth'
 export * from './use-find-get'
-export * from './use-service-store'
+export * from './use-data-store'
 export { useInstanceDefaults } from './utils'

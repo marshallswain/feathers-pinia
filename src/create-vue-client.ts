@@ -1,10 +1,10 @@
 import type { Application, FeathersService } from '@feathersjs/feathers'
-import type { HandleEvents } from './use-service-store'
+import type { HandleEvents } from './use-data-store'
 import type { AnyData } from './types'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
 import { VueService } from './create-vue-service'
-import { useServiceStore } from './use-service-store'
+import { useDataStore } from './use-data-store'
 import { feathersPiniaHooks } from './hooks'
 
 interface ServiceOptions {
@@ -42,7 +42,7 @@ export function createVueClient<Client extends Application>(
     // create pinia store
     const storeName = `service:${location}`
     const useStore = defineStore(storeName, () => {
-      const utils = useServiceStore({
+      const utils = useDataStore({
         idField: serviceOptions?.idField || options.idField,
         whitelist: (serviceOptions?.whitelist || []).concat(whitelist),
         paramsForServer: (serviceOptions?.paramsForServer || []).concat(paramsForServer),

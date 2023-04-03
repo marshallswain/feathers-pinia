@@ -1,9 +1,9 @@
-import { useServiceStore } from '../../src/'
+import { useDataStore } from '../../src/'
 import { api } from '../fixtures'
 
 describe('use service', () => {
   test('setup', () => {
-    const service = useServiceStore({
+    const service = useDataStore({
       idField: 'id',
     })
 

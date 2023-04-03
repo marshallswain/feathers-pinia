@@ -1,5 +1,5 @@
 import type { AnyData, PatchParams } from '../types'
-import type { CloneOptions } from '../use-service-store'
+import type { CloneOptions } from '../use-data-store'
 
 export interface BaseModelData {
   /**

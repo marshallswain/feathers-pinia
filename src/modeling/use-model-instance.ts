@@ -1,4 +1,4 @@
-import type { CloneOptions } from '../use-service-store'
+import type { CloneOptions } from '../use-data-store'
 import type { AnyData } from '../types'
 import type { BaseModelData, BaseModelInstanceProps, ModelInstanceData } from './types'
 import ObjectID from 'isomorphic-mongo-objectid'
