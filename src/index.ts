@@ -1,6 +1,6 @@
-export type * from './types'
-export type * from './use-service-store/types'
-export type * from './use-find-get/types'
+export * from './types'
+export * from './use-service-store/types'
+export * from './use-find-get/types'
 
 export { createVueClient } from './create-vue-client'
 export { VueService } from './create-vue-service'
