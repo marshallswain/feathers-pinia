@@ -13,7 +13,7 @@ hero:
       link: /guide/whats-new
     - theme: alt
       text: Get Started
-      link: /guide/
+      link: /setup/
 
 features:
   - icon: 🕊️
