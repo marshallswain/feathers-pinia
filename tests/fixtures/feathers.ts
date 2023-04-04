@@ -34,10 +34,6 @@ const ContactService = memory<Contacts, ContactsData, Params<ContactsQuery>>({
   store: makeContactsData(),
   id: '_id',
 })
-const MessageService = memory({ paginate: paginate(), whitelist: whitelist() })
-const AltIdService = memory({ paginate: paginate(), whitelist: whitelist(), id: '_id' })
-const CustomIdService = memory({ paginate: paginate(), whitelist: whitelist(), id: '_id' })
-const TodoService = memory({ paginate: paginate(), whitelist: whitelist() })
 const AuthorService = memory({ paginate: paginate(), whitelist: whitelist() })
 const PostService = memory({ paginate: paginate(), whitelist: whitelist() })
 
@@ -45,10 +41,6 @@ interface ServiceTypes {
   users: typeof UserService
   tasks: typeof TaskService
   contacts: typeof ContactService
-  messages: typeof MessageService
-  'alt-ids': typeof AltIdService
-  'custom-ids': typeof CustomIdService
-  todos: typeof TodoService
   authors: typeof AuthorService
   posts: typeof PostService
 }
@@ -59,10 +51,6 @@ const feathersClient = feathers<ServiceTypes>()
   .use('tasks', TaskService)
   .use('users', UserService)
   .use('contacts', ContactService)
-  .use('messages', MessageService)
-  .use('alt-ids', AltIdService)
-  .use('custom-ids', CustomIdService)
-  .use('todos', TodoService)
   .use('authors', AuthorService)
   .use('posts', PostService)
 
@@ -119,7 +107,7 @@ export const api = createVueClient(feathersClient, {
       },
     },
     tasks: {
-      skipRequestIfExists: true,
+      skipGetIfExists: true,
     },
   },
 })
