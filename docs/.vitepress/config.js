@@ -46,7 +46,6 @@ export default {
       '/migrate/': getSetupSidebar(),
       '/guide/': getGuideSidebar(),
       '/app/': getGuideSidebar(),
-      // "/config/": getConfigSidebar(),
       '/': getGuideSidebar(),
     },
   },
@@ -58,8 +57,14 @@ function getSetupSidebar() {
       text: 'Start a Project',
       items: [
         { text: 'Overview', link: '/setup/' },
-        { text: 'Install Feathers Client', link: '/setup/install' },
-        { text: 'Setup Feathers Client', link: '/setup/feathers-client' },
+        {
+          text: 'Feathers Client',
+          items: [
+            { text: 'Install', link: '/setup/install' },
+            { text: 'Setup', link: '/setup/feathers-client' },
+          ]
+        },
+        { text: 'Setup Feathers-Pinia', link: '/setup/feathers-pinia' },
         {
           text: 'Frameworks',
           items: [
@@ -100,7 +105,7 @@ function getGuideSidebar() {
       items: [
         {
           text: 'Create a Client',
-          link: '/client/create-vue-app'
+          link: '/client/create-vue-client'
         },
         {
           text: 'Global Configuration',
@@ -171,7 +176,7 @@ function getGuideSidebar() {
     //       text: 'Pinia Stores',
     //       link: '/guide/pinia-stores',
     //       items: [
-    //         { text: 'useService - Service Stores', link: '/guide/use-service' },
+    //         { text: 'useDataStore - Data Stores', link: '/guide/use-data-store' },
     //         { text: 'useAuth - Auth Stores', link: '/guide/use-auth' },
     //       ],
     //     },
