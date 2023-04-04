@@ -1,3 +1,5 @@
+import pkg from '../../package.json'
+
 export default {
   title: 'Feathers-Pinia',
   description: 'Connect Feathers.',
@@ -15,18 +17,65 @@ export default {
       copyright: 'MIT Licensed',
     },
     nav: [
-      { text: 'Guide & APIs', link: '/guide/' },
+      { text: 'Setup', link: '/setup/' },
+      { text: 'API Guides', link: '/guide/' },
       {
-        text: 'Release Notes',
-        link: 'https://github.com/marshallswain/feathers-pinia/releases',
+        text: pkg.version,
+        items: [
+          {
+            text: 'Release Notes',
+            link: 'https://github.com/marshallswain/feathers-pinia/releases',
+          },
+          {
+            text: 'Docs v2',
+            link: 'https://v2.feathers-pinia.pages.dev/',
+          },
+          {
+            text: 'Docs v1',
+            link: 'https://v1.feathers-pinia.pages.dev/',
+          },
+          {
+            text: 'Docs v0',
+            link: 'https://v0.feathers-pinia.pages.dev/',
+          },
+        ]
       },
     ],
     sidebar: {
+      '/setup/': getSetupSidebar(),
+      '/migrate/': getSetupSidebar(),
       '/guide/': getGuideSidebar(),
       // "/config/": getConfigSidebar(),
       '/': getGuideSidebar(),
     },
   },
+}
+
+function getSetupSidebar() {
+  return [
+    {
+      text: 'Start a Project',
+      items: [
+        { text: 'Overview', link: '/setup/' },
+        { text: 'Install Modules', link: '/setup/install' },
+        { text: 'with Vite', link: '/setup/vite' },
+        { text: 'with Nuxt 3', link: '/setup/nuxt3' },
+        { text: 'with Quasar 🚧', link: '/setup/quasar' },
+        { text: 'Example Apps', link: '/setup/example-apps' },
+        { text: 'Other Setup Examples', link: '/setup/other' },
+      ],
+    },
+    {
+      text: 'Migration Guides',
+      items: [
+        { text: 'Models to Services', link: '/migrate/models' },
+        { text: 'Clone Handling', link: '/migrate/handle-clones' },
+        { text: 'Store Customization', link: '/migrate/store-customization' },
+        { text: 'from Vuex', link: '/migrate/from-feathers-vuex' },
+        { text: 'from 0.x', link: '/migrate/from-v0' },
+      ],
+    },
+  ]
 }
 
 function getGuideSidebar() {
@@ -37,27 +86,6 @@ function getGuideSidebar() {
         { text: "What's New 🎁", link: '/guide/whats-new' },
         { text: 'Introduction', link: '/guide/' },
         { text: 'Module Overview', link: '/guide/module-overview' },
-      ],
-    },
-    {
-      text: 'Start a Project',
-      items: [
-        { text: 'Overview', link: '/guide/get-started' },
-        { text: 'Install Modules', link: '/guide/setup' },
-        { text: 'with Vite', link: '/guide/setup-vite' },
-        { text: 'with Nuxt 3', link: '/guide/setup-nuxt3' },
-        { text: 'with Quasar 🚧', link: '/guide/setup-quasar' },
-        { text: 'Example Apps', link: '/guide/example-apps' },
-        { text: 'Other Setup Examples', link: '/guide/setup-other' },
-      ],
-    },
-    {
-      text: 'Migration Guides',
-      items: [
-        { text: 'Models to Services', link: '/guide/migrate-models' },
-        { text: 'Migrate Clone Handling', link: '/guide/migrate-handle-clones' },
-        { text: 'Migrate from Vuex 🚧', link: '/guide/migrate-from-feathers-vuex' },
-        { text: 'Migrate from 0.x', link: '/guide/migrate-from-v0' },
       ],
     },
     {
@@ -118,11 +146,8 @@ function getGuideSidebar() {
     {
       text: 'Common Tools',
       items: [
-        { text: 'Feathers Client Hooks', link: '/guide/hooks' },
         { text: 'useFind', link: '/guide/use-find' },
         { text: 'useGet', link: '/guide/use-get' },
-        { text: 'useClone', link: '/guide/use-clone' },
-        { text: 'useClones', link: '/guide/use-clones' },
       ],
     },
     {
@@ -132,14 +157,6 @@ function getGuideSidebar() {
         { text: 'Nuxt Module', link: '/guide/nuxt-module' },
         { text: 'OFetch', link: '/guide/ofetch' },
         { text: 'syncWithStorage', link: '/guide/storage-sync' },
-      ],
-    },
-    {
-      text: 'Pending Removal in 2.0',
-      items: [
-        { text: 'useFindWatched ⚠️', link: '/guide/use-find-watched' },
-        { text: 'useGetWatched ⚠️', link: '/guide/use-get-watched' },
-        { text: 'usePagination ⚠️', link: '/guide/use-pagination' },
       ],
     },
   ]

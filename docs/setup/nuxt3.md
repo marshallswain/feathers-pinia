@@ -4,13 +4,9 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-import pkg from '../../package.json'
+
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
-
-<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
-  <Badge :label="`v${pkg.version}`" />
-</div>
 
 # Nuxt 3
 
@@ -53,7 +49,7 @@ npm i ofetch -D
 Next, create a file named `1.feathers.ts` in the `plugins` folder. We prefix with a `1` because Nuxt plugins are run in
 alphabetical order. We want Feathers to load before other plugins that might use it.
 
-<!--@include: ./nuxt-feathers-client-example.md-->
+<!--@include: ../partials/nuxt-feathers-client-example.md-->
 
 The previous code snippet utilizes Nuxt's `useCookie` for SSR compatibility. If you plan to use SSG or a
 non-server-based rendering strategy, see [SSG-Compatible localStorage](/guide/common-patterns#ssg-compatible-localstorage)
@@ -182,15 +178,15 @@ FeathersJS v5 Dove backend, or you can provide your own types. Let's create two
 Here's the `User` Model. Notice that since Feathers-Pinia v2 is highly modular, using [Auto-Imports](/guide/auto-imports)
 really cleans things up.
 
-<!--@include: ./notification-feathers-client.md-->
+<!--@include: ../partials/notification-feathers-client.md-->
 
-<!--@include: ./example-user-model.md-->
+<!--@include: ../partials/example-user-model.md-->
 
 ### 4.2. Task Model
 
 Now let's create the `Task` Model:
 
-<!--@include: ./example-task-model.md-->
+<!--@include: ../partials/example-task-model.md-->
 
 ## 5. Service Stores
 
@@ -252,7 +248,7 @@ Now we can use the `taskStore` by calling `const taskStore = useTaskStore()`.
 
 If your app requires user login, the following sections demonstrate how to implement it.
 
-<!--@include: ./assess-your-auth-risk.md-->
+<!--@include: ../partials/assess-your-auth-risk.md-->
 
 ### 6.1 Auth Store
 
@@ -260,7 +256,7 @@ Feathers-Pinia 2.0 uses a `setup` store for the auth store. The new `useAuth` ut
 authentication in most apps. Using the composition API allows more simplicity and more flexibility for custom scenarios.
 We'll keep this example simple. To implement auth, create the file below:
 
-<!--@include: ./notification-access-token.md-->
+<!--@include: ../partials/notification-access-token.md-->
 
 ```ts
 // stores/auth.ts

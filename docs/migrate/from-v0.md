@@ -4,30 +4,20 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-import pkg from '../../package.json'
+
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
-  <Badge :label="`v${pkg.version}`" />
-</div>
-
 # Migrate from Feathers-Pinia v0.x
 
-<BlockQuote type="danger" label="🚧 CAUTION 🚧">
+Once you've installed v3 (currently with `npm i feathers-pinia@pre`) you'll need to make the following changes.
 
-If you're going to try out the pre-release, make sure you **lock the version number** in your package.json.
-
-</BlockQuote>
-
-Once you've installed version 2.0 (currently with `npm i feathers-pinia@pre`) you'll need to make the following changes.
-
-## Switch to Model Functions
+## Switch to Implicit Modeling
 
 Since this process is very similar for Feathers-Pinia and Feathers-Vuex users, it has its own page. See the page on
 [Migrating Models](/guide/migrate-models).
 
-## Switch `handleClones` to `useClones`
+## Switch Handling of Clones
 
 Since this process is very similar for Feathers-Pinia and Feathers-Vuex users, it has its own page. See the page on
 [Migrating handleClones](/guide/migrate-handle-clones).
@@ -35,13 +25,17 @@ Since this process is very similar for Feathers-Pinia and Feathers-Vuex users, i
 ## Don't Worry About `__isClone`
 
 There's no need to manually remove `__isClone` or other instance metadata in hooks. They are now added as a
-non-enumerable values, so they won't show up during instance serializion when prepping to send to the API server.
+non-enumerable values, so they won't show up during instance serializion when sending to the API server.
 
 ## No `debounceEventsMaxWait`
 
 **TLDR:** If you were using it, replace `debounceEventsMaxWait` with `debounceEventsGuarantee`.
 
-In order to reduce file size, we have removed lodash's debounce from the package.  Lodash's debounce supported custom intervals for guaranteed execution.  The replacement package, [just-debounce](https://npmjs.com/package/just-debounce) does not support a custom interval for guarantee. You can still guarantee execution by setting `debounceEventsGuarantee: true` in the options.  This shouldn't break any apps since the guaranteed interval will only be made shorter.
+In order to reduce file size, we have removed lodash's debounce from the package.  Lodash's debounce supported custom
+intervals for guaranteed execution.  The replacement package, [just-debounce](https://npmjs.com/package/just-debounce)
+does not support a custom interval for guarantee. You can still guarantee execution by setting
+`debounceEventsGuarantee: true` in the options.  This shouldn't break any apps since the guaranteed interval will only
+be made shorter.
 
 ## tempIdField Not Configurable
 
@@ -50,15 +44,16 @@ idField, a `__tempId` will automatically be assigned.
 
 ## Global State Exports Removed
 
-Any API involving global state has been removed. This includes
+Any API involving global state has been removed and moved into the Feathers-Pinia Client. This includes
 
 - the `clients` export
 - the `models` export
 
 ## Service Store Changes
 
-- `clientAlias` has been removed.
-- `servicePath` has been removed. Pass the `service` object, instead.
+- `clientAlias` has been removed, since the store only receives data from the Feathers Client.
+- `servicePath` has been removed, since the store only receives data from the Feathers Client.
+- `service` has been removed, since the store only receives data from the Feathers Client.
 - `tempIdField` has been removed. The value is hard-coded to `__tempId`.
 - `eventLocksById` has been renamed to `eventLocks`.
 - `pendingById` has been split into several objects by method name:
@@ -67,9 +62,9 @@ Any API involving global state has been removed. This includes
   - `patchPendingById`
   - `removePendingById`
 - `afterFind` has been removed. You can use Feathers Client hooks instead.
-- `state` has been removed. Use `setup` stores, instead. See [Customize the Store](/guide/use-service#customize-the-store).
-- `methods` has been removed. Use `setup` stores, instead. See [Customize the Store](/guide/use-service#customize-the-store).
-- `actions` has been removed. Use `setup` stores, instead. See [Customize the Store](/guide/use-service#customize-the-store).
+- `state` has been removed. Use [Store Composition](/guide/store-composition)
+- `methods` has been removed. Use [Store Composition](/guide/store-composition)
+- `actions` has been removed. Use [Store Composition](/guide/store-composition)
 
 ## No More `defineAuthStore`
 

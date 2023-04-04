@@ -4,13 +4,9 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-import pkg from '../../package.json'
+
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
-
-<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
-  <Badge :label="`v${pkg.version}`" />
-</div>
 
 # OFetch SSR Adapter for Feathers-Rest
 
@@ -39,4 +35,4 @@ npm i ofetch -D
 
 Here's an example of setting up the OFetch adapter to work with Feathers-Client in a Nuxt 3 plugin:
 
-<!--@include: ./nuxt-feathers-client-example.md-->
+<!--@include: ../partials/nuxt-feathers-client-example.md-->

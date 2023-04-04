@@ -4,13 +4,9 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-import pkg from '../../package.json'
+
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
-
-<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
-  <Badge :label="`v${pkg.version}`" />
-</div>
 
 # Starting a Vite Project
 
@@ -175,13 +171,13 @@ Now let's create the `Task` Model:
 
 ## 5. Service Stores
 
-<!--@include: ./setting-up-service-stores.md-->
+<!--@include: ../partials/setting-up-service-stores.md-->
 
 ## 6. Authentication
 
 If your app requires user login, the following sections demonstrate how to implement it.
 
-<!--@include: ./assess-your-auth-risk.md-->
+<!--@include: ../partials/assess-your-auth-risk.md-->
 
 ### 6.1 Auth Store
 

@@ -4,13 +4,9 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-import pkg from '../../package.json'
+
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
-
-<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
-  <Badge :label="`v${pkg.version}`" />
-</div>
 
 # useAuth - Auth Stores
 
@@ -44,7 +40,7 @@ Let's start off with an example of the most basic auth setup with `useAuth`. Thi
 `useAuthStore`. It uses `useAuth` inside to retrieve and use the composables. It doesn't automatically handle the `user`,
 so we'll get to that next.
 
-<!--@include: ./notification-access-token.md-->
+<!--@include: ../partials/notification-access-token.md-->
 
 ```ts
 // src/stores/auth.ts

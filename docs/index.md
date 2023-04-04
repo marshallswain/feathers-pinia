@@ -47,10 +47,6 @@ import Badge from './components/Badge.vue'
 import pkg from '../package.json'
 </script>
 
-<div style="position: fixed; z-index: 1000; top: 2px; right: 2px;">
-  <Badge :label="`v${pkg.version}`" />
-</div>
-
 <style>
 .VPImage {
   max-height: 240px;
