@@ -28,19 +28,12 @@ manually refresh data.
 - **Declarative Workflow Support** - Compose computed params and let query as they change.
 - **Imperative Workflow Support** - Pass reactive params for imperative control.
 
-<BlockQuote>
-
-To lighten the burden of migrating from Feathers-Vuex, the old `useFind` utility is now provided as
-[`useFindWatched`](./use-find-watched). It is recommended that all new code be written with the new `useFind` API.
-
-</BlockQuote>
-
 ## Usage
 
 The `useFind` utility can be used from three places:
 
 - As a [FeathersModel](/guide/use-feathers-model) method
-- As a [store method](/guide/use-service)
+- As a [store method](/guide/use-data-store)
 - or standalone, as described on this page
 
 ### Recommended
@@ -107,8 +100,8 @@ await prev() // retrieve the previous page of results
   - **`store` {Store}** <Badge type="danger" label="conditionally required" /> a Feathers-Pinia service store. It is
   only needed when using `useFind` in standalone mode. `useFind` can also be find on any service store by calling
   `store.useFind(params)`. When called from the Model or the store, you do not pass the store object in the params.
-  - **`clones` {Boolean}** returns result as clones. See [Querying Data](/guide/querying-data#local-params-api)
-  - **`temps` {Boolean}** includes temp records in the results. See [Querying Data](/guide/querying-data#local-params-api)
+  - **`clones` {Boolean}** returns result as clones. See [Querying Data](/services/querying-data#local-params-api)
+  - **`temps` {Boolean}** includes temp records in the results. See [Querying Data](/services/querying-data#local-params-api)
   - **`qid` {string}** an identifier for this query. Allows pagination data to be tracked separately.
   - **`onServer` {boolean}** when enabled, the internal `findInStore` getter will return only the results that match the
   current query in the `pagination` object for this store. Setting `onServer` to true gives up live lists and gives all

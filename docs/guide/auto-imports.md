@@ -60,7 +60,7 @@ export default defineConfig({
 ```
 
 The `dirs` option, shown above, is important to enable the `composables`, `models`, and `stores` folders to all work
-with auto-imports. Now we can keep our code organized by purpose, as is shown in the [Setup Guides](/guide/get-started).
+with auto-imports. Now we can keep our code organized by purpose, as is shown in the [Setup Guides](/setup/).
 
 All of the [Model Composition Utilities](#model-composition-utilities) and [Feathers-Pinia Composables](#feathers-pinia-composables)
 on this page are made available through auto-imports.
@@ -286,18 +286,13 @@ to be full [FeathersModel Instances](/guide/use-feathers-model-instances).
 
 #### Store Creation
 
-- [useService](/guide/use-service) for creating service stores.
+- [useService](/guide/use-data-store) for creating service stores.
 - [useAuth](/guide/use-auth) for creating auth stores.
 
 #### Data Fetching
 
 - [useFind](/guide/use-find) for fall-through cache-enabled `find` queries.
 - [useGet](/guide/use-get) for cache-enabled `get` queries.
-
-#### Form Building
-
-- [useClone](/guide/use-clone) for simplifying clone and commit for a single component prop.
-- [useClones](/guide/use-clones) for simplifying clone and commit for all of a component's props.
 
 #### Hook Registration
 

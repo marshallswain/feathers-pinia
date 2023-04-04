@@ -223,8 +223,6 @@ clone.commit()
 
 In the example above, modifying the `task` variable would unsafely modify stored data, which is a generally unsupportive practice when not done consciously. Calling `task.clone()` returns a reactive clone of the instance.  It's safe to change clones. You can then call `clone.commit()` to update the original record in the store.
 
-The `clone` and `commit` methods are used by [useClone and useClones](./use-clones.md).
-
 ## Feathers Client
 
 This section reviews how to create and use Feathers Clients
@@ -338,7 +336,7 @@ const { api } = useFeathers()
 If you're using npm to install packages and keep getting errors about `vue-demi` and `peerDependencies`, you can silence
 these errors by creating an `.npmrc` file in the root of your project with the following contents:
 
-```text
+```txt
 shamefully-hoist=true
 strict-peer-dependencies=false
 legacy-peer-deps=true
@@ -348,7 +346,7 @@ legacy-peer-deps=true
 
 We can use composables to create a global configuration function for Feathers-Pinia. It's very convenient when paired
 with [Auto-Imports](/guide/auto-imports). Use a global config for consistent Models and stores. This example is found in
-`models/feathers-pinia-config.ts` in the Vite and Nuxt [example applications](/guide/example-apps):
+`models/feathers-pinia-config.ts` in the Vite and Nuxt [example applications](/setup/example-apps):
 
 ::: code-group
 
@@ -398,7 +396,7 @@ export const useUsersConfig = () => {
 ```
 
 And now you can call `useUsersConfig()` and destructure the variables needed by the Model and store, as shown in the
-[setup examples](/guide/get-started)
+[setup examples](/setup/)
 
 <BlockQuote type="info" label="note">
 Before version 2, Feathers-Pinia included the `setupFeathersPinia` utility to enable global configuration. That API has

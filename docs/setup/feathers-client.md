@@ -96,7 +96,7 @@ localStorage.
 
 If you're upgrading from Feathers v4 Crow and you receive an error like this one:
 
-```text
+```txt
 "Error: Failed to execute 'fetch' on 'Window': Illegal invocation"
 ```
 

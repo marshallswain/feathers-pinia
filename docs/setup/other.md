@@ -50,4 +50,4 @@ The same data can be written at any time during runtime by setting `api.service(
 
 ## Setting up SSR
 
-See the [Server Side Rendering section of the `useService` docs](/guide/use-service#server-side-rendering-ssr).
+See the [Server Side Rendering section of the `useService` docs](/guide/use-data-store#server-side-rendering-ssr).

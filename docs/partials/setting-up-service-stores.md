@@ -30,7 +30,7 @@ export const useUserStore = () => {
 
 Notice that we're reusing the `useUsersConfig` composable as an auto-import. Other auto-imports in use are `useService`
 and `connectModel`. The `useService` utility returns the default values that are required for a Feathers-Pinia store.
-These stores are [fully customizable](/guide/use-service#customize-the-store). The `connectModel` utility wires up the
+These stores are [fully customizable](/guide/use-data-store#customize-the-store). The `connectModel` utility wires up the
 `User` Model with the `users` store.
 
 ### 5.2 Tasks Store

@@ -18,7 +18,7 @@ the FeathersModel Instance interface.
 
 - [FeathersModel Static API](/guide/use-feathers-model)
 - [FeathersModel Stores](/guide/use-feathers-model-stores)
-- [useService API](/guide/use-service)
+- [useService API](/guide/use-data-store)
 
 ## Creating FeathersModel Instances
 

@@ -74,8 +74,8 @@ const { data: user, isPending, error } = useGet(props.id, { store: userStore, on
 - **`params` {Object}** a combined Feathers `Params` object and set of options for configuring behavior of `useGet`.
   - **`query` {Object}** a Feathers query object.
   - **`store` {Store}** the Feathers-Pinia service store
-  - **`clones` {Boolean}** returns result as a clone. See [Querying Data](/guide/querying-data#local-params-api)
-  - **`temps` {Boolean}** enables retrieving temp records. See [Querying Data](/guide/querying-data#local-params-api)
+  - **`clones` {Boolean}** returns result as a clone. See [Querying Data](/services/querying-data#local-params-api)
+  - **`temps` {Boolean}** enables retrieving temp records. See [Querying Data](/services/querying-data#local-params-api)
   - **`onServer` {boolean}** sets up a watcher on `id` that sends API requests when id changes.
   - **`watch` {boolean}** can be used to disable the watcher on `id` while `onServer` is true.
   - **`immediate` {boolean}** can be used to disable the initial request to the API server while `onServer` is true.

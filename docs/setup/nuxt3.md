@@ -21,7 +21,7 @@ Follow these steps to get started with a new Nuxt app:
 1. Create a Nuxt app
    - [Use the starter project](https://github.com/marshallswain/feathers-pinia-nuxt3) and read the below as reference. OR
    - [Start a new Nuxt app](https://v3.nuxtjs.org/getting-started/installation) and follow the below as instructions.
-2. [Install Feathers-Pinia](./setup),
+2. [Install Feathers-Pinia](./install),
 3. Follow the instructions, below.
 
 <BlockQuote>

@@ -18,7 +18,7 @@ For the TLDR (Too Long, Didn't Read) version, you can take a look at the [feathe
 Follow these steps to get started with a new single-page Vite app:
 
 1. [Create a Vue app with Vite](https://vitejs.dev/guide/#scaffolding-your-first-vite-project).
-2. [Install Modules](./setup),
+2. [Install Modules](./install),
 3. Follow the instructions, below
 
 ## 1. Feathers Client
@@ -62,7 +62,7 @@ page.
 <BlockQuote>
 If upgrading from Feathers v4 Crow and you receive an error like this one:
 
-```text
+```txt
 "Error: Failed to execute 'fetch' on 'Window': Illegal invocation"
 ```
 

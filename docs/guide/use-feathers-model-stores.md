@@ -17,7 +17,7 @@ Model Functions come with their own built-in stores. The BaseModel store API is 
 
 - [FeathersModel Static API](/guide/use-feathers-model)
 - [FeathersModel Instance API](/guide/use-feathers-model-instances)
-- [useService API](/guide/use-service)
+- [useService API](/guide/use-data-store)
 
 ## Creating a FeathersModel Store
 
@@ -49,7 +49,7 @@ unwrapped, which means you don't have to access their contents using `.value`, l
 
 ## API
 
-FeathersModel stores use the [useService](/guide/use-service) utility under the hood. This means that they implement all
+FeathersModel stores use the [useService](/guide/use-data-store) utility under the hood. This means that they implement all
 of the same APIs as BaseModel and include the full API for communicating with a Feathers service.
 
-For API docs, see [useService](/guide/use-service).
+For API docs, see [useService](/guide/use-data-store).

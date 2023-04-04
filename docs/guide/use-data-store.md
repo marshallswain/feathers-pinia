@@ -236,8 +236,6 @@ These utilities use a combination of multiple store methods to eliminate boilerp
 - [useFind()](/guide/use-find)
 - [useGet()](/guide/use-get)
 - `useGetOnce()` has the same API as [useGet](/guide/use-get), but only queries once per record.
-- [useFindWatched()](/guide/use-find-watched)
-- [useGetWatched()](/guide/use-get-watched)
 
 ## Customize the Store
 
@@ -340,7 +338,7 @@ Normally, during SSR, after the rendered page has been delivered to the client, 
 payload and pushes it into the store. This is called hydration. The problem is that basic hydration does not assure that
 records are Model instances. You'll recognize the problem when the browser throws an error like this:
 
-```text
+```txt
 Error: object has no method named `.save()`
 ```
 

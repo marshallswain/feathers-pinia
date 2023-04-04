@@ -21,7 +21,7 @@ any state or methods that are used with Feathers services.  Check out the
 
 ## FeathersModel Stores
 
-FeathersModel stores come with the full [useService](/guide/use-service) store under the hood.
+FeathersModel stores come with the full [useService](/guide/use-data-store) store under the hood.
 
 ## Comparing Stores
 

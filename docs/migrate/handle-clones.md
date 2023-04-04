@@ -107,8 +107,6 @@ function save() {
 
 :::
 
-Read more about built-in patch diffing, [here](./use-clones#automatic-patch-diffing).
-
 ## Behavior Change
 
 Previously, `useClones` would deep-watch the cloned props, by default. This was great if you wanted your forms to update

@@ -18,7 +18,7 @@ and service communications.
 
 - [FeathersModel Instance API](/guide/use-feathers-model-instances)
 - [FeathersModel Stores](/guide/use-feathers-model-stores)
-- [useService API](/guide/use-service)
+- [useService API](/guide/use-data-store)
 
 ## Create FeathersModel Functions
 
@@ -84,7 +84,7 @@ proxied directly onto FeathersModel's static interface:
 - `patch(id, data, params)`
 - `remove(id, params)`
 
-FeathersModel is built on `useService`. Read the [useService API docs](/guide/use-service#service-methods).
+FeathersModel is built on `useService`. Read the [useService API docs](/guide/use-data-store#service-methods).
 
 View the [Static Interface Comparison](/guide/model-functions#compare-static-properties) of BaseModel and FeathersModel.
 
@@ -96,7 +96,7 @@ View the [Static Interface Comparison](/guide/model-functions#compare-static-pro
 - `useFindWatched(options)`
 - `useGetWatched(options)`
 
-FeathersModel is built on `useService`. Read the [useService API docs](/guide/use-service#service-utils).
+FeathersModel is built on `useService`. Read the [useService API docs](/guide/use-data-store#service-utils).
 
 View the [Static Interface Comparison](/guide/model-functions#compare-static-properties) of BaseModel and FeathersModel.
 

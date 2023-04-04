@@ -25,5 +25,5 @@ Feathers-Pinia.
   - [FeathersModel stores](/guide/use-feathers-model-stores) build on top of BaseModel stores and add Feathers-related
   functionality.
 - [Pinia Stores](/guide/pinia-stores) shows you how to build `setup` stores with Pinia
-  - [useService](/guide/use-service) is for creating service stores.
+  - [useService](/guide/use-data-store) is for creating service stores.
   - [useAuth](/guide/use-auth) is for creating authentication stores.

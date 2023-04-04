@@ -14,12 +14,12 @@ Once you've installed v3 (currently with `npm i feathers-pinia@pre`) you'll need
 ## Switch to Implicit Modeling
 
 Since this process is very similar for Feathers-Pinia and Feathers-Vuex users, it has its own page. See the page on
-[Migrating Models](/guide/migrate-models).
+[Migrating Models](/migrate/models).
 
 ## Switch Handling of Clones
 
 Since this process is very similar for Feathers-Pinia and Feathers-Vuex users, it has its own page. See the page on
-[Migrating handleClones](/guide/migrate-handle-clones).
+[Migrating handleClones](/migrate/handle-clones).
 
 ## Don't Worry About `__isClone`
 
@@ -61,9 +61,9 @@ Any API involving global state has been removed and moved into the Feathers-Pini
   - `patchPendingById`
   - `removePendingById`
 - `afterFind` has been removed. You can use Feathers Client hooks instead.
-- `state` has been removed. Use [Store Composition](/guide/store-composition)
-- `methods` has been removed. Use [Store Composition](/guide/store-composition)
-- `actions` has been removed. Use [Store Composition](/guide/store-composition)
+- `state` has been removed. Use [Store Composition](/migrate/store-customization)
+- `methods` has been removed. Use [Store Composition](/migrate/store-customization)
+- `actions` has been removed. Use [Store Composition](/migrate/store-customization)
 
 ## No More `defineAuthStore`
 
@@ -114,4 +114,4 @@ Here are some resources to learn more about the previous example:
 
 - Learn more about [Auth Stores (useAuth)](/guide/use-auth)
 - `useFeathers` comes from a [composable utility pattern](/guide/common-patterns#access-feathers-client)
-- `useUserStore` is a [service store](/guide/use-service)
+- `useUserStore` is a [service store](/guide/use-data-store)

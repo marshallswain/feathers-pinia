@@ -11,7 +11,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 ## Setup
 
-For a detailed walkthrough refer to the [setup guide](/guide/setup) that most matches your chosen framework.
+For a detailed walkthrough refer to the [setup guide](/setup/) that most matches your chosen framework.
 
 ## Using Stores
 
@@ -25,13 +25,13 @@ const userStore = api.service('users').store
 
 ## Steps
 
-**If you haven't completed the initial [setup](./setup), please do so first.**
+**If you haven't completed the initial [setup](/setup/), please do so first.**
 
 The following steps outline the specific migration steps to apply to your codebase. The list might not be exhaustive, be sure to apply these concepts to any custom implmentation or variation you might have.
 
 ### Convert your Models
 
-See the section on [converting from Model Classes to Implicit Modeling](/guide/migrate-models).
+See the section on [converting from Model Classes to Implicit Modeling](/migrate/models).
 
 #### Imports
 
@@ -42,8 +42,8 @@ See the section on [converting from Model Classes to Implicit Modeling](/guide/m
 
 #### Breaking Changes
 
-- Add model instances to store after intantiation with `instance.addToStore()` (see [here](./index#new-model-instances-not-added-to-the-store))
-- **Find and replace state, getters and actions** according to [this](./index#store-structure-changes) list.
+- Add model instances to store after intantiation with `instance.addToStore()` (see [here](#new-model-instances-not-added-to-the-store))
+- **Find and replace state, getters and actions** according to [this](#store-structure-changes) list.
 
 #### Stores
 
@@ -59,10 +59,10 @@ Make sure you import and create store beforehand with `const <id>Store = use<id>
 
 #### Common Tools
 
-- **`useFind`:** is now `service.useFind`. The API is the same. See [service.useFind](./services#useFind)
-- **`useGet`:** is now `service.useGet`. The API is the same. See [service.useGet](/guide/services#useGet)
+- **`useFind`:** is now `service.useFind`. The API is the same. See [service.useFind](/services/hybrid-methods#useFind)
+- **`useGet`:** is now `service.useGet`. The API is the same. See [service.useGet](/services/hybrid-methods#useGet)
 - **usePagination:** is integrated into `service.useFind`
-- **handleClones:** is gone and built into the instance interface. See [Migrate Clone Handling](/guide/migrate-handle-clones)
+- **handleClones:** is gone and built into the instance interface. See [Migrate Clone Handling](/migrate/handle-clones)
 
 #### Renderless components
 
@@ -140,4 +140,4 @@ Feathers-Pinia does not have a `preferUpdate` option, nor does it support `updat
 
 ## Migrate `handleClones`
 
-The `handleClones` utility is now `useClones` and has a cleaner API. See the page on [Migrating handleClones](/guide/migrate-handle-clones)
+The `handleClones` utility is now `useClones` and has a cleaner API. See the page on [Migrating handleClones](/migrate/handle-clones)

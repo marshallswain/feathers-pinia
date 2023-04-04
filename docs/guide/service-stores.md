@@ -11,4 +11,4 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
-See [useService](/guide/use-service).
+See [useService](/guide/use-data-store).

@@ -191,7 +191,7 @@ supported by:
 - the [@feathersjs/knex](https://feathersjs.com/api/databases/knex.html) adapter
 - other SQL-based adapters
 
-Learn more on the new [Querying Data](/guide/querying-data) page.
+Learn more on the new [Querying Data](/services/querying-data) page.
 
 ### SQL `$like` Operators 🎁
 
@@ -273,14 +273,14 @@ These adapters will also work:
 
 If you use any of the above database adapters, give the new query operators a try!  Enjoy your new superpowers!
 
-Read more about all supported query filters and operators on the [Querying Data](/guide/querying-data) page.
+Read more about all supported query filters and operators on the [Querying Data](/services/querying-data) page.
 
 ### params.clones
 
 You can now pass `params.clones` to either `findInStore` or `getFromStore` to return all matching data as clones of the
 original data. This was formerly known as `params.copies` in Feathers-Vuex.
 
-Learn more in the [Querying Data page](/guide/querying-data#params-clones)
+Learn more in the [Querying Data page](/services/querying-data#params-clones)
 
 ## Built-in Patch Diffing 🎁
 
@@ -299,7 +299,7 @@ const task = api.service('tasks').new({
 })
 ```
 
-Read more about [Modeling](/guide/modeling).
+Read more about [Modeling](/guide/modeling-overview).
 
 ## Handle Associations
 
@@ -318,7 +318,7 @@ its best features include
 - **Intelligent Fall-Through Caching** - Like SWR, but way smarter.
 - **Pagination Support** - Built in, sharing the same logic with `usePagination`.
 
-See all of the features on the [Service API page](./services).
+See all of the features on the [Service API page](/services/).
 
 ## Removals ➖
 
