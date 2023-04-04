@@ -5,13 +5,12 @@ export const skipGetIfExists = () => async (context: HookContext, next: NextFunc
   const store = context.service.store
 
   if (context.method === 'get' && id != null) {
-    const skipIfExists = params.skipRequestIfExists || store.skipRequestIfExists
-    delete params.skipRequestIfExists
+    const skipIfExists = params.skipGetIfExists || store.skipGetIfExists
+    delete params.skipGetIfExists
 
     // If the records is already in store, return it
     const existingItem = store.getFromStore(context.id, params)
-    if (existingItem && skipIfExists)
-      context.result = existingItem
+    if (existingItem && skipIfExists) context.result = existingItem
   }
   await next()
 }

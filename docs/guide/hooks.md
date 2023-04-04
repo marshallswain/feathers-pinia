@@ -4,7 +4,6 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
@@ -64,6 +63,6 @@ in reverse order during responses.
 - `makeModelInstances(Model)` turns data from API responses into modeled data.
 - `handleFindSsr(store)` handles data for request state transferred from an SSR server, if enabled.
 - `normalizeFind()` takes care of normalizing pagination params for some feathers adapters.
-- `skipGetIfExists(store)` prevents get requests when the `skipRequestIfExists` option is enabled.
+- `skipGetIfExists(store)` prevents get requests when the `skipGetIfExists` option is enabled.
 - `patchDiffing(store)` saves bandwidth by diffing clones with original records and only sends the top-level keys that
   have changed.

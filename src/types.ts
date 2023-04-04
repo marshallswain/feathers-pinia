@@ -57,7 +57,7 @@ export interface Params<Q extends Query> extends FeathersParams<Q> {
   temps?: boolean
   clones?: boolean
   qid?: string
-  skipRequestIfExists?: boolean
+  skipGetIfExists?: boolean
   data?: any
   preserveSsr?: boolean
 }

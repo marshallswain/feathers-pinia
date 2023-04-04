@@ -4,7 +4,6 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
@@ -96,7 +95,7 @@ whitelist
 // FeathersModel internal state
 service
 paramsForServer
-skipRequestIfExists
+skipGetIfExists
 isSsr
 
 // pagination

@@ -15,7 +15,7 @@ export interface UseServiceOptions<M extends AnyData> {
   idField: string
   whitelist?: string[]
   paramsForServer?: string[]
-  skipRequestIfExists?: boolean
+  skipGetIfExists?: boolean
   ssr?: MaybeRef<boolean>
   handleEvents?: HandleEvents<M>
   debounceEventsTime?: number
@@ -24,7 +24,7 @@ export interface UseServiceOptions<M extends AnyData> {
 }
 
 const makeDefaultOptions = () => ({
-  skipRequestIfExists: false,
+  skipGetIfExists: false,
 })
 
 export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseServiceOptions<M>) => {

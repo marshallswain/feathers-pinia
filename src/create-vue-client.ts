@@ -11,7 +11,7 @@ interface ServiceOptions {
   idField?: string
   whitelist?: string[]
   paramsForServer?: string[]
-  skipRequestIfExists?: boolean
+  skipGetIfExists?: boolean
   handleEvents?: HandleEvents<AnyData>
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean

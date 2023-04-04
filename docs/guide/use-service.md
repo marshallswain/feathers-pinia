@@ -4,7 +4,6 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
@@ -60,7 +59,7 @@ interface UseServiceOptions<
   Model: ModelFunction
   whitelist?: string[]
   paramsForServer?: string[]
-  skipRequestIfExists?: boolean
+  skipGetIfExists?: boolean
   ssr?: MaybeRef<boolean>
   handleEvents?: HandleEvents<M>
   debounceEventsTime?: number
@@ -83,7 +82,7 @@ database.
 - **`Model {ModelFunction}`** is the class to use for each instance. See [Model Functions](/guide/model-functions)
 - **`whitelist`** is an array of keys to allow in the `findInStore` getter's `params.query` object.
 - **`paramsForServer`** is an array of query keys for `findInStore` to ignore and pass to the `find` action's query.
-- **`skipRequestIfExists {Boolean}`** when enabled will cause a `.get` request to automatically resolve with the stored
+- **`skipGetIfExists {Boolean}`** when enabled will cause a `.get` request to automatically resolve with the stored
 record with matching id, if one exists. If not, the request will be made as normal.
 - **`ssr {Boolean}`** indicates if Feathers-Pinia is loading in an SSR environment. Paginated queries made during SSR
 will be marked with `ssr: true`. When a matching request is made on the client (when `ssr` is false) the store data will
@@ -104,7 +103,7 @@ The following sections cover additional APIs returned when calling `useService`.
 
 - **`service`**
 - **`paramsForServer`**
-- **`skipRequestIfExists`**
+- **`skipGetIfExists`**
 - **`isSsr`**
 
 ### Model Config
