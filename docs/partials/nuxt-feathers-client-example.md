@@ -3,6 +3,7 @@
 ```ts [Dove Typed Client]
 // plugins/1.feathers.ts
 import { createClient } from 'feathers-pinia-api'
+import { createVueClient } from 'feathers-pinia'
 
 // rest imports for the server
 import { $fetch } from 'ofetch'
@@ -57,6 +58,7 @@ export default defineNuxtPlugin(async (nuxt) => {
 // plugins/1.feathers.ts
 import { feathers } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
+import { createVueClient } from 'feathers-pinia'
 
 // rest imports for the server
 import { $fetch } from 'ofetch'
