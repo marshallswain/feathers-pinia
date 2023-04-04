@@ -4,7 +4,6 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
@@ -375,7 +374,7 @@ doing Server Side Rendering.  If you haven't tried it, yet, it's easy to setup a
 
 The <a href="#useauth-🎁">useAuth</a> utility takes the place of `defineAuthStore`.
 
-See how to [migrate from defineAuthStore to useAuth](/guide/migrate-from-v0#no-more-defineauthstore)
+See how to [migrate from defineAuthStore to useAuth](/migrate/from-v0#no-more-defineauthstore)
 
 ### No `instance.update()` method
 

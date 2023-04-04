@@ -4,7 +4,6 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
@@ -37,8 +36,8 @@ In Nuxt, we setup the Feathers Client in a Nuxt plugin. This way, every request 
 the ability to leak data between requests.
 
 Nuxt supports Static Site Generation (SSG), Server-Side Rendering (SSR), and Hybrid Rendering (mixed rendering types).
-The primary difference between setting them up involves the Feathers Client. This example will use `@feathersjs/rest`
-with `fetch` on the server and `@feathersjs/socketio` in the browser.
+We'll setup a Feathers Client that will work in any mode. This example will use `@feathersjs/rest` with `fetch` on the
+server and `@feathersjs/socketio` in the browser.
 
 Since we need an SSR-compatible version of `fetch`, we will use [ofetch](/guide/ofetch).
 
@@ -47,7 +46,8 @@ npm i ofetch -D
 ```
 
 Next, create a file named `1.feathers.ts` in the `plugins` folder. We prefix with a `1` because Nuxt plugins are run in
-alphabetical order. We want Feathers to load before other plugins that might use it.
+alphabetical order. We want Feathers to load before other plugins that might use it. An example is provided for the
+typed Dove client and for a manually-setup client.
 
 <!--@include: ../partials/nuxt-feathers-client-example.md-->
 
@@ -76,12 +76,9 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-feathers-pinia',
   ],
-  // Allows you to put stores and models in their own folders
   imports: {
-    dirs: [
-      'stores',
-      'models',
-    ],
+    // Not required, but useful: list folder names here to enable additional "composables" folders.
+    dirs: [],
   },
   // Enable Nuxt Takeover Mode
   typescript: {
@@ -114,11 +111,9 @@ your package.json:
 }
 ```
 
-## 3. Composable Utils
+## 3. `useFeathers Composable
 
-### 3.1 `useFeathers` Client Access
-
-Let's create a composable that gives us instant access to the Feathers Client.
+Let's create a composable that gives us universal access to our Feathers-Pinia Client:
 
 ```ts
 // composables/feathers.ts
@@ -130,10 +125,9 @@ export const useFeathers = () => {
 }
 ```
 
-Any key returned in a Nuxt plugin's `provide` object will have a `$` prepended. The `useFeathers` composables pulls the
-`$api` object from `useNuxtApp`, renames it to `api` and returns it in another object. You could return multiple clients
-in this same object. With the above composable in place, we can now access the Feathers client from within in
-components, plugins, and middleware:
+Any key returned in a Nuxt plugin's `provide` object will have a `$` prepended. The example, above, normalizes it back
+to `api`. You could return multiple clients in this same object. With the above composable in place, we can now access
+the Feathers client from within in components, plugins, and middleware:
 
 ```ts
 const { api } = useFeathers()
@@ -142,117 +136,18 @@ const { api } = useFeathers()
 Auto-imports decouple our code from module paths and are super convenient. Read more about
 [Auto-Imports in the Nuxt Module](/guide/nuxt-module).
 
-### 3.2 Global Config
+You're now ready to start using Feathers Pinia. There's no need to setup Models or Stores, since it's all done for you,
+implicitly. Let's setup authentication with our new auto-created service stores.
 
-Next let's create a global configuration composable, which will give access to the `pinia` instance and other options
-which are shared between services.
-
-```ts
-// src/models/feathers-pinia-config.ts
-/**
- * Returns a global configuration object for Feathers-Pinia
- */
-export const useFeathersPiniaConfig = () => {
-  const { $pinia: pinia } = useNuxtApp()
-  return {
-    pinia,
-    idField: '_id',
-    whitelist: ['$regex'],
-  }
-}
-```
-
-The above composable gives us two benefits:
-
-1. DRY code: changing a shared value in one place updates it for all services.
-2. Quick access to the values from anywhere in the app.
-
-## 4. Model Classes
-
-You're ready to begin [Data Modeling](/guide/modeling-overview). Feathers-Pinia can directly use TypeScript types from a
-FeathersJS v5 Dove backend, or you can provide your own types. Let's create two
-[Model Functions](/guide/model-functions): `User` and `Task`.
-
-### 4.1. User Model
-
-Here's the `User` Model. Notice that since Feathers-Pinia v2 is highly modular, using [Auto-Imports](/guide/auto-imports)
-really cleans things up.
-
-<!--@include: ../partials/notification-feathers-client.md-->
-
-<!--@include: ../partials/example-user-model.md-->
-
-### 4.2. Task Model
-
-Now let's create the `Task` Model:
-
-<!--@include: ../partials/example-task-model.md-->
-
-## 5. Service Stores
-
-In Nuxt 3, the user stores are setup as auto-imported composables, making them really convenient to use.  (If you haven't noticed, yet, one of the primary themes of Nuxt 3 is convenient Developer Experience.)
-
-### 5.1 Users Service
-
-To setup the `/users` service store, create the following file:
-
-```ts
-// composables/service.users.ts
-import { defineStore } from 'pinia'
-import { useService } from 'feathers-pinia'
-
-export const useUserStore = () => {
-  const { pinia, idField, whitelist, servicePath, service, name } = useUsersConfig()
-
-  const useStore = defineStore(servicePath, () => {
-    const utils = useService({ service, idField, whitelist })
-    return { ...utils }
-  })
-  const store = useStore(pinia)
-
-  connectModel(name, useUserModel, () => store)
-
-  return store
-}
-```
-
-With the above file in place, you can call `const userStore = useUserStore()` from any component to get the userStore.
-
-### 5.2 Tasks Service
-
-To setup the `/tasks` service store, create the following file:
-
-```ts
-// composables/service.tasks.ts
-import { defineStore } from 'pinia'
-import { useService } from 'feathers-pinia'
-
-export const useTaskStore = () => {
-  const { pinia, idField, whitelist, servicePath, service, name } = useTasksConfig()
-
-  const useStore = defineStore(servicePath, () => {
-    const utils = useService({ service, idField, whitelist })
-    return { ...utils }
-  })
-  const store = useStore(pinia)
-
-  connectModel(name, useTaskModel, () => store)
-
-  return store
-}
-```
-
-Now we can use the `taskStore` by calling `const taskStore = useTaskStore()`.
-
-## 6. Authentication
+## 4. Authentication
 
 If your app requires user login, the following sections demonstrate how to implement it.
 
 <!--@include: ../partials/assess-your-auth-risk.md-->
 
-### 6.1 Auth Store
+### 4.1 Auth Store
 
-Feathers-Pinia 2.0 uses a `setup` store for the auth store. The new `useAuth` utility contains all of the logic for
+Feathers-Pinia 3.0 uses a `setup` store for the auth store. The new `useAuth` utility contains all of the logic for
 authentication in most apps. Using the composition API allows more simplicity and more flexibility for custom scenarios.
 We'll keep this example simple. To implement auth, create the file below:
 
@@ -263,10 +158,9 @@ We'll keep this example simple. To implement auth, create the file below:
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { userStore } = useUserStore()
   const { api } = useFeathers()
 
-  const auth = useAuth({ api, userStore })
+  const auth = useAuth({ api, servicePath: 'users' })
 
   return auth
 })
@@ -276,15 +170,13 @@ if (import.meta.hot)
 
 ```
 
-Notice that we've called `useAuth` by providing the `api` and `userStore`. By providing the `userStore`, it will
-automatically add a returned `user` to the store after successful login. The above example also calls `reAuthenticate`,
-which checks for a valid, non-expired accessToken in the Feathers Client and automatically authenticates if one is
-found. It will fail silently to avoid the need to catch errors during app initialization.
+Notice that we've called `useAuth` by providing the `api` and `servicePath` to the users service. By providing the
+`servicePath`, it will automatically add a returned `user` to the store after successful login.
 
-The Auth store for Nuxt is different than the one in the Vite app. It does not call `reAuthenticate` inside the store.
-Instead, we will call it in the next step from within the auth plugin.
+The Auth store for Nuxt varies slightly from the Vite app. It does not call `reAuthenticate` inside the store. Instead,
+we will call it in the next step from within the auth plugin.
 
-### 6.2 Auth Plugin
+### 4.2 Auth Plugin
 
 Now let's move on to create the `feathers-auth` plugin, which will use auth store. We'll prefix the filename with `2.`
 in order to make sure it runs after the Feathers Client is created.
@@ -301,7 +193,7 @@ export default defineNuxtPlugin(async (_nuxtApp) => {
 
 ```
 
-### 6.3 Route Middleware
+### 4.3 Route Middleware
 
 With the auth store and plugin in place, we can now setup a route middleware to control the user's session. Create the
 following file to restrict non-authenticated users the routes in the `publicRoutes` array. Authenticated users will have
@@ -312,23 +204,24 @@ access to all routes.
 export default defineNuxtRouteMiddleware(async (to, _from) => {
   const auth = useAuthStore()
 
+  await auth.getPromise()
+
   // Allow 404 page to show
-  const router = useRouter()
-  const allRoutes = router.getRoutes()
-  if (!allRoutes.map(r => r.path).includes(to.path))
+  if (!to.matched.length)
     return
 
   // if user is not logged in, redirect to '/' when not navigating to a public page.
   const publicRoutes = ['/', '/login']
-  if (!auth.user?.value) {
+  if (!auth.user) {
     if (!publicRoutes.includes(to.path))
       return navigateTo('/')
   }
 })
+
 ```
 
-Instead of blindly redirecting to the login page, the middleware allows the 404 page to work by bringing in the list of
-`allRoutes` and checking the current route against the list.
+Instead of blindly redirecting to the login page, the middleware allows the 404 page to work by checking the current
+route for matches.
 
 ## What's Next?
 

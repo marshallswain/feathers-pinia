@@ -7,8 +7,6 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# Service Stores
+# Feathers-Pinia Services
 
 [[toc]]
-
-See [useService](/guide/use-service).

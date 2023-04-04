@@ -4,7 +4,6 @@ outline: deep
 
 <script setup>
 import Badge from '../components/Badge.vue'
-
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
@@ -24,8 +23,7 @@ Follow these steps to get started with a new single-page Vite app:
 
 ## 1. Feathers Client
 
-The first step is to setup a Feathers Client. While Feathers-Pinia v2 is not limited to only working with Feathers API
-servers, its primary focus is still connectivity with Feathers.
+The first step is to setup a Feathers Client.
 
 The new [FeathersJS v5 Dove CLI](https://feathersjs.com/guides/cli/index.html) now creates [a fully-typed Feathers
 Client](https://feathersjs.com/guides/cli/client.html) for you. The next examples shows what it looks like to use the
