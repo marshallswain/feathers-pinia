@@ -9,31 +9,49 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 # What's New in 3.0
 
-Feathers-Pinia 3.0 finally gives us the magical, implicit API that we enjoyed with Feathers-Vuex, but in a smaller,
-implicitly modular and much faster package. This page will go over some of the highlights.
+Feathers-Pinia 3.0 finally gives us the magical, implicit API that we enjoyed with Feathers-Vuex, but in a
+smaller, implicitly modular and much faster package. This page will go over more of the highlights.
 
 [[toc]]
 
-## Full Feathers Client Integration 🎁
+## Leading the Simple Life
 
-Instead of having a bunch of separate modules, the latest version of Feathers-Pinia wraps itself around the Feathers
-Client, reuses its types, and packs all of the functionality into a single location.
-
-Once you've setup your Feathers Client, configuring Feathers-Pinia is this easy:
+All of that effort to setup a Version 2.0 app is now a thing of the past.  In 3.0, we've identified the best patterns from the giant 2.0 refactor and made all of the features implicit, with the ability to customize where needed.  The result is a work of art.  Here's all it takes to configure all services with a global configuration:
 
 ```ts
-import { createPiniaClient } from 'feathers-pinia'
+// src/feathers.ts
+import { createVueClient } from 'feathers-pinia'
+import { pinia } from './plugins/pinia'
 
-const api = createPiniaClient(feathersClient, { pinia, idField: '_id' })
+const feathersClient = {} // See the Feathers Client install/setup pages
+const api = createVueClient(feathersClient, { pinia, idField: '_id' })
 ```
 
-And this is all of the code required to create a store and fetch data:
+And with that you get a wrapped Feathers Client with all of the Feathers Interface methods plus all of the API and local data-related store methods.  Manually wrangling stores and Models is no longer required or even an option.  Data modeling still runs the show, under the hood, and all data is turned into `FeathersInstance` instances, by default.  If you want to extend that functionality, you can use the `services` option of the global config and provide a `setupInstance` method, like this:
 
 ```ts
-api.service('tasks').find({ query: {} })
+// src/feathers.ts
+import { createVueClient } from 'feathers-pinia'
+import { pinia } from './plugins/pinia'
+
+const feathersClient = {} // See the Feathers Client install/setup pages
+const api = createVueClient(feathersClient, { 
+  pinia, 
+  idField: '_id',
+  services: {
+    users: {
+      setupInstance(data: FeathersInstance<Users>) {
+        return useInstanceDefaults(data, { name: '' })
+      },
+    },
+  },
+})
 ```
 
-Yep, you just use the Feathers Client and the rest is done for you!
+And with the above code in place you have a default `name` property on every instance.  You can still setup
+relationships, etc.
+
+Feathers-Pinia v3's key feature: Use the Feathers Client and the rest is handled for you.
 
 ### Feathers Dove TS Support 🎉
 
