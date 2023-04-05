@@ -38,9 +38,8 @@ export class PiniaService<Svc extends FeathersService> {
     if (data.__isSetup) return data
 
     const asBaseModel = useModelInstance(data, {
-      servicePath: this.servicePath,
       store: this.store,
-      service: this,
+      setupInstance: (data: AnyData) => this.new(data),
     })
     const asFeathersModel = useFeathersInstance(asBaseModel, {
       service: this as any,

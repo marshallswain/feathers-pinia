@@ -5,16 +5,13 @@ import ObjectID from 'isomorphic-mongo-objectid'
 import { defineProperties } from '../utils/define-properties'
 
 interface UseModelInstanceOptions {
-  servicePath: string
   store: any
-  service?: any
+  setupInstance: any
 }
 
 export const useModelInstance = <M extends AnyData>(data: ModelInstanceData<M>, options: UseModelInstanceOptions) => {
-  const { servicePath, store } = options
+  const { store, setupInstance } = options
   const __isClone = data.__isClone || false
-  const service = options.service || { new: <M>(val: M) => val }
-  const setupInstance = <M>(data: M) => service.new(data)
 
   // instance.__isTemp
   Object.defineProperty(data, '__isTemp', {
@@ -27,7 +24,6 @@ export const useModelInstance = <M extends AnyData>(data: ModelInstanceData<M>, 
 
   // BaseModel properties
   const asBaseModel = defineProperties(data, {
-    __servicePath: servicePath,
     __isClone,
     __idField: store.idField,
     __tempId:
