@@ -7,7 +7,7 @@ beforeEach(() => {
   resetService(service)
 })
 
-describe('VueService', () => {
+describe('PiniaService', () => {
   test('includes model methods', () => {
     // create an instance
     expect(typeof service.new).toBe('function')

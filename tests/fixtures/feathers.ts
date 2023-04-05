@@ -7,7 +7,7 @@ import { memory } from '@feathersjs/memory'
 import { NotAuthenticated } from '@feathersjs/errors'
 import { createPinia } from 'pinia'
 import { timeout } from '../test-utils'
-import { createVueClient, useInstanceDefaults } from '../../src'
+import { createPiniaClient, useInstanceDefaults } from '../../src'
 import rest from '@feathersjs/rest-client'
 import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
@@ -90,7 +90,7 @@ feathersClient.hooks({
   },
 })
 
-export const api = createVueClient(feathersClient, {
+export const api = createPiniaClient(feathersClient, {
   pinia,
   idField: '_id',
   whitelist: ['$regex'],

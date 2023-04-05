@@ -17,9 +17,6 @@ export interface UseServiceOptions<M extends AnyData> {
   paramsForServer?: string[]
   skipGetIfExists?: boolean
   ssr?: MaybeRef<boolean>
-  handleEvents?: HandleEvents<M>
-  debounceEventsTime?: number
-  debounceEventsGuarantee?: boolean
   customSiftOperators?: Record<string, any>
 }
 

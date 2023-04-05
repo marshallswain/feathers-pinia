@@ -1,9 +1,9 @@
 import type { FeathersService } from '@feathersjs/feathers'
-import type { VueService } from '../create-vue-service'
+import type { PiniaService } from '../create-pinia-service'
 import type { AnyData, AnyDataOrArray } from '../types'
 import { FeathersInstance } from '../modeling'
 
-export function convertData(service: VueService<FeathersService>, result: AnyDataOrArray<AnyData>) {
+export function convertData(service: PiniaService<FeathersService>, result: AnyDataOrArray<AnyData>) {
   if (!result) {
     return result
   } else if (Array.isArray(result)) {

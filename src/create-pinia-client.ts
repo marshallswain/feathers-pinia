@@ -3,9 +3,10 @@ import type { HandleEvents } from './use-data-store'
 import type { AnyData } from './types'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
-import { VueService } from './create-vue-service'
+import { PiniaService } from './create-pinia-service'
 import { useDataStore } from './use-data-store'
 import { feathersPiniaHooks } from './hooks'
+import { useServiceEvents } from './use-data-store'
 
 interface ServiceOptions {
   idField?: string
@@ -26,40 +27,62 @@ interface CreateVueClientOptions extends ServiceOptions {
   services?: Record<string, ServiceOptions>
 }
 
-type CreateVueServiceTypes<T extends { [key: string]: FeathersService }> = {
-  [Key in keyof T]: VueService<T[Key]>
+type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
+  [Key in keyof T]: PiniaService<T[Key]>
 }
 
-export function createVueClient<Client extends Application>(
+export function createPiniaClient<Client extends Application>(
   client: Client,
   options: CreateVueClientOptions,
-): Application<CreateVueServiceTypes<Client['services']>> {
+): Application<CreatePiniaServiceTypes<Client['services']>> {
   const vueApp = feathers()
   vueApp.defaultService = function (location: string) {
-    const { whitelist = [], paramsForServer = [] } = options
-    const serviceOptions = options.services?.[location]
+    const serviceOptions = options.services?.[location] || {}
+
+    // combine service and global options
+    const idField = serviceOptions?.idField || options.idField
+    const whitelist = (serviceOptions.whitelist || []).concat(options.whitelist || [])
+    const paramsForServer = (serviceOptions.paramsForServer || []).concat(options.paramsForServer || [])
+    const handleEvents = serviceOptions?.handleEvents || options.handleEvents
+    const debounceEventsTime =
+      serviceOptions.debounceEventsTime != null ? serviceOptions.debounceEventsTime : options.debounceEventsTime
+    const debounceEventsGuarantee =
+      serviceOptions.debounceEventsGuarantee != null
+        ? serviceOptions.debounceEventsGuarantee
+        : options.debounceEventsGuarantee
+    const customSiftOperators = Object.assign(
+      {},
+      serviceOptions.customSiftOperators || {},
+      options.customSiftOperators || {},
+    )
 
     // create pinia store
     const storeName = `service:${location}`
     const useStore = defineStore(storeName, () => {
       const utils = useDataStore({
-        idField: serviceOptions?.idField || options.idField,
-        whitelist: (serviceOptions?.whitelist || []).concat(whitelist),
-        paramsForServer: (serviceOptions?.paramsForServer || []).concat(paramsForServer),
-        handleEvents: serviceOptions?.handleEvents || options.handleEvents,
-        debounceEventsTime: serviceOptions?.debounceEventsTime || options.debounceEventsTime,
-        debounceEventsGuarantee: serviceOptions?.debounceEventsGuarantee || options.debounceEventsGuarantee,
-        customSiftOperators: options.customSiftOperators,
+        idField,
+        whitelist,
+        paramsForServer,
+        customSiftOperators,
         ssr: options.ssr,
       })
       return utils
     })
 
-    const vueService = new VueService(client.service(location), {
+    const clientService = client.service(location)
+    const vueService = new PiniaService(clientService, {
       store: useStore(options.pinia),
       setupFn: serviceOptions?.setupInstance,
       servicePath: location,
     })
+
+    useServiceEvents({
+      service: vueService,
+      debounceEventsTime,
+      debounceEventsGuarantee,
+      handleEvents,
+    })
+
     return vueService
   }
 

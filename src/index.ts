@@ -2,8 +2,8 @@ export * from './types'
 export * from './use-data-store/types'
 export * from './use-find-get/types'
 
-export { createVueClient } from './create-vue-client'
-export { VueService } from './create-vue-service'
+export { createPiniaClient } from './create-pinia-client'
+export { PiniaService } from './create-pinia-service'
 export { OFetch } from './feathers-ofetch'
 
 export * from './hooks'

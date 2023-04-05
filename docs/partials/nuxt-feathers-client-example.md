@@ -3,7 +3,7 @@
 ```ts [Dove Typed Client]
 // plugins/1.feathers.ts
 import { createClient } from 'feathers-pinia-api'
-import { createVueClient } from 'feathers-pinia'
+import { createPiniaClient } from 'feathers-pinia'
 
 // rest imports for the server
 import { $fetch } from 'ofetch'
@@ -39,7 +39,7 @@ export default defineNuxtPlugin(async (nuxt) => {
   const feathersClient = createClient(connection, { storage, storageKey })
 
   // wrap the feathers client
-  const api = createVueClient(feathersClient, {
+  const api = createPiniaClient(feathersClient, {
     pinia: nuxt.$pinia,
     ssr: !!process.server,
     idField: '_id',
@@ -58,7 +58,7 @@ export default defineNuxtPlugin(async (nuxt) => {
 // plugins/1.feathers.ts
 import { feathers } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
-import { createVueClient } from 'feathers-pinia'
+import { createPiniaClient } from 'feathers-pinia'
 
 // rest imports for the server
 import { $fetch } from 'ofetch'
@@ -96,7 +96,7 @@ export default defineNuxtPlugin(async (nuxt) => {
     .configure(authenticationClient({ storage, storageKey }))
 
   // wrap the feathers client
-  const api = createVueClient(feathersClient, {
+  const api = createPiniaClient(feathersClient, {
     pinia: nuxt.$pinia,
     ssr: !!process.server,
     idField: '_id',

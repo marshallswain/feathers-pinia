@@ -23,7 +23,7 @@ automatically assumes that every object needs to be a model. So now there is no 
 ## Switch to Implicit Modeling
 
 The below tabs allow you to compare previous modeling examples to the latest API. In Feathers-Pinia modeling happens in
-the `services` config of `createVueClient`.
+the `services` config of `createPiniaClient`.
 
 ::: code-group
 
@@ -75,9 +75,9 @@ const User = useFeathersModel<Users, UsersData, UsersQuery, typeof modelFn>(
 ```
 
 ```ts [New API]
-import { createVueClient, useInstanceDefaults } from 'feathers-pinia'
+import { createPiniaClient, useInstanceDefaults } from 'feathers-pinia'
 
-const api = createVueClient(feathersClient, {
+const api = createPiniaClient(feathersClient, {
   pinia,
   idField: 'id',
   services: {

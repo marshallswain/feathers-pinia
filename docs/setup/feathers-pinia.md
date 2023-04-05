@@ -16,16 +16,16 @@ If you don't have a Feathers Client setup, yet, you'll need to [install](./insta
 
 ## Create a Vue Client
 
-Use the [createVueClient](/client/create-vue-client) module to initialize a Feathers-Pinia client. Below is a generic
+Use the [createPiniaClient](/client/create-pinia-client) module to initialize a Feathers-Pinia client. Below is a generic
 example. See the Framework examples for framework-specific implementations.
 
 ```ts
 // src/feathers.ts
-import { createVueClient } from 'feathers-pinia'
+import { createPiniaClient } from 'feathers-pinia'
 import { pinia } from './plugins/pinia'
 
 const feathersClient = {} // See the Feathers Client install/setup pages
-const api = createVueClient(feathersClient, { 
+const api = createPiniaClient(feathersClient, { 
   pinia, 
   idField: '_id',
   // optional
@@ -38,7 +38,7 @@ const api = createVueClient(feathersClient, {
 })
 ```
 
-See a full explanation of options on the [createVueClient](/client/create-vue-client) page.
+See a full explanation of options on the [createPiniaClient](/client/create-pinia-client) page.
 
 The above code wraps the `feathersClient` into a Feathers-Pinia turbocharged client. To create or reference a store, you
 just use the service like you would with a plain Feathers Client:

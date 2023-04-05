@@ -11,18 +11,18 @@ import { useFeathersInstance } from './modeling/use-feathers-instance'
 import { convertData } from './utils/convert-data'
 import { FeathersInstance } from './modeling'
 
-interface VueServiceOptions {
+interface PiniaServiceOptions {
   servicePath: string
   store: any
   setupFn?: <D extends AnyData>(data: D) => D
 }
 
-export class VueService<Svc extends FeathersService> {
+export class PiniaService<Svc extends FeathersService> {
   store
   servicePath = ''
   private setupFn
 
-  constructor(public service: Svc, public options: VueServiceOptions) {
+  constructor(public service: Svc, public options: PiniaServiceOptions) {
     this.store = options.store
     this.setupFn = options.setupFn
     this.servicePath = options.servicePath
@@ -175,5 +175,19 @@ export class VueService<Svc extends FeathersService> {
     results.queryWhen(() => !results.data.value)
     results.get()
     return results
+  }
+
+  /* events */
+
+  on(eventName: string | symbol, listener: (...args: any[]) => void) {
+    return this.service.on(eventName, listener)
+  }
+
+  emit(eventName: string | symbol, ...args: any[]): boolean {
+    return this.service.emit(eventName, ...args)
+  }
+
+  removeListener(eventName: string | symbol, listener: (...args: any[]) => void) {
+    return this.service.removeListener(eventName, listener)
   }
 }

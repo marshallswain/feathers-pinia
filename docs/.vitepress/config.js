@@ -105,7 +105,7 @@ function getGuideSidebar() {
       items: [
         {
           text: 'Create a Client',
-          link: '/client/create-vue-client'
+          link: '/client/create-pinia-client'
         },
         {
           text: 'Global Configuration',

@@ -7,7 +7,7 @@ beforeEach(() => {
   resetService(service)
 })
 
-describe('VueService', () => {
+describe('PiniaService', () => {
   test('instances have pending state', async () => {
     const contact = service.new({})
     expect(contact.isSavePending).toBeDefined()

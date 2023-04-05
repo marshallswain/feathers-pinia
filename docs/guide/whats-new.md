@@ -22,9 +22,9 @@ Client, reuses its types, and packs all of the functionality into a single locat
 Once you've setup your Feathers Client, configuring Feathers-Pinia is this easy:
 
 ```ts
-import { createVueClient } from 'feathers-pinia'
+import { createPiniaClient } from 'feathers-pinia'
 
-const api = createVueClient(feathersClient, { pinia, idField: '_id' })
+const api = createPiniaClient(feathersClient, { pinia, idField: '_id' })
 ```
 
 And this is all of the code required to create a store and fetch data:

@@ -1,4 +1,3 @@
-import { computed } from 'vue-demi'
 import { api, makeContactsData } from '../fixtures'
 import { resetService } from '../test-utils'
 

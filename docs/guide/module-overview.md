@@ -17,10 +17,10 @@ These are the primary utilities for creating stores.
 
 ```ts
 // Setup & Store Creation
-export { createVueClient } from './create-vue-client'
+export { createPiniaClient } from './create-pinia-client'
 export { OFetch } from './feathers-ofetch'
 export { useInstanceDefaults } from './utils'
 ```
 
-- [createVueClient](/guide/use-data-store) wraps the Feathers Client in a Feathers-Pinia client.
+- [createPiniaClient](/guide/use-data-store) wraps the Feathers Client in a Feathers-Pinia client.
 - [OFetch](/guide/ofetch) is a special fetch adapter for SSR applications.
