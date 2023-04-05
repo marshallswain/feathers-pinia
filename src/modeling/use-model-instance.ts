@@ -28,7 +28,7 @@ export const useModelInstance = <M extends AnyData>(data: ModelInstanceData<M>, 
     __idField: store.idField,
     __tempId:
       data[store.idField] == null && data.__tempId == null ? new ObjectID().toString() : data.__tempId || undefined,
-    getClone(this: M) {
+    hasClone(this: M) {
       const id = this[this.__idField] || this.__tempId
       const item = store.clonesById[id]
       return item ? setupInstance(item) : null

@@ -46,7 +46,7 @@ export interface BaseModelInstanceProps<M extends AnyData = AnyData> {
   /**
    * Returns the item's clone from the store, if one exists.
    */
-  getClone<N extends AnyData>(this: N): N | null
+  hasClone<N extends AnyData>(this: N): N | null
   /**
    * Creates a copy of an item or temp record. The copy will have `__isClone` set to `true` and will be added to the
    * Model's clone storage. If not already stored, the original item  will be added to the appropriate store.
