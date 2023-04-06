@@ -21,7 +21,7 @@ Follow these steps to get started with a new Nuxt app:
 1. Create a Nuxt app
    - [Use the starter project](https://github.com/marshallswain/feathers-pinia-nuxt3) and read the below as reference. OR
    - [Start a new Nuxt app](https://v3.nuxtjs.org/getting-started/installation) and follow the below as instructions.
-2. [Install Feathers-Pinia](./install),
+2. [Install packages](./install),
 3. Follow the instructions, below.
 
 <BlockQuote>
@@ -58,7 +58,7 @@ on the Common Patterns page.
 Also, notice the line at the end: `return { provide: { api } }`. This line makes the `api` available to the rest of the
 Nuxt application. We'll use it after we setup Pinia.
 
-## 2. Install Pinia
+## 2. Pinia
 
 Let's get Pinia installed and update the Nuxt config:
 
@@ -68,50 +68,9 @@ npm install pinia @pinia/nuxt
 
 Setup your Nuxt config:
 
-```ts
-// nuxt.config.ts
-// https://v3.nuxtjs.org/api/configuration/nuxt.config
-export default defineNuxtConfig({
-  modules: [
-    '@pinia/nuxt',
-    'nuxt-feathers-pinia',
-  ],
-  imports: {
-    // Not required, but useful: list folder names here to enable additional "composables" folders.
-    dirs: [],
-  },
-  // Enable Nuxt Takeover Mode
-  typescript: {
-    shim: false,
-  },
-  // optional, Vue Reactivity Transform
-  experimental: {
-    reactivityTransform: true,
-  },
-})
-```
+<!--@include: ../partials/nuxt-config.md-->
 
-You can read more about the above configuration at these links:
-
-- [@pinia/nuxt module](https://pinia.vuejs.org/ssr/nuxt.html)
-- [nuxt-feathers-pinia module](/guide/nuxt-module)
-- [Nuxt `imports` config](https://nuxt.com/docs/api/configuration/nuxt-config#imports)
-- [Nuxt Takeover Mode](https://nuxt.com/docs/getting-started/installation#prerequisites)
-- [Vue Reactivity Transform](https://vuejs.org/guide/extras/reactivity-transform.html)
-
-Using the extra `imports` as shown above enables Nuxt's auto-import feature in the `models` and `stores` folders, which
-will come in handy for Model and store creation, later.
-
-Finally, if npm is your package manager and you see the error `ERESOLVE unable to resolve dependency tree`, add this to
-your package.json:
-
-```json
-"overrides": { 
-  "vue": "latest"
-}
-```
-
-## 3. `useFeathers Composable
+## 3. `useFeathers` Composable
 
 Let's create a composable that gives us universal access to our Feathers-Pinia Client:
 
@@ -125,9 +84,9 @@ export const useFeathers = () => {
 }
 ```
 
-Any key returned in a Nuxt plugin's `provide` object will have a `$` prepended. The example, above, normalizes it back
-to `api`. You could return multiple clients in this same object. With the above composable in place, we can now access
-the Feathers client from within in components, plugins, and middleware:
+Any key returned in a Nuxt plugin's `provide` object will have a `$` prepended. The above example normalizes it back
+to `api`. You can return multiple clients in this object, if desired. With the above composable in place, we can now
+access the Feathers client from within in components, plugins, and middleware, like this:
 
 ```ts
 const { api } = useFeathers()
@@ -136,12 +95,12 @@ const { api } = useFeathers()
 Auto-imports decouple our code from module paths and are super convenient. Read more about
 [Auto-Imports in the Nuxt Module](/guide/nuxt-module).
 
-You're now ready to start using Feathers Pinia. There's no need to setup Models or Stores, since it's all done for you,
-implicitly. Let's setup authentication with our new auto-created service stores.
+You're ready to start managing data with Feathers Pinia. There's no need to setup Models or Stores, since it's all done
+for you, implicitly. If your applications needs user login, continue to the next section.
 
 ## 4. Authentication
 
-If your app requires user login, the following sections demonstrate how to implement it.
+The following sections demonstrate how to implement local authentication.
 
 <!--@include: ../partials/assess-your-auth-risk.md-->
 
@@ -159,9 +118,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
-
   const auth = useAuth({ api, servicePath: 'users' })
-
   return auth
 })
 
@@ -178,8 +135,8 @@ we will call it in the next step from within the auth plugin.
 
 ### 4.2 Auth Plugin
 
-Now let's move on to create the `feathers-auth` plugin, which will use auth store. We'll prefix the filename with `2.`
-in order to make sure it runs after the Feathers Client is created.
+Now let's create a plugin to automatically `reAuthenticate` after a refresh. We'll call it `2.feathers-auth.ts`
+in order to make sure it runs after the Feathers-Pinia Client is ready.
 
 ```ts
 // plugins/2.feathers-auth.ts
@@ -195,9 +152,8 @@ export default defineNuxtPlugin(async (_nuxtApp) => {
 
 ### 4.3 Route Middleware
 
-With the auth store and plugin in place, we can now setup a route middleware to control the user's session. Create the
-following file to restrict non-authenticated users the routes in the `publicRoutes` array. Authenticated users will have
-access to all routes.
+Now let's protect some routes.  Create the following file to restrict non-authenticated users the routes in the
+`publicRoutes` array. Authenticated users will have access to all routes.
 
 ```ts
 // middleware/session.global.ts
@@ -225,5 +181,4 @@ route for matches.
 
 ## What's Next?
 
-Check out the full example app: [feathers-pinia-nuxt3](https://www.github.com/marshallswain/feathers-pinia-nuxt3). Check
-out the login component to see an example of signup/login.
+Learn how to query data with a [Feathers-Pinia service](/services/).

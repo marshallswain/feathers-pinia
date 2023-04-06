@@ -1,6 +1,6 @@
 ::: code-group
 
-```ts [Dove Typed Client]
+```ts [createClient]
 // plugins/1.feathers.ts
 import { createClient } from 'feathers-pinia-api'
 import { createPiniaClient } from 'feathers-pinia'
@@ -54,7 +54,7 @@ export default defineNuxtPlugin(async (nuxt) => {
 })
 ```
 
-```ts [Manually Setup Client]
+```ts [Manual setup]
 // plugins/1.feathers.ts
 import { feathers } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
