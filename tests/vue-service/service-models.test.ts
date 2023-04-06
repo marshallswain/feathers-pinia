@@ -21,7 +21,7 @@ describe('useFeathersModel', () => {
     expect(typeof contact.patch).toBe('function')
     expect(typeof contact.remove).toBe('function')
     expect(typeof contact.removeFromStore).toBe('function')
-    expect(typeof contact.addToStore).toBe('function')
+    expect(typeof contact.createInStore).toBe('function')
   })
 
   test('service.get returns feathers instance', async () => {
@@ -32,7 +32,7 @@ describe('useFeathersModel', () => {
     expect(typeof contact.patch).toBe('function')
     expect(typeof contact.remove).toBe('function')
     expect(typeof contact.removeFromStore).toBe('function')
-    expect(typeof contact.addToStore).toBe('function')
+    expect(typeof contact.createInStore).toBe('function')
   })
 
   test('service.create returns feathers instance', async () => {
@@ -43,7 +43,7 @@ describe('useFeathersModel', () => {
     expect(typeof contact.patch).toBe('function')
     expect(typeof contact.remove).toBe('function')
     expect(typeof contact.removeFromStore).toBe('function')
-    expect(typeof contact.addToStore).toBe('function')
+    expect(typeof contact.createInStore).toBe('function')
   })
 
   test('service.patch returns feathers instance', async () => {
@@ -56,7 +56,7 @@ describe('useFeathersModel', () => {
     expect(typeof contact.patch).toBe('function')
     expect(typeof contact.remove).toBe('function')
     expect(typeof contact.removeFromStore).toBe('function')
-    expect(typeof contact.addToStore).toBe('function')
+    expect(typeof contact.createInStore).toBe('function')
   })
 
   test('service.remove returns feathers instance', async () => {
@@ -68,7 +68,7 @@ describe('useFeathersModel', () => {
     expect(typeof contact.patch).toBe('function')
     expect(typeof contact.remove).toBe('function')
     expect(typeof contact.removeFromStore).toBe('function')
-    expect(typeof contact.addToStore).toBe('function')
+    expect(typeof contact.createInStore).toBe('function')
   })
 
   test('has new feathers-related methods', async () => {

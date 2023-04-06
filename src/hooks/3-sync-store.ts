@@ -14,11 +14,11 @@ export const syncStore = () => async (context: HookContext, next: NextFunction) 
       store.removeFromStore(context.result)
     } else if (method === 'create') {
       const restoredTempIds = restoreTempIds(context.data, context.result)
-      context.result = store.addToStore(restoredTempIds)
+      context.result = store.createInStore(restoredTempIds)
     } else if (method === 'find' && Array.isArray(context.result.data)) {
-      context.result.data = store.addToStore(context.result.data)
+      context.result.data = store.createInStore(context.result.data)
     } else {
-      context.result = store.addToStore(context.result)
+      context.result = store.createInStore(context.result)
     }
 
     // Update pagination based on the qid

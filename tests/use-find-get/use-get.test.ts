@@ -219,7 +219,7 @@ describe('useGet', () => {
       const { error, clearError, get, request } = service.useGet('1', { immediate: false })
       expect(error.value).toBe(null)
 
-      const response = await get()
+      await get()
       // wait extra time to make sure the request happened
       await timeout(10)
       await request.value

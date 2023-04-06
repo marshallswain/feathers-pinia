@@ -1,5 +1,5 @@
 import { api } from '../fixtures'
-import { resetService, timeout, timeoutHook } from '../test-utils'
+import { resetService } from '../test-utils'
 
 const service = api.service('contacts')
 

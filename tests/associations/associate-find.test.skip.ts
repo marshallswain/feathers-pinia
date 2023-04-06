@@ -109,12 +109,12 @@ afterAll(() => reset())
 
 describe('Populated Data', () => {
   test('values added by associatedFind default to an empty array when no related data is present', async () => {
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     expect(author.posts).toEqual([])
   })
 
   test('bogus ids will still return an empty array (no local data to populate)', async () => {
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     expect(author.posts).toEqual([])
   })
 
@@ -124,7 +124,7 @@ describe('Populated Data', () => {
     // records are not in store after a query that uses skipStore
     expect(Post.findInStore({ query: {} }).data.length).toBe(0)
 
-    const author = Author({ id: 1, name: 'Marshall', posts }).addToStore()
+    const author = Author({ id: 1, name: 'Marshall', posts }).createInStore()
     expect(author.posts).toEqual(posts)
     // make sure the records were added to the Post store
     expect(Post.findInStore({ query: {} }).data.length).toBe(3)
@@ -133,28 +133,28 @@ describe('Populated Data', () => {
 
 describe('AssociateFind Utils', () => {
   test('utils are added at underscored prop, like `_posts`', async () => {
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     expect(author._posts).toBeDefined()
     expect(author._posts.allData.length).toBe(0)
   })
 
   test('utils include a `find` method', () => {
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     expect(typeof author._posts.find).toBe('function')
   })
 
   test('utils include a `findInStore` method', () => {
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     expect(typeof author._posts.findInStore).toBe('function')
   })
 
   test('utils include a `useFind` method', () => {
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     expect(typeof author._posts.useFind).toBe('function')
   })
 
   test('can use nested `useFind` to make a new query', () => {
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     const { data, prev, next } = author._posts.useFind({ query: {} })
     expect(Array.isArray(data.value)).toBe(true)
     expect(typeof next).toBe('function')
@@ -164,7 +164,7 @@ describe('AssociateFind Utils', () => {
 
 describe('Fetching Associated Data - "posts belong to many authors"', () => {
   test('can find associated data directly from the instance', async () => {
-    const post = Post({ authorIds: [1, 2, 3] }).addToStore()
+    const post = Post({ authorIds: [1, 2, 3] }).createInStore()
     const result = await post._authors.find()
     const authors = result.data as FeathersInstance<Authors>[]
     expect(authors.length).toBe(3)
@@ -172,7 +172,7 @@ describe('Fetching Associated Data - "posts belong to many authors"', () => {
   })
 
   test('returns empty results if there is no data matching the params given to `associateFind`', async () => {
-    const message = Author({}).addToStore()
+    const message = Author({}).createInStore()
     const result = await message._posts.find()
     expect(result.data.length).toEqual(0)
     expect(result.data.map((i: any) => i.id)).toEqual([])
@@ -182,14 +182,14 @@ describe('Fetching Associated Data - "posts belong to many authors"', () => {
 describe('Writing to the Association Attribute', () => {
   test('writing records to the association triggers the handleSetInstance callback', async () => {
     const posts = [{ id: 1, name: 'Marshall' }]
-    const author = Author({}).addToStore()
+    const author = Author({}).createInStore()
     author.posts = posts
     expect(author.setInstanceRan).toBeTruthy()
   })
 
   test('after passing through handleSetInstance, the data can be retrieved from the store.', async () => {
     const posts = await postService.find({ query: { authorIds: 1 }, paginate: false, skipStore: true })
-    const author = Author({ id: 1 }).addToStore()
+    const author = Author({ id: 1 }).createInStore()
     author.posts = posts
     // expect(author.posts).toEqual([1, 2, 3])
     expect(author.posts.length).toBe(3)
@@ -197,7 +197,7 @@ describe('Writing to the Association Attribute', () => {
   })
 
   test('associations are maintained for records without ids when the query in makeParams includes __tempId', async () => {
-    const author = Author({ id: 1 }).addToStore()
+    const author = Author({ id: 1 }).createInStore()
 
     // Write data without an id to the `posts` setter
     author.posts = [{ title: 'Rocketman', userIds: [] }]
@@ -210,7 +210,7 @@ describe('Saving Instance', () => {
   test('assocations are not included during save', async () => {
     let hadAssociatedData = false
     let hookRan = false
-    const author = Author({ id: 1 }).addToStore()
+    const author = Author({ id: 1 }).createInStore()
 
     // Populate the posts and make sure they show up through the getter.
     await author._posts.find()
@@ -233,7 +233,7 @@ describe('Saving Instance', () => {
   })
 
   test('assocated data must be manually saved', async () => {
-    const message = Author({ id: 1 }).addToStore()
+    const message = Author({ id: 1 }).createInStore()
     await message._posts.find()
     const results = await Promise.all(message.posts.map((post) => post.save()))
     expect(results?.length).toBe(3)
@@ -242,7 +242,7 @@ describe('Saving Instance', () => {
 
 describe('Cloning Associations', () => {
   test('associated data is still present after clone', async () => {
-    const author = Author({ id: 1 }).addToStore()
+    const author = Author({ id: 1 }).createInStore()
     await author._posts.find()
     const clone = author.clone()
     expect(author.posts?.length).toEqual(3)
@@ -250,7 +250,7 @@ describe('Cloning Associations', () => {
   })
 
   test('associated data is still present after clone/commit', async () => {
-    const author = Author({ id: 1 }).addToStore()
+    const author = Author({ id: 1 }).createInStore()
     await author._posts.find()
     const clone = author.clone()
     const original = clone.commit()
@@ -259,7 +259,7 @@ describe('Cloning Associations', () => {
   })
 
   test('associated data is still present after clone/re-clone/reset', async () => {
-    const author = Author({ id: 1 }).addToStore()
+    const author = Author({ id: 1 }).createInStore()
     await author._posts.find()
     const clone = author.clone()
 

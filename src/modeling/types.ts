@@ -71,7 +71,7 @@ export interface BaseModelInstanceProps<M extends AnyData = AnyData> {
    * Adds the current instance to the appropriate store. If the instance is a clone, it will be added to `clones`. If it
    * has an `idField`, it will be added to items, otherwise it will be added to temps.
    */
-  addToStore<N extends AnyData>(this: N): N
+  createInStore<N extends AnyData>(this: N): N
   /**
    * Removes the current instance from items, temps, and clones.
    */

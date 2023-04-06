@@ -1,4 +1,3 @@
-import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo } from '../types'
 import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
@@ -6,7 +5,8 @@ import { unref } from 'vue-demi'
 import stringify from 'fast-json-stable-stringify'
 import isEqual from 'fast-deep-equal'
 import fastCopy from 'fast-copy'
-import { defineProperties } from './define-properties'
+import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo } from '../types'
+import { defineValues } from './define-properties'
 import { convertData } from './convert-data'
 import { deepUnref } from './deep-unref'
 
@@ -43,20 +43,24 @@ interface GetExtendedQueryInfoOptions {
 export function getExtendedQueryInfo({ queryInfo, service, store, qid }: GetExtendedQueryInfoOptions) {
   const qidState: any = store.pagination[qid.value]
   const queryState = qidState[queryInfo.queryId]
-  if (!queryState) return null
+  if (!queryState)
+    return null
 
   const { total } = queryState
   const pageState = queryState[queryInfo.pageId as string]
-  if (!pageState) return null
+  if (!pageState)
+    return null
 
-  const { ids, queriedAt } = pageState
+  const { ids, queriedAt, ssr } = pageState
   const result = Object.values(_.pick(store.itemsById, ...ids))
   const items = convertData(service, result)
-  const info = { ...queryInfo, ids, items, total, queriedAt, queryState }
+  const info = { ...queryInfo, ids, items, total, queriedAt, queryState, ssr }
   return info || null
 }
 
-export const hasOwn = (obj: AnyData, prop: string) => Object.prototype.hasOwnProperty.call(obj, prop)
+export function hasOwn(obj: AnyData, prop: string) {
+  return Object.prototype.hasOwnProperty.call(obj, prop)
+}
 
 /**
  *
@@ -70,11 +74,12 @@ export function getArray<T>(data: T | T[]) {
 
 export function pickDiff(obj: any, diffDef: DiffDefinition) {
   // If no diff definition was given, return the entire object.
-  if (!diffDef) return obj
+  if (!diffDef)
+    return obj
 
   // Normalize all types into an array and pick the keys
   const keys = typeof diffDef === 'string' ? [diffDef] : Array.isArray(diffDef) ? diffDef : Object.keys(diffDef || obj)
-  const topLevelKeys = keys.map((key) => key.toString().split('.')[0])
+  const topLevelKeys = keys.map(key => key.toString().split('.')[0])
   return _.pick(obj, ...topLevelKeys)
 }
 
@@ -83,15 +88,18 @@ export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition)
   const cloneVal = pickDiff(clone, diffDef)
 
   // If diff was an object, merge the values into the cloneVal
-  if (typeof diffDef !== 'string' && !Array.isArray(diffDef)) Object.assign(cloneVal, diffDef)
+  if (typeof diffDef !== 'string' && !Array.isArray(diffDef))
+    Object.assign(cloneVal, diffDef)
 
   const areEqual = isEqual(originalVal, cloneVal)
 
-  if (areEqual) return {}
+  if (areEqual)
+    return {}
 
   // Loop through clone, compare original value to clone value, if different add to diff object.
   const diff = Object.keys(cloneVal).reduce((diff: AnyData, key) => {
-    if (!isEqual(original[key], cloneVal[key])) diff[key] = cloneVal[key]
+    if (!isEqual(original[key], cloneVal[key]))
+      diff[key] = cloneVal[key]
 
     return diff
   }, {})
@@ -117,14 +125,16 @@ export function restoreTempIds(data: AnyDataOrArray<any>, resData: AnyDataOrArra
 
   responseItems.forEach((item: any, index: number) => {
     const tempId = sourceItems[index][tempIdField]
-    if (tempId) defineProperties(item, { [tempIdField]: tempId })
+    if (tempId)
+      defineValues(item, { [tempIdField]: tempId })
   })
 
   return isArray ? responseItems : responseItems[0]
 }
 
 function stringifyIfObject(val: any): string | any {
-  if (typeof val === 'object' && val != null) return val.toString()
+  if (typeof val === 'object' && val != null)
+    return val.toString()
 
   return val
 }
@@ -138,12 +148,16 @@ function stringifyIfObject(val: any): string | any {
  * @param idField
  */
 export function getId(item: any, idField: string) {
-  if (!item) return
-  if (idField && item[idField] !== undefined) return stringifyIfObject(item[idField as string])
+  if (!item)
+    return
+  if (idField && item[idField] !== undefined)
+    return stringifyIfObject(item[idField as string])
 
-  if (item.id !== undefined) return stringifyIfObject(item.id)
+  if (item.id !== undefined)
+    return stringifyIfObject(item.id)
 
-  if (item._id !== undefined) return stringifyIfObject(item._id)
+  if (item._id !== undefined)
+    return stringifyIfObject(item._id)
 }
 
 /**
@@ -151,11 +165,12 @@ export function getId(item: any, idField: string) {
  * @param params existing params
  */
 export function getParams(params?: MaybeRef<Params<Query>>): Params<Query> {
-  if (!params) return {}
+  if (!params)
+    return {}
 
   return fastCopy(unref(params))
 }
 
 export function timeout(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms))
 }

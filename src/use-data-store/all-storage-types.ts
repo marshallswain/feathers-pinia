@@ -1,17 +1,17 @@
-import type { AnyData } from '../types'
-import type { MakeCopyOptions } from '../types'
+import type { AnyData, MakeCopyOptions } from '../types'
 import fastCopy from 'fast-copy'
-import { defineProperties, getArray } from '../utils'
+import { defineValues } from '../utils'
 import { useServiceTemps } from './temps'
 import { useServiceClones } from './clones'
 import { useServiceStorage } from './storage'
 
 interface UseAllStorageOptions {
   getIdField: (val: AnyData) => any
+  setupInstance: any
 }
 
 export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOptions) => {
-  const { getIdField } = options
+  const { getIdField, setupInstance } = options
 
   /**
    * Makes a copy of the Model instance with __isClone properly set
@@ -28,7 +28,7 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
         return this[this.__idField] == null
       },
     })
-    const withExtras = defineProperties(copied, {
+    const withExtras = defineValues(copied, {
       __isClone: isClone,
       __tempId: item.__tempId,
     })
@@ -38,12 +38,16 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
   // item storage
   const itemStorage = useServiceStorage<M>({
     getId: getIdField,
+    beforeWrite: setupInstance,
+    onRead: setupInstance,
   })
 
   // temp item storage
   const { tempStorage, moveTempToItems } = useServiceTemps<M>({
     getId: (item) => item.__tempId,
     itemStorage,
+    beforeWrite: setupInstance,
+    onRead: setupInstance,
   })
 
   // clones
@@ -53,8 +57,9 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
     makeCopy,
     beforeWrite: (item) => {
       markAsClone(item)
-      return item
+      return setupInstance(item)
     },
+    onRead: setupInstance,
   })
 
   /**
@@ -73,49 +78,6 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
     return itemStorage.merge(item)
   }
 
-  /**
-   * An alias for addOrUpdate
-   * @param data a single record or array of records.
-   * @returns data added or modified in the store. If you pass an array, you get an array back.
-   */
-  function addToStore(data: AnyData | AnyData[]): AnyData | AnyData[] {
-    const { items, isArray } = getArray(data)
-
-    const _items = items.map((item: AnyData) => {
-      const stored = addItemToStorage(item as any)
-      return stored
-    })
-
-    return isArray ? _items : _items[0]
-  }
-
-  /**
-   * If a clone is provided, it removes the clone from the store.
-   * If a temp is provided, it removes the temp from the store.
-   * If an item is provided, the item and its associated temp and clone are removed.
-   * If a string is provided, it removes any item, temp, or clone from the stores.
-   * @param data
-   */
-  function removeFromStore(data: M | M[]) {
-    const { items } = getArray(data)
-    items.forEach((item: M) => {
-      if (typeof item === 'string') {
-        itemStorage.removeItem(item)
-        tempStorage.removeItem(item)
-        cloneStorage.removeItem(item)
-      } else {
-        if ((item as M).__isClone) return cloneStorage.remove(item as M)
-
-        if ((item as M).__isTemp) return tempStorage.remove(item as M)
-
-        itemStorage.remove(item)
-        tempStorage.remove(item)
-        cloneStorage.remove(item)
-      }
-    })
-    return data
-  }
-
   return {
     itemStorage,
     tempStorage,
@@ -123,7 +85,6 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
     clone,
     commit,
     reset,
-    addToStore,
-    removeFromStore,
+    addItemToStorage,
   }
 }

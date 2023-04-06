@@ -2,8 +2,8 @@ import type { Ref } from 'vue-demi'
 import type { NullableId } from '@feathersjs/feathers'
 import { computed, ref } from 'vue-demi'
 import { BadRequest } from '@feathersjs/errors'
-import { useCounter } from '../utils/use-counter'
 import decode from 'jwt-decode'
+import { useCounter } from '../utils/use-counter'
 
 type SuccessHandler = (result: Record<string, any>) => Promise<Record<string, any> | void>
 type ErrorHandler = (error: Error) => Promise<void>
@@ -28,7 +28,7 @@ interface AuthenticateData {
   password?: string
 }
 
-export const useAuth = <d extends AuthenticateData = AuthenticateData>(options: UseAuthOptions) => {
+export function useAuth<d extends AuthenticateData = AuthenticateData>(options: UseAuthOptions) {
   const { api, servicePath, skipTokenCheck } = options
   const entityService = servicePath ? api.service(servicePath) : null
   const entityKey = options.entityKey || 'user'
@@ -49,7 +49,8 @@ export const useAuth = <d extends AuthenticateData = AuthenticateData>(options: 
   // user
   const userId = ref<NullableId>(null)
   const user = computed(() => {
-    if (!entityService) return null
+    if (!entityService)
+      return null
     const u = entityService?.getFromStore(userId)
     return u.value || null
   })
@@ -65,7 +66,7 @@ export const useAuth = <d extends AuthenticateData = AuthenticateData>(options: 
   const handleAuthResult = (result: any) => {
     const entity = result[entityKey]
     if (entityService && entity) {
-      const stored = entityService.store.addToStore(entity)
+      const stored = entityService.store.createInStore(entity)
       userId.value = stored[entityService.store.idField] || stored.__tempId
     }
     isAuthenticated.value = true
@@ -96,7 +97,8 @@ export const useAuth = <d extends AuthenticateData = AuthenticateData>(options: 
     try {
       const payload = decode(jwt) as any
       return new Date().getTime() > payload.exp * 1000
-    } catch (error) {
+    }
+    catch (error) {
       return false
     }
   }

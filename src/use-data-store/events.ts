@@ -25,7 +25,7 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
     async () => {
       const values = Object.values(addOrUpdateById.value)
       if (values.length === 0) return
-      service.store.addToStore(values)
+      service.store.createInStore(values)
       addOrUpdateById.value = {}
     },
     options.debounceEventsTime || 20,
@@ -87,7 +87,7 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
     }
 
     if (!options.debounceEventsTime)
-      eventName === 'removed' ? service.store.removeFromStore(item) : service.store.addToStore(item)
+      eventName === 'removed' ? service.store.removeFromStore(item) : service.store.createInStore(item)
     else eventName === 'removed' ? enqueueRemoval(item) : enqueueAddOrUpdate(item)
   }
 

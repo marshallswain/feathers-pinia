@@ -9,21 +9,24 @@ interface Options {
   request?: any
 }
 
-export const usePageData = (options: Options) => {
+export function usePageData(options: Options) {
   const { limit, skip, total, request } = options
   /**
    * The number of pages available based on the results returned in the latestQuery prop.
    */
   const pageCount = computed(() => {
-    if (total.value) return Math.ceil(total.value / limit.value)
+    if (total.value)
+      return Math.ceil(total.value / limit.value)
     else return 1
   })
 
   // Uses Math.floor so we can't land on a non-integer page like 1.4
   const currentPage = computed({
     set(pageNumber: number) {
-      if (pageNumber < 1) pageNumber = 1
-      else if (pageNumber > pageCount.value) pageNumber = pageCount.value
+      if (pageNumber < 1)
+        pageNumber = 1
+      else if (pageNumber > pageCount.value)
+        pageNumber = pageCount.value
       const newSkip = limit.value * Math.floor(pageNumber - 1)
       skip.value = newSkip
     },
@@ -41,7 +44,8 @@ export const usePageData = (options: Options) => {
   })
 
   const wait = async () => {
-    if (request?.value) await request.value
+    if (request?.value)
+      await request.value
   }
   const toStart = async () => {
     currentPage.value = 1

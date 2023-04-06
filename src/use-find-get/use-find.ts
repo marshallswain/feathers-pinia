@@ -1,22 +1,18 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query, QueryInfo } from '../types'
-import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types'
-import type { Ref, ComputedRef } from 'vue-demi'
+import type { ComputedRef, Ref } from 'vue-demi'
 import { computed, ref, unref, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
-import { deepUnref, getExtendedQueryInfo, getQueryInfo } from '../utils'
-import { itemsFromPagination } from './utils'
-import { convertData } from '../utils/convert-data'
-import { usePageData } from './utils-pagination'
 import { useDebounceFn } from '@vueuse/core'
 import stringify from 'fast-json-stable-stringify'
+import { deepUnref, getExtendedQueryInfo, getQueryInfo } from '../utils'
+import { convertData } from '../utils/convert-data'
+import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types'
+import { itemsFromPagination } from './utils'
+import { usePageData } from './utils-pagination'
+import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types'
 
-export const useFind = (
-  params: ComputedRef<UseFindParams | null>,
-  options: UseFindOptions = {},
-  deps: UseFindGetDeps,
-) => {
-  const { pagination, debounce = 100, immediate = true, watch: _watch = false, paginateOnServer = false } = options
+export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
+  const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOnServer = false } = options
   const { store, service } = deps
 
   /** PARAMS **/
@@ -124,6 +120,9 @@ export const useFind = (
 
   // pulled into its own function so it can be called from `makeRequest` or `find`
   function setupPendingState() {
+    // prevent setting pending state for cached ssr requests
+    if (currentQuery.value?.ssr) return
+
     if (!haveBeenRequested.value) haveBeenRequested.value = true // never resets
     clearError()
     if (!isPending.value) isPending.value = true
@@ -135,9 +134,7 @@ export const useFind = (
     const ___params = unref(paginateOnServer ? (paramsWithPagination as any) : __params)
 
     // if queryWhen is falsey, return early with dummy data
-    if (!queryWhenFn()) {
-      return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
-    }
+    if (!queryWhenFn()) return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
 
     setupPendingState()
     requestCount.value++
@@ -149,7 +146,7 @@ export const useFind = (
       if (response.total) {
         const queryInfo = getQueryInfo(paramsWithPagination.value)
         const extendedQueryInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
-        queries.value.push(extendedQueryInfo as ExtendedQueryInfo)
+        if (extendedQueryInfo) queries.value.push(extendedQueryInfo as unknown as ExtendedQueryInfo)
         if (queries.value.length > 2) queries.value.shift()
       }
       haveLoaded.value = true
@@ -165,7 +162,7 @@ export const useFind = (
   const findDebounced = useDebounceFn<any>(find, debounce)
 
   /** Query Gatekeeping **/
-  const makeRequest = async (_params?: Params<Query>) => {
+  const makeRequest = async () => {
     // If params are null, do nothing
     if (params.value === null) return
 
@@ -187,7 +184,7 @@ export const useFind = (
   /** Pagination Data **/
   const total = computed(() => {
     if (paginateOnServer) {
-      return latestQuery.value?.total || 0
+      return currentQuery.value?.total || 0
     } else {
       const count = service.countInStore(paramsWithoutPagination.value)
       return count.value
@@ -197,16 +194,16 @@ export const useFind = (
   const { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev } = pageData
 
   /** Query Watching **/
-  if (paginateOnServer) {
+  if (paginateOnServer && _watch) {
     watch(
       paramsWithPagination,
-      (val: UseFindParams) => {
-        makeRequest(val)
+      () => {
+        makeRequest()
       },
       { immediate: false },
     )
 
-    if (immediate) makeRequest(paramsWithPagination.value)
+    if (immediate) makeRequest()
 
     // watch realtime events and re-query
     // TODO: only re-query when relevant
@@ -229,6 +226,10 @@ export const useFind = (
   return {
     paramsWithPagination,
     isSsr: computed(() => {
+      // hack: read total early during SSR to prevent hydration mismatch
+      setTimeout(() => {
+        ref(total.value)
+      }, 0)
       return store.isSsr
     }), // ComputedRef<boolean>
     qid, // WritableComputedRef<string>

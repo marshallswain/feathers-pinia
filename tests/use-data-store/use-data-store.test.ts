@@ -7,6 +7,7 @@ describe('use service', () => {
     })
 
     expect(Object.keys(service)).toEqual([
+      'new',
       'idField',
       'whitelist',
       'paramsForServer',
@@ -37,11 +38,12 @@ describe('use service', () => {
 
       // local queries
       'findInStore',
+      'findOneInStore',
       'countInStore',
+      'createInStore',
       'getFromStore',
+      'patchInStore',
       'removeFromStore',
-      'removeByQuery',
-      'addToStore',
       'clearAll',
 
       // pending state

@@ -83,18 +83,18 @@ afterAll(() => reset())
 describe('Populated Data', () => {
   //
   test('values added by associatedGet default to null when no related data is present', async () => {
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     expect(comment.author).toBe(null)
   })
 
   test('a bogus id will still return null (no local data to populate)', async () => {
-    const comment = Comment({ authorId: 1 }).addToStore()
+    const comment = Comment({ authorId: 1 }).createInStore()
     expect(comment.author).toBe(null)
   })
 
   test("pre-populated data gets added to the associated Model's store", async () => {
     const author = { id: 1, name: 'Marshall' }
-    const comment = Comment({ authorId: 1, author }).addToStore()
+    const comment = Comment({ authorId: 1, author }).createInStore()
     const populatedUser = JSON.parse(JSON.stringify(comment.author))
     expect(populatedUser).toEqual(author)
   })
@@ -102,30 +102,30 @@ describe('Populated Data', () => {
 
 describe('AssociateGet Utils', () => {
   test('utils are added at underscored prop, like `_author`', async () => {
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     expect(comment._author).toBeDefined()
   })
 
   test('utils include a `get` method', () => {
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     expect(typeof comment._author.get).toBe('function')
   })
 
   test('utils include a `getFromStore` method', () => {
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     expect(typeof comment._author.getFromStore).toBe('function')
   })
 })
 
 describe('Fetching Associated Data', () => {
   test('can get associated data directly from the instance', async () => {
-    const comment = Comment({ authorId: 3 }).addToStore()
+    const comment = Comment({ authorId: 3 }).createInStore()
     const result = await comment._author.get(3)
     expect(result?.id).toBe(3)
   })
 
   test('throws 404 if not found', async () => {
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     try {
       await comment._author.get(4)
     } catch (error: any) {
@@ -137,7 +137,7 @@ describe('Fetching Associated Data', () => {
 describe('Writing to the Association Attribute', () => {
   test('writing a record to the association triggers the handleSetInstance callback', async () => {
     const author = { id: 1, name: 'Marshall' }
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     comment.author = author
     expect(comment.setInstanceRan).toBeTruthy()
     expect(comment.authorId).toBe(1)
@@ -145,14 +145,14 @@ describe('Writing to the Association Attribute', () => {
 
   test('after passing through handleSetInstance, the data can be retrieved from the store.', async () => {
     const author = { id: 1, name: 'Marshall' }
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     comment.author = author
     expect(comment.author).toEqual(author)
   })
 
   test('associations also work for temp records', async () => {
     const author = { name: 'Marshall' }
-    const comment = Comment({}).addToStore()
+    const comment = Comment({}).createInStore()
     // Write data without an id to the `author` setter
     comment.author = author
     expect(comment.author.__tempId).toBe(comment.authorId)
@@ -163,7 +163,7 @@ describe('Writing to the Association Attribute', () => {
 describe('Saving Instance', () => {
   test('assocations are not included during save', async () => {
     let hadAssociatedData = false
-    const comment = Comment({ authorId: 3 }).addToStore()
+    const comment = Comment({ authorId: 3 }).createInStore()
     // Populate the author and make sure it shows up through the getter.
     await comment._author.get(3)
     expect(comment.author.id).toBe(3)
@@ -179,7 +179,7 @@ describe('Saving Instance', () => {
   })
 
   test('assocated data must be manually saved', async () => {
-    const comment = Comment({ authorId: 3 }).addToStore()
+    const comment = Comment({ authorId: 3 }).createInStore()
     await comment._author.get(3)
     const result = await comment.author?.save()
     expect(result.id).toBe(3)
@@ -188,14 +188,14 @@ describe('Saving Instance', () => {
 
 describe('Cloning Associations', () => {
   test('associated data is still present after clone', async () => {
-    const comment = Comment({ authorId: 3 }).addToStore()
+    const comment = Comment({ authorId: 3 }).createInStore()
     await comment._author.get(3)
     const clone = comment.clone()
     expect(comment.author).toEqual(clone.author)
   })
 
   test('associated data is still present after clone/commit', async () => {
-    const comment = Comment({ authorId: 3 }).addToStore()
+    const comment = Comment({ authorId: 3 }).createInStore()
     await comment._author.get(3)
     const clone = comment.clone()
     const original = clone.commit()
@@ -203,7 +203,7 @@ describe('Cloning Associations', () => {
   })
 
   test('associated data is still present after clone/re-clone/reset', async () => {
-    const comment = Comment({ authorId: 3 }).addToStore()
+    const comment = Comment({ authorId: 3 }).createInStore()
     await comment._author.get(3)
 
     const clone = comment.clone()

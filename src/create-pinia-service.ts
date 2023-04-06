@@ -1,53 +1,37 @@
 import type { Params as FeathersParams, FeathersService, Id } from '@feathersjs/feathers'
 import type { AnyData, Params, Query } from './types'
 import type { MaybeRef } from '@vueuse/core'
-import type { UseFindOptions, UseFindPage, UseFindParams, UseGetParams } from './use-find-get'
+import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get'
 import type { ComputedRef } from 'vue-demi'
 import { reactive, computed, isRef, ref, unref } from 'vue-demi'
 import { getParams } from './utils'
 import { useFind, useGet } from './use-find-get'
-import { useModelInstance } from './modeling/use-model-instance'
-import { useFeathersInstance } from './modeling/use-feathers-instance'
 import { convertData } from './utils/convert-data'
 import { FeathersInstance } from './modeling'
 
 interface PiniaServiceOptions {
   servicePath: string
   store: any
-  setupFn?: <D extends AnyData>(data: D) => D
 }
 
 export class PiniaService<Svc extends FeathersService> {
   store
   servicePath = ''
-  private setupFn
 
   constructor(public service: Svc, public options: PiniaServiceOptions) {
     this.store = options.store
-    this.setupFn = options.setupFn
     this.servicePath = options.servicePath
   }
 
-  /* prepare new "instances" outside of store */
-
   /**
+   * Prepare new "instances" outside of store
+   *
    * Functionally upgrades plain data to a service model "instance".
    * - flags each record with `__isSetup` to avoid duplicate work.
    */
   new(data: AnyData = {}) {
-    if (data.__isSetup) return data
-
-    const asBaseModel = useModelInstance(data, {
-      store: this.store,
-      setupInstance: (data: AnyData) => this.new(data),
-    })
-    const asFeathersModel = useFeathersInstance(asBaseModel, {
-      service: this as any,
-      store: this.store,
-    })
-    const afterSetup = this.setupFn ? this.setupFn(asFeathersModel) : asFeathersModel
-    Object.defineProperty(afterSetup, '__isSetup', { value: true })
-    return reactive(afterSetup)
+    const asInstance = this.store.new(data)
+    return reactive(asInstance)
   }
 
   /* service methods clone params */
@@ -107,10 +91,8 @@ export class PiniaService<Svc extends FeathersService> {
   }
 
   findOneInStore(params?: MaybeRef<Params<Query>>) {
-    const result = this.store.findInStore(params)
-    const item = result.data[0] || null
-    const converted = convertData(this, item)
-    return converted
+    const result = this.store.findOneInStore(params)
+    return result
   }
 
   countInStore(params?: MaybeRef<Params<Query>>) {
@@ -126,7 +108,7 @@ export class PiniaService<Svc extends FeathersService> {
 
   createInStore(data: AnyData) {
     const convertedInput = convertData(this, data)
-    const result = this.store.addToStore(convertedInput)
+    const result = this.store.createInStore(convertedInput)
     const converted = convertData(this, result)
     return converted
   }

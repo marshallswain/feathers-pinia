@@ -30,14 +30,14 @@ describe(`Temporary Records`, () => {
   })
 
   test('temps can be retrieved with getFromStore', () => {
-    const item = service.new({ name: 'this is a test' }).addToStore()
+    const item = service.new({ name: 'this is a test' }).createInStore()
     const tempFromStore = service.getFromStore(item.__tempId).value
     expect(tempFromStore?.__tempId).toBe(item.__tempId)
     expect(tempFromStore?.__isTemp).toBeTruthy()
   })
 
   test('temps are added to tempsById', () => {
-    const item = service.new({ name: 'this is a test' }).addToStore()
+    const item = service.new({ name: 'this is a test' }).createInStore()
     expect(service.store.tempsById).toHaveProperty(item.__tempId)
   })
 
@@ -54,7 +54,7 @@ describe(`Temporary Records`, () => {
   })
 
   test('saving a temp does not remove __tempId, temp added to store is updated', async () => {
-    const temp = service.new({ name: 'this is a test' }).addToStore()
+    const temp = service.new({ name: 'this is a test' }).createInStore()
     const item = await temp.save()
     expect(temp._id).toBeDefined()
     expect(temp.__tempId).toBeDefined()
@@ -70,19 +70,19 @@ describe(`Temporary Records`, () => {
   })
 
   test('find getter does not returns temps when params.temps is falsy', async () => {
-    service.new({ name: 'this is a test' }).addToStore()
+    service.new({ name: 'this is a test' }).createInStore()
     const { data } = service.findInStore({ query: {} })
     expect(data.value.length).toBe(12)
   })
 
   test('find getter returns temps when temps param is true', async () => {
-    service.new({ name: 'this is a test' }).addToStore()
+    service.new({ name: 'this is a test' }).createInStore()
     const { data } = service.findInStore({ query: {}, temps: true })
     expect(data.value.length).toBe(13)
   })
 
   test('temps can be removed from the store', async () => {
-    const item = service.new({ name: 'this is a test' }).addToStore()
+    const item = service.new({ name: 'this is a test' }).createInStore()
     item.removeFromStore()
     expect(item.__tempId).toBeDefined()
     expect(service.store.tempsById).not.toHaveProperty(item.__tempId)

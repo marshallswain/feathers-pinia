@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from 'vue-demi'
+import { computed, ref } from 'vue-demi'
 import { api, makeContactsData } from '../fixtures'
 import { resetService, timeout } from '../test-utils'
 
@@ -105,7 +105,7 @@ describe('useFind', () => {
       const _params = computed(() => {
         return { query }
       })
-      const { data, total, find } = service.useFind(_params)
+      const { data, find } = service.useFind(_params)
       await find()
       expect(data.value[0].name).toBe('Moose')
 
@@ -322,7 +322,7 @@ describe('latestQuery and previousQuery', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { latestQuery, previousQuery, currentQuery, find, next } = service.useFind(params, {
+    const { latestQuery, previousQuery, find, next } = service.useFind(params, {
       paginateOnServer: true,
       immediate: false,
     })
@@ -344,15 +344,16 @@ describe('latestQuery and previousQuery', () => {
       'total',
       'queriedAt',
       'queryState',
+      'ssr',
     ]
 
-    expect(Object.keys(latestQuery.value)).toEqual(keys)
+    expect(Object.keys(latestQuery.value as any)).toEqual(keys)
     expect(previousQuery.value).toBe(null)
 
     await next()
 
-    expect(Object.keys(latestQuery.value)).toEqual(keys)
-    expect(Object.keys(previousQuery.value)).toEqual(keys)
+    expect(Object.keys(latestQuery.value as any)).toEqual(keys)
+    expect(Object.keys(previousQuery.value as any)).toEqual(keys)
   })
 
   describe('Has `allLocalData`', () => {
@@ -413,7 +414,7 @@ describe('latestQuery and previousQuery', () => {
       if (!shouldQuery.value) return null
       return { query: { name } }
     })
-    const { data, total, requestCount, request } = service.useFind(params, { paginateOnServer: true })
+    const { data, requestCount, request } = service.useFind(params, { paginateOnServer: true })
 
     await request.value
 

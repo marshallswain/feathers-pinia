@@ -1,21 +1,20 @@
 import type { Id } from '@feathersjs/feathers'
-import type { Params } from '../types'
-import type { AnyData } from '../types'
-import type { StorageMapUtils } from './storage'
 import { _ } from '@feathersjs/commons'
 import { computed, unref } from 'vue-demi'
 import { filterQuery, select, sorter } from '@feathersjs/adapter-commons'
-import { sqlOperations } from './utils-custom-operators'
 import sift from 'sift'
 import fastCopy from 'fast-copy'
-import { deepUnref } from '../utils'
+import type { AnyData, Params } from '../types'
+import { deepUnref, getArray } from '../utils'
+import { sqlOperations } from './utils-custom-operators'
+import type { StorageMapUtils } from './storage'
 
 interface UseServiceLocalOptions<M extends AnyData> {
   idField: string
   itemStorage: StorageMapUtils<M>
   tempStorage?: StorageMapUtils<M>
   cloneStorage?: StorageMapUtils<M>
-  removeFromStore: (data: M | M[]) => M | M[]
+  addItemToStorage: any
   whitelist?: string[]
   paramsForServer?: string[]
   customSiftOperators?: Record<string, any>
@@ -24,13 +23,13 @@ interface UseServiceLocalOptions<M extends AnyData> {
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
 const additionalOperators = ['$elemMatch']
 
-export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: UseServiceLocalOptions<M>) => {
+export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: UseServiceLocalOptions<M>) {
   const {
     idField,
     itemStorage,
     tempStorage,
     cloneStorage,
-    removeFromStore,
+    addItemToStorage,
     paramsForServer = [],
     whitelist = [],
     customSiftOperators = {},
@@ -66,7 +65,7 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     return { values, filters }
   }
 
-  const findInStore = (params: Params<Q>) => {
+  function findInStore(params: Params<Q>) {
     const result = computed(() => {
       // clean up any nested refs
       if (params.query) params.query = deepUnref(params.query)
@@ -100,7 +99,15 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     }
   }
 
-  const countInStore = (params: Params<Q>) => {
+  function findOneInStore(params: Params<Q>) {
+    const result = findInStore(params)
+    const item = computed(() => {
+      return result.data.value[0] || null
+    })
+    return item
+  }
+
+  function countInStore(params: Params<Q>) {
     const value = computed(() => {
       params = { ...unref(params) }
 
@@ -112,8 +119,8 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
     return value
   }
 
-  const getFromStore = (id: Id | null, params?: Params<Q>) =>
-    computed((): M | null => {
+  const getFromStore = (id: Id | null, params?: Params<Q>) => {
+    return computed((): M | null => {
       id = unref(id)
       params = fastCopy(unref(params) || {})
       if (params.query) params.query = deepUnref(params.query)
@@ -129,21 +136,76 @@ export const useServiceLocal = <M extends AnyData, Q extends AnyData>(options: U
       const toReturn = params.clones && item.clone ? item.clone(undefined, { useExisting: true }) : item || null
       return toReturn
     })
-
-  const removeByQuery = (params: Params<Q>) => {
-    const clones = cloneStorage ? cloneStorage.list.value : []
-    const { values } = filterItems(params, clones)
-    const result = removeFromStore(values)
-    return result
   }
 
-  const associations = {}
+  /**
+   * Write records to the store.
+   * @param data a single record or array of records.
+   * @returns data added or modified in the store. If you pass an array, you get an array back.
+   */
+  function createInStore(data: M | M[]): M | M[] {
+    const { items, isArray } = getArray(data)
+
+    const _items = items.map((item: AnyData) => {
+      const stored = addItemToStorage(item as any)
+      return stored
+    })
+
+    return isArray ? _items : _items[0]
+  }
+
+  // TODO
+  function patchInStore() {
+    return
+  }
+
+  /**
+   * If a clone is provided, it removes the clone from the store.
+   * If a temp is provided, it removes the temp from the store.
+   * If an item is provided, the item and its associated temp and clone are removed.
+   * If a string is provided, it removes any item, temp, or clone from the stores.
+   * @param data
+   */
+  function removeFromStore(data: M | M[] | null, params?: Params<Q>) {
+    if (data === null && params?.query && Object.keys(params?.query).length) {
+      const clones = cloneStorage ? cloneStorage.list.value : []
+      const { values } = filterItems(params, clones)
+      const result = removeItems(values)
+      return result
+    } else if (data !== null) {
+      removeItems(data)
+    }
+
+    return data
+  }
+
+  function removeItems(data: M | M[]) {
+    const { items } = getArray(data)
+    items.forEach((item: M) => {
+      if (typeof item === 'string') {
+        itemStorage.removeItem(item)
+        tempStorage?.removeItem(item)
+        cloneStorage?.removeItem(item)
+      } else {
+        if ((item as M).__isClone) return cloneStorage?.remove(item as M)
+
+        if ((item as M).__isTemp) return tempStorage?.remove(item as M)
+
+        itemStorage.remove(item)
+        tempStorage?.remove(item)
+        cloneStorage?.remove(item)
+      }
+    })
+    return data
+  }
 
   return {
     findInStore,
+    findOneInStore,
     countInStore,
     getFromStore,
-    associations,
-    removeByQuery,
+    createInStore,
+    patchInStore,
+    removeFromStore,
   }
 }

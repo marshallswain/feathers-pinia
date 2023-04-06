@@ -35,7 +35,7 @@ describe('useDataStore events', () => {
 
   it('handles removed events', async () => {
     const data = { _id: 'foo', name: 'Steve', age: 99 }
-    api.service('contacts').store.addToStore(data)
+    api.service('contacts').store.createInStore(data)
     const added = api.service('contacts').getFromStore('foo')
     expect(added.value.name).toBe('Steve')
 

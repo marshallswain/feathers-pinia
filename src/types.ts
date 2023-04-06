@@ -33,13 +33,14 @@ export interface QueryInfo {
   isExpired: boolean
 }
 
-export interface ExtendedQueryInfo extends QueryInfo {
+export interface QueryInfoExtended extends QueryInfo {
   ids: Id[]
   items: FeathersInstance<AnyData>[]
   total: number
   queriedAt: number
   queryState: PaginationStateQuery
 }
+export type ExtendedQueryInfo = QueryInfoExtended | null
 
 export type DiffDefinition = undefined | string | string[] | Record<string, any> | false
 
@@ -57,6 +58,7 @@ export interface Params<Q extends Query> extends FeathersParams<Q> {
   temps?: boolean
   clones?: boolean
   qid?: string
+  ssr?: boolean
   skipGetIfExists?: boolean
   data?: any
   preserveSsr?: boolean
