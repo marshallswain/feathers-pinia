@@ -7,18 +7,15 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# Install Feathers Client
+# Install Packages and Feathers Client
 
-Follow instructions on this page to install required packages. There's an optional section on how to install and use a
-typed Feathers v5 Dove Client from your Dove API. This page focuses on installing packages. The next page shows how
-create a Feathers Client.
+Install required packages, including the (optional) Feathers Dove Client.
 
 [[toc]]
 
 ## Install Packages
 
-You'll need these packages installed to use the Feathers Client, even if you're going to use the typed client from your
-Feathers v5 Dove API.
+You'll need these packages installed to use the Feathers Client, even if you're going to use the typed client from your Feathers v5 Dove API.
 
 ### Pinia and Feathers-Pinia
 
@@ -42,12 +39,11 @@ If your app will use feathers-rest (no realtime connection), install these packa
 npm i @feathersjs/feathers @feathersjs/authentication-client @feathersjs/rest-client
 ```
 
-## Install a Typed Feathers Client
+## Install Typed Client
 
-The FeathersJS v5 Dove CLI create a typed client application for you while you build your app. Use these steps to
-connect to a Dove-based API:
+The FeathersJS v5 Dove CLI creates a typed client application for you. Use these steps to install the client from a Dove-based API:
 
-### Prepare for Client Bundling
+### Prepare
 
 Check the `package.json` file in your Dove API's codebase to make sure it's ready to bundle. We won't be publishing to
 npm, but instead will bundle the client into the `public` directory of the Feathers app. The most important part is to
@@ -63,7 +59,7 @@ make sure you have the correct `name` and `version` configured:
 }
 ```
 
-### Bundle the Client
+### Bundle
 
 After preparing the correct information in the `package.json`, you're ready to run the bundle script:
 
@@ -87,7 +83,7 @@ feathers-pinia-api/
 ├─ package.json
 ```
 
-### Installing the Dove Client Bundle
+### Install
 
 Follow these instructions to install the bundled client into your application:
 
@@ -116,13 +112,13 @@ named the same as your API's `name` attribute in the api repo's `package.json`.
 }
 ```
 
-### Shipping to Production
+### Ship to Production
 
 You'll use a variation of the above process when shipping to production. Ship your Feathers API, first, including the
 client `.tgz` builds. Then you can update your CI build to install from the production API instead of from
 `localhost:3030`.
 
-### CI-Free Alternative
+### File-based Alternative
 
 As an alternative to updating a CI process, you can consider copying the client file into your client repo and
 installing it from the file you copied into your client application. If you check this file into your client's git repo,
@@ -132,8 +128,29 @@ you won't have to customize the CI process.
 npm i ./clients/feathers-pinia-api-0.0.3.tgz
 ```
 
-### Updating the Client Version
+### Update the Client
 
 Sometimes you may run into an issue when trying to update the client package. Even though you've specified the new
 version number in the `package.json`, the old version will be installed. To work around this, sometimes you have to wipe
 out the `node_modules` folder and reinstall packages with the new version number in place.
+
+## Important Notes
+
+### SSG Compatibility
+
+See the [Common Patterns](/guide/common-patterns#ssg-compatible-localstorage) page to see an example of SSG-friendly
+localStorage.
+
+### Errors with Fetch Setup
+
+If you're upgrading from Feathers v4 Crow and you receive an error like this one:
+
+```txt
+"Error: Failed to execute 'fetch' on 'Window': Illegal invocation"
+```
+
+You can fix this by binding `window` to `fetch`, as is also shown in the above examples.
+
+```ts
+window.fetch.bind(window)
+```
