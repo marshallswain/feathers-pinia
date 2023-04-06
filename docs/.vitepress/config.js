@@ -57,18 +57,11 @@ function getSetupSidebar() {
       text: 'Start a Project',
       items: [
         { text: 'Overview', link: '/setup/' },
+        { text: 'Install', link: '/setup/install' },
         {
-          text: 'Feathers Client',
+          text: 'Setup',
           items: [
-            { text: 'Install', link: '/setup/install' },
-            { text: 'Setup', link: '/setup/feathers-client' },
-          ]
-        },
-        { text: 'Setup Feathers-Pinia', link: '/setup/feathers-pinia' },
-        {
-          text: 'Frameworks',
-          items: [
-            // { text: 'Vite 🚧', link: '/setup/vite' },
+            { text: 'Vite', link: '/setup/vite' },
             { text: 'Nuxt 3', link: '/setup/nuxt3' },
             // { text: 'Quasar 🚧', link: '/setup/quasar' },
           ]
@@ -105,15 +98,15 @@ function getGuideSidebar() {
       items: [
         {
           text: 'Create a Client',
-          link: '/client/create-pinia-client'
+          link: '/guide/create-pinia-client'
         },
         {
           text: 'Global Configuration',
-          link: '/client/global-configuration'
+          link: '/guide/global-configuration'
         },
         {
           text: 'Service Configuration',
-          link: '/client/service-configuration'
+          link: '/guide/service-configuration'
         },
       ]
     },
