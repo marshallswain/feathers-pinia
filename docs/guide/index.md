@@ -11,7 +11,7 @@ maximize perceived application speed for end users while providing a pleasant de
 
 ## Overview of Features
 
-- **[Data Modeling](/guide/modeling-overview)** using pure functions with **stellar TypeScript Support**.
+- **[Data Modeling](/guide/modeling)** using pure functions with **stellar TypeScript Support**.
 - **[Model Associations](/guide/model-associations)** with the new [associateFind](/guide/associate-find) and
 [associateGet](/guide/associate-get) utilities.
 - **[Clone and Commit](/guide/common-patterns#mutation-multiplicity-pattern)** support for keeping mutation count low.

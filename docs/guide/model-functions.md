@@ -11,7 +11,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
-Data Modeling is the [most important feature of Feathers-Pinia](/guide/modeling-overview). There are two Model Function
+Data Modeling is the [most important feature of Feathers-Pinia](/guide/modeling). There are two Model Function
 types we can use to model our data:
 
 - [BaseModel](/guide/base-model) provides data storage, retrieval, temp records, and clone/commit methods.

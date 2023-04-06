@@ -107,7 +107,7 @@ export const api = createPiniaClient(feathersClient, {
 })
 ```
 
-See a full explanation of options on the [createPiniaClient](/client/create-pinia-client) page.
+See a full explanation of options on the [createPiniaClient](/guide/create-pinia-client) page.
 
 The above code wraps the `feathersClient` into a Feathers-Pinia turbocharged client. To create or reference a store, you
 just use the service like you would with a plain Feathers Client:

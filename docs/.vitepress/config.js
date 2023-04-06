@@ -124,7 +124,7 @@ function getGuideSidebar() {
     // {
     //   text: 'Data Modeling',
     //   items: [
-    //     { text: 'Overview', link: '/guide/modeling-overview' },
+    //     { text: 'Overview', link: '/guide/modeling' },
     //     {
     //       text: 'Model Functions',
     //       link: '/guide/model-functions',

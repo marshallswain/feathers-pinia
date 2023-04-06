@@ -317,7 +317,7 @@ const task = api.service('tasks').new({
 })
 ```
 
-Read more about [Modeling](/guide/modeling-overview).
+Read more about [Modeling](/guide/modeling).
 
 ## Handle Associations
 
