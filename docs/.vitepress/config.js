@@ -189,14 +189,14 @@ function getGuideSidebar() {
     //     { text: 'useGet', link: '/guide/use-get' },
     //   ],
     // },
-    // {
-    //   text: 'Other Tools',
-    //   items: [
-    //     { text: 'Auto-Imports', link: '/guide/auto-imports' },
-    //     { text: 'Nuxt Module', link: '/guide/nuxt-module' },
-    //     { text: 'OFetch', link: '/guide/ofetch' },
-    //     { text: 'syncWithStorage', link: '/guide/storage-sync' },
-    //   ],
-    // },
+    {
+      text: 'Other Tools',
+      items: [
+        { text: 'Auto-Imports', link: '/guide/auto-imports' },
+        { text: 'Nuxt Module', link: '/guide/nuxt-module' },
+        { text: 'OFetch', link: '/guide/ofetch' },
+        // { text: 'syncWithStorage', link: '/guide/storage-sync' },
+      ],
+    },
   ]
 }
