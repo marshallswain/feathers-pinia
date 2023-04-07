@@ -21,7 +21,22 @@ interface UseServiceLocalOptions<M extends AnyData> {
 }
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
-const additionalOperators = ['$elemMatch']
+const additionalOperators = [
+  '$in',
+  '$nin',
+  '$exists',
+  'eq',
+  'ne',
+  '$mod',
+  '$all',
+  '$not',
+  '$size',
+  '$type',
+  '$regex',
+  '$options',
+  '$where',
+  '$elemMatch',
+]
 
 export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: UseServiceLocalOptions<M>) {
   const {
@@ -39,10 +54,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
 
   /** @private */
   const _filterQueryOperators = computed(() => {
-    return additionalOperators
-      .concat(whitelist || [])
-      .concat(['$regex', '$options'])
-      .concat(Object.keys(operations))
+    return additionalOperators.concat(whitelist || []).concat(Object.keys(operations))
   })
 
   const filterItems = (params: Params<Q>, startingValues: M[] = []) => {
