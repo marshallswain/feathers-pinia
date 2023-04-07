@@ -6,19 +6,21 @@ outline: deep
 [[toc]]
 
 Welcome to the apex of Vue Data Modeling and FeathersJS connectivity for the artisan developer. Feathers-Pinia is
-**the** first-class data modeling solution built with the Vue Composition API. It is well known for its features which
+**the** first-class data modeling solution built with for Vue Composition API. It is well known for its features which
 maximize perceived application speed for end users while providing a pleasant developer experience.
 
 ## Overview of Features
 
-- **[Data Modeling](/guide/modeling)** using pure functions with **stellar TypeScript Support**.
+- **[Implicit, Functional Data Modeling](/guide/modeling)** maintains your data structure, requires no setup, and is
+fully customizable.
 - **[Model Associations](/guide/model-associations)** with the new [associateFind](/guide/associate-find) and
 [associateGet](/guide/associate-get) utilities.
-- **[Clone and Commit](/guide/common-patterns#mutation-multiplicity-pattern)** support for keeping mutation count low.
+- **[Clone and Commit](/guide/common-patterns#mutation-multiplicity-pattern)** dramatically reduces the need for custom
+Pinia actions.
 - **[Per-Record Defaults](/guide/model-functions-shared#useinstancedefaults)** offer a functional way of adding default
-values to every record.
+values and methods to every record.
 - **Realtime by Default**: It's ready for WebSocket-enhanced, multi-user interactivity.
-- **Independently Reactive**: no need to assign records to component or store `data` to enable reactive binding.
+- **Independent Reactivity**: no need to assign records to component or store `data` to enable reactive binding.
 - **[Local Queries](/services/querying-data)**: Make requests against locally-cached data as though it was a FeathersJS
 database, **now with support for SQL `$like` operators.**
 - **[Live Queries](/guide/common-patterns.html#reactive-lists-with-live-queries)** with client-side pagination allow
@@ -26,7 +28,7 @@ arrays of data to automatically update as new records are added, modified, or re
 - **[Server-Side Pagination](/guide/use-find#server-paging-auto-fetch)**: alternative to live-list pagination,
 optionally give all control to the server and perform manual fetching. In this mode, lists only update when new queries
 are made.
-- **[SSR Support](/guide/use-data-store#server-side-rendering-ssr)**: optimize server-loaded data on the client without
+- **[Super-Efficient SSR](/guide/use-data-store#server-side-rendering-ssr)**: optimize server-loaded data on the client without
 refetching. The latest Nuxt APIs are fully supported.
 - **[Fall-Through Cache](/guide/use-find)** like SWR but with built-in, low-memory query intelligence. It knows which
 records can be shared between different queries, which allows relevant records to show immediately while additional data
@@ -38,11 +40,7 @@ is fetched.
   on your data.
 - **[Flexible Auth Support](/guide/use-auth)** with the new `useAuth` composition utility.
 API.
-- Full support for [FeathersJS v5 Dove](https://feathersjs.com).
-
-While built for Pinia, it has evolved to support standalone configurations not requiring Pinia. Both the standalone and
-Pinia-based workflows are first-class integrations with almost 100% feature parity. Pinia-based setups support easy SSR
-integration.
+- Full support for [FeathersJS v5 Dove](https://feathersjs.com) and earlier versions of Feathers.
 
 ## Coming from Feathers-Vuex
 
