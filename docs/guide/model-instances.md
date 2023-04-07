@@ -43,22 +43,22 @@ standalone nature of instances makes them more flexible.
 Let's add the task to the Model's store:
 
 ```ts
-task.addToStore()
+task.createInStore()
 ```
 
-Wasn't that nice! The `addToStore` method is just hanging out there on the data, ready to be used.
+Wasn't that nice! The `createInStore` method is just hanging out there on the data, ready to be used.
 
 ### Decoupling from Modules
 
-The previous section showed how instances have a convenient `addToStore` method on them. In most cases this type of API
+The previous section showed how instances have a convenient `createInStore` method on them. In most cases this type of API
 is far more convenient than a verbose API like the one in the next example:
 
 ```ts
 // This type of API couples this code to the `feathers-pinia` module
 // This doesn't actually exist. 
-import { addToStore } from 'feathers-pinia'
+import { createInStore } from 'feathers-pinia'
 
-addToStore(todo)
+createInStore(todo)
 ```
 
 Every import in a component adds a tight coupling. You can't copy that component to another project without also
@@ -98,7 +98,7 @@ __idField
 __tempId
 
 // storage
-addToStore()
+createInStore()
 removeFromStore()
 
 // clone and commit
@@ -118,7 +118,7 @@ __idField
 __tempId
 
 // storage
-addToStore()
+createInStore()
 removeFromStore()
 
 // clone and commit

@@ -130,9 +130,9 @@ console.log(committed.__isClone) // --> false
 
 Each instance comes with two methods for adding and removing the instance from the store.
 
-### `addToStore()`
+### `createInStore()`
 
-The `addToStore` method adds the instance to the appropriate storage interface inside of the `Model.store`. If the
+The `createInStore` method adds the instance to the appropriate storage interface inside of the `Model.store`. If the
 instance has an `idField`, it will be added to the `items` storage, otherwise it will be added to the `temps` storage.
 
 ```ts
@@ -145,7 +145,7 @@ const task = Task({ id: 5, description: 'Do the Dishes' })
 const task = Task({ description: 'Do the Dishes' })
 ```
 
-Thanks to Model Functions, we no longer have to call `.addToStore()` to make an instance reactive. Create an instance
+Thanks to Model Functions, we no longer have to call `.createInStore()` to make an instance reactive. Create an instance
 and it is automatically ready to bind to a template. Let there be much rejoicing!
 
 ```ts
@@ -166,7 +166,7 @@ connected to the server.)
 const task = Task({ description: 'Do the Dishes' })
 
 // Instance is added to the store store
-task.addToStore()
+task.createInStore()
 
 // Instance is no longer in the store.
 task.removeFromStore()

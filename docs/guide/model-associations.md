@@ -127,7 +127,7 @@ import { User } from './users'
 
 const modelFn = (data: ModelInstance<Messages>) => {
   if (data.user) {
-    data.user = User(data.user).addToStore()
+    data.user = User(data.user).createInStore()
   }
   const withDefaults = useInstanceDefaults({ text: '' }, data)
   return withDefaults
@@ -150,7 +150,7 @@ import { User } from './users'
 const modelFn = (data: ModelInstance<Messages>) => {
   if (message.user) {
     // convert a plain `user` object into a `User` instance and add to store
-    User(message.user).addToStore()
+    User(message.user).createInStore()
     delete message.user
 
     // access the user through the `users` store.

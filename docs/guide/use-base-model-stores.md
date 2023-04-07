@@ -86,7 +86,7 @@ turn off pagination, only `{ data }` will be returned.
 - `countInStore(params)` returns the number of records in the store which match `params.query`.
 - `getFromStore(id, params)` returns the record from the store with matching `id`, or returns `null` if a record is not
 found.
-- `addToStore(data)` adds the data object or array to the correct internal storage (items or temps), depending on if an
+- `createInStore(data)` adds the data object or array to the correct internal storage (items or temps), depending on if an
 idField is present.
 - `removeFromStore(data)` removes any data with matching `data[idField]` from the store. `data` can be an object or an
 array of objects.

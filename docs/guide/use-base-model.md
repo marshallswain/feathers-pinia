@@ -70,7 +70,7 @@ A few store methods are proxied directly onto BaseModel's static interface:
 - `findInStore(params)`
 - `countInStore(params)`
 - `getFromStore(id, params)`
-- `addToStore(data)`
+- `createInStore(data)`
 - `removeFromStore(data)`
 
 Read more about these methods in the [BaseModel Store API](/guide/use-base-model-stores#storage)

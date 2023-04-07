@@ -117,8 +117,8 @@ params are used in each method.
 ```ts
 import { Task } from '../models/task'
 
-// Call addToStore to get a reactive Vue object
-const task = Task({ description: 'Do something!' }).addToStore()
+// Call createInStore to get a reactive Vue object
+const task = Task({ description: 'Do something!' }).createInStore()
 
 await task.save() // --> Creates the task on the server.
 ```

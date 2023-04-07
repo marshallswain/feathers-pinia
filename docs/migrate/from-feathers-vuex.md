@@ -42,7 +42,7 @@ See the section on [converting from Model Classes to Implicit Modeling](/migrate
 
 #### Breaking Changes
 
-- Add model instances to store after intantiation with `instance.addToStore()` (see [here](#new-model-instances-not-added-to-the-store))
+- Add model instances to store after intantiation with `instance.createInStore()` (see [here](#new-model-instances-not-added-to-the-store))
 - **Find and replace state, getters and actions** according to [this](#store-structure-changes) list.
 
 #### Stores
@@ -77,13 +77,13 @@ of the familiar processes from Feathers-Vuex.
 
 With Feathers-Vuex, when you called `new Model(data)`, the new instance would automatically get added to the store.
 
-In Feathers-Pinia, you have to call `service.new(data).addToStore()` to manually add the instance to the store.
+In Feathers-Pinia, you have to call `service.new(data).createInStore()` to manually add the instance to the store.
 
 ```ts
 const { api } = useFeathers()
 
 const todo = api.service('todos').new({ name: 'do something' })
-todo.addToStore()
+todo.createInStore()
 ```
 
 ### Calling .clone() on a clone is allowed
@@ -126,7 +126,7 @@ avoid colliding with action names.
 - **`service.store.patch`**
 - **`service.store.remove`**
 - **`service.store.addOrUpdate`**
-- **`service.store.addToStore`** is a new alias to `addOrUpdate`
+- **`service.store.createInStore`** is a new alias to `addOrUpdate`
 - **`service.store.clearAll`**
 - **`service.store.clone`** is still around, but it's better to use `instance.clone()`.
 - **`service.store.commit`** is still around, but it's better to use `clone.commit()`.

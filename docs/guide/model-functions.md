@@ -48,7 +48,7 @@ setStore()
 findInStore()
 countInStore()
 getFromStore()
-addToStore()
+createInStore()
 removeFromStore()
 associations
 ```
@@ -59,7 +59,7 @@ setStore()
 findInStore()
 countInStore()
 getFromStore()
-addToStore()
+createInStore()
 removeFromStore()
 associations
 
