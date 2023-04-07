@@ -61,6 +61,39 @@ const { data } = Model.findInStore({ query: {}, clones: true, temps: true })
 Note that any existing clones are re-used, so if you need the clone to match the latest data you need to call
 `clone.reset()`, manually.
 
+## All [sift](https://github.com/crcn/sift.js/) operators enabled locally
+
+There's no need to manually add a sift operator to the whitelist. They've all been enabled, internally, for store
+queries, only.
+
+These are part of the Feathers Query Syntax, and are enabled, by default, on the server.
+
+- [$in](https://github.com/crcn/sift.js/#in)
+- [$nin](https://github.com/crcn/sift.js/#nin)
+- [$exists](https://github.com/crcn/sift.js/#exists)
+- [$gte](https://github.com/crcn/sift.js/#gte)
+- [$gt](https://github.com/crcn/sift.js/#gt)
+- [$lte](https://github.com/crcn/sift.js/#lte)
+- [$lt](https://github.com/crcn/sift.js/#lt)
+- [$and](https://github.com/crcn/sift.js/#and)
+- [$or](https://github.com/crcn/sift.js/#or)
+
+These are enabled, by default, in the store.
+
+- [$eq](https://github.com/crcn/sift.js/#eq)
+- [$ne](https://github.com/crcn/sift.js/#ne)
+- [$mod](https://github.com/crcn/sift.js/#mod)
+- [$all](https://github.com/crcn/sift.js/#all)
+- [$nor](https://github.com/crcn/sift.js/#nor)
+- [$not](https://github.com/crcn/sift.js/#not)
+- [$size](https://github.com/crcn/sift.js/#size)
+- [$type](https://github.com/crcn/sift.js/#type)
+- [$regex](https://github.com/crcn/sift.js/#regex)
+- [$where](https://github.com/crcn/sift.js/#where)
+- [$elemMatch](https://github.com/crcn/sift.js/#elemmatch)
+
+You won't be able to use operators from this second list on the server without configuring your query validators.
+
 ## Query Props Overview
 
 **Feathers-Pinia supports all of the following query props**, however, different filters and operators are supported by

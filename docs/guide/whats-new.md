@@ -198,7 +198,27 @@ Webpack, Rollup, and more, is provided through the new `unplugin-auto-imports` p
 
 Learn more about the new [Auto-Imports Support](/guide/auto-imports).
 
-## Query API Reference 📖
+## Improved Querying
+
+### All [sift](https://github.com/crcn/sift.js/) operators enabled
+
+These operators are enabled for store queries, by default:
+
+- [$eq](https://github.com/crcn/sift.js/#eq)
+- [$ne](https://github.com/crcn/sift.js/#ne)
+- [$mod](https://github.com/crcn/sift.js/#mod)
+- [$all](https://github.com/crcn/sift.js/#all)
+- [$nor](https://github.com/crcn/sift.js/#nor)
+- [$not](https://github.com/crcn/sift.js/#not)
+- [$size](https://github.com/crcn/sift.js/#size)
+- [$type](https://github.com/crcn/sift.js/#type)
+- [$regex](https://github.com/crcn/sift.js/#regex)
+- [$where](https://github.com/crcn/sift.js/#where)
+- [$elemMatch](https://github.com/crcn/sift.js/#elemmatch)
+
+Learn more on the [Querying Data](/services/querying-data#all-sift-operators-enabled-locally) page.
+
+### Query API Reference 📖
 
 The documentation now includes a page about supported query props. It's a great reference for what query props are
 supported by:
@@ -291,6 +311,13 @@ These adapters will also work:
 If you use any of the above database adapters, give the new query operators a try!  Enjoy your new superpowers!
 
 Read more about all supported query filters and operators on the [Querying Data](/services/querying-data) page.
+
+### Custom Local Query Operators
+
+You can now register your own custom operators for store queries, allowing more flexibility of how to filter store data.
+This is done using the `customSiftOperators` configuration option.
+
+See the [createPiniaClient](/guide/create-pinia-client) documentation.
 
 ### params.clones
 
