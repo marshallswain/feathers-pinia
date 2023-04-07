@@ -16,18 +16,29 @@ smaller, implicitly modular and much faster package. This page will go over more
 
 ## Leading the Simple Life
 
-All of that effort to setup a Version 2.0 app is now a thing of the past.  In 3.0, we've identified the best patterns from the giant 2.0 refactor and made all of the features implicit, with the ability to customize where needed.  The result is a work of art.  Here's all it takes to configure all services with a global configuration:
+Complex setup is a thing of the past. Version 3 combines the best patterns from all previous versions, makes everything
+implicit, and almost does your job for you.  The result is a work of art.  
+
+You can configure all services in one line of code:
 
 ```ts
 // src/feathers.ts
-import { createVueClient } from 'feathers-pinia'
 import { pinia } from './plugins/pinia'
 
 const feathersClient = {} // See the Feathers Client install/setup pages
 const api = createVueClient(feathersClient, { pinia, idField: '_id' })
 ```
 
-And with that you get a wrapped Feathers Client with all of the Feathers Interface methods plus all of the API and local data-related store methods.  Manually wrangling stores and Models is no longer required or even an option.  Data modeling still runs the show, under the hood, and all data is turned into `FeathersInstance` instances, by default.  If you want to extend that functionality, you can use the `services` option of the global config and provide a `setupInstance` method, like this:
+That line of code gives you a lot:
+
+- A wrapped Feathers Client
+- All Feathers Service Interface methods and some extras like `findOne`, for convenience.
+- All of the local, data-related store methods, with its Live Queries and Lists.
+- Pinia stores created on the fly.
+- Implicit Models created for you. Manually wrangling stores and Models is no longer even an option.  
+
+Data modeling still runs the show "under the hood," and all data is turned into `Feathers` instances, by default. You
+can customize instances using the `services` option of the config with a `setupInstance` method, like this:
 
 ```ts
 // src/feathers.ts
@@ -48,37 +59,31 @@ const api = createVueClient(feathersClient, {
 })
 ```
 
-And with the above code in place you have a default `name` property on every instance.  You can still setup
-relationships, etc.
-
-Feathers-Pinia v3's key feature: Use the Feathers Client and the rest is handled for you.
+And with the above code in place you have a default `name` property on every `user`.  
 
 ### Feathers Dove TS Support 🎉
 
-The new utilities in Feathers-Pinia 2.0 bring support for the new TypeScript enhancements in Feathers v5 Dove. While
-the Feathers-Pinia client implicitly uses the Dove types, sometimes you'll need to directly import the types from your
-backend and use them in your Feathers-Pinia frontend.
-
-Learn more about Feathers v5 Dove types in the Feathers documentation:
+Version 3 automatically uses the TypeScript enhancements when you use it with Feathers v5 Dove. Learn more about
+Feathers v5 Dove types in the Feathers documentation:
 
 - Creating types [with TypeBox](https://feathersjs.com/api/schema/typebox.html)
 - Reusing server types with [the Feathers Client](https://feathersjs.com/guides/cli/client.html)
 
 ### Big Update, Small Footprint 🐾
 
-While Feathers-Pinia v3 is huge update. We've actually kept all of the benefits of previous versions while reducing
-the overall API size. This means higher efficiency, with a 20% smaller footprint than the previous version.
+We kept all of the features while reducing the overall size. This means higher efficiency, with a 20% smaller footprint
+than the previous version. Less code means fewer bugs. 🐞
 
 ### The One Correct Way 🥇
 
 Version 3 builds from version 2's clean structure. It takes what we learned from v2's flexibility and focuses on a
-single, correct way to do things. There's no confusion and no need to wonder if you're using the correct API.
+single, correct way to do things. There's no more confusion and no need to wonder if you're using the correct API.
 
 ### Modular, Yet Centralized 📦
 
 Building on the Feathers Client allows us to implicitly create stores only when their associated Feathers services are
-referenced. There's no need to manually create a Pinia store for service data. And there's no need to customize stores.
-Instead, you can take advantage of [Pinia store composition](https://pinia.vuejs.org/cookbook/composing-stores.html).
+used. There's no need to manually create a Pinia store. There's no need to customize stores. Instead, we use
+[Pinia store composition](https://pinia.vuejs.org/cookbook/composing-stores.html).
 
 ### Huge Performance Boost 🚀
 
@@ -87,12 +92,12 @@ the hood of Pinia and Vue 3. But we've gone a step further and fine-tuned and te
 extra work. Some of the biggest improvements are:
 
 - No unnecessary stack frames happen under the hood. We stand firmly against wasted CPU cycles!
-- As from the beginning, you still have full control over adding instances to the store with `instance.addToStore()`.
+- As from the beginning, you still have full control over adding instances to the store with `instance.createInStore()`.
 
-### Efficient Pinia SSR
+### Super-Efficient SSR
 
 SSR applications will now be especially fast. In the past, if you had an app with 30 services, you had a Pinia hydration
-bundle that contained 30 services, if you only used a few of them on a page. Since stores are now created only when
+bundle that contained 30 services, even if you only used a few of them on a page. Since stores are now created only when
 needed, the Pinia bundle contains only the services actually used to render the page.
 
 ## Just Use Services ⭐️⭐️⭐️⭐️⭐️
@@ -149,11 +154,7 @@ import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
-
-  const auth = useAuth({ 
-    api, 
-    servicePath: 'users'
-  })
+  const auth = useAuth({ api, servicePath: 'users' })
 
   auth.reAuthenticate()
 
@@ -176,21 +177,19 @@ Data modeling is one of the most-loved features in Feathers-Pinia.  Version 2.x 
 Classes. Now in v3 model functions are implicitly created for you. You can customize them by providing a `setupInstance`
 function in the individual service options.
 
-Learn more about [Model Functions](/guide/model-functions)
+Learn more about [Model Functions](/guide/modeling)
 
 ### useInstanceDefaults 🎁
 
 You can define default values for instances using the `useInstanceDefaults`. This takes the place of the former
 BaseModel class's `instanceDefaults` method.
 
-Learn more about the new [useInstanceDefaults utility](/guide/model-functions-shared#useinstancedefaults)
+Learn more about the new [useInstanceDefaults utility](/guide/modeling#useinstancedefaults)
 
 ## Nuxt Module ⚡️
 
-Feathers-Pinia v2 comes with a module for Nuxt which registers auto-imports and provides Nuxt-specific utilities for
-data modeling.
-
-Learn more about the new [Nuxt Module](/guide/nuxt-module)
+Feathers-Pinia comes with a module for Nuxt which registers auto-imports. Learn more about the new
+[Nuxt Module](/guide/nuxt-module)
 
 ## Auto-Imports ⚡️
 
