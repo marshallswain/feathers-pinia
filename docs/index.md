@@ -12,7 +12,7 @@ hero:
       text: What's New
       link: /guide/whats-new
     - theme: alt
-      text: Get Started
+      text: Start a Project
       link: /setup/
 
 features:
