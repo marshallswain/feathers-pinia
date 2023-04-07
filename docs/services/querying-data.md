@@ -36,7 +36,7 @@ By default, queries do not include temporary records. You can add temporary reco
 `params.temps` to true.
 
 ```ts
-const { data } = Model.findInStore({ query: {}, temps: true })
+const { data } = service.findInStoreInStore({ query: {}, temps: true })
 ```
 
 ### params.clones
@@ -46,7 +46,7 @@ Store queries normally return data from `items` (or `temps` if `params.temps` is
 model and store:
 
 ```ts
-const { data } = Model.findInStore({ query: {}, clones: true })
+const { data } = service.findInStoreInStore({ query: {}, clones: true })
 data.forEach(item => {
   console.log(item.__isClone) // --> true
 })
@@ -55,7 +55,7 @@ data.forEach(item => {
 The `clones` param can be used together with `temps`, as well:
 
 ```ts
-const { data } = Model.findInStore({ query: {}, clones: true, temps: true })
+const { data } = service.findInStoreInStore({ query: {}, clones: true, temps: true })
 ```
 
 Note that any existing clones are re-used, so if you need the clone to match the latest data you need to call
@@ -77,18 +77,19 @@ These are part of the Feathers Query Syntax, and are enabled, by default, on the
 - [$lt](https://github.com/crcn/sift.js/#lt)
 - [$and](https://github.com/crcn/sift.js/#and)
 - [$or](https://github.com/crcn/sift.js/#or)
+- [$nor](https://github.com/crcn/sift.js/#nor)
 
 These are enabled, by default, in the store.
 
-- [$eq](https://github.com/crcn/sift.js/#eq)
-- [$ne](https://github.com/crcn/sift.js/#ne)
-- [$mod](https://github.com/crcn/sift.js/#mod)
-- [$all](https://github.com/crcn/sift.js/#all)
-- [$nor](https://github.com/crcn/sift.js/#nor)
-- [$not](https://github.com/crcn/sift.js/#not)
-- [$size](https://github.com/crcn/sift.js/#size)
+- [$eq](#equality-🕊️) 🌱
+- [$ne](#ne-🕊️) 🌱
+- [$mod](#mod-🌱) 🌱
+- [$all](#all-🌱) 🌱
+- [$not](#not-🌱) 🌱
+- [$size](#size-🌱) 🌱
 - [$type](https://github.com/crcn/sift.js/#type)
-- [$regex](https://github.com/crcn/sift.js/#regex)
+- [$regex](#regex-🌱) 🌱
+- [$options](#options-🌱) 🌱
 - [$where](https://github.com/crcn/sift.js/#where)
 - [$elemMatch](https://github.com/crcn/sift.js/#elemmatch)
 
@@ -125,7 +126,7 @@ Filters are special properties (starting with a $) added at the top level of a q
   ```
 
   ```ts
-  Model.find({ query: { $limit: 1 } })
+  service.findInStore({ query: { $limit: 1 } })
   ```
 
   ```ts
@@ -149,7 +150,7 @@ Filters are special properties (starting with a $) added at the top level of a q
   ```
 
   ```ts
-  Model.find({ query: { $limit: 1, $skip: 1 } })
+  service.findInStore({ query: { $limit: 1, $skip: 1 } })
   ```
 
   ```ts
@@ -174,7 +175,7 @@ Filters are special properties (starting with a $) added at the top level of a q
   ```
 
   ```ts
-  Model.find({ query: { $sort: { name: -1 } } })
+  service.findInStore({ query: { $sort: { name: -1 } } })
   ```
 
   ```ts
@@ -205,7 +206,7 @@ as normal.
   ```
 
   ```ts
-  Model.find({ query: { $select: ['id', 'name'] } })
+  service.findInStore({ query: { $select: ['id', 'name'] } })
   ```
 
   ```ts
@@ -231,7 +232,7 @@ as normal.
   ```
 
   ```ts
-  Model.find({ query: { $or: [{ name: 'Bob' }, { id: 3 }] } })
+  service.findInStore({ query: { $or: [{ name: 'Bob' }, { id: 3 }] } })
   ```
 
   ```ts
@@ -254,7 +255,7 @@ as normal.
   ```
 
   ```ts
-  Model.find({ query: { $nor: [{ name: 'Bob' }, { id: 3 }] } })
+  service.findInStore({ query: { $nor: [{ name: 'Bob' }, { id: 3 }] } })
   ```
 
   ```ts
@@ -278,7 +279,7 @@ as normal.
   ```
 
   ```ts
-  Model.find({ 
+  service.findInStore({ 
     query: { 
       $and: [
         { age: { $gt: 20 } },
@@ -315,7 +316,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: 'Mary' })
+  service.findInStore({ name: 'Mary' })
   ```
 
   ```ts
@@ -339,7 +340,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: { $in: ['Mary', 'Bob'] } })
+  service.findInStore({ name: { $in: ['Mary', 'Bob'] } })
   ```
 
   ```ts
@@ -364,7 +365,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: { $nin: ['Mary', 'Bob'] } })
+  service.findInStore({ name: { $nin: ['Mary', 'Bob'] } })
   ```
 
   ```ts
@@ -388,7 +389,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: { $lt: 35 } })
+  service.findInStore({ name: { $lt: 35 } })
   ```
 
   ```ts
@@ -412,7 +413,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: { $lte: 35 } })
+  service.findInStore({ name: { $lte: 35 } })
   ```
 
   ```ts
@@ -437,7 +438,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: { $gt: 35 } })
+  service.findInStore({ name: { $gt: 35 } })
   ```
 
   ```ts
@@ -461,7 +462,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: { $gte: 35 } })
+  service.findInStore({ name: { $gte: 35 } })
   ```
 
   ```ts
@@ -486,7 +487,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ name: { $ne: 35 } })
+  service.findInStore({ name: { $ne: 35 } })
   ```
 
   ```ts
@@ -511,7 +512,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ query: { name: { $exists: true } } })
+  service.findInStore({ query: { name: { $exists: true } } })
   ```
 
   ```ts
@@ -536,7 +537,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ query: { qty: { $mod: [ 4, 0 ] } } })
+  service.findInStore({ query: { qty: { $mod: [ 4, 0 ] } } })
   ```
 
   ```ts
@@ -561,7 +562,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ query: { languages: { $all: ['Spanish', 'English'] } } })
+  service.findInStore({ query: { languages: { $all: ['Spanish', 'English'] } } })
   ```
 
   ```ts
@@ -585,7 +586,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ```
 
   ```ts
-  Model.find({ query: { languages: { $size: 1 } } })
+  service.findInStore({ query: { languages: { $size: 1 } } })
   ```
 
   ```ts
@@ -611,7 +612,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
 
   ```ts
   // Match any `name` with an "o" in it
-  Model.find({ name: { $regex: 'o', $options 'igm' } })
+  service.findInStore({ name: { $regex: 'o', $options 'igm' } })
   ```
 
   ```ts
@@ -643,7 +644,7 @@ Can only be used with the `$regex` operator. See above.
 
   ```ts
   // Match any `name` without an "o" in it
-  Model.find({ name: { $not: { $regex: 'o', $options 'igm' } } })
+  service.findInStore({ name: { $not: { $regex: 'o', $options 'igm' } } })
   ```
 
   ```ts
@@ -668,7 +669,7 @@ Can only be used with the `$regex` operator. See above.
 
   ```ts
   // Match any `name` with an "o" in it
-  Model.find({ name: { $like: '%o%' } })
+  service.findInStore({ name: { $like: '%o%' } })
   ```
 
   ```ts
@@ -694,7 +695,7 @@ Can only be used with the `$regex` operator. See above.
 
   ```ts
   // Match any `name` with an "o" in it
-  Model.find({ name: { $ilike: 'b%' } })
+  service.findInStore({ name: { $ilike: 'b%' } })
   ```
 
   ```ts
@@ -725,7 +726,7 @@ See `$ilike`.
 
   ```ts
   // Match any `name` with an "o" in it
-  Model.find({ name: { $notlike: 'B%' } })
+  service.findInStore({ name: { $notlike: 'B%' } })
   ```
 
   ```ts
@@ -757,7 +758,7 @@ See `$notlike`performs a case-insensitive negative match against values.
 
   ```ts
   // Match any `name` with an "o" in it
-  Model.find({ name: { $notILike: 'b%' } })
+  service.findInStore({ name: { $notILike: 'b%' } })
   ```
 
   ```ts
@@ -783,12 +784,56 @@ is supported by MongoDB, but uses alias strings instead of JS constructors.
   ```
 
   ```ts
-  Model.find({ age: { $type: Number } })
+  service.findInStore({ age: { $type: Number } })
   ```
 
   ```ts
   [
     { id: 1, name: 'Bob', age: 42 },
     { id: 3, name: 'Mary', age: 35 },
+  ]
+  ```
+
+#### $where 🌱
+
+<https://www.mongodb.com/docs/manual/reference/operator/query/where/>
+
+Should only be used in store queries. It's recommended that you do not enable `$where` from the client without putting
+some effort into additional security. It can circumvent your APIs privacy measures and expose data to the wrong users.
+
+#### $elemMatch 🌱
+
+```ts
+  [
+  {
+    month: "july",
+    casts: [
+      { id: 1, value: 200 },
+      { id: 2, value: 1000 }
+    ]
+  },
+  {
+    month: "august",
+    casts: [
+      { id: 3, value: 1000 },
+      { id: 4, value: 4000 }
+    ]
+  }
+]
+  ```
+
+  ```ts
+  service.findInStore({ casts: { $elemMatch: { value: { $gt: 1000 } } } })
+  ```
+
+  ```ts
+  [
+    {
+      month: "august",
+      casts: [
+        { id: 3, value: 1000 },
+        { id: 4, value: 4000 } // matches since 4000 > 1000
+      ]
+    }
   ]
   ```

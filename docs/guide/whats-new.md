@@ -202,7 +202,7 @@ Learn more about the new [Auto-Imports Support](/guide/auto-imports).
 
 ### All [sift](https://github.com/crcn/sift.js/) operators enabled
 
-These operators are enabled for store queries, by default:
+These operators are now enabled for store queries, by default:
 
 - [$eq](https://github.com/crcn/sift.js/#eq)
 - [$ne](https://github.com/crcn/sift.js/#ne)
