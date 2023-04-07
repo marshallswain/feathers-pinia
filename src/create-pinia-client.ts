@@ -4,11 +4,17 @@ import type { AnyData } from './types'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
 import { PiniaService } from './create-pinia-service'
-import { useDataStore , useServiceEvents } from './use-data-store'
+import { useDataStore, useServiceEvents } from './use-data-store'
 import { feathersPiniaHooks } from './hooks'
 import { useFeathersInstance } from './modeling'
 
-interface ServiceOptions {
+interface SetupInstanceUtils {
+  app?: any
+  service?: any
+  servicePath?: string
+}
+
+interface PiniaServiceConfig {
   idField?: string
   whitelist?: string[]
   paramsForServer?: string[]
@@ -16,16 +22,15 @@ interface ServiceOptions {
   handleEvents?: HandleEvents<AnyData>
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
-  setupInstance?: (data: any) => any
+  setupInstance?: (data: any, utils?: SetupInstanceUtils) => any
   customSiftOperators?: Record<string, any>
 }
 
-interface CreateVueClientOptions extends ServiceOptions {
+interface CreatePiniaClientConfig extends PiniaServiceConfig {
   idField: string
   pinia: any
   ssr?: boolean
-  services?: Record<string, ServiceOptions>
-  setupInstance?: (data: any) => any
+  services?: Record<string, PiniaServiceConfig>
 }
 
 type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
@@ -34,7 +39,7 @@ type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
 
 export function createPiniaClient<Client extends Application>(
   client: Client,
-  options: CreateVueClientOptions,
+  options: CreatePiniaClientConfig,
 ): Application<CreatePiniaServiceTypes<Client['services']>> {
   const vueApp = feathers()
   vueApp.defaultService = function (location: string) {
@@ -56,7 +61,12 @@ export function createPiniaClient<Client extends Application>(
       serviceOptions.customSiftOperators || {},
       options.customSiftOperators || {},
     )
-    const setupInstance = serviceOptions.setupInstance || options.setupInstance || ((data: any) => data)
+    const setupInstance = (data: any) => {
+      const utils = { app: vueApp, service: vueApp.service(location), servicePath: location }
+      const fromGlobal = options.setupInstance ? options.setupInstance(data, utils) : data
+      const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(data, utils) : fromGlobal
+      return serviceLevel
+    }
 
     // create pinia store
     const storeName = `service:${location}`
