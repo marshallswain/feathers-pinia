@@ -87,11 +87,11 @@ These are enabled, by default, in the store.
 - [$all](#all-🌱) 🌱
 - [$not](#not-🌱) 🌱
 - [$size](#size-🌱) 🌱
-- [$type](https://github.com/crcn/sift.js/#type)
+- [$type](#type-🌱)
 - [$regex](#regex-🌱) 🌱
 - [$options](#options-🌱) 🌱
-- [$where](https://github.com/crcn/sift.js/#where)
-- [$elemMatch](https://github.com/crcn/sift.js/#elemmatch)
+- [$where](https://github.com/crcn/sift.js/#where) 🌱
+- [$elemMatch](https://github.com/crcn/sift.js/#elemmatch) 🌱
 
 You won't be able to use operators from this second list on the server without configuring your query validators.
 
@@ -244,6 +244,8 @@ as normal.
 
 #### $nor 🌱
 
+> 🌱 Supported by MongoDB (requires query schema update)
+
 `$nor` matches records that match non of the queries provided in the array.
 
   ```ts
@@ -268,7 +270,7 @@ as normal.
 
 `$and` matches records which match all queries provided in its array.
 
-> 🌱 🚩 Supported by MongoDB and Knex
+> 🌱 🚩 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html) and [Knex](https://feathersjs.com/api/databases/knex.html)
 
   ```ts
   [
@@ -497,11 +499,16 @@ Matches if an object has the same key:value pair as provided in the query. [docs
   ]
   ```
 
+### MongoDB Operators
+
+These are additional operators that are supported by MongoDB databases. You can enable them in your query syntax on the
+backend.
+
 #### $exists 🌱
 
 `$exists` matches if the property is not `null` or `undefined` [docs](https://www.mongodb.com/docs/manual/reference/operator/query/exists/)
 
-> 🌱 Supported by the MongoDB Adapter
+> 🌱 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html)
 
   ```ts
   [
@@ -526,7 +533,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
 
 `$mod` matches where the value of a field divided by a divisor has the specified remainder. [docs](https://www.mongodb.com/docs/manual/reference/operator/query/mod/)
 
-> 🌱 Supported by the [MongoDB Adapter](https://feathersjs.com/api/databases/mongodb.html)
+> 🌱 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html)
 
   ```ts
   [
@@ -551,7 +558,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
 
 `$all` matches when an array value contains all the specified elements. [docs](https://www.mongodb.com/docs/manual/reference/operator/query/all/)
 
-> 🌱 Supported by the [MongoDB Adapter](https://feathersjs.com/api/databases/mongodb.html)
+> 🌱 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html)
 
   ```ts
   [
@@ -575,7 +582,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
 
 `$size` matches when the array field's length matches the provided number. [docs](https://www.mongodb.com/docs/manual/reference/operator/query/size/)
 
-> 🌱 Supported by the [MongoDB Adapter](https://feathersjs.com/api/databases/mongodb.html)
+> 🌱 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html)
 
   ```ts
   [
@@ -600,7 +607,7 @@ Matches if an object has the same key:value pair as provided in the query. [docs
 
 `$regex` matches a regular expression against a value based on matching `$options`. [docs](https://www.mongodb.com/docs/manual/reference/operator/query/regex/)
 
-> 🌱 Supported by the [MongoDB Adapter](https://feathersjs.com/api/databases/mongodb.html)
+> 🌱 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html)
 
   ```ts
   [
@@ -626,13 +633,13 @@ Matches if an object has the same key:value pair as provided in the query. [docs
 
 Can only be used with the `$regex` operator. See above.
 
-> 🌱 Supported by the [MongoDB Adapter](https://feathersjs.com/api/databases/mongodb.html)
+> 🌱 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html)
 
 #### $not 🌱
 
 `$not` performs a logical NOT operation on the specified query. [docs](https://www.mongodb.com/docs/manual/reference/operator/query/not/)
 
-> 🌱 Supported by the [MongoDB Adapter](https://feathersjs.com/api/databases/mongodb.html)
+> 🌱 Supported by [MongoDB](https://feathersjs.com/api/databases/mongodb.html)
 
   ```ts
   [
@@ -653,122 +660,7 @@ Can only be used with the `$regex` operator. See above.
   ]
   ```
 
-#### $like 🚩
-
-`$like` performs a case-sensitive match on values.
-
-> 🚩 Supported by these SQL Adapters: [@feathersjs/knex](https://feathersjs.com/api/databases/knex.html#like), [feathers-objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators), [feathers-sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
-
-  ```ts
-  [
-    { id: 1, name: 'Bob', age: 42 },
-    { id: 2, name: 'Joe', age: 21 },
-    { id: 3, name: 'Mary', age: 35 },
-  ]
-  ```
-
-  ```ts
-  // Match any `name` with an "o" in it
-  service.findInStore({ name: { $like: '%o%' } })
-  ```
-
-  ```ts
-  [
-    { id: 1, name: 'Bob', age: 42 },
-    { id: 2, name: 'Joe', age: 21 },
-  ]
-  ```
-
-#### $ilike 🚩
-
-`$ilike` performs a case-insensitive match on values.
-
-> 🚩 Supported by these SQL Adapters: [@feathersjs/knex](https://feathersjs.com/api/databases/knex.html#like), [feathers-objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators)
-
-  ```ts
-  [
-    { id: 1, name: 'Bob', age: 42 },
-    { id: 2, name: 'Joe', age: 21 },
-    { id: 3, name: 'Mary', age: 35 },
-  ]
-  ```
-
-  ```ts
-  // Match any `name` with an "o" in it
-  service.findInStore({ name: { $ilike: 'b%' } })
-  ```
-
-  ```ts
-  [
-    { id: 1, name: 'Bob', age: 42 },
-  ]
-  ```
-
-#### $iLike 🚩
-
-See `$ilike`.
-
-> 🚩 Supported by these SQL Adapters: [feathers-sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
-
-#### $notlike 🚩
-
-`$notlike` performs a case-sensitive negative match against values.
-
-> 🚩 Supported by these SQL Adapters: [@feathersjs/knex](https://feathersjs.com/api/databases/knex.html#like), [feathers-sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
-
-  ```ts
-  [
-    { id: 1, name: 'Bob', age: 42 },
-    { id: 2, name: 'Joe', age: 21 },
-    { id: 3, name: 'Mary', age: 35 },
-  ]
-  ```
-
-  ```ts
-  // Match any `name` with an "o" in it
-  service.findInStore({ name: { $notlike: 'B%' } })
-  ```
-
-  ```ts
-  [
-    { id: 2, name: 'Joe', age: 21 },
-    { id: 3, name: 'Mary', age: 35 },
-  ]
-  ```
-
-#### $notLike 🚩
-
-See `$notlike`performs a case-insensitive negative match against values.
-
-> 🚩 Supported by these SQL Adapters: [feathers-objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators), [feathers-sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
-
-#### $notILike 🚩
-
-`$notILike`
-
-> 🚩 Supported by these SQL Adapters: [feathers-objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators), [feathers-sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
-
-  ```ts
-  [
-    { id: 1, name: 'Bob', age: 42 },
-    { id: 2, name: 'Joe', age: 21 },
-    { id: 3, name: 'Mary', age: 35 },
-  ]
-  ```
-
-  ```ts
-  // Match any `name` with an "o" in it
-  service.findInStore({ name: { $notILike: 'b%' } })
-  ```
-
-  ```ts
-  [
-    { id: 2, name: 'Joe', age: 21 },
-    { id: 3, name: 'Mary', age: 35 },
-  ]
-  ```
-
-#### $type
+#### $type 🌱
 
 `$type` matches when the type of the value matches the provided JS constructor.
 
@@ -798,8 +690,13 @@ is supported by MongoDB, but uses alias strings instead of JS constructors.
 
 <https://www.mongodb.com/docs/manual/reference/operator/query/where/>
 
-Should only be used in store queries. It's recommended that you do not enable `$where` from the client without putting
-some effort into additional security. It can circumvent your APIs privacy measures and expose data to the wrong users.
+<BlockQuote type="danger">
+
+In general, do not enable the API server to use `$where` in queries. It can enable too much querying freedom and expose
+data to unauthorized users. Unless you are going to put in the time to build the tooling to make it safe, only use it
+for store queries. Even then, you likely don't need it, since the entire query is a where clause.
+
+</BlockQuote>
 
 #### $elemMatch 🌱
 
@@ -835,5 +732,122 @@ some effort into additional security. It can circumvent your APIs privacy measur
         { id: 4, value: 4000 } // matches since 4000 > 1000
       ]
     }
+  ]
+  ```
+
+### SQL Operators
+
+#### $like 🚩
+
+`$like` performs a case-sensitive match on values.
+
+> 🚩 Supported by these SQL Adapters: [Knex](https://feathersjs.com/api/databases/knex.html#like), [Objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators), [Sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
+
+  ```ts
+  [
+    { id: 1, name: 'Bob', age: 42 },
+    { id: 2, name: 'Joe', age: 21 },
+    { id: 3, name: 'Mary', age: 35 },
+  ]
+  ```
+
+  ```ts
+  // Match any `name` with an "o" in it
+  service.findInStore({ name: { $like: '%o%' } })
+  ```
+
+  ```ts
+  [
+    { id: 1, name: 'Bob', age: 42 },
+    { id: 2, name: 'Joe', age: 21 },
+  ]
+  ```
+
+#### $ilike 🚩
+
+`$ilike` performs a case-insensitive match on values.
+
+> 🚩 Supported by these SQL Adapters: [Knex](https://feathersjs.com/api/databases/knex.html#like), [Objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators)
+
+  ```ts
+  [
+    { id: 1, name: 'Bob', age: 42 },
+    { id: 2, name: 'Joe', age: 21 },
+    { id: 3, name: 'Mary', age: 35 },
+  ]
+  ```
+
+  ```ts
+  // Match any `name` with an "o" in it
+  service.findInStore({ name: { $ilike: 'b%' } })
+  ```
+
+  ```ts
+  [
+    { id: 1, name: 'Bob', age: 42 },
+  ]
+  ```
+
+#### $iLike 🚩
+
+See `$ilike`.
+
+> 🚩 Supported by these SQL Adapters: [Sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
+
+#### $notlike 🚩
+
+`$notlike` performs a case-sensitive negative match against values.
+
+> 🚩 Supported by these SQL Adapters: [Knex](https://feathersjs.com/api/databases/knex.html#like), [Sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
+
+  ```ts
+  [
+    { id: 1, name: 'Bob', age: 42 },
+    { id: 2, name: 'Joe', age: 21 },
+    { id: 3, name: 'Mary', age: 35 },
+  ]
+  ```
+
+  ```ts
+  // Match any `name` with an "o" in it
+  service.findInStore({ name: { $notlike: 'B%' } })
+  ```
+
+  ```ts
+  [
+    { id: 2, name: 'Joe', age: 21 },
+    { id: 3, name: 'Mary', age: 35 },
+  ]
+  ```
+
+#### $notLike 🚩
+
+See `$notlike`performs a case-insensitive negative match against values.
+
+> 🚩 Supported by these SQL Adapters: [Objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators), [Sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
+
+#### $notILike 🚩
+
+`$notILike`
+
+> 🚩 Supported by these SQL Adapters: [Objection](https://github.com/feathersjs-ecosystem/feathers-objection#default-query-operators), [Sequelize](https://github.com/feathersjs-ecosystem/feathers-sequelize)
+
+  ```ts
+  [
+    { id: 1, name: 'Bob', age: 42 },
+    { id: 2, name: 'Joe', age: 21 },
+    { id: 3, name: 'Mary', age: 35 },
+  ]
+  ```
+
+  ```ts
+  // Match any `name` with an "o" in it
+  service.findInStore({ name: { $notILike: 'b%' } })
+  ```
+
+  ```ts
+  [
+    { id: 2, name: 'Joe', age: 21 },
+    { id: 3, name: 'Mary', age: 35 },
   ]
   ```
