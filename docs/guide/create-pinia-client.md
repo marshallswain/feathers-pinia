@@ -50,7 +50,7 @@ createPiniaClient(feathersClient, {
     contacts: {
       whitelist: ['$test'],
       // runs after the global setupInstance
-      setupInstance(data: any) {
+      setupInstance(data: any, , { api, service, servicePath }) {
         const withDefaults = useInstanceDefaults({ name: '', age: 0 }, data)
         return withDefaults
       },
@@ -83,7 +83,7 @@ interface CreatePiniaClientConfig {
   debounceEventsTime?: 20
   debounceEventsGuarantee?: false
   customSiftOperators?: {},
-  setupInstance?: (data = {}) => {}
+  setupInstance?: (data = {}, , { api, service, servicePath }) => {}
 }
 ```
 
