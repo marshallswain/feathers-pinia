@@ -95,20 +95,7 @@ function getGuideSidebar() {
     },
     {
       text: 'Feathers-Pinia Client',
-      items: [
-        {
-          text: 'Create a Client',
-          link: '/guide/create-pinia-client'
-        },
-        {
-          text: 'Global Configuration',
-          link: '/guide/global-configuration'
-        },
-        {
-          text: 'Service Configuration',
-          link: '/guide/service-configuration'
-        },
-      ]
+      link: '/guide/create-pinia-client',
     },
     {
       text: 'Feathers-Pinia Services',

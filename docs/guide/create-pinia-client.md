@@ -7,6 +7,157 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# Create a Feathers-Pinia Client
+# The Feathers-Pinia Client
+
+Wrap your Feathers Client in pure productivity.
 
 [[toc]]
+
+## createPiniaClient
+
+The `createPiniaClient` utility is the primary utility in Feathers-Pinia. It wraps the Feathers Client and enhances it
+with additional service methods.
+
+```ts
+createPiniaClient(feathersClient, {
+  pinia: nuxt.$pinia,
+  ssr: !!process.server,
+  // below are configurable per service in the `services` object.
+  idField: '_id',
+  whitelist: ['$customLocalParam'],
+  paramsForServer: ['$customServerParam'],
+  skipGetIfExists: true,
+  handleEvents: HandleEvents<AnyData>
+  debounceEventsTime: 20
+  debounceEventsGuarantee: false
+  customSiftOperators: {}, // see sift docs
+  // runs for every service
+  setupInstance: (data = {}, { api, service, servicePath }) => {
+    if (servicePath.startsWith('my-'))
+      Object.defineProperty(data, 'belongsToMe', {
+        get() {
+          return true
+        }
+      })
+    return data
+  },
+  // Service config, keyed by path, See service configuration to 
+  // learn how options are merged with the global config.
+  services: {
+    users: {
+      idField: 'id',
+    },
+    contacts: {
+      whitelist: ['$test'],
+      // runs after the global setupInstance
+      setupInstance(data: any) {
+        const withDefaults = useInstanceDefaults({ name: '', age: 0 }, data)
+        return withDefaults
+      },
+    },
+    tasks: {
+      skipGetIfExists: true,
+    },
+  },
+})
+```
+
+Let's take a look at the possible configuration values.
+
+## Global Configuration
+
+The pseudo-interface, below, shows possible configuration values with their default values. Values not followed by `?`
+are required and have no default value.
+
+```ts
+interface CreatePiniaClientConfig {
+  idField: string
+  pinia: Pinia
+  ssr?: false,
+  services?: {},
+  // global options for each service
+  whitelist?: string[],
+  paramsForServer?: string[],
+  skipGetIfExists?: true,
+  handleEvents?: HandleEvents<AnyData>
+  debounceEventsTime?: 20
+  debounceEventsGuarantee?: false
+  customSiftOperators?: {},
+  setupInstance?: (data = {}) => {}
+}
+```
+
+Let's take a closer look at each one:
+
+- **`idField {String}`** is the attribute on the record that will serve as the unique identifier or "primary key" in the
+database.
+- **`pinia {Pinia}`** your app's primary Pinia instance. Allows dynamic creation of stores.
+- **`ssr {Boolean}`** indicates if Feathers-Pinia is loading in an SSR environment. Paginated queries made during SSR
+will be marked with `ssr: true`. When a matching request is made on the client (when `ssr` is false) the store data will
+clear the `ssr` flag for that request.
+- **`services {Record<string, PiniaServiceConfig>}`** an object, keyed by service path, which allows passing specific
+configuration to individual services. See [Service Configuration](#service-configuration).
+- **`whitelist`** is an array of keys to allow in the `findInStore` queries.
+- **`paramsForServer`** is an array of query keys for `findInStore` to ignore and pass to the `find` action's query.
+- **`skipGetIfExists {Boolean}`** when enabled will cause a `.get` request to automatically resolve with the stored
+record, if one exists. If not, the request will be made as normal.
+- **`handleEvents {Object}`** is an object that lets you customize how realtime events are handled. Each key is a name
+- of a realtime event handler function: `created`, `patched`, `updated`, or `removed`. You can provide your own handler
+- to customize and override individual events. The handler's function signature is
+
+  ```ts
+  function eventHandler(data, { service }) {
+     // handle event
+  }
+  const handleEvents = {
+    created: eventHandler,
+    patched: eventHandler,
+    updated: eventHandler,
+    removed: eventHandler,
+  }
+  ```
+
+- **`debounceEventsTime {Number}`** determines how long to wait until flushing a batch of events. Defaults to `20`. If
+no events have been received in a 20 millisecond period, all gathered events will be processed.
+- **`debounceEventsGuarantee {Boolean}`** forces accumulated events to flush every `debounceEventsTime` interval. Off by
+default.
+- **`customSiftOperators {Object}`** allows passing an object of custom [sift operators](https://github.com/crcn/sift.js/)
+which are used to query data from the store with `findInStore` and `useFind`. All sift operators are enabled for store
+queries.
+- **`setupInstance {Function}`** a global model function that allows modifying instances from all services. It has the
+following shape:
+
+  ```ts
+  // modify data and return the modified object
+  function setupInstance(data, { app, service, servicePath }) {
+    return data
+  }
+  ```
+
+## Service Configuration
+
+```ts
+interface PiniaServiceConfig {
+  whitelist?: string[],
+  paramsForServer?: string[],
+  skipGetIfExists?: true,
+  handleEvents?: HandleEvents<AnyData>
+  debounceEventsTime?: 20
+  debounceEventsGuarantee?: number
+  customSiftOperators?: {},
+  setupInstance?: (data = {}) => {}
+}
+```
+
+These options are all configurable at the global and service levels. See descriptions in the global configuration
+section. Here is a description of how each option is handled when it's also configured globally:
+
+- **`whitelist`** concatenated with the global value
+- **`paramsForServer`** concatenated with the global value
+- **`skipGetIfExists {Boolean}`** overrides the global value
+- **`handleEvents {Object}`** overrides the global value
+- **`debounceEventsTime {Number}`** overrides the global value
+- **`debounceEventsGuarantee {Boolean}`** overrides the global value
+- **`customSiftOperators {Object}`** merged over the global value
+- **`setupInstance {Function}`** runs after the global value. The global `setupInstance` will already have been applied
+by the time the service-level `setupInstance` runs.
