@@ -105,36 +105,7 @@ needed, the Pinia bundle contains only the services actually used to render the 
 You can think of the Feathers Service as the Model. The Feathers-Pinia Client now replaces the service Models and Stores
 APIs. All of these methods are now available directly on each Feathers Client service.
 
-```ts
-const { api } = useFeathers()
-const service = api.service('users')
-
-// create data instances
-service.new(data)
-
-// service methods
-service.find(params)
-service.findOne(params)
-service.count(params)
-service.get(id, params)
-service.create(id, params)
-service.patch(id, params)
-service.remove(id, params)
-
-// store methods
-service.findInStore(params)
-service.findOneInStore(params)
-service.countInStore(params)
-service.getFromStore(id, params)
-service.createInStore(id, params)
-service.patchInStore(id, params)
-service.removeFromStore(id, params)
-
-// hybrid methods
-service.useFind(params, options)
-service.useGet(id, options)
-service.useGetOnce(id, options)
-```
+<!--@include: ../partials/service-interface.md-->
 
 The Feathers Service is the only place to find these methods, now.
 

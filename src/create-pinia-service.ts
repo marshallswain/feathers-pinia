@@ -44,6 +44,8 @@ export class PiniaService<Svc extends FeathersService> {
 
   async findOne(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
+    params.query = params.query || {}
+    params.query.$limit = 1
     const result = await this.service.find(params as FeathersParams)
     const item = (result.data || result)[0] || null
     return item

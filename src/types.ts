@@ -1,7 +1,7 @@
 import type { Params as FeathersParams, Id } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
 import type { FeathersInstance } from './modeling'
-import type { PaginationStateQuery } from './use-data-store'
+import type { PaginationStateQuery } from './stores'
 
 export type MaybeArray<T> = T | T[]
 export type AnyData = Record<string, any>

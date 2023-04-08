@@ -1,10 +1,10 @@
 import type { Application, FeathersService } from '@feathersjs/feathers'
-import type { HandleEvents } from './use-data-store'
+import type { HandleEvents } from './stores'
 import type { AnyData } from './types'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
 import { PiniaService } from './create-pinia-service'
-import { useDataStore, useServiceEvents } from './use-data-store'
+import { useServiceStore, useServiceEvents } from './stores'
 import { feathersPiniaHooks } from './hooks'
 import { useFeathersInstance } from './modeling'
 
@@ -71,7 +71,7 @@ export function createPiniaClient<Client extends Application>(
     // create pinia store
     const storeName = `service:${location}`
     const useStore = defineStore(storeName, () => {
-      const utils = useDataStore({
+      const utils = useServiceStore({
         idField,
         whitelist,
         paramsForServer,

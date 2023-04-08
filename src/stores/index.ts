@@ -1,4 +1,6 @@
-export { useDataStore, type UseServiceOptions } from './use-data-store'
+export { useDataStore, type UseDataStoreOptions } from './use-data-store'
+export { useServiceStore, type UseServiceStoreOptions } from './use-service-store'
+
 export { useQueuePromise } from './event-queue-promise'
 export { useServiceLocal } from './local-queries'
 export { useServiceTemps } from './temps'

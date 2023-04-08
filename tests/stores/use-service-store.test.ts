@@ -1,16 +1,14 @@
-import { useDataStore } from '../../src'
+import { useServiceStore } from '../../src'
 
-describe('use service', () => {
+describe('useServiceStore', () => {
   test('setup', () => {
-    const service = useDataStore({
+    const service = useServiceStore({
       idField: 'id',
     })
 
     expect(Object.keys(service)).toEqual([
       'new',
       'idField',
-      'whitelist',
-      'paramsForServer',
       'isSsr',
 
       // items
@@ -31,11 +29,6 @@ describe('use service', () => {
       'commit',
       'reset',
 
-      // pagination
-      'pagination',
-      'updatePaginationForQuery',
-      'unflagSsr',
-
       // local queries
       'findInStore',
       'findOneInStore',
@@ -45,6 +38,15 @@ describe('use service', () => {
       'patchInStore',
       'removeFromStore',
       'clearAll',
+
+      // server options
+      'whitelist',
+      'paramsForServer',
+
+      // server pagination
+      'pagination',
+      'updatePaginationForQuery',
+      'unflagSsr',
 
       // pending state
       'isPending',

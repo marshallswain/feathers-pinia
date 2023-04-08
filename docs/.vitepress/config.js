@@ -100,46 +100,52 @@ function getGuideSidebar() {
     {
       text: 'Feathers-Pinia Services',
       items: [
-        { text: 'Overview', link: '/services/' },
-        { text: 'API Methods', link: '/services/api-methods' },
-        { text: 'Store Methods', link: '/services/store-methods' },
+        {
+          text: 'Service Overview',
+          link: '/services/',
+          items: [
+            { text: 'The "new" Method', link: '/services/the-new-method' },
+            { text: 'API Methods', link: '/services/api-methods' },
+            { text: 'Store Methods', link: '/services/store-methods' },
+            { text: 'Hybrid Methods', link: '/services/hybrid-methods' },
+            { text: 'Event Methods', link: '/services/event-methods' },
+          ]
+        },
         { text: 'Querying Data', link: '/services/querying-data' },
         { text: 'Modeling', link: '/services/modeling' },
-        { text: 'Hybrid Methods', link: '/services/hybrid-methods' },
       ]
     },
-    // {
-    //   text: 'Data Modeling',
-    //   items: [
-    //     { text: 'Overview', link: '/guide/modeling' },
-    //     {
-    //       text: 'Model Functions',
-    //       link: '/guide/model-functions',
-    //       items: [
-    //         { text: 'useBaseModel', link: '/guide/use-base-model' },
-    //         { text: 'useFeathersModel', link: '/guide/use-feathers-model' },
-    //         { text: 'Shared Utils', link: '/guide/model-functions-shared' },
-    //       ],
-    //     },
-    //     {
-    //       text: 'Model Instances',
-    //       link: '/guide/model-instances',
-    //       items: [
-    //         { text: 'BaseModel Instances', link: '/guide/use-base-model-instances' },
-    //         { text: 'FeathersModel Instances', link: '/guide/use-feathers-model-instances' },
-    //       ],
-    //     },
-    //     {
-    //       text: 'Model Associations',
-    //       link: '/guide/model-associations',
-    //       items: [
-    //         { text: 'associateFind', link: '/guide/associate-find' },
-    //         { text: 'associateGet', link: '/guide/associate-get' },
-    //       ],
-    //     },
-    //     { text: 'Common Patterns', link: '/guide/common-patterns' },
-    //   ],
-    // },
+    {
+      text: 'Data Stores',
+      items: [
+        {
+          text: 'useDataStore Overview',
+          link: '/guide/modeling',
+          items: [
+            { text: 'The "new" Method', link: '/services/the-new-method' },
+            { text: 'Store Methods', link: '/services/store-methods' },
+             
+          ]
+        },
+        {
+          text: 'Model Instances',
+          link: '/guide/model-instances',
+          items: [
+            { text: 'BaseModel Instances', link: '/guide/use-base-model-instances' },
+            { text: 'FeathersModel Instances', link: '/guide/use-feathers-model-instances' },
+          ],
+        },
+        // {
+        //   text: 'Model Associations',
+        //   link: '/guide/model-associations',
+        //   items: [
+        //     { text: 'associateFind', link: '/guide/associate-find' },
+        //     { text: 'associateGet', link: '/guide/associate-get' },
+        //   ],
+        // },
+        // { text: 'Common Patterns', link: '/guide/common-patterns' },
+      ],
+    },
     // {
     //   text: 'Stores',
     //   items: [

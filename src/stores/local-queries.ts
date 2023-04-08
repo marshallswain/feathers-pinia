@@ -1,3 +1,4 @@
+import { MaybeRef } from '@vueuse/core'
 import type { Id } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import { computed, unref } from 'vue-demi'
@@ -77,8 +78,9 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     return { values, filters }
   }
 
-  function findInStore(params: Params<Q>) {
+  function findInStore(_params: MaybeRef<Params<Q>>) {
     const result = computed(() => {
+      const params = unref(_params)
       // clean up any nested refs
       if (params.query) params.query = deepUnref(params.query)
 
@@ -111,7 +113,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     }
   }
 
-  function findOneInStore(params: Params<Q>) {
+  function findOneInStore(params: MaybeRef<Params<Q>>) {
     const result = findInStore(params)
     const item = computed(() => {
       return result.data.value[0] || null
@@ -119,7 +121,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     return item
   }
 
-  function countInStore(params: Params<Q>) {
+  function countInStore(params: MaybeRef<Params<Q>>) {
     const value = computed(() => {
       params = { ...unref(params) }
 
@@ -131,7 +133,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     return value
   }
 
-  const getFromStore = (id: Id | null, params?: Params<Q>) => {
+  const getFromStore = (id: MaybeRef<Id | null>, params?: Params<Q>) => {
     return computed((): M | null => {
       id = unref(id)
       params = fastCopy(unref(params) || {})
@@ -155,11 +157,11 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
    * @param data a single record or array of records.
    * @returns data added or modified in the store. If you pass an array, you get an array back.
    */
-  function createInStore(data: M | M[]): M | M[] {
-    const { items, isArray } = getArray(data)
+  function createInStore<N = MaybeRef<M | M[]>>(data: N): N {
+    const { items, isArray } = getArray(unref(data))
 
-    const _items = items.map((item: AnyData) => {
-      const stored = addItemToStorage(item as any)
+    const _items = items.map((item: N) => {
+      const stored = addItemToStorage(unref(item))
       return stored
     })
 
@@ -167,8 +169,53 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
   }
 
   // TODO
-  function patchInStore() {
-    return
+  function patchInStore(
+    _idOrData: MaybeRef<M | M[] | Id | null>,
+    _data: MaybeRef<AnyData> = {},
+    _params: MaybeRef<Params<Q>> = {},
+  ) {
+    const idOrData = unref(_idOrData)
+    const data = unref(_data)
+    const params = unref(_params)
+
+    // patches provided items using the `data` from the closure scope.
+    function updateItems(items: any[]) {
+      const patched = items
+        .map((item: M | Id | null) => {
+          item = unref(item)
+          // convert ids to items from the store
+          if (typeof item === 'number' || typeof item === 'string') {
+            item = getFromStore(item as Id).value
+          }
+          if (item == null) return null
+
+          const toWrite = { ...item, ...data }
+          const stored = addItemToStorage(toWrite)
+          return stored
+        })
+        .filter((i) => i)
+      return patched
+    }
+
+    if (idOrData === null) {
+      // patching multiple cannot use an empty array
+      if (params?.query && !Object.keys(params?.query).length) {
+        throw new Error(
+          `cannot perform multiple patchInStore with an empty query. You must explicitly provide a query. To patch all items, try using a query that matches all items, like "{ id: { $exists: true } }"`,
+        )
+      }
+      // patch by query
+      const fromStore = findInStore(params).data.value
+      const items = updateItems(fromStore)
+
+      return items
+    } else {
+      // patch provided data
+      const { items, isArray } = getArray(idOrData)
+      const patchedItems = updateItems(items)
+
+      return isArray ? patchedItems : patchedItems[0]
+    }
   }
 
   /**

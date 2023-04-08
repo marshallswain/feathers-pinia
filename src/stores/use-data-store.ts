@@ -5,17 +5,11 @@ import type { AnyData } from '../types'
 import { MaybeRef } from '@vueuse/core'
 import { useServiceLocal } from './local-queries'
 
-import { useServicePagination } from './pagination'
-import { useServicePending } from './pending'
-import { useServiceEventLocks } from './event-locks'
 import { useAllStorageTypes } from './all-storage-types'
 import { useModelInstance } from '../modeling/use-model-instance'
 
-export interface UseServiceOptions {
+export interface UseDataStoreOptions {
   idField: string
-  whitelist?: string[]
-  paramsForServer?: string[]
-  skipGetIfExists?: boolean
   ssr?: MaybeRef<boolean>
   customSiftOperators?: Record<string, any>
   setupInstance?: any
@@ -25,9 +19,9 @@ const makeDefaultOptions = () => ({
   skipGetIfExists: false,
 })
 
-export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseServiceOptions) => {
+export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDataStoreOptions) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const { idField, whitelist, paramsForServer, customSiftOperators } = options
+  const { idField, customSiftOperators } = options
 
   function setupInstance<N extends M>(this: any, data: N) {
     const asBaseModel = useModelInstance(data, {
@@ -48,9 +42,6 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseSe
     }
   }
 
-  // pending state
-  const pendingState = useServicePending()
-
   // storage
   const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
     getIdField: (val: AnyData) => val[idField],
@@ -62,18 +53,10 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseSe
     return !!ssr
   })
 
-  // pagination
-  const { pagination, clearPagination, updatePaginationForQuery, unflagSsr } = useServicePagination({
-    idField,
-    isSsr,
-  })
-
   function clearAll() {
     itemStorage.clear()
     tempStorage.clear()
     cloneStorage.clear()
-    clearPagination()
-    pendingState.clearAllPending()
   }
 
   // local data filtering
@@ -84,19 +67,12 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseSe
       tempStorage,
       cloneStorage,
       addItemToStorage,
-      whitelist,
-      paramsForServer,
       customSiftOperators,
     })
-
-  // event locks
-  const eventLocks = useServiceEventLocks()
 
   const store = {
     new: setupInstance,
     idField,
-    whitelist,
-    paramsForServer,
     isSsr,
 
     // items
@@ -117,11 +93,6 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseSe
     commit,
     reset,
 
-    // options
-    pagination,
-    updatePaginationForQuery,
-    unflagSsr,
-
     // local queries
     findInStore,
     findOneInStore,
@@ -131,9 +102,6 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseSe
     patchInStore,
     removeFromStore,
     clearAll,
-
-    ...pendingState,
-    ...eventLocks,
   }
 
   return store
