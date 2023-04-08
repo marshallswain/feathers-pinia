@@ -104,37 +104,31 @@ export class PiniaService<Svc extends FeathersService> {
 
   getFromStore(id: Id, params?: MaybeRef<Params<Query>>): ComputedRef<FeathersInstance<AnyData>> {
     const result = this.store.getFromStore(id, params)
-    const converted = computed(() => convertData(this, result.value) as FeathersInstance<AnyData>)
-    return converted
+    return result
   }
 
   createInStore(data: AnyData) {
-    const convertedInput = convertData(this, data)
-    const result = this.store.createInStore(convertedInput)
-    const converted = convertData(this, result)
-    return converted
+    const result = this.store.createInStore(data)
+    return result
   }
 
-  // TODO: Support multi patch with params
-  // patchInStore(id: Id, data: AnyData, _params?: MaybeRef<Params<Query>>) {
-  patchInStore(id: Id, data: AnyData) {
-    const item = id != null ? this.getFromStore(id) : null
-    const convertedInput = convertData(this, { ...item, ...data })
-    const result = this.store.addOrUpdate(convertedInput)
-    const converted = convertData(this, result)
-    return converted
+  patchInStore<M extends AnyData, Q extends AnyData>(
+    idOrData: MaybeRef<M | M[] | Id | null>,
+    data: MaybeRef<AnyData> = {},
+    params: MaybeRef<Params<Q>> = {},
+  ) {
+    const result = this.store.patchInStore(idOrData, data, params)
+    return result
   }
 
   removeFromStore(id?: Id, params?: MaybeRef<Params<Query>>) {
     const item = id != null ? this.getFromStore(id) : null
     if (item) {
       const result = this.store.removeFromStore(item)
-      const converted = convertData(this, result)
-      return converted
+      return result
     } else if (id == null && unref(params)?.query) {
       const result = this.store.removeByQuery(params)
-      const converted = convertData(this, result)
-      return converted
+      return result
     }
   }
 
