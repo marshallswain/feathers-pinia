@@ -1,18 +1,17 @@
-import { useServiceLocal, useServiceStorage, useServiceTemps } from '../../src'
+import { useAllStorageTypes, useServiceLocal } from '../../src'
 
-const itemStorage = useServiceStorage({ getId: (item) => item.id })
-const { tempStorage } = useServiceTemps({
-  getId: (item) => item.__tempId,
-  itemStorage,
+const idField = 'id'
+const { itemStorage, tempStorage, addItemToStorage } = useAllStorageTypes({
+  getIdField: (val: any) => val[idField],
+  setupInstance: (data) => data,
 })
-
 const { findInStore, countInStore, getFromStore } = useServiceLocal({
   idField: 'id',
   itemStorage,
   tempStorage,
   whitelist: [],
   paramsForServer: [],
-  removeFromStore: (d: any) => d,
+  addItemToStorage,
 })
 
 describe('use-service-local', () => {
