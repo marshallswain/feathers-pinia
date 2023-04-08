@@ -69,6 +69,7 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
    */
   const addItemToStorage = (item: M) => {
     const id = getIdField(item)
+    item = setupInstance(item)
 
     if (item.__isClone) return cloneStorage.merge(item)
     else if (id != null && item.__tempId != null) return moveTempToItems(item)
