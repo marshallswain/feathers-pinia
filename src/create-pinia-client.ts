@@ -104,11 +104,12 @@ export function createPiniaClient<Client extends Application>(
   }
 
   // register hooks on every service
-  vueApp.mixins.push((service: any) => {
+  const mixin: any = (service: any) => {
     service.hooks({
       around: feathersPiniaHooks(),
     })
-  })
+  }
+  vueApp.mixins.push(mixin)
 
   Object.defineProperties(vueApp, {
     authentication: {
