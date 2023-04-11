@@ -222,7 +222,8 @@ const storage = {
   removeItem: () => (jwt.value = null),
 }
 
-export const api = createClient(socketio(socket), { storage })
+const feathersClient = createClient(socketio(socket), { storage })
+export const api = createPiniaClient(feathersClient, { idField: '_id'})
 ```
 
 ### Server-Compatible Fetch

@@ -42,7 +42,7 @@ import io from 'socket.io-client'
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
 const socket = io(host, { transports: ['websocket'] })
 
-export const api = createClient(socketio(socket), { storage: window.localStorage })
+const feathersClient = createClient(socketio(socket), { storage: window.localStorage })
 ```
 
 ```ts [createClient fetch]
@@ -53,7 +53,7 @@ import rest from '@feathersjs/rest-client'
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
 window.fetch.bind(window)
 
-export const api = createClient(rest(host).fetch(fetch), { storage: window.localStorage })
+const feathersClient = createClient(rest(host).fetch(fetch), { storage: window.localStorage })
 ```
 
 ```ts [Socket.io]
