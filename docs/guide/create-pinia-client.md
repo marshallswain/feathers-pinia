@@ -173,7 +173,7 @@ interface SetupInstanceUtils {
 These options are all configurable at the global and service levels. See descriptions in the global configuration
 section. Here is a description of how each option is handled when it's also configured globally:
 
-- **`idField`** concatenated with the global value
+- **`idField`** overrides the global value
 - **`whitelist`** concatenated with the global value
 - **`paramsForServer`** concatenated with the global value
 - **`skipGetIfExists {Boolean}`** overrides the global value
