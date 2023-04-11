@@ -151,20 +151,29 @@ or an object to merge into the store.
 
 ```ts
 interface PiniaServiceConfig {
-  whitelist?: string[],
-  paramsForServer?: string[],
-  skipGetIfExists?: true,
+  idField?: string
+  whitelist?: string[]
+  paramsForServer?: string[]
+  skipGetIfExists?: boolean
   handleEvents?: HandleEvents<AnyData>
-  debounceEventsTime?: 20
-  debounceEventsGuarantee?: number
-  customSiftOperators?: {},
-  setupInstance?: (data = {}) => {}
+  debounceEventsTime?: number
+  debounceEventsGuarantee?: boolean
+  setupInstance?: (data: any, utils: SetupInstanceUtils) => any
+  customizeStore?: (data: ReturnType<typeof useServiceStore>) => Record<string, any>
+  customSiftOperators?: Record<string, any>
+}
+
+interface SetupInstanceUtils {
+  app?: any
+  service?: any
+  servicePath?: string
 }
 ```
 
 These options are all configurable at the global and service levels. See descriptions in the global configuration
 section. Here is a description of how each option is handled when it's also configured globally:
 
+- **`idField`** concatenated with the global value
 - **`whitelist`** concatenated with the global value
 - **`paramsForServer`** concatenated with the global value
 - **`skipGetIfExists {Boolean}`** overrides the global value
