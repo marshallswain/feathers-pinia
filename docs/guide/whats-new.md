@@ -314,12 +314,8 @@ const task = api.service('tasks').new({
 
 ## Handle Associations
 
-<BlockQuote type="warning" label="A Note About Associations">
-
-Association support will become available after more testing. The current plan is to bring back `associateFind` and
-`associateGet`.
-
-</BlockQuote>
+Use the [modeling utilities](/guide/utilities) to define associations on your data. The new methods assure that new
+instances are not enumerable, so they won't be sent to the API server.
 
 ## New `service.useFind` API 🎁
 
