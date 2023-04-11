@@ -48,9 +48,10 @@ unwrapped, which means you don't have to access their contents using `.value`, l
 custom operators to query store data with `findInStore`.
 - `setupInstance` is a function that receives the instance data and allows you to customize it before returning it.
 
-## API
+## State
 
-Here is the Data Stores API, grouped by functionality.
+- `idField` will match the `idField` option that you provided in the Model options.
+- `isSsr` exists as a utility attribute which can be used in custom store getters and actions.
 
 ### Items
 
@@ -80,29 +81,92 @@ Clones are copies of stored data from either `items` or `temps`. They have eithe
 - `commit(clone)` copies the keys from the provided `clone` onto its original record in `items` (or `temps`).
 - `reset(clone)` makes the `clone` match the original record in `items` (or `temps`).
 
-### Storage
+## The "new" Method
+
+```ts
+service.new(data)
+```
+
+Creates a new instance of this service's data type. Records are not automatically added to the store. You must call
+`instance.createInStore()` to do that.
+
+## Storage Methods
 
 The storage APIs include methods for adding data to and removing data from the internal storage. All of the below
 methods except `clearAll` are also aliased directly on the Model. The `clearAll` method is not aliased to make it
 explicitly obvious that you are clearing the store by calling `Model.store.clearAll()`.
 
-- `findInStore(params) => { data, limit, skip, total }` returns records from the store matching `params.query`. The
-response is synchronous and always returns a results object with an array of `data`. Paginated responses also include
-`limit`, `skip`, and `total`. If you turn off pagination, only `{ data }` will be returned. All returned properties are
-computed properties.
-- `findOneInStore(params) => Computed<Record>` returns the first record that matches `params.query`. The response is synchronous and returns
-an object.
-- `countInStore(params) => Computed<number>` returns the number of records in the store which match `params.query`.
+### findInStore(params)
+
+```ts
+service.findInStore(params) => ({ data, limit, skip, total })
+```
+
+Returns records from the store matching `params.query`. The response is synchronous and always returns a results object
+with an array of `data`. Paginated responses also include `limit`, `skip`, and `total`. If you turn off pagination, only
+`{ data }` will be returned. All returned properties are computed properties.
+
+### findOneInStore(params)
+
+```ts
+service.findOneInStore(params) => Computed<Record>
+```
+
+Returns the first record that matches `params.query`. The response is synchronous and returns an object.
+
+### countInStore(params)
+
+```ts
+service.countInStore(params) => Computed<number>
+```
+
+Returns the number of records in the store which match `params.query`.
+
+### getFromStore(id, params)
+
 - `getFromStore(id, params) => Computed<Record>` returns the record from the store with matching `id`, or returns `null`
 if a record is not found.
-- `createInStore(data)` adds the data object or array to the correct internal storage (items or temps), depending on if
-an idField is present.
-- `patchInStore(idOrItems, data)` updates each of the provided items or items that match the ids with the provided data.
-- `removeFromStore(idOrItems, params)` removes provided items or items that match provided ids from the store. You can
-also pass `null` as the first argument and remove items based on a query.
-- `clearAll()` removes all stored `items`, `temps`, and `clones` from the store.
 
-### Internal State
+### createInStore(data)
 
-- `idField` will match the `idField` option that you provided in the Model options.
-- `isSsr` exists as a utility attribute which can be used in custom store getters and actions.
+```ts
+service.createInStore(record)
+service.createInStore(record[])
+```
+
+Adds the data object or array to the correct internal storage (items or temps), depending on if an idField is present.
+
+### patchInStore(idOrItems, data, params)
+
+```ts
+// several overrides
+service.patchInStore(id, data)
+service.patchInStore(id[], data)
+service.patchInStore(item, data)
+service.patchInStore(item[], data)
+service.patchInStore(null, data, paramsWithQuery)
+```
+
+Updates each of the provided items or items that match the ids with the provided data.
+
+### removeFromStore(idOrItems, params)
+
+```ts
+// several overrides
+service.removeFromStore(id, params)
+service.removeFromStore(id[], params)
+service.removeFromStore(record, params)
+service.removeFromStore(record[], params)
+service.removeFromStore(null, paramsWithQuery)
+```
+
+Removes provided items or items that match provided ids from the store. You can also pass `null` as the first argument
+and remove items based on a query.
+
+### clearAll()
+
+```ts
+service.clearAll()
+```
+
+Removes all stored `items`, `temps`, and `clones` from the store.

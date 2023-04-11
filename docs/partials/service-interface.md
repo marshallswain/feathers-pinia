@@ -19,9 +19,9 @@ service.findInStore(params)
 service.findOneInStore(params)
 service.countInStore(params)
 service.getFromStore(id, params)
-service.createInStore(id, params)
-service.patchInStore(id, params)
-service.removeFromStore(id, params)
+service.createInStore(data, params) // data is a record or array or records
+service.patchInStore(idData, params) // idData is one or more ids or records
+service.removeFromStore(idData, params) // idData is one or more ids or records
 
 // hybrid methods
 service.useFind(params, options)

@@ -31,16 +31,16 @@ Learn more about the service methods:
 
 ## The "new" Method
 
+```ts
+service.new(data)
+```
+
 The "new" method allows creation of model instances. It takes the place of calling `new Model(data)` in previous
 Feathers-Pinia releases.
 
-[[toc]]
-
-### Creating Instances
-
 ### Customizing Instances
 
-#### Instance Defaults
+Customizing the default state of each instance is done through `setupInstance` in each service's configuration.
 
 ## Service Methods
 
@@ -48,85 +48,54 @@ Service methods are convenience wrappers around the Feathers Client service prov
 
 ### `find(params)`
 
-Uses the Feathers Client to retrieve records from the API server. On an SSR server, find data will be marked as `ssr: true`, which allows extra queries to be skipped on the client.
-
 ```ts
-todoStore.find({ query: {} }).then(/* ... */)
+await todoStore.find({ query: {} })
 ```
 
+Uses the Feathers Client to retrieve records from the API server. On an SSR server, find data will be marked as `ssr: true`, which allows extra queries to be skipped on the client.
+
 ### `findOne(params)`
+
+```ts
+await service.findOne({ query: {} })
+```
 
 Uses the Feathers Client to retrieve the first matching record from the API server. On an SSR server, find data will be
 marked as `ssr: true`, which allows extra queries to be skipped on the client.
 
-```ts
-service.findOne({ query: {} }).then(/* ... */)
-```
-
 ### `count(params)`
+
+```ts
+await service.count({ query: { isComplete: false } })
+```
 
 Like `find`, but returns the number of records that match the query. It does not return the actual records.
 
-```vue
-<script setup lang="ts">
-import { useTodos } from '../store/todos'
-const todoStore = useTodos()
-
-await todoStore.count({ query: { isComplete: false } })
-</script>
-```
-
 ### `get(id, params)`
+
+```ts
+await todoStore.get(1)
+```
 
 Uses the Feathers Client to retrieve a single record from the API server.
 
-```vue
-<script setup lang="ts">
-import { useTodos } from '../store/todos'
-const todoStore = useTodos()
-
-await todoStore.get(1)
-</script>
-```
-
-### `update(id, data, params)`
-
 Uses the Feathers Client to send an `update` request to the API server.
-
-```vue
-<script setup lang="ts">
-import { useTodos } from '../store/todos'
-const todoStore = useTodos()
-
-await todoStore.update(1, { description: 'foo', isComplete: true })
-</script>
-```
 
 ### `patch(id, data, params)`
 
-Uses the Feathers Client to send an `patch` request to the API server.
-
-```vue
-<script setup lang="ts">
-import { useTodos } from '../store/todos'
-const todoStore = useTodos()
-
+```ts
 await todoStore.patch(1, { isComplete: true })
-</script>
 ```
+
+Uses the Feathers Client to send an `patch` request to the API server.
 
 ### `remove(id, params)`
 
-Uses the Feathers Client to send a `remove` request to the API server.
-
-```vue
-<script setup lang="ts">
-import { useTodos } from '../store/todos'
-const todoStore = useTodos()
-
-await todoStore.remove(1)
-</script>
+```ts
+await api.service.remove(id)
 ```
+
+Uses the Feathers Client to send a `remove` request to the API server.
 
 ### Service Utils
 
