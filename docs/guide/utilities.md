@@ -42,7 +42,7 @@ For adding configurable, non-enumerable setters to items.
 
 ## Example Associations
 
-```ts
+```ts {25-38,45-52,59-66}
 import { defineGetters, defineSetters } from 'feathers-pinia'
 
 export const api = createPiniaClient(feathersClient, {
