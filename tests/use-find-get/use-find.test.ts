@@ -114,6 +114,20 @@ describe('useFind', () => {
       expect(data.value.length).toBe(1)
       expect(data.value[0].name).toBe('Marshall')
     })
+
+    test('shows correct paginated store results', async () => {
+      const params = computed(() => {
+        return { query: { $limit: 3 } }
+      })
+      const { data, find, next } = service.useFind(params)
+      await find()
+      expect(data.value.length).toBe(3)
+      expect(data.value[0].name).toBe('Moose')
+
+      await next()
+
+      expect(data.value[0].name).toBe('Loose')
+    })
   })
 })
 

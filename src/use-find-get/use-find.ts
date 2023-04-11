@@ -58,7 +58,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       const values = itemsFromPagination(store, service, cachedParams.value)
       return values
     } else {
-      const localParams = pagination ? paramsWithPagination.value : params.value || {}
+      const localParams = paramsWithPagination.value
       const result = service.findInStore(deepUnref(localParams)).data.value
       return result.filter((i: any) => i)
     }
