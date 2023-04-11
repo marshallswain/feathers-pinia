@@ -18,29 +18,29 @@ are not supported.
 
 ## defineValues
 
-For adding configurable, non-enumerable properties to items.
-
 ```ts
-
+defineValues(record, object)
 ```
+
+For adding configurable, non-enumerable properties to items.
 
 ## defineGetters
 
 For adding configurable, non-enumerable getters to items.
 
 ```ts
-defineGetters(data, objectOfFunctions)
+defineGetters(record, objectOfFunctions)
 ```
 
 ## defineSetters
 
 ```ts
-defineSetters(data, objectOfFunctions)
+defineSetters(record, objectOfFunctions)
 ```
 
 For adding configurable, non-enumerable setters to items.
 
-## Exampla Associations
+## Example Associations
 
 ```ts
 import { defineGetters, defineSetters } from 'feathers-pinia'
