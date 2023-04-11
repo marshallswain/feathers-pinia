@@ -18,16 +18,8 @@ data.
 
 Feathers-Pinia includes two new utilities for creating and managing associations between data:
 
-- [**`associateFind`**](./associate-find.md) helps manage associated lists of records. (populate `user.messages` onto
-each `user`)
-- [**`associateGet`**](./associate-get.md) helps manage an associated record. (for example, populating `message.user`
-onto each `message` object.)
-
 If you would like to learn about the problems that arise when trying to associate data between stores, read the rest of
 this page.
-
-Learn about **one-to-many** relationships on the [associateFind](./associate-find.md) page.<br/>
-Learn about **one-to-one** relationships on the [associateGet](./associate-get.md) page.
 
 The rest of this page covers challenges and potential solutions when populating data. Jump to the
 [last section](#new-association-utils) for the optimal solution.
@@ -204,7 +196,7 @@ service on the API server to know how to save `users` data. That's just more tig
 
 <Badge>New in 2.0</Badge>
 
-The [associateFind](./associate-find.md) and [associateGet](./associate-get.md) utilities offer a consistent way to keep
+The associateFind and associateGet utilities offer a consistent way to keep
 data in the appropriate store. They use a combination of all of the above solutions with some magic of their own to
 provide the following automatic benefits:
 
@@ -214,7 +206,7 @@ provide the following automatic benefits:
 - **Clean API Requests** where associated data never goes to the wrong endpoint.
 - **Clone and Commit Support** where defining a setter is optional.
 - **Pagination Support** for lists, and a bunch of other utilities, since they're built on the same `Find` and `Get`
-classes that power [useFind](./use-find.md) and [useGet](./use-get.md).
+classes that power [useFind](/services/use-find) and [useGet](/services/use-get).
 
 And all of the functionality comes in a clean, short syntax. Here's an example of `associateGet` that populates the user
 onto each message:
@@ -254,5 +246,5 @@ const modelFn = (data: ModelInstance<Users>) => {
 }
 ```
 
-Learn about **one-to-many** relationships with [associateFind](./associate-find.md).<br/>
-Learn about **one-to-one** relationships with [associateGet](./associate-get.md).
+Learn about **one-to-many** relationships with associateFind.<br/>
+Learn about **one-to-one** relationships with associateGet.

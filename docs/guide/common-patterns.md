@@ -12,146 +12,90 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 ## Accessing a Store From Hooks
 
-You can use [Auto-Imports](/guide/auto-imports) to reference a store from within hooks. This example accesses the
-`userStore` inside of the hooks:
+First, get the `app` instance from `context`. Then lookup a service and use its methods:
 
-<!--@include: ./notification-feathers-client.md-->
+```ts
 
-```ts [With Auto-Imports]
-import type { ModelInstance } from 'feathers-pinia'
-import type { User, UserData, UserQuery } from 'feathers-pinia-api'
+async (context: HookContext, next: NextFunction) => {
+  const { app } = context
+  // use service methods
+  app.service('messages').findInStore()
 
-export const useUsersConfig = () => {
-  const { pinia, idField, whitelist } = useFeathersPiniaConfig()
-  const servicePath = 'users'
-  const service = useFeathersService<User, UserQuery>(servicePath)
-  const name = 'User'
+  // directly read from the store
+  app.service('messages').store.items
 
-  return { pinia, idField, whitelist, servicePath, service, name }
-}
-
-export const useUserModel = () => {
-  const { idField, service, name } = useUsersConfig()
-
-  const Model = useModel(name, () => {
-    const modelFn = (data: ModelInstance<User>) => {
-      const defaults = {
-        email: '',
-        password: '',
-      }
-      const withDefaults = useInstanceDefaults(defaults, data)
-      return withDefaults
-    }
-    return useFeathersModel<User, UserData, UserQuery, typeof modelFn>({ name, idField, service }, modelFn)
-  })
-
-  onModelReady(name, () => {
-    service.hooks({ 
-      around: { 
-        all: [...feathersPiniaHooks(Model)],
-        find: [
-          async (context, next) => {
-            // Reference the userStore through auto-imports
-            const userStore = useUserStore()
-            // Do something with the userStore before sending the request
-            await next()
-            // Do something with the userStore after the response comes back.
-          }
-        ]
-      } 
-    })
-  })
-  connectModel(name, () => Model, useUserStore)
-
-  return Model
+  await next()
 }
 ```
 
-## Handle Custom Server Response
+## Handle Custom Methods
 
-Now that Feathers-Pinia is fully integrated into hooks, custom server responses should be handled in hooks. See the
-previous example, above.
+See the FeathersJS documentation for to to use [custom methods](https://feathersjs.com/api/services.html#custom-methods).
+
+To handle the response from a custom method, create a [custom Pinia store](#custom-pinia-stores).
+
+## Custom Pinia Stores
+
+Instead of customizing stores, a more flexible solution is provided by Pinia: Store Composition. Here's an example of
+how to create a feature store that references a Feathers-Pinia v3 store.
+
+```ts
+export const useFeatureStore = defineStore('my-feature-store', () => {
+  const { api } = useFeathers()
+
+  const usersNamedFred = computed(() => {
+    return api.service('users').findInStore({ query: { name: 'Fred' } }).data.value
+  })
+  
+  return { usersNamedFred }
+})
+```
+
+You can use any of the Feathers-Pinia service methods in composed stores. Read more about [Pinia Store Composition](https://pinia.vuejs.org/cookbook/composing-stores.html)
 
 ## Reactive Lists with Live Queries
 
-Using Live Queries greatly simplifies app development.  The `find` getter enables this feature.  Here is how you might setup a component to take advantage of Live Queries.  The next example shows how to setup two live-query lists using two getters.
+Using Live Queries greatly simplifies app development.  The `find` getter enables this feature.  Here is how you might
+setup a component to take advantage of Live Queries.  The next example shows how to setup two live-query lists using two
+getters.
 
 ```ts
-const Appointment = useAppointmentModel
-
 // fetch past and future appointments
-const params = reactive({ query: {} } })
-const { isPending, find } = Appointment.useFind(params)
+const params = computed(() => {
+  return { query: {} }
+})
+const { isPending, find } = api.service('appointments').useFind(params)
 
 // future appointments
-const futureParams = reactive({ query: { date: { $gt: new Date() } } })
-const { data: futureAppointments } = Appointment.useFind(futureParams)
+const futureParams = computed(() => {
+  return { query: { date: { $gt: new Date() } } }
+})
+const { data: futureAppointments } = api.service('appointments').useFind(futureParams)
 
 // past appointments
-const pastParams = reactive({ query: { date: { $lt: new Date() } } })
-const { data: pastAppointments } = Appointment.useFind(pastParams)
+const pastParams = computed(() => {
+  return { query: { date: { $lt: new Date() } } }
+})
+const { data: pastAppointments } = api.service('appointments').useFind(pastParams)
 ```
 
-in the above example of component code, the `future` and `pastAppointments` will automatically update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.  `feathers-pinia` listens to socket events automatically, so you don't have to manually wire any of this up!
+in the above example of component code, the `future` and `pastAppointments` will automatically update as more data is
+fetched using the `find` utility.  New items will show up in one of the lists, automatically.  `feathers-pinia` listens
+to socket events automatically, so you don't have to manually wire any of this up!
 
 ## Query Once Per Record
 
-To prevent making extra `get` requests, you can use one of the following queryOnce patterns:
+The simplest way to only query once per record is to set the `skipGetIfExists` option to `true` during configuration.
 
-### Query Once Manual
-
-<BlockQuote>
-
-See the next example for a new short-hand syntax to implement this same pattern with `store.useGetOnce`.
-
-</BlockQuote>
-
-For real-time apps, it's not necessary to retrieve a single record more than once, since feathers-pinia will automatically keep the record up to date with real-time events. You can use `queryWhen` to make sure you only retrieve a record once. Perform the following steps to accomplish this:
-
-1. Pass `immediate: false` in the params to prevent the initial request.
-2. Pass a function that returns a boolean to `queryWhen`. In this example, we return `!user.value` because we should query when we don't already have a user record.
-3. Manually call `get`, which will only trigger an API request if we don't have the record. Woot!
-
-```ts
-const User = useUserModel()
-
-interface Props {
-  id: string | number
-}
-const props = defineProps<Props>()
-
-const { data: user, queryWhen, get } = User.useGet(props.id, { 
-  onServer: true, 
-  immediate: false            // (1)
-})
-queryWhen(() => !user.value)  // (2)
-await get()                   // (3)
-```
-
-The above example also shows why `queryWhen` is no longer passed as an argument. It's most common that `queryWhen` needs values returned by `useGet`, but those values aren't available until after `useGet` runs, making them unavailable to `queryWhen` as an argument. In short, moving `queryWhen` to the returned object gives us access to everything we need to productively prevent queries.
-
-### Query Once Auto
-
-The previous pattern of only querying once is so common for real-time apps that we've built a shortcut for it at `store.useGetOnce`. It uses the same code as above, but built into the store method.
-
-```ts
-const User = useUserModel()
-
-interface Props {
-  id: string | number
-}
-const props = defineProps<Props>()
-
-const { data: user } = User.useGetOnce(props.id)
-```
-
-Now the same record will only be retrieved once.
+You can also use the `useFindOnce` method to achieve the same behavior for individual requests.
 
 ## Clearing Data on Logout
 
-The best solution is to simply refresh to clear memory.  If you're using localStorage, clear the localStorage, then refresh. The alternative to refreshing would be to perform manual cleanup of the service stores. Refreshing is much simpler and more practical, so it's the official solution.
+The best solution is to simply refresh to clear memory.  If you're using localStorage, clear the localStorage, then
+call `window.location.reload()`. The alternative to refreshing would be to perform manual cleanup of the service stores.
+Refreshing is much simpler and more practical, so it's the official solution.
 
-## Model-Level Computed Props
+## Data-Level Computed Props
 
 You can define model-level computed properties by using `Object.defineProperty` to create a non-enumerable,
 configurable, ES5 getter. Note that when you use `defineProperty`, you have to manually specify a union type. The line
@@ -160,9 +104,8 @@ exists.
 
 ```ts
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
-import { type ModelInstance } from 'feathers-pinia'
 
-const modelFn = (data: ModelInstance<Users>) => {
+const setupInstance (data: Users) {
   const withDefaults = useInstanceDefaults({ firstName: '', lastName: '' }, data)
 
   // Define a non-enumerable, configurable property
@@ -175,43 +118,45 @@ const modelFn = (data: ModelInstance<Users>) => {
   })
   return withDefaults as typeof withDefaults & { fullName: string }
 }
-const User = useBaseModel<Users, UsersQuery, typeof modelFn>({ name: 'User', idField: '_id' }, modelFn)
 ```
 
-<https://vuex.feathersjs.com/common-patterns.html#model-specific-computed-properties>
+### Relationships Between Services
 
-## Relationships Between Services
-
-See the [Model Associations](./model-associations.md) page.
-
-## Working with Forms
+Use `Object.defineProperties` to create relationships in the `setupInstnace` method of each service.
 
 ### Mutation Multiplicity Pattern
 
-The Mutation Multiplicity (anti) Pattern is a side effect of strict mode in stores. Vuex strict mode would throw errors when editing data in the store. Thankfully, Pinia will not throw errors when you modify store data. However, it's considered an anti-pattern to modify store data directly. The one exception is that cloned records are considered safe to edit in Feathers-Pinia, despite being kept in the store.  The most common (anti)pattern that beginners use to work around the "limitation" of not being able to edit store data is to
+The Mutation Multiplicity (anti) Pattern is a side effect of strict mode in stores. Vuex strict mode would throw errors
+when editing data in the store. Thankfully, Pinia will not throw errors when you modify store data. However, it's
+considered an anti-pattern to modify store data directly. The one exception is that cloned records are considered safe
+to edit in Feathers-Pinia, despite being kept in the store.  The most common (anti)pattern that beginners use to work
+around the "limitation" of not being able to edit store data is to
 
 1. Read data from the store and use it for display in the UI.
 2. Create custom actions/mutations intended to modify the data in specific ways.
 3. Use the actions/mutations wherever they apply (usually implemented as one mutation per form).
 
-There are times when defining custom mutations is the most supportive pattern for the task, but consider them to be more rare.  The above pattern can result in a huge number of mutations, extra lines of code, and increased long-term maintenance costs.
+There are times when defining custom mutations is the most supportive pattern for the task, but consider them to be more
+rare.  The above pattern can result in a huge number of mutations, extra lines of code, and increased long-term
+maintenance costs.
 
 The solution to the Mutation Multiplicity Malfeasance is the Clone and Commit Pattern in Feathers-Pinia.
 
 ### Clone and Commit Pattern
 
-The "Clone and Commit" pattern provides an alternative to using a lot of actions/mutations. This patterns looks more like this:
+The "Clone and Commit" pattern provides an alternative to using a lot of actions/mutations. This patterns looks more
+like this:
 
 1. Read data from the store and use it for display in the UI.  (Same as above)
 2. Create and modify a clone of the data.
 3. Use a single mutation to commit the changes back to the original record in the store.
 
-Sending most edits through a single mutation can really simplify the way you work with store data.  The `BaseModel` class has `clone` and `commit` instance methods. These methods provide a clean API for working with items in the store and not unsafely editing data:
+Sending most edits through a single mutation can really simplify the way you work with store data.  The `BaseModel`
+class has `clone` and `commit` instance methods. These methods provide a clean API for working with items in the store
+and not unsafely editing data:
 
 ```ts
-const Task = useTaskModel()
-
-const task = Task({
+const task = api.service('tasks').new({
   description: 'Plant the garden',
   isComplete: false
 })
@@ -221,32 +166,13 @@ clone.description = 'Plant half of the garden."
 clone.commit()
 ```
 
-In the example above, modifying the `task` variable would unsafely modify stored data, which is a generally unsupportive practice when not done consciously. Calling `task.clone()` returns a reactive clone of the instance.  It's safe to change clones. You can then call `clone.commit()` to update the original record in the store.
+In the example above, modifying the `task` variable would unsafely modify stored data, which is a generally unsupportive
+practice when not done consciously. Calling `task.clone()` returns a reactive clone of the instance.  It's safe to
+change clones. You can then call `clone.commit()` to update the original record in the store.
 
 ## Feathers Client
 
 This section reviews how to create and use Feathers Clients
-
-### Feathers Clients Manual Setup
-
-FeathersJS v5 Dove creates a typed client for you, but you can still create Feathers Clients manually.
-
-Here's an example **feathers-socket.io** client:
-
-```ts
-// src/feathers.ts
-import { feathers } from '@feathersjs/feathers'
-import socketio from '@feathersjs/socketio-client'
-import auth from '@feathersjs/authentication-client'
-import io from 'socket.io-client'
-
-const socket = io('http://localhost:3030', { transports: ['websocket'] })
-
-// This variable name becomes the alias for this server.
-export const api = feathers()
-  .configure(socketio(socket))
-  .configure(auth({ storage: window.localStorage }))
-```
 
 ### Multiple Feathers Clients
 
@@ -341,64 +267,3 @@ shamefully-hoist=true
 strict-peer-dependencies=false
 legacy-peer-deps=true
 ```
-
-## Global Configuration
-
-We can use composables to create a global configuration function for Feathers-Pinia. It's very convenient when paired
-with [Auto-Imports](/guide/auto-imports). Use a global config for consistent Models and stores. This example is found in
-`models/feathers-pinia-config.ts` in the Vite and Nuxt [example applications](/setup/example-apps):
-
-::: code-group
-
-```ts [Vite]
-import { pinia } from '~/modules/pinia'
-
-/**
- * Returns a configuration object for Feathers-Pinia
- */
-export const useFeathersPiniaConfig = () => {
-  return {
-    pinia,
-    idField: '_id',
-    whitelist: ['$regex'],
-  }
-}
-```
-
-```ts [Nuxt]
-/**
- * Returns a global configuration object for Feathers-Pinia
- */
-export const useFeathersPiniaConfig = () => {
-  const { $pinia: pinia } = useNuxtApp()
-  return {
-    pinia,
-    idField: '_id',
-    whitelist: ['$regex'],
-  }
-}
-```
-
-:::
-
-Now you can use the `useFeathersPiniaConfig` to create service-specific composables to share between the Model and
-store. Place this composable directly above the Model definition (in this case the `User` Model definition):
-
-```ts
-export const useUsersConfig = () => {
-  const { pinia, idField, whitelist } = useFeathersPiniaConfig()
-  const servicePath = 'users'
-  const service = useFeathersService<User, UserQuery>(servicePath)
-  const name = 'User'
-
-  return { pinia, idField, whitelist, servicePath, service, name }
-}
-```
-
-And now you can call `useUsersConfig()` and destructure the variables needed by the Model and store, as shown in the
-[setup examples](/setup/)
-
-<BlockQuote type="info" label="note">
-Before version 2, Feathers-Pinia included the `setupFeathersPinia` utility to enable global configuration. That API has
-been removed in favor of the above solution.
-</BlockQuote>

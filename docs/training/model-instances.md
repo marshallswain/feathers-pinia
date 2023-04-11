@@ -11,7 +11,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
-Each [Model Function](/guide/model-functions) receives an object and upgrades it to be a model instance. The instance
+Each Model Function receives an object and upgrades it to be a model instance. The instance
 API will be different depending on the type of Model Function used.
 
 ## Why Model Instances
@@ -23,7 +23,7 @@ coupled.
 
 ### Interface Super Powers
 
-Model instances are created by passing an object to a [Model Function](/guide/model-functions). Assuming you've created
+Model instances are created by passing an object to a Model Function. Assuming you've created
 a Model Function, creating an instance is as easy as calling the function with some data:
 
 ```ts
@@ -50,8 +50,8 @@ Wasn't that nice! The `createInStore` method is just hanging out there on the da
 
 ### Decoupling from Modules
 
-The previous section showed how instances have a convenient `createInStore` method on them. In most cases this type of API
-is far more convenient than a verbose API like the one in the next example:
+The previous section showed how instances have a convenient `createInStore` method on them. In most cases this type of
+API is far more convenient than a verbose API like the one in this next example:
 
 ```ts
 // This type of API couples this code to the `feathers-pinia` module
@@ -73,13 +73,7 @@ User. It just knows that the records have a `.save()` method.
 
 ## Model Instance Types
 
-Each of the two [Model Functions](/guide/model-functions) produces a different interface on each instance.
-
-- The [Base Model Instance](/guide/use-base-model-instances) API includes attributes related to the "parent" Model
-function, as well as temp state, clone state and methods, and storage methods.
-
-- The [Feathers Model Instance](/guide/use-feathers-model-instances) API includes all of BaseModel, plus methods for
-communicating with the Feathers API server about the instance.
+Each of the two Model Functions produces a different interface on each instance.
 
 ## Compare Instance APIs
 

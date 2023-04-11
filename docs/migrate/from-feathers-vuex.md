@@ -59,8 +59,8 @@ Make sure you import and create store beforehand with `const <id>Store = use<id>
 
 #### Common Tools
 
-- **`useFind`:** is now `service.useFind`. The API is the same. See [service.useFind](/services/hybrid-methods#useFind)
-- **`useGet`:** is now `service.useGet`. The API is the same. See [service.useGet](/services/hybrid-methods#useGet)
+- **`useFind`:** is now `service.useFind`. The API is the same. See [service.useFind](/services/use-find)
+- **`useGet`:** is now `service.useGet`. The API is the same. See [service.useGet](/services/use-get)
 - **usePagination:** is integrated into `service.useFind`
 - **handleClones:** is gone and built into the instance interface. See [Migrate Clone Handling](/migrate/handle-clones)
 

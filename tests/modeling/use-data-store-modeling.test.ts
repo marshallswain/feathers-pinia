@@ -26,7 +26,7 @@ describe('standalone stores', () => {
   describe('store methods', () => {
     it('can store.new', async () => {
       const task = store.new(record)
-      expect(task.__isBaseInstance).toBe(true)
+      expect(task.__isStoreInstance).toBe(true)
       expect(task.__isClone).toBe(false)
       expect(task.__idField).toBe('id')
       expect(task.__tempId).toBe(undefined)
@@ -412,13 +412,13 @@ describe('standalone stores', () => {
 
     test('instances are still instances after findInStore', async () => {
       const task = store.new(record)
-      expect(task.__isBaseInstance).toBe(true)
+      expect(task.__isStoreInstance).toBe(true)
 
       const added = task.createInStore()
-      expect(added.__isBaseInstance).toBe(true)
+      expect(added.__isStoreInstance).toBe(true)
 
       const { data } = store.findInStore({ query: {} })
-      expect(data.value[0].__isBaseInstance).toBe(true)
+      expect(data.value[0].__isStoreInstance).toBe(true)
     })
   })
 })

@@ -2,21 +2,21 @@ import { BadRequest } from '@feathersjs/errors'
 import type { FeathersService, Params } from '@feathersjs/feathers'
 import type { AnyData } from '../types'
 import { defineValues, defineGetters } from '../utils/define-properties'
-import type { FeathersInstanceProps } from './types'
+import type { ServiceInstanceProps } from './types'
 import type { PiniaService } from '../create-pinia-service'
 
 type Service = FeathersService | PiniaService<FeathersService>
 
-export interface useFeathersInstanceOptions<S extends Service> {
+export interface useServiceInstanceOptions<S extends Service> {
   service: S
   store: any
 }
 
-export const useFeathersInstance = <M extends AnyData, S extends Service, P extends Params = Params>(
+export const useServiceInstance = <M extends AnyData, S extends Service, P extends Params = Params>(
   data: M,
-  options: useFeathersInstanceOptions<S>,
+  options: useServiceInstanceOptions<S>,
 ) => {
-  if (data.__isFeathersInstance) return data
+  if (data.__isServiceInstance) return data
 
   const { service, store } = options
   const merge = (data: M, toMerge: AnyData) => Object.assign(data, toMerge)
@@ -40,7 +40,7 @@ export const useFeathersInstance = <M extends AnyData, S extends Service, P exte
   } as any)
 
   defineValues(data, {
-    __isFeathersInstance: true,
+    __isServiceInstance: true,
     save(this: M, params?: P) {
       const id = this[store.idField]
       return id != null ? this.patch(params) : this.create(params)
@@ -64,5 +64,5 @@ export const useFeathersInstance = <M extends AnyData, S extends Service, P exte
     },
   })
 
-  return data as M & FeathersInstanceProps<M, AnyData, P>
+  return data as M & ServiceInstanceProps<M, AnyData, P>
 }

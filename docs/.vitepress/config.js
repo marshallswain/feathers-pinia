@@ -75,7 +75,6 @@ function getSetupSidebar() {
       items: [
         { text: 'Models to Services', link: '/migrate/models' },
         { text: 'Clone Handling', link: '/migrate/handle-clones' },
-        { text: 'Store Customization', link: '/migrate/store-customization' },
         { text: 'from Vuex', link: '/migrate/from-feathers-vuex' },
         { text: 'from 0.x', link: '/migrate/from-v0' },
       ],
@@ -100,81 +99,38 @@ function getGuideSidebar() {
     {
       text: 'Feathers-Pinia Services',
       items: [
+        { text: 'Service API', link: '/services/', },
+        { text: 'Service Stores', link: '/services/stores', },
+        { text: 'Instance API', link: '/services/instances', },
         {
-          text: 'Service Overview',
-          link: '/services/',
-          items: [
-            { text: 'The "new" Method', link: '/services/the-new-method' },
-            { text: 'API Methods', link: '/services/api-methods' },
-            { text: 'Store Methods', link: '/services/store-methods' },
-            { text: 'Hybrid Methods', link: '/services/hybrid-methods' },
-            { text: 'Event Methods', link: '/services/event-methods' },
+          text: 'Hybrid Queries',
+          link: '/services/hybrid-queries',
+          items:[
+            { text: 'useFind', link: '/services/use-find', },
+            { text: 'useGet', link: '/services/use-get', },
           ]
         },
-        { text: 'Querying Data', link: '/services/querying-data' },
-        { text: 'Modeling', link: '/services/modeling' },
+        { text: 'Common Patterns', link: '/guide/common-patterns' },
       ]
     },
     {
-      text: 'Data Stores',
+      text: 'Data Modeling',
       items: [
-        {
-          text: 'useDataStore Overview',
-          link: '/guide/modeling',
-          items: [
-            { text: 'The "new" Method', link: '/services/the-new-method' },
-            { text: 'Store Methods', link: '/services/store-methods' },
-             
-          ]
-        },
-        {
-          text: 'Model Instances',
-          link: '/guide/model-instances',
-          items: [
-            { text: 'BaseModel Instances', link: '/guide/use-base-model-instances' },
-            { text: 'FeathersModel Instances', link: '/guide/use-feathers-model-instances' },
-          ],
-        },
-        // {
-        //   text: 'Model Associations',
-        //   link: '/guide/model-associations',
-        //   items: [
-        //     { text: 'associateFind', link: '/guide/associate-find' },
-        //     { text: 'associateGet', link: '/guide/associate-get' },
-        //   ],
-        // },
-        // { text: 'Common Patterns', link: '/guide/common-patterns' },
+        { text: 'useInstanceDefaults', link: '/guide/use-instance-defaults' },
+      ]
+    },
+    {
+      text: 'Standalone Data Stores',
+      items: [
+        { text: 'Data Stores', link: '/data-stores/' },
+        { text: 'Instance API', link: '/data-stores/instances' },
+        { text: 'Querying Data', link: '/data-stores/querying-data' },
       ],
     },
-    // {
-    //   text: 'Stores',
-    //   items: [
-    //     { text: 'Overview', link: '/guide/stores-overview' },
-    //     {
-    //       text: 'Model Stores',
-    //       link: '/guide/model-stores',
-    //       items: [
-    //         { text: 'BaseModel Stores', link: '/guide/use-base-model-stores' },
-    //         { text: 'FeathersModel Stores', link: '/guide/use-feathers-model-stores' },
-    //       ],
-    //     },
-    //     {
-    //       text: 'Pinia Stores',
-    //       link: '/guide/pinia-stores',
-    //       items: [
-    //         { text: 'useDataStore - Data Stores', link: '/guide/use-data-store' },
-    //         { text: 'useAuth - Auth Stores', link: '/guide/use-auth' },
-    //       ],
-    //     },
-    //   ],
-    // },
-    // {
-    //   text: 'Common Tools',
-    //   items: [
-    //     { text: 'useFind', link: '/guide/use-find' },
-    //     { text: 'useGet', link: '/guide/use-get' },
-    //   ],
-    // },
+    {
+      text: 'Auth Stores',
+      items: [ { text: 'useAuth - Auth Stores', link: '/guide/use-auth' }, ],
+    },
     {
       text: 'Other Tools',
       items: [

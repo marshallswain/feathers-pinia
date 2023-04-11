@@ -8,7 +8,6 @@ export interface UseFindPage {
 }
 
 export interface UseFindGetDeps {
-  store: any
   service: any
 }
 

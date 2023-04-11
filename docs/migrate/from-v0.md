@@ -61,9 +61,9 @@ Any API involving global state has been removed and moved into the Feathers-Pini
   - `patchPendingById`
   - `removePendingById`
 - `afterFind` has been removed. You can use Feathers Client hooks instead.
-- `state` has been removed. Use [Store Composition](/migrate/store-customization)
-- `methods` has been removed. Use [Store Composition](/migrate/store-customization)
-- `actions` has been removed. Use [Store Composition](/migrate/store-customization)
+- `state` has been removed. Use [Store Composition](/guide/common-patterns#custom-pinia-stores)
+- `methods` has been removed. Use [Store Composition](/guide/common-patterns#custom-pinia-stores)
+- `actions` has been removed. Use [Store Composition](/guide/common-patterns#custom-pinia-stores)
 
 ## No More `defineAuthStore`
 
@@ -88,9 +88,7 @@ import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
-  const userStore = useUserStore()
-
-  const utils = useAuth({ api, userStore })
+  const utils = useAuth({ api, servicePath: 'users' })
 
   utils.reAuthenticate()
 
@@ -109,9 +107,3 @@ if (import.meta.hot) {
 If you're using auto-imports, there's no need to import `useAuth`.
 
 </BlockQuote>
-
-Here are some resources to learn more about the previous example:
-
-- Learn more about [Auth Stores (useAuth)](/guide/use-auth)
-- `useFeathers` comes from a [composable utility pattern](/guide/common-patterns#access-feathers-client)
-- `useUserStore` is a [service store](/guide/use-data-store)

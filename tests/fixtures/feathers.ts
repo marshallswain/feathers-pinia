@@ -1,13 +1,16 @@
 import type { Tasks, TasksData, TasksQuery } from './schemas/tasks'
 import type { Users, UsersData, UsersQuery } from './schemas/users'
 import type { Contacts, ContactsData, ContactsQuery } from './schemas/contacts'
+import type { Posts } from './schemas/posts'
+import type { Authors } from './schemas/authors'
+import type { Comments } from './schemas/comments'
 
 import { feathers, HookContext, Params } from '@feathersjs/feathers'
 import { memory } from '@feathersjs/memory'
 import { NotAuthenticated } from '@feathersjs/errors'
 import { createPinia } from 'pinia'
 import { timeout } from '../test-utils'
-import { createPiniaClient, useInstanceDefaults } from '../../src'
+import { createPiniaClient, defineGetters, defineSetters, useInstanceDefaults } from '../../src'
 import rest from '@feathersjs/rest-client'
 import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
@@ -108,6 +111,54 @@ export const api = createPiniaClient(feathersClient, {
     },
     tasks: {
       skipGetIfExists: true,
+    },
+    authors: {
+      setupInstance(author, { app }) {
+        const withDefaults = useInstanceDefaults({ setInstanceRan: false }, author)
+        const withAssociations = defineGetters(withDefaults, {
+          posts(this: Authors) {
+            return app.service('posts').useFind({ query: { authorId: this.id } })
+          },
+          comments(this: Authors) {
+            return app.service('comments').useFind({ query: { authorId: this.id } })
+          },
+        })
+        const withAssociationSetters = defineSetters(withAssociations, {
+          posts(this: Posts, post: Posts) {
+            author.setInstanceRan = true
+            if (post.id && !this.authorIds.includes(post.id)) post.authorIds.push(post.id)
+          },
+        })
+        return withAssociationSetters
+      },
+    },
+    posts: {
+      setupInstance(post, { app }) {
+        const withDefaults = useInstanceDefaults({ authorIds: [] }, post)
+        const withAssociations = defineGetters(withDefaults, {
+          authors(this: Posts) {
+            return app.service('authors').useFind({ query: { id: { $in: this.authorIds } } })
+          },
+          comments(this: Posts) {
+            return app.service('comments').useFind({ query: { postId: this.id } })
+          },
+        })
+        return withAssociations
+      },
+    },
+    comments: {
+      setupInstance(comment, { app }) {
+        const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, comment)
+        const withAssociations = defineGetters(withDefaults, {
+          post(this: Comments) {
+            return app.service('posts').useGet(this.postId)
+          },
+          author(this: Comments) {
+            return app.service('authors').useGet(this.authorId)
+          },
+        })
+        return withAssociations
+      },
     },
   },
 })

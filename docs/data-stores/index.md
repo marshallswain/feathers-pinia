@@ -7,48 +7,54 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# BaseModel Stores
+# Standalone Data Stores
 
 [[toc]]
 
-Model Functions come with their own built-in stores. The BaseModel store API is a subset of the FeathersModel store.
-
-**Related reading:**
-
-- [BaseModel Static API](/guide/use-base-model)
-- [BaseModel Instance API](/guide/use-base-model-instances)
-
-## Creating a BaseModel Store
-
-BaseModel stores are created only when you create a BaseModel Function using [useBaseModel](/guide/use-base-model). The
-default store is found at `Model.store`:
+## Creating a Data Store
 
 <!--@include: ./notification-feathers-client.md-->
 
 ```ts
-import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
-import { type ModelInstance, useBaseModel, useInstanceDefaults } from 'feathers-pinia'
+import { useDataStore } from 'feathers-pinia'
+import { createPinia, defineStore } from 'pinia'
 
-const modelFn = (data: ModelInstance<Tasks>) => {
-  const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, data)
-  return withDefaults
+const pinia = createPinia()
+
+const useStore = defineStore('custom-tasks', () => {
+  const utils = useDataStore({
+    idField: 'id',
+    customSiftOperators: {}
+    setupInstance: (data: any, { api, service, servicePath }) => data
+  })
+  return { ...utils }
+})
+const store = useStore(pinia) // --> See API, below
+
+// Adds HMR support
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useStore, import.meta.hot))
 }
-const Task = useBaseModel<Tasks, TasksQuery, typeof modelFn>({ name: 'Task', idField: '_id' }, modelFn)
-
-console.log(Task.store) // --> See API, below
 ```
 
 Similar to a Pinia store, the top-level of the store is a `reactive`, which means nested `computed` properties will be
 unwrapped, which means you don't have to access their contents using `.value`, like you would with a Vue `ref` or
 `computed`, normally.
 
+### Options
+
+- `idField` is the name of the unique identifier attribute on each record.
+- `customSiftOperators` is an optional object containing [sift](https://github.com/crcn/sift.js/) operators for using
+custom operators to query store data with `findInStore`.
+- `setupInstance` is a function that receives the instance data and allows you to customize it before returning it.
+
 ## API
 
-Here is the API for BaseModel stores, grouped by functionality.
+Here is the Data Stores API, grouped by functionality.
 
 ### Items
 
-Items are records which have an idField, which is usually assigned by a server, though not required.
+Items are records which have an unique idField.
 
 - `itemsById` is an object used as the storage for items. They are keyed by idField to allow for quick lookup.
 - `items` is a dynamically-computed array which holds the list of all records in `itemsById`.
@@ -80,21 +86,23 @@ The storage APIs include methods for adding data to and removing data from the i
 methods except `clearAll` are also aliased directly on the Model. The `clearAll` method is not aliased to make it
 explicitly obvious that you are clearing the store by calling `Model.store.clearAll()`.
 
-- `findInStore(params)` returns records from the store matching `params.query`. The response is synchronous and always
-returns a results object with an array of `data`. Paginated responses also include `limit`, `skip`, and `total`. If you
-turn off pagination, only `{ data }` will be returned.
-- `countInStore(params)` returns the number of records in the store which match `params.query`.
-- `getFromStore(id, params)` returns the record from the store with matching `id`, or returns `null` if a record is not
-found.
-- `createInStore(data)` adds the data object or array to the correct internal storage (items or temps), depending on if an
-idField is present.
-- `removeFromStore(data)` removes any data with matching `data[idField]` from the store. `data` can be an object or an
-array of objects.
+- `findInStore(params) => { data, limit, skip, total }` returns records from the store matching `params.query`. The
+response is synchronous and always returns a results object with an array of `data`. Paginated responses also include
+`limit`, `skip`, and `total`. If you turn off pagination, only `{ data }` will be returned. All returned properties are
+computed properties.
+- `findOneInStore(params) => Computed<Record>` returns the first record that matches `params.query`. The response is synchronous and returns
+an object.
+- `countInStore(params) => Computed<number>` returns the number of records in the store which match `params.query`.
+- `getFromStore(id, params) => Computed<Record>` returns the record from the store with matching `id`, or returns `null`
+if a record is not found.
+- `createInStore(data)` adds the data object or array to the correct internal storage (items or temps), depending on if
+an idField is present.
+- `patchInStore(idOrItems, data)` updates each of the provided items or items that match the ids with the provided data.
+- `removeFromStore(idOrItems, params)` removes provided items or items that match provided ids from the store. You can
+also pass `null` as the first argument and remove items based on a query.
 - `clearAll()` removes all stored `items`, `temps`, and `clones` from the store.
 
 ### Internal State
 
 - `idField` will match the `idField` option that you provided in the Model options.
-- `associations` stores a reference to each `associateFind` or `associateGet` relationship.
-- `whitelist` will match the `whitelist` option that you provided in the Model options. The `whitelist` marks special
-query operators and filters to be allowed in store queries.
+- `isSsr` exists as a utility attribute which can be used in custom store getters and actions.

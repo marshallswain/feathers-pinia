@@ -18,7 +18,7 @@ export interface BaseModelData {
   __tempId?: string
 }
 
-export interface BaseModelInstanceProps<M extends AnyData = AnyData> {
+export interface StoreInstanceProps<M extends AnyData = AnyData> {
   /**
    * The name of the Model function
    */
@@ -79,13 +79,9 @@ export interface BaseModelInstanceProps<M extends AnyData = AnyData> {
 }
 
 export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
-export type ModelInstance<M extends AnyData> = ModelInstanceData<M> & BaseModelInstanceProps<M>
+export type ModelInstance<M extends AnyData> = ModelInstanceData<M> & StoreInstanceProps<M>
 
-export interface FeathersInstanceProps<
-  M extends AnyData,
-  Q extends AnyData,
-  P extends PatchParams<Q> = PatchParams<Q>,
-> {
+export interface ServiceInstanceProps<M extends AnyData, Q extends AnyData, P extends PatchParams<Q> = PatchParams<Q>> {
   readonly isSavePending: boolean
   readonly isCreatePending: boolean
   readonly isPatchPending: boolean
@@ -95,6 +91,6 @@ export interface FeathersInstanceProps<
   patch: (this: ModelInstance<M>, params?: P) => Promise<M>
   remove: (this: ModelInstance<M>, params?: P) => Promise<M>
 }
-export type FeathersInstance<M extends AnyData, Q extends AnyData = AnyData> = ModelInstanceData<M> &
-  BaseModelInstanceProps<M> &
-  FeathersInstanceProps<M, Q>
+export type ServiceInstance<M extends AnyData, Q extends AnyData = AnyData> = ModelInstanceData<M> &
+  StoreInstanceProps<M> &
+  ServiceInstanceProps<M, Q>

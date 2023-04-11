@@ -9,29 +9,13 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 # useAuth - Auth Stores
 
+Learn how to create and customize auth stores.
+
 [[toc]]
 
-In Feathers-Pinia 2.0, the new `useAuth` composition utility which allows you to create a highly-flexible
+In Feathers-Pinia 3.0, the new `useAuth` composition utility which allows you to create a highly-flexible
 [setup store](https://pinia.vuejs.org/core-concepts/#setup-stores). This both makes the API more flexible while also
-keeping it easy to use for simple authentication requirements. The old `defineAuthStore` utility has been removed.
-
-Note that most of the examples on this page take advantage of auto-imports as explained in the [Vite](/setup/vite)
-and [Nuxt](/setup/nuxt3) guides.
-
-<BlockQuote type="danger" label="Assess Your Risk">
-
-The examples on this page will suffice for apps with simple security requirements. If you are building an app with high
-privacy requirements, you might need something more secure.
-
-There are multiple ways to secure your app. If you need help, please [contact a FeathersHQ member](https://github.com/feathershq/)
-for consulting services.
-
-</BlockQuote>
-
-The examples that follow feature utilities for which you might need more information:
-
-- `useFeathers` comes from a [composable utility pattern](/guide/common-patterns#access-feathers-client)
-- `useUserStore` is a [service store](/guide/use-data-store)
+keeping it easy to use for simple authentication requirements.
 
 ## useAuth
 
@@ -77,9 +61,7 @@ import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
-  const { userStore } = useUserStore()
-
-  const utils = useAuth({ api, userStore })
+  const utils = useAuth({ api, servicePath: 'users' })
 
   utils.reAuthenticate()
 
@@ -91,7 +73,7 @@ if (import.meta.hot) {
 }
 ```
 
-When you provide the `userStore` option, the `user` object returned from calling `authenticate` will be added to the
+When you provide the `servicePath` option, the `user` object returned from calling `authenticate` will be added to the
 `userStore`. The `auth` util will store the `userId` internally and expose a `user` getter that pulls the reactive `user`
 from the `userStore`.
 
@@ -237,7 +219,7 @@ router.beforeEach(async (to, from) => {
 ## Obtaining the Auth Payload
 
 In previous versions, the authenticate method stored the `accessToken` and `payload` information inside the store. In
-version 2.0, that information has been removed from the store since it is stored in the Feathers Client. You can
+version 3.0, that information has been removed from the store since it is stored in the Feathers Client. You can
 retrieve the `accessToken` as shown in the example, below. The example assumes you've used the [Nuxt](/setup/nuxt3)
 or [Vite](/setup/vite) setup instructions.
 

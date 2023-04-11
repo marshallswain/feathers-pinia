@@ -51,7 +51,7 @@ const api = createVueClient(feathersClient, {
   idField: '_id',
   services: {
     users: {
-      setupInstance(data: FeathersInstance<Users>) {
+      setupInstance(data: ServiceInstance<Users>) {
         return useInstanceDefaults(data, { name: '' })
       },
     },
@@ -140,7 +140,7 @@ Learn more about the new [useAuth utility](/guide/use-auth)
 The `useDataStore` utility allows creating your own data stores with the same shape as service stores. You only need
 this if you want to manage non-Feathers data with the same API.
 
-Learn more about the new [useDataStore utility](/guide/use-data-store).
+Learn more about the new [useDataStore utility](/data-stores/).
 
 ## Implicit Data Modeling
 
@@ -148,14 +148,12 @@ Data modeling is one of the most-loved features in Feathers-Pinia.  Version 2.x 
 Classes. Now in v3 model functions are implicitly created for you. You can customize them by providing a `setupInstance`
 function in the individual service options.
 
-Learn more about [Model Functions](/guide/modeling)
-
 ### useInstanceDefaults 🎁
 
 You can define default values for instances using the `useInstanceDefaults`. This takes the place of the former
 BaseModel class's `instanceDefaults` method.
 
-Learn more about the new [useInstanceDefaults utility](/guide/modeling#useinstancedefaults)
+Learn more about the new [useInstanceDefaults utility](/guide/use-instance-defaults)
 
 ## Nuxt Module ⚡️
 
@@ -187,7 +185,7 @@ These operators are now enabled for store queries, by default:
 - [$where](https://github.com/crcn/sift.js/#where)
 - [$elemMatch](https://github.com/crcn/sift.js/#elemmatch)
 
-Learn more on the [Querying Data](/services/querying-data#all-sift-operators-enabled-locally) page.
+Learn more on the [Querying Data](/data-stores/querying-data#all-sift-operators-enabled-locally) page.
 
 ### Query API Reference 📖
 
@@ -199,7 +197,7 @@ supported by:
 - the [@feathersjs/knex](https://feathersjs.com/api/databases/knex.html) adapter
 - other SQL-based adapters
 
-Learn more on the new [Querying Data](/services/querying-data) page.
+Learn more on the new [Querying Data](/data-stores/querying-data) page.
 
 ### SQL `$like` Operators 🎁
 
@@ -281,7 +279,7 @@ These adapters will also work:
 
 If you use any of the above database adapters, give the new query operators a try!  Enjoy your new superpowers!
 
-Read more about all supported query filters and operators on the [Querying Data](/services/querying-data) page.
+Read more about all supported query filters and operators on the [Querying Data](/data-stores/querying-data) page.
 
 ### Custom Local Query Operators
 
@@ -295,13 +293,13 @@ See the [createPiniaClient](/guide/create-pinia-client) documentation.
 You can now pass `params.clones` to either `findInStore` or `getFromStore` to return all matching data as clones of the
 original data. This was formerly known as `params.copies` in Feathers-Vuex.
 
-Learn more in the [Querying Data page](/services/querying-data#params-clones)
+Learn more in the [Querying Data page](/data-stores/querying-data#params-clones)
 
 ## Built-in Patch Diffing 🎁
 
 <!--@include: ../partials/patch-diffing.md-->
 
-Read more about [FeathersModel Instances](/guide/use-feathers-model-instances)
+Read more about [FeathersModel Instances](/services/instances)
 
 ## Reactive Instances ➕
 
@@ -313,8 +311,6 @@ const task = api.service('tasks').new({
   description: 'Bind me to a template. I am ready.'
 })
 ```
-
-Read more about [Modeling](/guide/modeling).
 
 ## Handle Associations
 
@@ -397,5 +393,3 @@ The rarely-used `update` method has been removed from the instance interface. Us
 advantage of patch diffing and partial updates.  You can still replace an entire object by just sending all of the data
 through `patch`. The Model Functions and Feathers-connected stores continue to have an `update` method, which an also
 be used.
-
-Read more about [Model Instances](/guide/model-instances).

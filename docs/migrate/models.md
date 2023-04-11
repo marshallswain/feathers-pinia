@@ -102,7 +102,7 @@ method of the service's configuration.
 
 ### `useInstanceDefaults`
 
-The `instanceDefaults` static Model function is replaced by the [useInstanceDefaults utility](/guide/model-functions-shared#useinstancedefaults).
+The `instanceDefaults` static Model function is replaced by the [useInstanceDefaults utility](/guide/use-instance-defaults).
 
 ### `setupInstance` Changes
 

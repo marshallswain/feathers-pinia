@@ -12,7 +12,7 @@ export const useGet = (
   _params: MaybeRef<UseGetParams> = ref({}),
   deps: UseFindGetDeps,
 ) => {
-  const { store, service } = deps
+  const { service } = deps
 
   // normalize args into refs
   const id = isRef(_id) ? _id : ref(_id)
@@ -20,7 +20,7 @@ export const useGet = (
 
   /** ID & PARAMS **/
   const { immediate = true, watch: _watch = true } = params.value
-  const isSsr = computed(() => store.isSsr)
+  const isSsr = computed(() => service.store.isSsr)
 
   /** REQUEST STATE **/
   const isPending = ref(false)
@@ -35,13 +35,13 @@ export const useGet = (
   })
   const data = computed(() => {
     if (isPending.value && mostRecentId.value != null) {
-      const result = store.getFromStore(mostRecentId.value, params).value
+      const result = service.store.getFromStore(mostRecentId.value, params).value
       return result
     }
-    const result = store.getFromStore(id.value, params).value
+    const result = service.store.getFromStore(id.value, params).value
     return result
   })
-  const getFromStore = store.getFromStore
+  const getFromStore = service.store.getFromStore
 
   const hasLoaded = computed(() => !!data.value)
 

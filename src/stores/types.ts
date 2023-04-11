@@ -115,7 +115,7 @@ export interface HandleFindErrorOptions<Q extends Query> {
 
 interface Association {
   name: string
-  Model: any
+  service: any
   type: 'find' | 'get'
 }
 export type BaseModelAssociations = Record<string, Association>

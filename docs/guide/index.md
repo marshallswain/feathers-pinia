@@ -11,26 +11,24 @@ maximize perceived application speed for end users while providing a pleasant de
 
 ## Overview of Features
 
-- **[Implicit, Functional Data Modeling](/guide/modeling)** maintains your data structure, requires no setup, and is
+- Implicit, Functional Data Modeling maintains your data structure, requires no setup, and is
 fully customizable.
-- **[Model Associations](/guide/model-associations)** with the new [associateFind](/guide/associate-find) and
-[associateGet](/guide/associate-get) utilities.
 - **[Clone and Commit](/guide/common-patterns#mutation-multiplicity-pattern)** dramatically reduces the need for custom
 Pinia actions.
-- **[Per-Record Defaults](/guide/model-functions-shared#useinstancedefaults)** offer a functional way of adding default
+- **[Per-Record Defaults](/guide/common-patterns#useinstancedefaults)** offer a functional way of adding default
 values and methods to every record.
 - **Realtime by Default**: It's ready for WebSocket-enhanced, multi-user interactivity.
 - **Independent Reactivity**: no need to assign records to component or store `data` to enable reactive binding.
-- **[Local Queries](/services/querying-data)**: Make requests against locally-cached data as though it was a FeathersJS
+- **[Local Queries](/data-stores/querying-data)**: Make requests against locally-cached data as though it was a FeathersJS
 database, **now with support for SQL `$like` operators.**
 - **[Live Queries](/guide/common-patterns.html#reactive-lists-with-live-queries)** with client-side pagination allow
 arrays of data to automatically update as new records are added, modified, or removed.
-- **[Server-Side Pagination](/guide/use-find#server-paging-auto-fetch)**: alternative to live-list pagination,
+- **[Server-Side Pagination](/services/use-find#server-paging-auto-fetch)**: alternative to live-list pagination,
 optionally give all control to the server and perform manual fetching. In this mode, lists only update when new queries
 are made.
-- **[Super-Efficient SSR](/guide/use-data-store#server-side-rendering-ssr)**: optimize server-loaded data on the client without
+- **[Super-Efficient SSR](/guide/whats-new#super-efficient-ssr)**: optimize server-loaded data on the client without
 refetching. The latest Nuxt APIs are fully supported.
-- **[Fall-Through Cache](/guide/use-find)** like SWR but with built-in, low-memory query intelligence. It knows which
+- **[Fall-Through Cache](/services/use-find)** like SWR but with built-in, low-memory query intelligence. It knows which
 records can be shared between different queries, which allows relevant records to show immediately while additional data
 is fetched.
 - Flexible code patterns allow developers to work as they wish.

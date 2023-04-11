@@ -6,7 +6,7 @@ import { defineStore } from 'pinia'
 import { PiniaService } from './create-pinia-service'
 import { useServiceStore, useServiceEvents } from './stores'
 import { feathersPiniaHooks } from './hooks'
-import { useFeathersInstance } from './modeling'
+import { useServiceInstance } from './modeling'
 
 interface SetupInstanceUtils {
   app?: any
@@ -22,7 +22,7 @@ interface PiniaServiceConfig {
   handleEvents?: HandleEvents<AnyData>
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
-  setupInstance?: (data: any, utils?: SetupInstanceUtils) => any
+  setupInstance?: (data: any, utils: SetupInstanceUtils) => any
   customSiftOperators?: Record<string, any>
 }
 
@@ -61,9 +61,16 @@ export function createPiniaClient<Client extends Application>(
       serviceOptions.customSiftOperators || {},
       options.customSiftOperators || {},
     )
-    const setupInstance = (data: any) => {
+
+    function wrappedSetupInstance(data: any) {
+      const asFeathersModel = useServiceInstance(data, {
+        service: vueApp.service(location),
+        store,
+      })
+
+      // call the provided `setupInstance`
       const utils = { app: vueApp, service: vueApp.service(location), servicePath: location }
-      const fromGlobal = options.setupInstance ? options.setupInstance(data, utils) : data
+      const fromGlobal = options.setupInstance ? options.setupInstance(asFeathersModel, utils) : asFeathersModel
       const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(data, utils) : fromGlobal
       return serviceLevel
     }
@@ -85,15 +92,6 @@ export function createPiniaClient<Client extends Application>(
 
     const clientService = client.service(location)
     const piniaService = new PiniaService(clientService, { store, servicePath: location })
-
-    function wrappedSetupInstance(data: any) {
-      const asFeathersModel = useFeathersInstance(data, {
-        service: vueApp.service(location),
-        store,
-      })
-      const withSetup = setupInstance(asFeathersModel)
-      return withSetup
-    }
 
     useServiceEvents({
       service: piniaService,

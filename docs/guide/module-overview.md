@@ -22,5 +22,5 @@ export { OFetch } from './feathers-ofetch'
 export { useInstanceDefaults } from './utils'
 ```
 
-- [createPiniaClient](/guide/use-data-store) wraps the Feathers Client in a Feathers-Pinia client.
+- [createPiniaClient](/guide/create-pinia-client) wraps the Feathers Client in a Feathers-Pinia client.
 - [OFetch](/guide/ofetch) is a special fetch adapter for SSR applications.

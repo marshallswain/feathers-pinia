@@ -7,57 +7,32 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# FeathersModel Instances
+# `ServiceInstance` API
+
+Learn about instance-level properties and methods on service-related data.
 
 [[toc]]
 
-This page covers the ways you can create [FeathersModel](/guide/use-feathers-model) instances and gives details about
-the FeathersModel Instance interface.
+## Instance API Overview
 
-**Related reading:**
-
-- [FeathersModel Static API](/guide/use-feathers-model)
-- [FeathersModel Stores](/guide/use-feathers-model-stores)
-- [useService API](/guide/use-data-store)
-
-## Creating FeathersModel Instances
-
-There are two ways to create FeathersModel instances:
-
-- Directly with `useFeathersModel`
-
-- Upgrading `BaseModel` instances with `useFeathersInstance`
-
-### With useFeathersModel
-
-Once you've created a [FeathersModel](/guide/use-feathers-model), you can pass it data to create an instance:
+Every record retrieved from the API or service store will be a functional `ServiceInstance` with the following instance API. You can also manually create instances using the `service.new` method.
 
 ```ts
-import { Task } from '../models/task'
-
-const task = Task({ description: 'Do the dishes' })
-
-// Send it to the Feathers API server
-await task.save()
+api.service('todos').new(data)
 ```
 
-You also get the correct types if you create in save all at once, or use any of the instance methods.
+Every instance contains the properties described below.
 
-```ts
-const task = await Task({ description: 'Do the dishes' }).save()
-```
+## Built on the Data Stores Instance API
 
-### Upgrading a BaseModel
-
-You can use the [useFeathersInstance](/guide/model-functions-shared#usefeathersinstance) utility in a Model Function to add FeathersModel instance methods to your
-data.
-
-## Built on BaseModel
-
-All FeathersModel instances also include the properties and methods found on [BaseModel instances](/guide/use-base-model-instances).
+All FeathersModel instances also include the properties and methods found in the [StoreInstance API](/data-stores/instances).
 This page only covers the methods that are unique to FeathersModel instances.
 
 ## Instance Properties
+
+### __isServiceInstance
+
+A boolean that indicates that this is a Feathers instance.
 
 ### isPending
 
@@ -103,11 +78,11 @@ Reads store state and evaluates to `true` if there is a pending `remove`request 
 task.isRemovePending // --> boolean
 ```
 
-## Feathers Methods
+## API Methods
 
 The following methods are available on FeathersModel instances:
 
-### `save(params)`
+### `instance.save(params)`
 
 The `save` method is a convenience wrapper for the `create/patch` methods. If the record has no idField, the
 `instance.create()`method will be used. The`params` argument will be used in the Feathers client request. See the
@@ -128,7 +103,7 @@ record an `id`. Others use a different field. For example, MongoDB uses `_id`. I
 
 When calling `save()` on a clone, you can [use special params to handle patch diffing](#patch-diffing).
 
-### `create(params)`
+### `instance.create(params)`
 
 The `create` method calls the `create` action (service method) using the instance data. The `params` argument will be used in the Feathers client request. See the [Feathers Service](https://docs.feathersjs.com/guides/basics/services.html#service-methods) docs, for reference.
 
@@ -140,7 +115,7 @@ const task = Task({ description: 'Do something!' })
 await task.create() // --> Creates the task on the server using the instance data
 ```
 
-### `patch(params)`
+### `instance.patch(data, params)`
 
 The `patch` method calls the `patch` action (service method) using the instance data. The instance's id field is used for the `patch` id. The `params` argument will be used in the Feathers client request. See the [Feathers Service](https://docs.feathersjs.com/guides/basics/services.html#service-methods) docs, for reference.
 
@@ -154,7 +129,7 @@ await task.patch() // --> Sends a `patch` request the with the id and descriptio
 
 When calling `save()` on a clone, you can [use special params to handle patch diffing](#patch-diffing).
 
-### `remove(params)`
+### `instance.remove(params)`
 
 ## Patch Diffing
 

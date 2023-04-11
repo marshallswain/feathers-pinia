@@ -1,3 +1,12 @@
 export const feathersPiniaAutoImport = {
-  'feathers-pinia': ['useFeathersInstance', 'useInstanceDefaults', 'useDataStore', 'useAuth', 'createPiniaClient'],
+  'feathers-pinia': [
+    'useServiceInstance',
+    'useInstanceDefaults',
+    'useDataStore',
+    'useAuth',
+    'createPiniaClient',
+    'defineGetters',
+    'defineSetters',
+    'defineValues',
+  ],
 }

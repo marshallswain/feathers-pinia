@@ -1,6 +1,6 @@
 import type { CloneOptions } from '../stores'
 import type { AnyData, ById, Params } from '../types'
-import type { BaseModelData, BaseModelInstanceProps, ModelInstanceData } from './types'
+import type { BaseModelData, StoreInstanceProps, ModelInstanceData } from './types'
 import ObjectID from 'isomorphic-mongo-objectid'
 import { defineValues } from '../utils/define-properties'
 
@@ -18,7 +18,7 @@ export const useModelInstance = <M extends AnyData, Q extends AnyData>(
   data: ModelInstanceData<M>,
   options: UseModelInstanceOptions<M, Q>,
 ) => {
-  if (data.__isBaseInstance) return data
+  if (data.__isStoreInstance) return data
 
   const { idField, clonesById, clone, commit, reset, createInStore, removeFromStore } = options
   const __isClone = data.__isClone || false
@@ -34,7 +34,7 @@ export const useModelInstance = <M extends AnyData, Q extends AnyData>(
 
   // BaseModel properties
   const asBaseModel = defineValues(data, {
-    __isBaseInstance: true,
+    __isStoreInstance: true,
     __isClone,
     __idField: idField,
     __tempId: data[idField] == null && data.__tempId == null ? new ObjectID().toString() : data.__tempId || undefined,
@@ -63,7 +63,7 @@ export const useModelInstance = <M extends AnyData, Q extends AnyData>(
       const item = removeFromStore(this)
       return item
     },
-  }) as M & BaseModelData & BaseModelInstanceProps<M>
+  }) as M & BaseModelData & StoreInstanceProps<M>
 
   return asBaseModel
 }

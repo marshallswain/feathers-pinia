@@ -47,7 +47,3 @@ api.use(servicePath, memory({
 ```
 
 The same data can be written at any time during runtime by setting `api.service('users').options.store` to the new object, keyed by id.
-
-## Setting up SSR
-
-See the [Server Side Rendering section of the `useService` docs](/guide/use-data-store#server-side-rendering-ssr).

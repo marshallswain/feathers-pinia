@@ -13,7 +13,8 @@ import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types'
 
 export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
   const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOnServer = false } = options
-  const { store, service } = deps
+  const { service } = deps
+  const { store } = service
 
   /** PARAMS **/
   const qid = computed(() => params.value?.qid || 'default')

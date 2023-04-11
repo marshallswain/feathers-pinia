@@ -60,5 +60,5 @@ if (import.meta.hot) {
 
 Feathers-Pinia comes with two utilities for creating different types of stores:
 
-- [useService](/guide/use-data-store) is used to create a store that connects to a FeathersJS service.
+- [useService](/data-stores/) is used to create a store that connects to a FeathersJS service.
 - [useAuth](/guide/use-auth) is used to create an auth store.

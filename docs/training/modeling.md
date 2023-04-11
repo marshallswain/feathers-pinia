@@ -62,23 +62,23 @@ service path as the model name/type. Every record is automatically turned into a
 required to define custom functionality that's specific to our application.
 
 Feathers-Pinia also allows us to work with non-service and service data using the same API. You can use
-[data stores](guide/use-data-store) to create modeling stores. The consistent interface keeps the mental overhead low
+[data stores](/data-stores/) to create modeling stores. The consistent interface keeps the mental overhead low
 and our productivity goes way up!
 
-## Instance Interfaces
+### Instance Interfaces
 
-When working with Feathers-Pinia
+There are two instance interfaces built into Feathers-Pinia.
 
-### Feathers Instance Interface
+- The [ModelInstance API](/data-stores/instances) is added to all records in the standalone data stores.
+- The [ServiceInstance API](/services/instances) is added to all records in the service stores and API methods.
 
-### Model Instance Interface
+### useInstanceDefaults
 
-- [associateFind](/guide/associate-find) creates one-to-many associations based on a FeathersJS query.
-- [associateGet](/guide/associate-get) create one-to-one associations based on an id.
+```ts
+useInstanceDefaults(defaults, data)
+```
 
-## useInstanceDefaults
-
-The `useInstanceDefaults(defaults, data)` utility allows you to specify default values to assign to new instances. It
+The `useInstanceDefaults` utility allows you to specify default values to assign to new instances. It
 only assigns a value if it the attribute not already specified on the incoming object.
 
 ```ts
@@ -120,3 +120,8 @@ console.log(user) // --> { name: 'Marshall', email: '', password: '' }
 const user = User({ name: undefined })
 console.log(user) // --> { name: undefined, email: '', password: '' }
 ```
+
+### Modeling Associations
+
+- associateFind creates one-to-many associations based on a FeathersJS query.
+- associateGet create one-to-one associations based on an id.

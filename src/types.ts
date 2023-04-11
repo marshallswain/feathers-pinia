@@ -1,6 +1,6 @@
 import type { Params as FeathersParams, Id } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
-import type { FeathersInstance } from './modeling'
+import type { ServiceInstance } from './modeling'
 import type { PaginationStateQuery } from './stores'
 
 export type MaybeArray<T> = T | T[]
@@ -35,7 +35,7 @@ export interface QueryInfo {
 
 export interface QueryInfoExtended extends QueryInfo {
   ids: Id[]
-  items: FeathersInstance<AnyData>[]
+  items: ServiceInstance<AnyData>[]
   total: number
   queriedAt: number
   queryState: PaginationStateQuery

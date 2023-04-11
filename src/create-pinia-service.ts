@@ -7,7 +7,7 @@ import { reactive, computed, isRef, ref, unref } from 'vue-demi'
 import { getParams } from './utils'
 import { useFind, useGet } from './use-find-get'
 import { convertData } from './utils/convert-data'
-import { FeathersInstance } from './modeling'
+import { ServiceInstance } from './modeling'
 
 interface PiniaServiceOptions {
   servicePath: string
@@ -102,7 +102,7 @@ export class PiniaService<Svc extends FeathersService> {
     return result
   }
 
-  getFromStore(id: Id, params?: MaybeRef<Params<Query>>): ComputedRef<FeathersInstance<AnyData>> {
+  getFromStore(id: Id, params?: MaybeRef<Params<Query>>): ComputedRef<ServiceInstance<AnyData>> {
     const result = this.store.getFromStore(id, params)
     return result
   }
@@ -136,13 +136,13 @@ export class PiniaService<Svc extends FeathersService> {
 
   useFind(params: ComputedRef<UseFindParams | null>, options?: UseFindOptions) {
     const _params = isRef(params) ? params : ref(params)
-    return useFind(_params, options, { store: this.store, service: this })
+    return useFind(_params, options, { service: this })
   }
 
   useGet(id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = ref({})) {
     const _id = isRef(id) ? id : ref(id)
     const _params = isRef(params) ? params : ref(params)
-    return useGet(_id, _params, { store: this.store, service: this })
+    return useGet(_id, _params, { service: this })
   }
 
   useGetOnce(_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {

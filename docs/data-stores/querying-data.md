@@ -105,7 +105,7 @@ different databases. The following key indicates support:
 - 🚩 one of the SQL Adapters ([see @feathersjs/knex](https://feathersjs.com/api/databases/knex.html))
 
 If your Feathers API Service supports any of these operators, you can use the operators in
-[useFind queries](/guide/use-find) to speed up user experience with the fall-through cache.
+[useFind queries](/services/use-find) to speed up user experience with the fall-through cache.
 
 ### Filters
 

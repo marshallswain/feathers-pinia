@@ -27,3 +27,17 @@ export const defineGetters = <M extends AnyData, D extends AnyData>(data: M, pro
   })
   return data
 }
+
+/**
+ * Defines all provided properties as non-enumerable, configurable, setters
+ */
+export const defineSetters = <M extends AnyData, D extends AnyData>(data: M, properties: D) => {
+  Object.keys(properties).forEach((key) => {
+    Object.defineProperty(data, key, {
+      enumerable: false,
+      configurable: true,
+      set: properties[key],
+    })
+  })
+  return data
+}
