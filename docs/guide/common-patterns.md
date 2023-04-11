@@ -32,11 +32,20 @@ async (context: HookContext, next: NextFunction) => {
 
 See the FeathersJS documentation for to to use [custom methods](https://feathersjs.com/api/services.html#custom-methods).
 
-To handle the response from a custom method, create a [custom Pinia store](#custom-pinia-stores).
+To handle the response from a custom method, either [customize the store](#using-customizestore) or use
+[store composition](#composing-stores).
 
-## Custom Pinia Stores
+## Customize the Store
 
-Instead of customizing stores, a more flexible solution is provided by Pinia: Store Composition. Here's an example of
+### Using `customizeStore`
+
+The `customizeStore` global- and service-level configuration options allow you to return an object with additional
+state, computed properties, and functions. See an example on the [Feathers-Pinia Client](/guide/create-pinia-client)
+page.
+
+### Composing Stores
+
+Pinia's `setup` stores allow a really clean way to layer functionality with Store Composition. Here's an example of
 how to create a feature store that references a Feathers-Pinia v3 store.
 
 ```ts

@@ -103,6 +103,12 @@ export const api = createPiniaClient(feathersClient, {
   paramsForServer: [],
   skipGetIfExists: true,
   customSiftOperators: {},
+  setupInstance(data) {
+    return data
+  },
+  customizeStore(defaultStore) {
+    return {}
+  },
   services: {},
 })
 ```

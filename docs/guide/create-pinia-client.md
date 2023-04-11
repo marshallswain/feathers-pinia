@@ -41,6 +41,10 @@ createPiniaClient(feathersClient, {
       })
     return data
   },
+  customizeStore(defaultStore) {
+    // You can directly modify the defaultStore object
+    defaultStore.globalValue = ref(true)
+  }
   // Service config, keyed by path, See service configuration to 
   // learn how options are merged with the global config.
   services: {
@@ -54,6 +58,11 @@ createPiniaClient(feathersClient, {
         const withDefaults = useInstanceDefaults({ name: '', age: 0 }, data)
         return withDefaults
       },
+      // customize the store for a single service
+      customizeStore(defaultStore) {
+        defaultStore.contactsValue = ref(true)
+        return { otherValue: true } // returned values will be merged, as well
+      }
     },
     tasks: {
       skipGetIfExists: true,
@@ -75,7 +84,7 @@ interface CreatePiniaClientConfig {
   pinia: Pinia
   ssr?: false,
   services?: {},
-  // global options for each service
+  // global and per-service options
   whitelist?: string[],
   paramsForServer?: string[],
   skipGetIfExists?: true,
@@ -83,7 +92,8 @@ interface CreatePiniaClientConfig {
   debounceEventsTime?: 20
   debounceEventsGuarantee?: false
   customSiftOperators?: {},
-  setupInstance?: (data = {}, , { api, service, servicePath }) => {}
+  setupInstance?: (data = {}, , { api, service, servicePath }) => ({})
+  customizeStore?: (defaultStore) => {}
 }
 ```
 
@@ -134,6 +144,9 @@ following shape:
   }
   ```
 
+- **`customizeStore {Function}`** a function that allows modifying the store for all services. Return the modified store
+or an object to merge into the store.
+
 ## Service Configuration
 
 ```ts
@@ -161,3 +174,5 @@ section. Here is a description of how each option is handled when it's also conf
 - **`customSiftOperators {Object}`** merged over the global value
 - **`setupInstance {Function}`** runs after the global value. The global `setupInstance` will already have been applied
 by the time the service-level `setupInstance` runs.
+- **`customizeStore {Function}`** runs after the global `customizeStore` and receives the store data with globally-
+customized values.

@@ -23,6 +23,7 @@ interface PiniaServiceConfig {
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
   setupInstance?: (data: any, utils: SetupInstanceUtils) => any
+  customizeStore?: (data: ReturnType<typeof useServiceStore>) => Record<string, any>
   customSiftOperators?: Record<string, any>
 }
 
@@ -61,6 +62,14 @@ export function createPiniaClient<Client extends Application>(
       serviceOptions.customSiftOperators || {},
       options.customSiftOperators || {},
     )
+    function customizeStore(utils: any) {
+      const fromGlobal = Object.assign(utils, options.customizeStore ? options.customizeStore(utils) : utils)
+      const fromService = Object.assign(
+        fromGlobal,
+        serviceOptions.customizeStore ? serviceOptions.customizeStore(fromGlobal) : fromGlobal,
+      )
+      return fromService
+    }
 
     function wrappedSetupInstance(data: any) {
       const asFeathersModel = useServiceInstance(data, {
@@ -86,7 +95,8 @@ export function createPiniaClient<Client extends Application>(
         ssr: options.ssr,
         setupInstance: wrappedSetupInstance,
       })
-      return utils
+      const custom = customizeStore(utils)
+      return { ...utils, ...custom }
     })
     const store = useStore(options.pinia)
 

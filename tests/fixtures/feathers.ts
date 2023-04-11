@@ -15,6 +15,7 @@ import rest from '@feathersjs/rest-client'
 import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
 import { makeContactsData } from './data'
+import { computed, ref } from 'vue'
 
 const pinia = createPinia()
 const restClient = rest()
@@ -98,6 +99,15 @@ export const api = createPiniaClient(feathersClient, {
   idField: '_id',
   whitelist: ['$regex'],
   paramsForServer: [],
+  customizeStore() {
+    return {
+      globalCustom: true,
+      sharedGlobal: ref(false),
+      toggleSharedGlobal() {
+        this.sharedGlobal = !this.sharedGlobal
+      },
+    }
+  },
   services: {
     users: {
       idField: 'id',
@@ -107,6 +117,16 @@ export const api = createPiniaClient(feathersClient, {
       setupInstance(data: any) {
         const withDefaults = useInstanceDefaults({ name: '', age: 0 }, data)
         return withDefaults
+      },
+      customizeStore(data) {
+        const serviceCustom = ref(false)
+        const serviceCustomOpposite = computed(() => !serviceCustom.value)
+        const itemsLength = computed(() => data.items.value.length)
+        function setServiceCustom(val: boolean) {
+          serviceCustom.value = val
+        }
+        const globalCustom = false
+        return { serviceCustom, serviceCustomOpposite, itemsLength, setServiceCustom, globalCustom }
       },
     },
     tasks: {
