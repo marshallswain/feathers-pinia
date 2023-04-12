@@ -1,12 +1,14 @@
-import { api } from '../fixtures'
+import { api, makeContactsData } from '../fixtures'
 import { resetService } from '../test-utils'
 
 const service = api.service('contacts')
 
-beforeEach(() => {
+beforeEach(async () => {
   resetService(service)
+  service.service.store = makeContactsData()
+  await service.find({ query: { $limit: 100 } })
 })
-
+afterEach(() => resetService(service))
 describe('PiniaService', () => {
   test('includes model methods', () => {
     // create an instance
@@ -37,5 +39,29 @@ describe('PiniaService', () => {
 
     expect(service.store).toBeDefined()
     expect(service.servicePath).toBe('contacts')
+  })
+
+  test('count', async () => {
+    const response = await service.count()
+    expect(response.data.length).toBe(0)
+    expect(response.total).toBe(12)
+    expect(response.limit).toBe(0)
+    expect(response.skip).toBe(0)
+  })
+
+  test('count custom query', async () => {
+    const response = await service.count({ query: { age: { $lt: 6 } } })
+    expect(response.data.length).toBe(0)
+    expect(response.total).toBe(3)
+    expect(response.limit).toBe(0)
+    expect(response.skip).toBe(0)
+  })
+
+  test('count cannot override limit', async () => {
+    const response = await service.count({ query: { $limit: 5 } })
+    expect(response.data.length).toBe(0)
+    expect(response.total).toBe(12)
+    expect(response.limit).toBe(0)
+    expect(response.skip).toBe(0)
   })
 })

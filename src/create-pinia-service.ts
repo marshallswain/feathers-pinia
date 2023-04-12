@@ -53,6 +53,8 @@ export class PiniaService<Svc extends FeathersService> {
 
   async count(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
+    params.query = params.query || {}
+    params.query.$limit = 0
     const result = await this.service.find(params as FeathersParams)
     return result
   }
