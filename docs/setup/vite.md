@@ -51,7 +51,7 @@ import { createClient } from 'feathers-pinia-api'
 import rest from '@feathersjs/rest-client'
 
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
-window.fetch.bind(window)
+const fetch = window.fetch.bind(window)
 
 const feathersClient = createClient(rest(host).fetch(fetch), { storage: window.localStorage })
 ```
@@ -78,7 +78,7 @@ import authenticationClient from '@feathersjs/authentication-client'
 import rest from '@feathersjs/rest-client'
 
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
-window.fetch.bind(window)
+const fetch = window.fetch.bind(window)
 
 export const feathersClient = feathers()
   .configure(rest(host).fetch(fetch))
