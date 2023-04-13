@@ -13,23 +13,23 @@ Learn how to store associated data in its proper stores.
 
 [[toc]]
 
-Every Feathers-Pinia Client includes a `storeRelated` method, which receives a `data` object and a `config` object which
+Every Feathers-Pinia Client includes a `storeAssociated` method, which receives a `data` object and a `config` object which
 tells the utility the service in which to store the associated data.
 
-## storeRelated
+## storeAssociated
 
 ```ts
-storeRelated(data, config)
+storeAssociated(data, config)
 ```
 
 - **data {Object}** any record
 - **config {Object}** an object with keys that represent a key from `data` and where the values are service paths.
 
-Note that `storeRelated` should generally be used first in `setupInstance`.
+Note that `storeAssociated` should generally be used first in `setupInstance`.
 
 ## Example
 
-See `storeRelated` as configured in the `posts` service of this example:
+See `storeAssociated` as configured in the `posts` service of this example:
 
 ```ts
 export const api = createPiniaClient(feathersClient, {
