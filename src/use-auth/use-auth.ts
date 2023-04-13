@@ -28,7 +28,7 @@ interface AuthenticateData {
   password?: string
 }
 
-export function useAuth<d extends AuthenticateData = AuthenticateData>(options: UseAuthOptions) {
+export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   const { api, servicePath, skipTokenCheck } = options
   const entityService = servicePath ? api.service(servicePath) : null
   const entityKey = options.entityKey || 'user'
@@ -49,8 +49,7 @@ export function useAuth<d extends AuthenticateData = AuthenticateData>(options: 
   // user
   const userId = ref<NullableId>(null)
   const user = computed(() => {
-    if (!entityService)
-      return null
+    if (!entityService) return null
     const u = entityService?.getFromStore(userId)
     return u.value || null
   })
@@ -97,8 +96,7 @@ export function useAuth<d extends AuthenticateData = AuthenticateData>(options: 
     try {
       const payload = decode(jwt) as any
       return new Date().getTime() > payload.exp * 1000
-    }
-    catch (error) {
+    } catch (error) {
       return false
     }
   }

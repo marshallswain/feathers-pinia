@@ -42,6 +42,21 @@ describe('useAuth in Pinia store', () => {
     expect(authStore.isAuthenticated).toBe(true)
     expect(authStore.user).toBeNull()
   })
+
+  test('custom types', async () => {
+    interface AuthenticateData {
+      strategy: 'jwt' | 'local' | 'ldap'
+      accessToken?: string
+      tuid?: string
+      password?: string
+    }
+
+    defineStore('auth', () => {
+      const utils = useAuth<AuthenticateData>({ api })
+      utils.reAuthenticate()
+      return { ...utils }
+    })
+  })
 })
 
 describe('useAuth in Pinia store with userStore', () => {
