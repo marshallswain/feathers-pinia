@@ -117,6 +117,7 @@ function getGuideSidebar() {
       text: 'Data Modeling',
       items: [
         { text: 'useInstanceDefaults', link: '/guide/use-instance-defaults' },
+        { text: 'storeAssociated', link: '/guide/store-associated' },
         { text: 'Utilities', link: '/guide/utilities' },
       ]
     },

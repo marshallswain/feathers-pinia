@@ -6,7 +6,8 @@ import { defineStore } from 'pinia'
 import { PiniaService } from './create-pinia-service'
 import { useServiceStore, useServiceEvents } from './stores'
 import { feathersPiniaHooks } from './hooks'
-import { useServiceInstance } from './modeling'
+import { storeAssociated, useServiceInstance } from './modeling'
+import { defineGetters } from './utils'
 
 interface SetupInstanceUtils {
   app?: any
@@ -38,11 +39,16 @@ type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
   [Key in keyof T]: PiniaService<T[Key]>
 }
 
+interface AppExtensions {
+  storeAssociated: (data: any, config: Record<string, string>) => void
+}
+
 export function createPiniaClient<Client extends Application>(
   client: Client,
   options: CreatePiniaClientConfig,
-): Application<CreatePiniaServiceTypes<Client['services']>> {
+): Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions {
   const vueApp = feathers()
+
   vueApp.defaultService = function (location: string) {
     const serviceOptions = options.services?.[location] || {}
 
@@ -121,28 +127,22 @@ export function createPiniaClient<Client extends Application>(
   }
   vueApp.mixins.push(mixin)
 
-  Object.defineProperties(vueApp, {
-    authentication: {
-      get() {
-        return (client as any).authentication
-      },
+  defineGetters(vueApp, {
+    authentication() {
+      return (client as any).authentication
     },
-    authenticate: {
-      get() {
-        return (client as any).authenticate
-      },
+    authenticate() {
+      return (client as any).authenticate
     },
-    reAuthenticate: {
-      get() {
-        return (client as any).reAuthenticate
-      },
+    reAuthenticate() {
+      return (client as any).reAuthenticate
     },
-    logout: {
-      get() {
-        return (client as any).logout
-      },
+    logout() {
+      return (client as any).logout
     },
   })
 
-  return vueApp
+  Object.assign(vueApp, { storeAssociated })
+
+  return vueApp as Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions
 }

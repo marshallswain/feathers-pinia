@@ -40,6 +40,7 @@ const ContactService = memory<Contacts, ContactsData, Params<ContactsQuery>>({
 })
 const AuthorService = memory({ paginate: paginate(), whitelist: whitelist() })
 const PostService = memory({ paginate: paginate(), whitelist: whitelist() })
+const CommentService = memory({ paginate: paginate(), whitelist: whitelist() })
 
 interface ServiceTypes {
   users: typeof UserService
@@ -47,6 +48,7 @@ interface ServiceTypes {
   contacts: typeof ContactService
   authors: typeof AuthorService
   posts: typeof PostService
+  comments: typeof CommentService
 }
 
 const feathersClient = feathers<ServiceTypes>()
@@ -57,6 +59,7 @@ const feathersClient = feathers<ServiceTypes>()
   .use('contacts', ContactService)
   .use('authors', AuthorService)
   .use('posts', PostService)
+  .use('comments', CommentService)
 
 // hooks to simulate auth responses
 feathersClient.authentication.service.hooks({
@@ -133,6 +136,7 @@ export const api = createPiniaClient(feathersClient, {
       skipGetIfExists: true,
     },
     authors: {
+      idField: 'id',
       setupInstance(author, { app }) {
         const withDefaults = useInstanceDefaults({ setInstanceRan: false }, author)
         const withAssociations = defineGetters(withDefaults, {
@@ -153,20 +157,28 @@ export const api = createPiniaClient(feathersClient, {
       },
     },
     posts: {
+      idField: 'id',
       setupInstance(post, { app }) {
-        const withDefaults = useInstanceDefaults({ authorIds: [] }, post)
-        const withAssociations = defineGetters(withDefaults, {
-          authors(this: Posts) {
-            return app.service('authors').useFind({ query: { id: { $in: this.authorIds } } })
-          },
-          comments(this: Posts) {
-            return app.service('comments').useFind({ query: { postId: this.id } })
-          },
+        app.storeAssociated(post, {
+          authors: 'authors',
+          author: 'authors',
+          comments: 'comments',
         })
-        return withAssociations
+
+        const withDefaults = useInstanceDefaults({ authorIds: [] }, post)
+        // const withAssociations = defineGetters(withDefaults, {
+        //   authors(this: Posts) {
+        //     return app.service('authors').useFind({ query: { id: { $in: this.authorIds } } })
+        //   },
+        //   comments(this: Posts) {
+        //     return app.service('comments').useFind({ query: { postId: this.id } })
+        //   },
+        // })
+        return withDefaults
       },
     },
     comments: {
+      idField: 'id',
       setupInstance(comment, { app }) {
         const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, comment)
         const withAssociations = defineGetters(withDefaults, {
