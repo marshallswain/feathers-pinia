@@ -315,7 +315,7 @@ const task = api.service('tasks').new({
 ## Handle Associations
 
 Use the [modeling utilities](/guide/utilities) to define associations on your data. The new methods assure that new
-instances are not enumerable, so they won't be sent to the API server. The [storeRelated](/guide/store-related) utility
+instances are not enumerable, so they won't be sent to the API server. The [storeRelated](/guide/store-associated) utility
 automatically distributes related data into correct service stores with a simple config.
 
 ## New `service.useFind` API 🎁
