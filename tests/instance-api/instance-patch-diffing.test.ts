@@ -18,14 +18,14 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
-    const hook: any = vi.fn(async (context) => {
+    const hook = vi.fn(async (context) => {
       return context
     })
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save()
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas', isComplete: true })
   })
 
@@ -34,12 +34,12 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: false })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas' })
   })
 
@@ -49,12 +49,12 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name' })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas' })
   })
 
@@ -63,14 +63,14 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     const returned = await clone.save({ diff: 'scooby-doo' })
 
     expect(returned).toEqual(clone)
-    const callData = hook.returns[0].data
-    const result = hook.returns[0].result
+    const callData = hook.mock.results[0].value.data
+    const result = hook.mock.results[0].value.result
     expect(result._id).toBeDefined()
     expect(callData).toEqual({})
   })
@@ -82,12 +82,12 @@ describe('instance patch diffing', () => {
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: ['name', 'test'] })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
@@ -98,12 +98,12 @@ describe('instance patch diffing', () => {
     clone.test = true
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: ['name', 'test'] })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas', test: true })
   })
 
@@ -114,12 +114,12 @@ describe('instance patch diffing', () => {
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: { name: 'test' } })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'test' })
   })
 
@@ -128,12 +128,12 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: 'test' })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas', test: 'foo' })
   })
 
@@ -143,12 +143,12 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.test = false
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: ['test'] })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
@@ -158,12 +158,12 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.test = true
 
-    const hook: any = vi.fn((context) => context)
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: { test: false } })
 
-    const callData = hook.returns[0].data
+    const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
