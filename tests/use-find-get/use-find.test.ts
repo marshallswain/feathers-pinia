@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue-demi'
 import { api, makeContactsData } from '../fixtures'
 import { resetService, timeout } from '../test-utils'
+import { vi } from 'vitest'
 
 const service = api.service('contacts')
 
@@ -197,11 +198,11 @@ describe('Local Pagination', () => {
 })
 
 describe('Server Pagination', () => {
-  test('paginateOnServer enables server requests', async () => {
+  test('paginateOn: server enables server requests', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOnServer: true })
+    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOn: 'server' })
     expect(haveBeenRequested.value).toBe(true)
     expect(data.value.length).toBe(0)
 
@@ -209,11 +210,11 @@ describe('Server Pagination', () => {
     expect(data.value.length).toBe(3)
   })
 
-  test('paginateOnServer with `immediate` false', async () => {
+  test('paginateOn: server with `immediate` false', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOnServer: true, immediate: false })
+    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOn: 'server', immediate: false })
     expect(haveBeenRequested.value).toBe(false)
 
     await request.value
@@ -228,7 +229,7 @@ describe('Server Pagination', () => {
       }
     })
     const { request, currentQuery, requestCount, queryWhen, next, prev } = service.useFind(params, {
-      paginateOnServer: true,
+      paginateOn: 'server',
     })
 
     // run the query if we don't already have items.
@@ -256,7 +257,7 @@ describe('Server Pagination', () => {
       return { query: { $limit: 3, $skip: 0 } }
     })
     const { isPending, haveBeenRequested, haveLoaded, request, skip, next } = service.useFind(params, {
-      paginateOnServer: true,
+      paginateOn: 'server',
     })
     expect(isPending.value).toBe(true)
     expect(haveLoaded.value).toBe(false)
@@ -287,7 +288,7 @@ describe('Server Pagination', () => {
       return { query: { $limit: 3, $skip: 0 } }
     })
 
-    const { error, clearError, find } = service.useFind(params, { paginateOnServer: true, immediate: false })
+    const { error, clearError, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
     expect(error.value).toBe(null)
     try {
       expect(await find()).toThrow()
@@ -315,7 +316,7 @@ describe('Server Pagination', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { error, find } = service.useFind(params, { paginateOnServer: true, immediate: false })
+    const { error, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
     expect(error.value).toBe(null)
 
     try {
@@ -332,12 +333,12 @@ describe('Server Pagination', () => {
 })
 
 describe('latestQuery and previousQuery', () => {
-  test('paginateOnServer stores latestQuery and previousQuery', async () => {
+  test('paginateOn: server stores latestQuery and previousQuery', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
     const { latestQuery, previousQuery, find, next } = service.useFind(params, {
-      paginateOnServer: true,
+      paginateOn: 'server',
       immediate: false,
     })
 
@@ -375,7 +376,7 @@ describe('latestQuery and previousQuery', () => {
       const _params = computed(() => {
         return { query: { $limit: 4, $skip: 0 } }
       })
-      const { allLocalData, find, next } = service.useFind(_params, { paginateOnServer: true })
+      const { allLocalData, find, next } = service.useFind(_params, { paginateOn: 'server' })
       await find()
       await next()
       expect(allLocalData.value.length).toBe(8)
@@ -395,7 +396,7 @@ describe('latestQuery and previousQuery', () => {
         return { query: { $limit: 4, $skip: 0 } }
       })
       const { data, find, next, request, isPending } = service.useFind(params, {
-        paginateOnServer: true,
+        paginateOn: 'server',
         immediate: false,
       })
       await find()
@@ -428,7 +429,7 @@ describe('latestQuery and previousQuery', () => {
       if (!shouldQuery.value) return null
       return { query: { name } }
     })
-    const { data, requestCount, request } = service.useFind(params, { paginateOnServer: true })
+    const { data, requestCount, request } = service.useFind(params, { paginateOn: 'server' })
 
     await request.value
 

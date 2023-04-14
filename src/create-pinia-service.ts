@@ -124,7 +124,7 @@ export class PiniaService<Svc extends FeathersService> {
   }
 
   removeFromStore(id?: Id, params?: MaybeRef<Params<Query>>) {
-    const item = id != null ? this.getFromStore(id) : null
+    const item = id != null ? this.getFromStore(id).value : null
     if (item) {
       const result = this.store.removeFromStore(item)
       return result

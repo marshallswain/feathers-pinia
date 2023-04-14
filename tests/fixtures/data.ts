@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker'
+
 export function makeContactsData() {
   return {
     1: { _id: '1', name: 'Moose', age: 4, birthdate: '2019-03-1T07:00:00.000Z' },
@@ -13,4 +15,27 @@ export function makeContactsData() {
     11: { _id: '11', name: 'Rogue', age: 66, birthdate: '1957-03-1T07:00:00.000Z' },
     12: { _id: '12', name: 'Jubilee', age: 77, birthdate: '1946-03-1T07:00:00.000Z' },
   }
+}
+
+export function makeContactsDataRandom(count = 100) {
+  const placeholders = Array.from(Array(count).keys())
+  const contacts = placeholders.map((item: number) => {
+    const _id = item.toString()
+    const name = faker.name.fullName()
+    const birthdate = new Date(faker.date.birthdate())
+    const age = calculateAge(birthdate)
+
+    return { _id, name, age, birthdate: birthdate.getTime() }
+  })
+  const contactsById = contacts.reduce((acc, contact) => {
+    acc[contact._id] = contact
+    return acc
+  }, {})
+  return contactsById
+}
+
+function calculateAge(birthday: Date) {
+  const ageDifMs = Date.now() - birthday.getTime()
+  const ageDate = new Date(ageDifMs)
+  return Math.abs(ageDate.getUTCFullYear() - 1970)
 }

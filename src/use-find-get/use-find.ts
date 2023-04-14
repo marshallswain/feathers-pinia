@@ -12,7 +12,7 @@ import { usePageData } from './utils-pagination'
 import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types'
 
 export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
-  const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOnServer = false } = options
+  const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOn = 'client' } = options
   const { service } = deps
   const { store } = service
 
@@ -53,22 +53,49 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   }
 
   /** STORE ITEMS **/
+  const localParams = computed(() => {
+    const beforeCurrent = itemsBeforeCurrent.value
+    const adjustedSkip = skip.value + (beforeCurrent.length - skip.value)
+    const params = {
+      ...paramsWithPagination.value,
+      query: {
+        ...paramsWithPagination.value.query,
+        $limit: limit.value,
+        $skip: adjustedSkip,
+      },
+    }
+    return params
+  })
+
   const data = computed(() => {
-    if (paginateOnServer) {
+    if (paginateOn === 'server') {
       const values = itemsFromPagination(store, service, cachedParams.value)
       return values
-    } else {
-      const localParams = paramsWithPagination.value
+    } else if (paginateOn === 'hybrid') {
       const result = service.findInStore(deepUnref(localParams)).data.value
+      return result.filter((i: any) => i)
+    } else {
+      const result = service.findInStore(deepUnref(paramsWithPagination)).data.value
       return result.filter((i: any) => i)
     }
   })
+  const itemsBeforeCurrent = computed(() => {
+    if (currentQuery.value == null) return []
+
+    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
+    const firstOfCurrentPage = (currentQuery.value.items as any)[0]
+    const indexInItems = allItems.findIndex((i: any) => i[store.idField] === firstOfCurrentPage[store.idField])
+    // if indexInItems is higher than skip, use the skip value instead
+    const adjustedIndex = Math.min(indexInItems, skip.value)
+    const beforeCurrent = allItems.slice(0, adjustedIndex)
+    return beforeCurrent
+  })
   const allLocalData = computed(() => {
-    if (cachedQuery.value == null) return []
+    if (currentQuery.value == null) return []
 
     // Pull server results for each page of data
-    const pageKeys = Object.keys(_.omit(cachedQuery.value?.queryState, 'total', 'queryParams'))
-    const pages = Object.values(_.pick(cachedQuery.value?.queryState, ...pageKeys))
+    const pageKeys = Object.keys(_.omit(currentQuery.value?.queryState, 'total', 'queryParams'))
+    const pages = Object.values(_.pick(currentQuery.value?.queryState, ...pageKeys))
     // remove possible duplicates (page data can be different as you browse between pages and new items are added)
     const ids = pages.reduce((allIds, page) => {
       page.ids.forEach((id: number | string) => {
@@ -131,8 +158,8 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   }
 
   async function find(__params?: Params<Query>) {
-    // When `paginateOnServer` is enabled, the computed params will always be used, __params ignored.
-    const ___params = unref(paginateOnServer ? (paramsWithPagination as any) : __params)
+    // When `paginateOn: 'server'` is enabled, the computed params will always be used, __params ignored.
+    const ___params = unref(['hybrid', 'server'].includes(paginateOn) ? (paramsWithPagination as any) : __params)
 
     // if queryWhen is falsey, return early with dummy data
     if (!queryWhenFn()) return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
@@ -167,7 +194,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     // If params are null, do nothing
     if (params.value === null) return
 
-    if (!paginateOnServer) return
+    if (!['server', 'hybrid'].includes(paginateOn)) return
 
     // If we already have data for the currentQuery, update the cachedParams immediately
     if (currentQuery.value) updateCachedParams()
@@ -184,7 +211,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
   /** Pagination Data **/
   const total = computed(() => {
-    if (paginateOnServer) {
+    if (['server', 'hybrid'].includes(paginateOn)) {
       return currentQuery.value?.total || 0
     } else {
       const count = service.countInStore(paramsWithoutPagination.value)
@@ -195,7 +222,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   const { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev } = pageData
 
   /** Query Watching **/
-  if (paginateOnServer && _watch) {
+  if (['server', 'hybrid'].includes(paginateOn) && _watch) {
     watch(
       paramsWithPagination,
       () => {

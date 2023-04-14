@@ -17,7 +17,7 @@ export interface UseFindParams extends Params<Query> {
 }
 
 export interface UseFindOptions {
-  paginateOnServer?: boolean
+  paginateOn?: 'client' | 'server' | 'hybrid'
   pagination?: UseFindPage
   debounce?: number
   immediate?: boolean

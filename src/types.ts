@@ -8,7 +8,7 @@ export type AnyData = Record<string, any>
 export type AnyDataOrArray<M extends AnyData> = MaybeArray<M>
 
 export interface Filters {
-  $sort?: { [prop: string]: -1 | 1 }
+  $sort?: { [prop: string]: number }
   $limit?: MaybeRef<number>
   $skip?: MaybeRef<number>
   $select?: string[]

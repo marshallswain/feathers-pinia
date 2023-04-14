@@ -61,6 +61,7 @@
   "devDependencies": {
     "@babel/types": "^7.21.4",
     "@cspell/dict-fr-fr": "^2.2.1",
+    "@faker-js/faker": "^7.6.0",
     "@feathersjs/authentication-client": "5.0.4",
     "@feathersjs/authentication-jwt": "^2.0.10",
     "@feathersjs/memory": "^5.0.4",

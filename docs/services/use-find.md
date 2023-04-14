@@ -58,7 +58,7 @@ await next() // show the next page of results
 await prev() // show the previous page of results
 
 // server-side pagination with auto fetch
-const { data, prev, next } = api.service('messages').useFind(params, { paginateOnServer: true })
+const { data, prev, next } = api.service('messages').useFind(params, { paginateOn: 'server' })
 await next() // retrieve the next page of results
 await prev() // retrieve the previous page of results
 ```
@@ -74,12 +74,19 @@ await prev() // retrieve the previous page of results
   - **`qid` {string}** an identifier for this query. Allows pagination data to be tracked separately.
   
 - `options`
-  - **`paginateOnServer` {boolean}** when enabled, the internal `findInStore` getter will return only the results that
-  match the current query in the `pagination` object for this store. Setting `paginateOnServer` to true gives up live lists and
-  gives all control to the API server, which means you have to refetch in order for results to change.
+  - **`paginateOn` {string}** can be `'client'`, `'server'`, or `'hybrid'` Default is `'client'`.
+    - when set to `'client'`, you need to manually make API queries using `service.find()`, then you can paginate on
+    that data without making additional requests.
+    - when set to `'server'`, the internal `findInStore` getter will return only the results that match the current
+    query in the `pagination` object for this store. Setting `paginate: 'server'` gives up live lists and gives all
+    control to the API server, which means you have to refetch in order for results to change. Refetching currently
+    happens whenever a `created`, `updated`, or `removed` event is provided. This will potentially be refined in the
+    future.
+    - when set to `'hybrid'`, you get server-side pagination with live lists. This will likely become the default in
+    the future.
   - **`pagination` {Object}** an object containing two refs: `$limit` and `$skip`. This allows you to synchronize the
   internally-controlled pagination with UI-bound `$limit` and `$skip` properties.
-  - **`immediate` {boolean = true}** when `paginateOnServer` is set, by default it will make an initial request. Set
+  - **`immediate` {boolean = true}** when `paginateOn: 'server'` is set, by default it will make an initial request. Set
   `immediate: false` to prevent the initial request.
   - **`watch` {boolean = false}** enable this to automatically query when `reactive` or `ref` params are changed. This
   does not apply to `computed` params, since they are automatically watched.
@@ -99,10 +106,10 @@ store. Useful for awaint the `request` during SSR.
 #### Data
 
 - **`data` {Ref Array}** the array of results.
-- **`allData` {Ref Array}** all results for the matching query or server-retrieved data. With `paginateOnServer`, will return
-the correct results, even with custom query params that the store does not understand.
+- **`allData` {Ref Array}** all results for the matching query or server-retrieved data. With `paginateOn: 'server'`,
+will return the correct results, even with custom query params that the store does not understand.
 - **`total` {Computed number}** One of two things: For client-side results, the total number of records in the store
-that match the query. For `paginateOnServer` results, the total number of records on the server that match the query.
+that match the query. For `paginateOn: 'server'` results, the total number of records on the server that match the query.
 
 #### Query Tracking
 
@@ -192,13 +199,13 @@ await prev()
 ### Server Paging, Auto Fetch
 
 Another common use case is server-side pagination (gives the server full control and disables live-updating lists).
-Enable it by passing `paginateOnServer` in the options. You can also pull out `isPending` to show a status indicator when a
-request is pending. That's it!
+Enable it by passing `paginateOn: 'server'` in the options. You can also pull out `isPending` to show a status indicator
+when a request is pending. That's it!
 
 <BlockQuote>
 
-When you enable `paginateOnServer`, all control is given to the server, which disables live list updates. For live lists, use
-client-side pagination, as shown in the previous example.
+When you enable `paginateOn: 'server'`, all control is given to the server, which disables live list updates. For live
+lists, use client-side pagination, as shown in the previous example.
 
 </BlockQuote>
 
@@ -213,7 +220,7 @@ const params = computed(() => {
 })
 const { data, next, prev, isPending } = api.service('posts').useFind(params, { 
   pagination, 
-  paginateOnServer: true
+  paginateOn: 'server'
 })
 
 // move to the next page

@@ -61,7 +61,7 @@ const user = api.service('users').getFromStore(id)
   - **`clones` {Boolean}** returns result as a clone. See [Querying Data](/data-stores/querying-data#local-params-api)
   - **`temps` {Boolean}** enables retrieving temp records. See [Querying Data](/data-stores/querying-data#local-params-api)
   - **`watch` {boolean}** can be used to disable the watcher on `id`
-  - **`immediate` {boolean}** can be used to disable the initial request to the API server while `paginateOnServer` is true.
+  - **`immediate` {boolean}** can be used to disable the initial request to the API server.
 
 ### Returned Object
 
