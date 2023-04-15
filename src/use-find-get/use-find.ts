@@ -80,10 +80,11 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     }
   })
   const itemsBeforeCurrent = computed(() => {
-    if (currentQuery.value == null) return []
+    const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
+    if (whichQuery == null) return []
 
     const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
-    const firstOfCurrentPage = (currentQuery.value.items as any)[0]
+    const firstOfCurrentPage = (whichQuery.items as any)[0]
     const indexInItems = allItems.findIndex((i: any) => i[store.idField] === firstOfCurrentPage[store.idField])
     // if indexInItems is higher than skip, use the skip value instead
     const adjustedIndex = Math.min(indexInItems, skip.value)
@@ -212,7 +213,8 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   /** Pagination Data **/
   const total = computed(() => {
     if (['server', 'hybrid'].includes(paginateOn)) {
-      return currentQuery.value?.total || 0
+      const whichQuery = currentQuery.value || cachedQuery.value
+      return whichQuery?.total || 0
     } else {
       const count = service.countInStore(paramsWithoutPagination.value)
       return count.value
