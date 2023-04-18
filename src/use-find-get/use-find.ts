@@ -92,11 +92,12 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     return beforeCurrent
   })
   const allLocalData = computed(() => {
-    if (currentQuery.value == null) return []
+    const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
+    if (whichQuery == null) return []
 
     // Pull server results for each page of data
-    const pageKeys = Object.keys(_.omit(currentQuery.value?.queryState, 'total', 'queryParams'))
-    const pages = Object.values(_.pick(currentQuery.value?.queryState, ...pageKeys))
+    const pageKeys = Object.keys(_.omit(whichQuery.queryState, 'total', 'queryParams'))
+    const pages = Object.values(_.pick(whichQuery.queryState, ...pageKeys))
     // remove possible duplicates (page data can be different as you browse between pages and new items are added)
     const ids = pages.reduce((allIds, page) => {
       page.ids.forEach((id: number | string) => {
@@ -234,7 +235,9 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     )
 
     if (immediate) makeRequest()
+  }
 
+  if (paginateOn === 'server') {
     // watch realtime events and re-query
     // TODO: only re-query when relevant
     service.on('created', () => {
