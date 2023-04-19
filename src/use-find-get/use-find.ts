@@ -32,9 +32,10 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     }
   })
   const paramsWithoutPagination = computed(() => {
-    const queryShallowCopy = deepUnref({ ...(params.value?.query || {}) })
+    const queryShallowCopy = deepUnref(params.value?.query || {})
     const query = _.omit(queryShallowCopy, '$limit', '$skip')
-    return { ...params.value, query }
+    const newParams = { ...params.value, query }
+    return newParams
   })
 
   /** REQUEST STATE **/
@@ -92,7 +93,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   })
   const allLocalData = computed(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null)
+    if (whichQuery == null && paginateOn !== 'client')
       return []
 
     const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
@@ -149,7 +150,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
   async function find(__params?: Params<Query>) {
     // When `paginateOn: 'server'` is enabled, the computed params will always be used, __params ignored.
-    const ___params = unref(['hybrid', 'server'].includes(paginateOn) ? (paramsWithPagination as any) : __params)
+    const ___params = unref(__params != null ? __params : paginateOn === 'client' ? paramsWithoutPagination.value : paramsWithPagination.value)
 
     // if queryWhen is falsey, return early with dummy data
     if (!queryWhenFn()) return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
@@ -180,7 +181,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   const findDebounced = useDebounceFn<any>(find, debounce)
 
   /** Query Gatekeeping **/
-  const makeRequest = async () => {
+  const makeRequest = async (p?: Params<Query>) => {
     // If params are null, do nothing
     if (params.value === null) return
 
@@ -190,7 +191,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     // if the query passes queryWhen, setup the state before the debounce timer starts.
     if (queryWhenFn()) setupPendingState()
 
-    request.value = findDebounced()
+    request.value = findDebounced(p)
     await request.value
 
     // cache the params to update the computed `data``
