@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { computed, ref } from 'vue-demi'
 import { api, makeContactsData } from '../fixtures'
 import { resetService } from '../test-utils'
@@ -120,5 +121,24 @@ describe('Local Pagination', () => {
     pagination.skip.value = 5
 
     expect(result.data.value[0]._id).toBe('6')
+  })
+
+  test('can use `find` to query the server with current params', async () => {
+    // Throw an error in a hook
+    const hook = vi.fn()
+    service.hooks({ before: { find: [hook] } })
+
+    const params = computed(() => {
+      return { query: { $limit: 3, $skip: 0 } }
+    })
+
+    const { data, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
+
+    expect(hook).not.toHaveBeenCalled()
+
+    await find()
+
+    expect(hook).toHaveBeenCalled()
+    expect(data.value.length).toBe(3)
   })
 })
