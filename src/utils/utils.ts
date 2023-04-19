@@ -2,15 +2,11 @@ import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { unref } from 'vue-demi'
-import stringify from 'fast-json-stable-stringify'
 import isEqual from 'fast-deep-equal'
 import fastCopy from 'fast-copy'
 import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo } from '../types'
 import { defineValues } from './define-properties'
 import { convertData } from './convert-data'
-import { deepUnref } from './deep-unref'
-
-
 
 interface GetExtendedQueryInfoOptions {
   queryInfo: QueryInfo
@@ -28,7 +24,7 @@ export function getExtendedQueryInfo({ queryInfo, service, store, qid }: GetExte
   if (!pageState) return null
 
   const { ids, queriedAt, ssr } = pageState
-  const result = ids.map((id: any) => store.itemsById[id])
+  const result = ids.map((id: any) => store.itemsById[id]).filter((i: any) => i)
   const items = convertData(service, result)
   const info = { ...queryInfo, ids, items, total, queriedAt, queryState, ssr }
   return info || null

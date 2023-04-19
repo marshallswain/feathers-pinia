@@ -84,7 +84,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     if (whichQuery == null) return []
 
     const allItems = allLocalData.value
-    const firstOfCurrentPage = (whichQuery.items as any)[0]
+    const firstOfCurrentPage = whichQuery.items.find((i: any) => i)
     const indexInItems = allItems.findIndex((i: any) => i[store.idField] === firstOfCurrentPage[store.idField])
     // if indexInItems is higher than skip, use the skip value instead
     const adjustedIndex = Math.min(indexInItems, skip.value)
