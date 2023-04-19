@@ -10,6 +10,7 @@ describe('useServiceStore', () => {
       'new',
       'idField',
       'isSsr',
+      'defaultLimit',
 
       // items
       'itemsById',
@@ -47,6 +48,7 @@ describe('useServiceStore', () => {
       'pagination',
       'updatePaginationForQuery',
       'unflagSsr',
+      'getQueryInfo',
 
       // pending state
       'isPending',

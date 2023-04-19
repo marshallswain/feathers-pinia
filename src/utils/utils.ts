@@ -10,29 +10,7 @@ import { defineValues } from './define-properties'
 import { convertData } from './convert-data'
 import { deepUnref } from './deep-unref'
 
-export function getQueryInfo(_params: Params<Query>): QueryInfo {
-  const params = deepUnref(_params)
-  const { query = {} } = params
-  const qid = params.qid || 'default'
-  const $limit = query?.$limit
-  const $skip = query?.$skip || 0
 
-  const pageParams = $limit !== undefined ? { $limit, $skip } : undefined
-  const pageId = pageParams ? stringify(pageParams) : undefined
-
-  const queryParams = _.omit(query, '$limit', '$skip')
-  const queryId = stringify(queryParams)
-
-  return {
-    qid,
-    query,
-    queryId,
-    queryParams,
-    pageParams,
-    pageId,
-    isExpired: false,
-  }
-}
 
 interface GetExtendedQueryInfoOptions {
   queryInfo: QueryInfo

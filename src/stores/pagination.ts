@@ -1,16 +1,20 @@
-import type { Params } from '@feathersjs/feathers'
 import type { ComputedRef, Ref } from 'vue-demi'
 import type { PaginationState, UpdatePaginationForQueryOptions } from './types'
 import { ref, set } from 'vue-demi'
-import { getId, getQueryInfo, hasOwn } from '../utils'
+import { deepUnref, getId, hasOwn } from '../utils'
+import stringify from 'fast-json-stable-stringify'
+import { _ } from '@feathersjs/commons/lib'
+import { Params, Query, QueryInfo } from '../types'
 
 export interface UseServicePagination {
   idField: string
   isSsr: ComputedRef<boolean>
+  defaultLimit?: number
 }
 
 export const useServicePagination = (options: UseServicePagination) => {
   const { idField, isSsr } = options
+  const defaultLimit = options.defaultLimit || 10
 
   const pagination = ref({}) as Ref<PaginationState>
 
@@ -76,7 +80,7 @@ export const useServicePagination = (options: UseServicePagination) => {
     set(pagination.value, qid, newState)
   }
 
-  function unflagSsr(params: Params) {
+  function unflagSsr(params: Params<Query>) {
     const queryInfo = getQueryInfo(params)
     const { qid, queryId, pageId } = queryInfo
 
@@ -84,10 +88,35 @@ export const useServicePagination = (options: UseServicePagination) => {
     pageData.ssr = false
   }
 
+  function getQueryInfo(_params: Params<Query>): QueryInfo {
+    const params = deepUnref(_params)
+    const { query = {} } = params
+    const qid = params.qid || 'default'
+    const $limit = query?.$limit || defaultLimit
+    const $skip = query?.$skip || 0
+  
+    const pageParams = $limit !== undefined ? { $limit, $skip } : undefined
+    const pageId = pageParams ? stringify(pageParams) : undefined
+  
+    const queryParams = _.omit(query, '$limit', '$skip')
+    const queryId = stringify(queryParams)
+  
+    return {
+      qid,
+      query,
+      queryId,
+      queryParams,
+      pageParams,
+      pageId,
+      isExpired: false,
+    }
+  }
+
   return {
     pagination,
     updatePaginationForQuery,
     unflagSsr,
+    getQueryInfo,
     clearPagination,
   }
 }

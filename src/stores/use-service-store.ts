@@ -13,6 +13,7 @@ import { useModelInstance } from '../modeling/use-model-instance'
 
 export interface UseServiceStoreOptions {
   idField: string
+  defaultLimit?: number
   whitelist?: string[]
   paramsForServer?: string[]
   skipGetIfExists?: boolean
@@ -27,7 +28,7 @@ const makeDefaultOptions = () => ({
 
 export const useServiceStore = <M extends AnyData, Q extends Query>(_options: UseServiceStoreOptions) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const { idField, whitelist, paramsForServer, customSiftOperators } = options
+  const { idField, whitelist, paramsForServer, defaultLimit, customSiftOperators } = options
 
   function setupInstance<N extends M>(this: any, data: N) {
     const asBaseModel = useModelInstance(data, {
@@ -63,9 +64,10 @@ export const useServiceStore = <M extends AnyData, Q extends Query>(_options: Us
   })
 
   // pagination
-  const { pagination, clearPagination, updatePaginationForQuery, unflagSsr } = useServicePagination({
+  const { pagination, clearPagination, updatePaginationForQuery, getQueryInfo, unflagSsr } = useServicePagination({
     idField,
     isSsr,
+    defaultLimit,
   })
 
   function clearAll() {
@@ -96,6 +98,7 @@ export const useServiceStore = <M extends AnyData, Q extends Query>(_options: Us
     new: setupInstance,
     idField,
     isSsr,
+    defaultLimit,
 
     // items
     itemsById: itemStorage.byId,
@@ -133,6 +136,7 @@ export const useServiceStore = <M extends AnyData, Q extends Query>(_options: Us
     pagination,
     updatePaginationForQuery,
     unflagSsr,
+    getQueryInfo,
     ...pendingState,
     ...eventLocks,
   }

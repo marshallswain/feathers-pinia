@@ -116,6 +116,7 @@ export const api = createPiniaClient(feathersClient, {
       idField: 'id',
     },
     contacts: {
+      defaultLimit: 20,
       whitelist: ['$test'],
       setupInstance(data: any) {
         const withDefaults = useInstanceDefaults({ name: '', age: 0 }, data)

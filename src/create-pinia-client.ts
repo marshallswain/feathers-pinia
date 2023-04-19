@@ -17,6 +17,7 @@ interface SetupInstanceUtils {
 
 interface PiniaServiceConfig {
   idField?: string
+  defaultLimit?: number
   whitelist?: string[]
   paramsForServer?: string[]
   skipGetIfExists?: boolean
@@ -54,6 +55,7 @@ export function createPiniaClient<Client extends Application>(
 
     // combine service and global options
     const idField = serviceOptions.idField || options.idField
+    const defaultLimit = serviceOptions.defaultLimit || options.defaultLimit || 10
     const whitelist = (serviceOptions.whitelist || []).concat(options.whitelist || [])
     const paramsForServer = (serviceOptions.paramsForServer || []).concat(options.paramsForServer || [])
     const handleEvents = serviceOptions.handleEvents || options.handleEvents
@@ -95,6 +97,7 @@ export function createPiniaClient<Client extends Application>(
     const useStore = defineStore(storeName, () => {
       const utils = useServiceStore({
         idField,
+        defaultLimit,
         whitelist,
         paramsForServer,
         customSiftOperators,

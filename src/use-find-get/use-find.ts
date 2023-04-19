@@ -4,8 +4,7 @@ import { computed, ref, unref, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { useDebounceFn } from '@vueuse/core'
 import stringify from 'fast-json-stable-stringify'
-import { deepUnref, getExtendedQueryInfo, getQueryInfo } from '../utils'
-import { convertData } from '../utils/convert-data'
+import { deepUnref, getExtendedQueryInfo } from '../utils'
 import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types'
 import { itemsFromPagination } from './utils'
 import { usePageData } from './utils-pagination'
@@ -18,7 +17,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
   /** PARAMS **/
   const qid = computed(() => params.value?.qid || 'default')
-  const limit = pagination?.limit || ref(params.value?.query?.$limit || 10)
+  const limit = pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit)
   const skip = pagination?.skip || ref(params.value?.query?.$skip || 0)
 
   const paramsWithPagination = computed(() => {
@@ -83,7 +82,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
     if (whichQuery == null) return []
 
-    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
+    const allItems = allLocalData.value
     const firstOfCurrentPage = (whichQuery.items as any)[0]
     const indexInItems = allItems.findIndex((i: any) => i[store.idField] === firstOfCurrentPage[store.idField])
     // if indexInItems is higher than skip, use the skip value instead
@@ -93,22 +92,11 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   })
   const allLocalData = computed(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null) return []
+    if (whichQuery == null)
+      return []
 
-    // Pull server results for each page of data
-    const pageKeys = Object.keys(_.omit(whichQuery.queryState, 'total', 'queryParams'))
-    const pages = Object.values(_.pick(whichQuery.queryState, ...pageKeys))
-    // remove possible duplicates (page data can be different as you browse between pages and new items are added)
-    const ids = pages.reduce((allIds, page) => {
-      page.ids.forEach((id: number | string) => {
-        if (!allIds.includes(id)) allIds.push(id)
-      })
-      return allIds
-    }, [])
-    const matchingItemsById = _.pick(store.itemsById, ...ids)
-    const result = Object.values(matchingItemsById)
-    const converted = convertData(service, result)
-    return converted
+    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
+    return allItems
   })
 
   /** QUERY WHEN **/
@@ -121,7 +109,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     const qidState: any = store.pagination[qid.value]
     if (!qidState) return null
 
-    const queryInfo = getQueryInfo(cachedParams.value)
+    const queryInfo = store.getQueryInfo(cachedParams.value)
     const extendedInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
     return extendedInfo
   })
@@ -130,7 +118,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     const qidState: any = store.pagination[qid.value]
     if (!qidState) return null
 
-    const queryInfo = getQueryInfo(paramsWithPagination.value)
+    const queryInfo = store.getQueryInfo(paramsWithPagination.value)
     const extendedInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
     return extendedInfo
   })
@@ -174,7 +162,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
       // Keep the two most-recent queries
       if (response.total) {
-        const queryInfo = getQueryInfo(paramsWithPagination.value)
+        const queryInfo = store.getQueryInfo(paramsWithPagination.value)
         const extendedQueryInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
         if (extendedQueryInfo) queries.value.push(extendedQueryInfo as unknown as ExtendedQueryInfo)
         if (queries.value.length > 2) queries.value.shift()
@@ -195,8 +183,6 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   const makeRequest = async () => {
     // If params are null, do nothing
     if (params.value === null) return
-
-    if (!['server', 'hybrid'].includes(paginateOn)) return
 
     // If we already have data for the currentQuery, update the cachedParams immediately
     if (currentQuery.value) updateCachedParams()
@@ -281,7 +267,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     previousQuery, // ComputedRef<QueryInfo | null>
 
     // Requests & Watching
-    find, // FindFn<M>
+    find: makeRequest, // FindFn<M>
     request, // Ref<Promise<Paginated<M>>>
     requestCount, // Ref<number>
     queryWhen, // (queryWhenFn: () => boolean) => void

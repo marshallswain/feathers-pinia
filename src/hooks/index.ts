@@ -1,4 +1,4 @@
-import { unrefQuery } from './0-unref-query'
+import { unrefQuery } from './0-prepare-query'
 import { setPending } from './1-set-pending'
 import { eventLocks } from './2-event-locks'
 import { syncStore } from './3-sync-store'

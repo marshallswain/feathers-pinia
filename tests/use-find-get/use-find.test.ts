@@ -62,7 +62,7 @@ describe('useFind', () => {
     expect(qid.value).toBe('default')
     expect(request.value).toBeNull()
     expect(requestCount.value).toBe(0)
-    expect(limit.value).toBe(10)
+    expect(limit.value).toBe(20)
     expect(skip.value).toBe(0)
     expect(total.value).toBe(0)
     // utils
@@ -79,5 +79,11 @@ describe('useFind', () => {
     expect(typeof toEnd).toBe('function')
     expect(typeof toPage).toBe('function')
     expect(typeof toStart).toBe('function')
+  })
+
+  test('applies default limit to query', async () => {
+    const result = await service.find()    
+    // defaultLimit is 20 but there are only 12 records.
+    expect(result.data.length).toBe(12)
   })
 })

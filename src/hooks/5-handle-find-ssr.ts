@@ -1,5 +1,4 @@
 import type { HookContext, Id, NextFunction } from '@feathersjs/feathers'
-import { getQueryInfo } from '../utils'
 
 /**
  * Assures that the client reuses SSR-provided data instead of re-making the same query.
@@ -14,7 +13,7 @@ export function handleFindSsr() {
 
     if (context.method === 'find') {
       const { params } = context
-      const info = getQueryInfo(params)
+      const info = store.getQueryInfo(params)
       const qidData = store.pagination[info.qid]
       const queryData = qidData?.[info.queryId]
       const pageData = queryData?.[info.pageId as string]
