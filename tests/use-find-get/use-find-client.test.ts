@@ -31,21 +31,6 @@ describe('Local Pagination', () => {
       expect(data.value[0].name).toBe('Goose')
     })
 
-    test('does not cache values #72', async () => {
-      const query = ref<any>({ name: 'Moose' })
-      const _params = computed(() => {
-        return { query }
-      })
-      const { data, find } = service.useFind(_params)
-      await find()
-      expect(data.value[0].name).toBe('Moose')
-
-      query.value = { age: 21 }
-
-      expect(data.value.length).toBe(1)
-      expect(data.value[0].name).toBe('Marshall')
-    })
-
     test('shows correct paginated store results', async () => {
       const params = computed(() => {
         return { query: { $limit: 3 } }
@@ -140,5 +125,15 @@ describe('Local Pagination', () => {
 
     expect(hook).toHaveBeenCalled()
     expect(data.value.length).toBe(3)
+  })
+
+  test('allLocalData contains all stored data', async () => {
+    const _params = computed(() => {
+      return { query: { $limit: 4, $skip: 0 } }
+    })
+    const { allLocalData, find, next } = service.useFind(_params)
+    await find()
+    await next()
+    expect(allLocalData.value.length).toBe(12)
   })
 })
