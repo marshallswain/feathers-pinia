@@ -25,7 +25,7 @@ createPiniaClient(feathersClient, {
   storage: window.localStorage,
   // below are configurable per service in the `services` object.
   idField: '_id',
-  syncWithStorage: true || ['itemsById', 'pagination', 'etc']
+  syncWithStorage: true || ['itemsById', 'pagination', 'etc'],
   whitelist: ['$customLocalParam'],
   paramsForServer: ['$customServerParam'],
   skipGetIfExists: true,
