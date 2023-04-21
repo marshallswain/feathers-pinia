@@ -9,6 +9,8 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 # Sync with Storage
 
+Improve perceived app speed by storing some data client-side.
+
 [[toc]]
 
 A super-lightweight utility for syncing with `localStorage` (or any `Storage` interface) is built into Feathers-Pinia.
@@ -18,6 +20,10 @@ localStorage. Other features include:
 - Can be enabled for the entire `api` instance or individual services.
 - Only caches `itemsById` and `pagination` attributes, by default.
 - Allows passing custom keys to sync. This is globally configurable or customizable per service.
+
+The typical use case for this would be to speed up the perceived speed of Single Page Applications. The data hydrates
+so quickly that a SPA will feel like a server-rendered application. After any write to the store, the provided keys will
+be serialized into `localStorage` after a 500ms period of inactivity.
 
 ## Examples
 
