@@ -1,4 +1,4 @@
-import { syncWithStorage , clearStorage } from '../../src'
+import { syncWithStorage, clearStorage } from '../../src'
 import { api } from '../fixtures'
 import { resetService, timeout } from '../test-utils'
 import { vi } from 'vitest'

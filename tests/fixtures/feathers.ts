@@ -16,9 +16,19 @@ import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
 import { makeContactsData } from './data'
 import { computed, ref } from 'vue'
+import { vi } from 'vitest'
 
 const pinia = createPinia()
 const restClient = rest()
+
+export const localStorageMock: Storage = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+  length: 0,
+  key: vi.fn(),
+}
 
 const paginate = () => ({ default: 10, max: 100 })
 const whitelist = () => ['$options']
@@ -101,6 +111,8 @@ export const api = createPiniaClient(feathersClient, {
   pinia,
   idField: '_id',
   whitelist: ['$regex'],
+  syncWithStorage: false,
+  storage: localStorageMock,
   paramsForServer: [],
   customizeStore() {
     return {
@@ -118,6 +130,7 @@ export const api = createPiniaClient(feathersClient, {
     contacts: {
       defaultLimit: 20,
       whitelist: ['$test'],
+      syncWithStorage: ['tempsById'],
       setupInstance(data: any) {
         const withDefaults = useInstanceDefaults({ name: '', age: 0 }, data)
         return withDefaults

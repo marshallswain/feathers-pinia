@@ -8,6 +8,7 @@ import { useServiceStore, useServiceEvents } from './stores'
 import { feathersPiniaHooks } from './hooks'
 import { storeAssociated, useServiceInstance } from './modeling'
 import { defineGetters } from './utils'
+import { clearStorage, syncWithStorage as __sync } from './localstorage'
 
 interface SetupInstanceUtils {
   app?: any
@@ -18,6 +19,7 @@ interface SetupInstanceUtils {
 interface PiniaServiceConfig {
   idField?: string
   defaultLimit?: number
+  syncWithStorage?: boolean | string[]
   whitelist?: string[]
   paramsForServer?: string[]
   skipGetIfExists?: boolean
@@ -33,6 +35,7 @@ interface CreatePiniaClientConfig extends PiniaServiceConfig {
   idField: string
   pinia: any
   ssr?: boolean
+  storage?: Storage
   services?: Record<string, PiniaServiceConfig>
 }
 
@@ -42,6 +45,7 @@ type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
 
 interface AppExtensions {
   storeAssociated: (data: any, config: Record<string, string>) => void
+  clearStorage: () => void
 }
 
 export function createPiniaClient<Client extends Application>(
@@ -109,6 +113,28 @@ export function createPiniaClient<Client extends Application>(
     })
     const store = useStore(options.pinia)
 
+    // storage-sync
+    if (!options.ssr && options.storage) {
+      const defaultStorageKeys = ['itemsById', 'pagination']
+      const globalStorageKeys =
+        options.syncWithStorage === true
+          ? defaultStorageKeys
+          : Array.isArray(options.syncWithStorage)
+          ? options.syncWithStorage
+          : []
+      const serviceStorageKeys =
+        serviceOptions.syncWithStorage === true
+          ? defaultStorageKeys
+          : Array.isArray(serviceOptions.syncWithStorage)
+          ? serviceOptions.syncWithStorage
+          : []
+      const syncWithStorage = [...new Set([...globalStorageKeys, ...serviceStorageKeys])]
+      const shouldSyncStorage = syncWithStorage.length > 0
+      if (shouldSyncStorage) {
+        __sync(store, syncWithStorage, options.storage)
+      }
+    }
+
     const clientService = client.service(location)
     const piniaService = new PiniaService(clientService, { store, servicePath: location })
 
@@ -142,6 +168,11 @@ export function createPiniaClient<Client extends Application>(
     },
     logout() {
       return (client as any).logout
+    },
+    clearStorage() {
+      if (!options.ssr && options.storage) {
+        return clearStorage(options.storage)
+      }
     },
   })
 

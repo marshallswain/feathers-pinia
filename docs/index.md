@@ -14,6 +14,9 @@ hero:
     - theme: alt
       text: Start a Project
       link: /setup/
+    - theme: alt
+      text: API Guides
+      link: /guide/
 
 features:
   - icon: 🕊️

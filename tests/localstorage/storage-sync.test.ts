@@ -1,19 +1,7 @@
-import { syncWithStorage } from '../../src'
-import { api } from '../fixtures'
+import { api, localStorageMock } from '../fixtures'
 import { resetService, timeout } from '../test-utils'
-import { vi } from 'vitest'
 
 const service = api.service('contacts')
-
-const localStorageMock: Storage = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
-}
-syncWithStorage(service.store, ['tempsById'], localStorageMock)
 
 const reset = () => resetService(service)
 

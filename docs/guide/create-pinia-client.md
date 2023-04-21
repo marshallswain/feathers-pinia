@@ -22,14 +22,16 @@ with additional service methods.
 createPiniaClient(feathersClient, {
   pinia: nuxt.$pinia,
   ssr: !!process.server,
+  storage: window.localStorage,
   // below are configurable per service in the `services` object.
   idField: '_id',
+  syncWithStorage: true || ['itemsById', 'pagination', 'etc']
   whitelist: ['$customLocalParam'],
   paramsForServer: ['$customServerParam'],
   skipGetIfExists: true,
-  handleEvents: HandleEvents<AnyData>
-  debounceEventsTime: 20
-  debounceEventsGuarantee: false
+  handleEvents: {}, // HandleEvents<AnyData>
+  debounceEventsTime: 20,
+  debounceEventsGuarantee: false,
   customSiftOperators: {}, // see sift docs
   // runs for every service
   setupInstance: (data = {}, { api, service, servicePath }) => {
@@ -83,8 +85,10 @@ interface CreatePiniaClientConfig {
   idField: string
   pinia: Pinia
   ssr?: false,
+  storage?: undefined,
   services?: {},
   // global and per-service options
+  syncWithStorage?: undefined,
   whitelist?: string[],
   paramsForServer?: string[],
   skipGetIfExists?: true,
@@ -105,8 +109,12 @@ database.
 - **`ssr {Boolean}`** indicates if Feathers-Pinia is loading in an SSR environment. Paginated queries made during SSR
 will be marked with `ssr: true`. When a matching request is made on the client (when `ssr` is false) the store data will
 clear the `ssr` flag for that request.
+- **`storage {Storage}`** a `Storage` interface. Must be provided to enable storage sync. The most typical option is
+`window.localStorage`.
 - **`services {Record<string, PiniaServiceConfig>}`** an object, keyed by service path, which allows passing specific
 configuration to individual services. See [Service Configuration](#service-configuration).
+- **`syncWithStorage`** can be set to `true` or to an array of store keys to sync to the `storage` adapter. If set to
+`true`, the default keys will be used, which are `['itemsById', 'pagination']`.  See [Storage Sync](/guide/storage-sync)
 - **`whitelist`** is an array of keys to allow in the `findInStore` queries.
 - **`paramsForServer`** is an array of query keys for `findInStore` to ignore and pass to the `find` action's query.
 - **`skipGetIfExists {Boolean}`** when enabled will cause a `.get` request to automatically resolve with the stored
