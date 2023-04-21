@@ -1,10 +1,14 @@
 import pkg from '../../package.json'
+import { defineConfig } from 'vitepress'
 
-export default {
+export default defineConfig({
   title: 'Feathers-Pinia',
   description: 'Connect Vue to Feathers',
   lang: 'en-US',
   themeConfig: {
+    search: {
+      provider: 'local'
+    },
     socialLinks: [
       {
         icon: 'github',
@@ -49,7 +53,7 @@ export default {
       '/': getGuideSidebar(),
     },
   },
-}
+})
 
 function getSetupSidebar() {
   return [
@@ -136,10 +140,10 @@ function getGuideSidebar() {
     {
       text: 'Other Tools',
       items: [
+        { text: 'Storage Sync', link: '/guide/storage-sync' },
         { text: 'Auto-Imports', link: '/guide/auto-imports' },
         { text: 'Nuxt Module', link: '/guide/nuxt-module' },
         { text: 'OFetch', link: '/guide/ofetch' },
-        // { text: 'syncWithStorage', link: '/guide/storage-sync' },
       ],
     },
   ]
