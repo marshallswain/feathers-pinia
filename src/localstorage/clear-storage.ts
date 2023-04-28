@@ -5,9 +5,11 @@
  * @param storage an object using the Storage interface
  */
 export function clearStorage(storage: Storage = window.localStorage) {
-  Object.keys(storage).map((key) => {
-    if (key.startsWith('service:')) {
+  const prefix = 'service:' // replace this with your prefix
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i)
+    if (key?.startsWith(prefix)) {
       storage.removeItem(key)
     }
-  })
+  }
 }

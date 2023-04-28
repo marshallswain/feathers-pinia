@@ -7,11 +7,18 @@ const service = api.service('contacts')
 
 const localStorageMock: Storage = {
   getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
+  setItem: vi.fn(function () {
+    this.length++
+  }),
+  removeItem: vi.fn(function () {
+    this.length--
+  }),
   clear: vi.fn(),
   length: 0,
-  key: vi.fn(),
+  key: vi.fn(function () {
+    return 'service:contacts'
+  }),
+
   // Dummy key to make sure removeItem is called
   'service.items': '{"hey": "there"}',
 }
