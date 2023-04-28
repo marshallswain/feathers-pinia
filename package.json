@@ -1,6 +1,6 @@
 {
   "name": "feathers-pinia",
-  "version": "3.0.0-pre.18",
+  "version": "3.0.0-pre.19",
   "type": "module",
   "files": [
     "dist",
