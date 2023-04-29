@@ -98,7 +98,10 @@ function getGuideSidebar() {
     },
     {
       text: 'Feathers-Pinia Client',
-      link: '/guide/create-pinia-client',
+      items: [
+        { text: 'Client API', link: '/guide/create-pinia-client' },
+        { text: 'Common Pitfalls', link: '/guide/troubleshooting' },
+      ]
     },
     {
       text: 'Feathers-Pinia Services',
