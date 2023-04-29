@@ -13,6 +13,23 @@ If you run into issues, check here for solutions, first.
 
 [[toc]]
 
+## Usage Problems
+
+### File Uploads
+
+While using Feathers-Pinia, keep in mind that adding some types of data to the store can break the data. For example,
+when uploading a file, it's common to use a Buffer object. If you pass the Buffer through a Feathers-Pinia method, it
+will be wrapped with Vue reactivity and not work as intended.
+
+The solution is to use the underlying, plain Feathers service, which is available as `.service` on every Feathers-Pinia
+service.
+
+```ts
+const upload = await api.service('uploads').service.create({ buffer: file })
+```
+
+You can use the above pattern to avoid any Vue Reactivity-related errors with native types.
+
 ## TypeScript
 
 ### Package Version Mismatch
@@ -23,8 +40,7 @@ updated.
 
 The solution is to install the same version as `feathers-pinia` is using under the hood. Check the feathers-pinia
 package.json.  If `feathers-pinia` is outdated, mention it in the [#vue channel of the Feathers Discord](https://discord.com/invite/qa8kez8QBx).
-Until it's updated, downgrade your app to match. If anybody has a solution that allows TypeScript to not throw an error
-when the package versions don't match, please let us know.
+Until it's updated, downgrade your app to match. This error likely will not occur in `feathers-pinia@3.0.2` and above.
 
 ### Typeof Mixins is Incompatible
 
