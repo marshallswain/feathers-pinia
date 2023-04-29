@@ -35,7 +35,7 @@ const paginate = () => ({ default: 10, max: 100 })
 const whitelist = () => ['$options']
 
 class CustomMemory extends MemoryService<Users, UsersData, AdapterParams> {
-  async customCreate(data: UsersData, params: AdapterParams) {
+  async customCreate(data: UsersData, params?: AdapterParams) {
     const result = await super.create(data, params)
     return { ...result, custom: true }
   }
