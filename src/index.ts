@@ -1,24 +1,15 @@
-export { setupFeathersPinia } from './setup'
-export { defineStore } from './service-store/define-store'
-export { defineAuthStore } from './define-auth-store'
-export { makeServiceStore, BaseModel } from './service-store/index'
-export { makeState } from './service-store/make-state'
-
-export { models } from './models'
-export { clients, registerClient } from './clients'
-
-export { useFind } from './use-find'
-export { useGet } from './use-get'
-export { usePagination } from './use-pagination'
-export { useClones } from './use-clones'
-/**
- * @deprecated `handleClones` has been renamed to `useClones`.
- */
-export { useClones as handleClones } from './use-clones'
-
-export { syncWithStorage } from './storage-sync'
-export { syncWithStorageCompressed } from './storage-sync-compressed'
-export { clearStorage } from './clear-storage'
-
 export * from './types'
-export * from './service-store/types'
+
+export { createPiniaClient } from './create-pinia-client'
+export { PiniaService } from './create-pinia-service'
+export { OFetch } from './feathers-ofetch'
+
+export { feathersPiniaAutoImport } from './unplugin-auto-import-preset'
+
+export * from './hooks/'
+export * from './localstorage/'
+export * from './modeling/'
+export * from './use-auth/'
+export * from './use-find-get/'
+export * from './stores'
+export { useInstanceDefaults, defineGetters, defineSetters, defineValues } from './utils/'

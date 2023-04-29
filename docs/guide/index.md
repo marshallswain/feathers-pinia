@@ -12,10 +12,46 @@ import V2Block from '../components/V2Block.vue'
 
 [[toc]]
 
+Welcome to the apex of Vue Data Modeling and FeathersJS connectivity for the artisan developer. Feathers-Pinia is
+**the** first-class data modeling solution built with for Vue Composition API. It is well known for its features which
+maximize perceived application speed for end users while providing a pleasant developer experience.
+
+## Overview of Features
+
+- Implicit, Functional Data Modeling maintains your data structure, requires no setup, and is
+fully customizable.
+- **[Clone and Commit](/guide/common-patterns#mutation-multiplicity-pattern)** dramatically reduces the need for custom
+Pinia actions.
+- **[Per-Record Defaults](/guide/common-patterns#useinstancedefaults)** offer a functional way of adding default
+values and methods to every record.
+- **Realtime by Default**: It's ready for WebSocket-enhanced, multi-user interactivity.
+- **Independent Reactivity**: no need to assign records to component or store `data` to enable reactive binding.
+- **[Local Queries](/data-stores/querying-data)**: Make requests against locally-cached data as though it was a FeathersJS
+database, **now with support for SQL `$like` operators.**
+- **[Live Queries](/guide/common-patterns.html#reactive-lists-with-live-queries)** with client-side pagination allow
+arrays of data to automatically update as new records are added, modified, or removed.
+- **[Server-Side Pagination](/services/use-find#server-paging-auto-fetch)**: alternative to live-list pagination,
+optionally give all control to the server and perform manual fetching. In this mode, lists only update when new queries
+are made.
+- **[Super-Efficient SSR](/guide/whats-new#super-efficient-ssr)**: optimize server-loaded data on the client without
+refetching. The latest Nuxt APIs are fully supported.
+- **[Fall-Through Cache](/services/use-find)** like SWR but with built-in, low-memory query intelligence. It knows which
+records can be shared between different queries, which allows relevant records to show immediately while additional data
+is fetched.
+- Flexible code patterns allow developers to work as they wish.
+  - **Active Record Pattern**: allows use of utility methods built on each instance. This pattern allows creation of
+  loosely-coupled components built around the instance interface.
+  - **Data Mapper Pattern**: allows you to use a store-centric workflow where you let store logic perform operations
+  on your data.
+- **[Flexible Auth Support](/guide/use-auth)** with the new `useAuth` composition utility.
+API.
+- Full support for [FeathersJS v5 Dove](https://feathersjs.com) and earlier versions of Feathers.
+
+## Coming from Feathers-Vuex
+
 Feathers-Pinia is the next generation of [Feathers-Vuex](https://vuex.feathersjs.com). The difference is that it's built on [Pinia](https://pinia.esm.dev/): a Vue store with an intuitive API.
 
-::: tip Introducing Pinia
-PERSONAL OPINION ALERT: [Pinia](https://pinia.esm.dev/) is so simple and elegant. It matches Vue better than Vuex does. Using Pinia in your apps will have a few positive effects:
+Using Pinia in your apps will have a few positive effects:
 
 - The clean API requires lower mental overhead to use.
   - No more weird Vuex syntax.
@@ -23,65 +59,5 @@ PERSONAL OPINION ALERT: [Pinia](https://pinia.esm.dev/) is so simple and elegant
   - Use Composable Stores instead of injected rootState, rootGetters, etc.
 - Lower mental overhead means developers spend more time in a creative space. This usually results in an increase of productivity.
 - You'll have smaller bundle sizes. Not only is Pinia tiny, it's also modular. You don't have to register all of the plugins in a central store. Pinia's architecture enables tree shaking, so only the services needed for the current view need to load.
-  :::
 
-## Compared to Feathers-Vuex
-
-Apart from being a LOT faster and having a really clean API (thanks to Pinia), there are a few breaking changes to some of the familiar processes from Feathers-Vuex.
-
-### New Model Instances Not Added to the store
-
-With Feathers-Vuex, when you called `new Model(data)`, the new instance would automatically get added to the store.
-
-In Feathers-Pinia, you have to call `instance.addToStore()` to manually add the instance to the store.
-
-```ts
-import { models } from 'feathers-pinia'
-
-const todo = new models.api.Todo({ name: 'do something' })
-todo.addToStore()
-```
-
-### Calling .clone() on a clone is allowed
-
-In Feathers-Vuex you couldn't call `.clone()` on a clone. Now, calling `.clone()` will do the same as
-calling `.reset()`.
-
-### Store Structure Changes
-
-Since `state`, `getters`, and `actions` all live inside the same Pinia store object, the getters have been renamed to avoid colliding with action names.
-
-#### State
-
-- `ids` is no longer in state. It's now a getter named `itemIds`.
-- `keyedById` is now called `itemsById`.
-
-#### Getters
-
-- **`findInStore`** takes the place of the `find` getter.
-- **`countInStore`** takes the place of the `count` getter.
-- **`getFromStore`** takes the place of the `get` getter.
-- **`itemIds`** takes the place of the `ids` array in data.
-- **`items`** takes the place of the `list` getter.
-- **`tempIds`** is like `itemIds` but for temp records.
-- **`temps`** is a new array of temp records.
-- **`cloneIds`** is like `itemIds` but for clone records.
-- **`clones`** is a new array of clone records.
-
-#### Actions Mostly the Same
-
-- **`find`**
-- **`count`**
-- **`get`**
-- **`create`**
-- **`update`**
-- **`patch`**
-- **`remove`**
-- **`removeFromStore`**
-- **`addOrUpdate`**
-- **`addToStore`** is a new alias to `addOrUpdate`
-- **`clearAll`**
-- **`clone`**
-- **`commit`**
-- **`resetCopy`**
-- **`hydrateAll`** might be deprecated. Hydration with Pinia is as simple as `Object.assign(store, data)`.
+See the Migration Guide for developers [coming from Feathers-Vuex](/migrate/from-feathers-vuex).

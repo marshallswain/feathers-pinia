@@ -5,3 +5,6 @@ dist-ssr
 *.local
 
 coverage
+__unconfig_vite.config.ts
+/docs/.vitepress/cache
+/.VSCodeCounter

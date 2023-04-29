@@ -1,36 +1,26 @@
-<script>
-import { h } from 'vue'
-
-export default {
-  functional: true,
-  props: {
-    type: {
-      type: String,
-      default: 'tip',
-    },
-    text: {
-      type: String,
-      default: '',
-    },
-    vertical: {
-      type: String,
-      default: 'top',
-    },
+<script setup>
+defineProps({
+  type: {
+    type: String,
+    default: 'tip',
   },
-  render(props, slots) {
-    return h(
-      'span',
-      {
-        class: ['badge', props.type],
-        style: {
-          verticalAlign: props.vertical,
-        },
-      },
-      props.text || slots().default
-    )
+  label: {
+    type: String,
+    default: '',
   },
-}
+  vertical: {
+    type: String,
+    default: 'middle',
+  },
+})
 </script>
+
+<!-- eslint-disable vue/max-attributes-per-line -->
+<template>
+  <span class="badge" :class="type" :style="{ verticalAlign: vertical }">{{ label }}
+    <slot />
+  </span>
+</template>
 
 <style scoped>
 .badge {
@@ -43,19 +33,23 @@ export default {
   color: white;
   background-color: #42b983;
 }
+
 .badge.tip,
 .badge.green {
   background-color: #42b983;
 }
+
 .badge.error {
   background-color: #da5961;
 }
+
 .badge.warning,
 .badge.warn,
 .badge.yellow {
   background-color: #ffe564;
 }
-.badge + .badge {
+
+.badge+.badge {
   margin-left: 5px;
 }
 </style>
