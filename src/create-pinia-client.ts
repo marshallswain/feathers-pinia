@@ -40,7 +40,7 @@ interface CreatePiniaClientConfig extends PiniaServiceConfig {
 }
 
 type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
-  [Key in keyof T]: PiniaService<T[Key]>
+  [Key in keyof T]: PiniaService<T[Key]> & T[Key]
 }
 
 interface AppExtensions {

@@ -1,12 +1,12 @@
 import type { Tasks, TasksData, TasksQuery } from './schemas/tasks'
-import type { Users, UsersData, UsersQuery } from './schemas/users'
+import type { Users, UsersData } from './schemas/users'
 import type { Contacts, ContactsData, ContactsQuery } from './schemas/contacts'
 import type { Posts } from './schemas/posts'
 import type { Authors } from './schemas/authors'
 import type { Comments } from './schemas/comments'
 
 import { feathers, HookContext, Params } from '@feathersjs/feathers'
-import { memory } from '@feathersjs/memory'
+import { memory, MemoryService } from '@feathersjs/memory'
 import { NotAuthenticated } from '@feathersjs/errors'
 import { createPinia } from 'pinia'
 import { timeout } from '../test-utils'
@@ -17,6 +17,7 @@ import auth from '@feathersjs/authentication-client'
 import { makeContactsData } from './data'
 import { computed, ref } from 'vue'
 import { vi } from 'vitest'
+import { AdapterParams } from '@feathersjs/adapter-commons'
 
 const pinia = createPinia()
 const restClient = rest()
@@ -33,10 +34,19 @@ export const localStorageMock: Storage = {
 const paginate = () => ({ default: 10, max: 100 })
 const whitelist = () => ['$options']
 
-const UserService = memory<Users, UsersData, Params<UsersQuery>>({
+class CustomMemory extends MemoryService<Users, UsersData, AdapterParams> {
+  async customCreate(data: UsersData, params: AdapterParams) {
+    const result = await super.create(data, params)
+    return { ...result, custom: true }
+  }
+}
+
+const UserService = new CustomMemory({
   paginate: paginate(),
   whitelist: whitelist(),
 })
+export const usersMethods = ['find', 'get', 'create', 'patch', 'remove', 'customCreate'] as const
+
 const TaskService = memory<Tasks, TasksData, Params<TasksQuery>>({
   paginate: paginate(),
   whitelist: whitelist(),
@@ -65,7 +75,9 @@ const feathersClient = feathers<ServiceTypes>()
   .configure(restClient.axios(axios))
   .configure(auth())
   .use('tasks', TaskService)
-  .use('users', UserService)
+  .use('users', UserService, {
+    methods: usersMethods,
+  })
   .use('contacts', ContactService)
   .use('authors', AuthorService)
   .use('posts', PostService)

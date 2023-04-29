@@ -4,7 +4,7 @@ import type { MaybeRef } from '@vueuse/core'
 import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get'
 import type { ComputedRef } from 'vue-demi'
 import { reactive, computed, isRef, ref, unref } from 'vue-demi'
-import { getParams } from './utils'
+import { getParams, existingServiceMethods } from './utils'
 import { useFind, useGet } from './use-find-get'
 import { convertData } from './utils/convert-data'
 import { ServiceInstance } from './modeling'
@@ -21,6 +21,15 @@ export class PiniaService<Svc extends FeathersService> {
   constructor(public service: Svc, public options: PiniaServiceOptions) {
     this.store = options.store
     this.servicePath = options.servicePath
+
+    // copy custom methods from service onto this instance, exclude existing methods
+    const keysToIgnore = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).concat(existingServiceMethods)
+    for (const key in service) {
+      if (typeof service[key] === 'function' && !keysToIgnore.includes(key)) {
+        const instance = this as any
+        instance[key] = (service[key] as any).bind(service)
+      }
+    }
   }
 
   /**
@@ -36,12 +45,19 @@ export class PiniaService<Svc extends FeathersService> {
 
   /* service methods clone params */
 
+  /**
+   * finds records from the API server by query. Each record is reactive. Lists are non reactive.
+   * For reactive lists, use `findInStore`.
+   */
   async find(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.find(params as FeathersParams)
     return result
   }
 
+  /**
+   * finds a single record from the API server by query. The record is reactive.
+   */
   async findOne(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     params.query = params.query || {}
@@ -51,6 +67,9 @@ export class PiniaService<Svc extends FeathersService> {
     return item
   }
 
+  /**
+   * count records on the API server by query. Returns the number of matching records.
+   */
   async count(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     params.query = params.query || {}
@@ -59,23 +78,35 @@ export class PiniaService<Svc extends FeathersService> {
     return result
   }
 
+  /**
+   * retrieve a record from the API server by id. The record is reactive.
+   */
   async get(id: Id, _params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.get(id, params)
     return result
   }
 
+  /**
+   * create a record on the API server.
+   */
   async create(data: AnyData) {
     const result = await this.service.create(data)
     return result
   }
 
+  /**
+   * patch a record on the API server.
+   */
   async patch(id: Id, data: AnyData, _params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.patch(id, data, params)
     return result
   }
 
+  /**
+   * remove a record from the API server.
+   */
   async remove(id: Id, _params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.remove(id, params)
@@ -84,6 +115,9 @@ export class PiniaService<Svc extends FeathersService> {
 
   /* store methods accept refs and don't copy params */
 
+  /**
+   * find records in the local store. The returned list and records are reactive.
+   */
   findInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.findInStore(params)
     return {
@@ -94,26 +128,41 @@ export class PiniaService<Svc extends FeathersService> {
     }
   }
 
+  /**
+   * find a single record in the local store by query.
+   */
   findOneInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.findOneInStore(params)
     return result
   }
 
+  /**
+   * count records matching a query in the store.
+   */
   countInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.countInStore(params)
     return result
   }
 
+  /**
+   * get a single record from the store by id
+   */
   getFromStore(id: Id, params?: MaybeRef<Params<Query>>): ComputedRef<ServiceInstance<AnyData>> {
     const result = this.store.getFromStore(id, params)
     return result
   }
 
+  /**
+   * creates or adds an item to the store.
+   */
   createInStore(data: AnyData) {
     const result = this.store.createInStore(data)
     return result
   }
 
+  /**
+   * patches an item in the store
+   */
   patchInStore<M extends AnyData, Q extends AnyData>(
     idOrData: MaybeRef<M | M[] | Id | null>,
     data: MaybeRef<AnyData> = {},
@@ -123,6 +172,9 @@ export class PiniaService<Svc extends FeathersService> {
     return result
   }
 
+  /**
+   * removes one or more items from the store.
+   */
   removeFromStore(id?: Id, params?: MaybeRef<Params<Query>>) {
     const item = id != null ? this.getFromStore(id).value : null
     if (item) {
