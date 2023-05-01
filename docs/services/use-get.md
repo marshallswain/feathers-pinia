@@ -83,4 +83,4 @@ const user = api.service('users').getFromStore(id)
 
 The simplest way to only query once per record is to set the `skipGetIfExists` option to `true` during configuration.
 
-You can also use the `useFindOnce` method to achieve the same behavior for individual requests.
+You can also use the `useGetOnce` method to achieve the same behavior for individual requests.
