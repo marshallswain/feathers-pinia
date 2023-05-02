@@ -67,7 +67,7 @@ function getSetupSidebar() {
           items: [
             { text: 'Vite', link: '/setup/vite' },
             { text: 'Nuxt 3', link: '/setup/nuxt3' },
-            // { text: 'Quasar 🚧', link: '/setup/quasar' },
+            { text: 'Quasar', link: '/setup/quasar' },
           ]
         },
         { text: 'Example Apps', link: '/setup/example-apps' },
