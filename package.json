@@ -10,7 +10,10 @@
   "module": "./dist/feathers-pinia.js",
   "exports": {
     ".": {
-      "import": "./dist/feathers-pinia.js",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/feathers-pinia.js"
+      },
       "require": "./dist/feathers-pinia.umd.cjs"
     }
   },
