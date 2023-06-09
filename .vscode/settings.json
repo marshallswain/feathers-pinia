@@ -9,4 +9,5 @@
     "<node_internals>/**",
     "**/node_modules/**"
   ],
+  "prettier.configPath": ""
 }

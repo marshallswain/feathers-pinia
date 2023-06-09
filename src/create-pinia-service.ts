@@ -2,20 +2,20 @@ import type {
   Params as FeathersParams,
   FeathersService,
   Id,
-} from '@feathersjs/feathers'
-import type { AnyData, Params, Query } from './types.js'
-import type { MaybeRef } from '@vueuse/core'
+} from "@feathersjs/feathers"
+import type { AnyData, Params, Query } from "./types.js"
+import type { MaybeRef } from "@vueuse/core"
 import type {
   UseFindOptions,
   UseFindParams,
   UseGetParams,
-} from './use-find-get.js'
-import type { ComputedRef } from 'vue-demi'
-import { reactive, computed, isRef, ref, unref } from 'vue-demi'
-import { getParams, existingServiceMethods } from './utils/index.js'
-import { useFind, useGet } from './use-find-get.js'
-import { convertData } from './utils/convert-data'
-import { ServiceInstance } from './modeling/index.js'
+} from "./use-find-get/index.js"
+import type { ComputedRef } from "vue-demi"
+import { reactive, computed, isRef, ref, unref } from "vue-demi"
+import { getParams, existingServiceMethods } from "./utils/index.js"
+import { useFind, useGet } from "./use-find-get/index.js"
+import { convertData } from "./utils/convert-data"
+import { ServiceInstance } from "./modeling/index.js"
 
 interface PiniaServiceOptions {
   servicePath: string
@@ -24,7 +24,7 @@ interface PiniaServiceOptions {
 
 export class PiniaService<Svc extends FeathersService> {
   store
-  servicePath = ''
+  servicePath = ""
 
   constructor(public service: Svc, public options: PiniaServiceOptions) {
     this.store = options.store
@@ -35,7 +35,7 @@ export class PiniaService<Svc extends FeathersService> {
       Object.getPrototypeOf(this)
     ).concat(existingServiceMethods)
     for (const key in service) {
-      if (typeof service[key] === 'function' && !keysToIgnore.includes(key)) {
+      if (typeof service[key] === "function" && !keysToIgnore.includes(key)) {
         const instance = this as any
         instance[key] = (service[key] as any).bind(service)
       }
