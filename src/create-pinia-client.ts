@@ -8,7 +8,7 @@ import { useServiceStore, useServiceEvents } from './stores/index.js'
 import { feathersPiniaHooks } from './hooks/index.js'
 import { storeAssociated, useServiceInstance } from './modeling/index.js'
 import { defineGetters } from './utils/index.js'
-import { clearStorage, syncWithStorage as __sync } from './localstorage.js'
+import { clearStorage, syncWithStorage as __sync } from './localstorage/index.js'
 
 interface SetupInstanceUtils {
   app?: any
