@@ -1,9 +1,12 @@
-import type { AnyData } from '../types'
+import type { AnyData } from '../types.js'
 
 /**
  * Defines all provided properties as non-enumerable, configurable, values
  */
-export const defineValues = <M extends AnyData, D extends AnyData>(data: M, properties: D) => {
+export const defineValues = <M extends AnyData, D extends AnyData>(
+  data: M,
+  properties: D
+) => {
   Object.keys(properties).forEach((key) => {
     Object.defineProperty(data, key, {
       enumerable: false,
@@ -17,7 +20,10 @@ export const defineValues = <M extends AnyData, D extends AnyData>(data: M, prop
 /**
  * Defines all provided properties as non-enumerable, configurable, getters
  */
-export const defineGetters = <M extends AnyData, D extends AnyData>(data: M, properties: D) => {
+export const defineGetters = <M extends AnyData, D extends AnyData>(
+  data: M,
+  properties: D
+) => {
   Object.keys(properties).forEach((key) => {
     Object.defineProperty(data, key, {
       enumerable: false,
@@ -31,7 +37,10 @@ export const defineGetters = <M extends AnyData, D extends AnyData>(data: M, pro
 /**
  * Defines all provided properties as non-enumerable, configurable, setters
  */
-export const defineSetters = <M extends AnyData, D extends AnyData>(data: M, properties: D) => {
+export const defineSetters = <M extends AnyData, D extends AnyData>(
+  data: M,
+  properties: D
+) => {
   Object.keys(properties).forEach((key) => {
     Object.defineProperty(data, key, {
       enumerable: false,

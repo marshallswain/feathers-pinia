@@ -1,7 +1,7 @@
-import { vi } from 'vitest';
+import { vi } from 'vitest'
 import { computed, ref } from 'vue-demi'
-import { api, makeContactsData } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api, makeContactsData } from '../fixtures.js'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
 
@@ -117,7 +117,10 @@ describe('Local Pagination', () => {
       return { query: { $limit: 3, $skip: 0 } }
     })
 
-    const { data, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
+    const { data, find } = service.useFind(params, {
+      paginateOn: 'server',
+      immediate: false,
+    })
 
     expect(hook).not.toHaveBeenCalled()
 

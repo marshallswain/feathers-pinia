@@ -1,15 +1,14 @@
-export * from './types'
+export * from './types.js';
 
-export { createPiniaClient } from './create-pinia-client'
-export { PiniaService } from './create-pinia-service'
-export { OFetch } from './feathers-ofetch'
+export { createPiniaClient } from './create-pinia-client.js';
+export { PiniaService } from './create-pinia-service';
+export { OFetch } from './feathers-ofetch.js';
+export { feathersPiniaAutoImport } from './unplugin-auto-import-preset.js';
 
-export { feathersPiniaAutoImport } from './unplugin-auto-import-preset'
-
-export * from './hooks/'
-export * from './localstorage/'
-export * from './modeling/'
-export * from './use-auth/'
-export * from './use-find-get/'
-export * from './stores'
-export { useInstanceDefaults, defineGetters, defineSetters, defineValues } from './utils/'
+export * from './hooks/index.js';
+export * from './localstorage/index.js';
+export * from './modeling/index.js';
+export * from './use-auth/index.js';
+export * from './use-find-get/index.js';
+export * from './stores/index.js';
+export { useInstanceDefaults, defineGetters, defineSetters, defineValues } from './utils/index.js';

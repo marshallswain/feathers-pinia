@@ -2,8 +2,8 @@ import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { unref } from 'vue-demi'
-import type { Params, Query } from '../types'
-import type { UseFindParams } from './types'
+import type { Params, Query } from '../types.js'
+import type { UseFindParams } from './types.js'
 
 export function makeParamsWithoutPage(params: MaybeRef<UseFindParams>) {
   params = unref(params)
@@ -13,7 +13,10 @@ export function makeParamsWithoutPage(params: MaybeRef<UseFindParams>) {
 }
 
 // Updates the _params with everything from _newParams except `$limit` and `$skip`
-export function updateParamsExcludePage(_params: Ref<UseFindParams>, _newParams: MaybeRef<UseFindParams>) {
+export function updateParamsExcludePage(
+  _params: Ref<UseFindParams>,
+  _newParams: MaybeRef<UseFindParams>
+) {
   _params.value.query = {
     ...unref(_newParams).query,
     ..._.pick(unref(_params).query, '$limit', '$skip'),
@@ -32,7 +35,11 @@ export function getIdsFromQueryInfo(pagination: any, queryInfo: any): any[] {
 /**
  * A wrapper for findInStore that can return server-paginated data
  */
-export function itemsFromPagination(store: any, service: any, params: Params<Query>) {
+export function itemsFromPagination(
+  store: any,
+  service: any,
+  params: Params<Query>
+) {
   const qid = params.qid || 'default'
   const pagination = store.pagination[qid] || {}
   const queryInfo = store.getQueryInfo(params)
@@ -42,6 +49,6 @@ export function itemsFromPagination(store: any, service: any, params: Params<Que
       const fromStore = service.getFromStore(id).value
       return fromStore
     })
-    .filter(i => i) // filter out undefined values
+    .filter((i) => i) // filter out undefined values
   return items
 }

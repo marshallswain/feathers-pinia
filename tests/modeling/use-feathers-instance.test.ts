@@ -1,5 +1,5 @@
-import { api } from '../fixtures'
-import { resetService, timeout, timeoutHook } from '../test-utils'
+import { api } from '../fixtures.js'
+import { resetService, timeout, timeoutHook } from '../test-utils.js'
 
 const service = api.service('contacts')
 
@@ -100,6 +100,8 @@ describe('PiniaService', () => {
 
     await contact.remove()
 
-    await expect(api.service('contacts').get(0)).rejects.toThrow("No record found for id '0'")
+    await expect(api.service('contacts').get(0)).rejects.toThrow(
+      "No record found for id '0'"
+    )
   })
 })

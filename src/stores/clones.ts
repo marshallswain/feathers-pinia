@@ -1,7 +1,7 @@
-import type { AnyData, MakeCopyOptions } from '../types'
-import type { CloneOptions, beforeWriteFn, onReadFn } from './types'
-import type { StorageMapUtils } from './storage'
-import { useServiceStorage } from './storage'
+import type { AnyData, MakeCopyOptions } from '../types.js'
+import type { CloneOptions, beforeWriteFn, onReadFn } from './types.js'
+import type { StorageMapUtils } from './storage.js'
+import { useServiceStorage } from './storage.js'
 import { del as vueDelete } from 'vue-demi'
 import fastCopy from 'fast-copy'
 
@@ -13,9 +13,15 @@ export interface UseServiceClonesOptions<M extends AnyData> {
   makeCopy?: (item: M, data: AnyData, { isClone }: MakeCopyOptions) => M
 }
 
-export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOptions<M>) => {
+export const useServiceClones = <M extends AnyData>(
+  options: UseServiceClonesOptions<M>
+) => {
   const { itemStorage, tempStorage, onRead, beforeWrite } = options
-  const defaultMakeCopy = (item: M, data: AnyData = {}, { isClone }: MakeCopyOptions) => {
+  const defaultMakeCopy = (
+    item: M,
+    data: AnyData = {},
+    { isClone }: MakeCopyOptions
+  ) => {
     return fastCopy(Object.assign({}, item, data, { __isClone: isClone }))
   }
   const makeCopy = options.makeCopy || defaultMakeCopy

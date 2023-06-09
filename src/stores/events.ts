@@ -1,10 +1,10 @@
 import type { FeathersService } from '@feathersjs/feathers'
-import type { HandleEvents, HandledEvents } from './types'
-import type { AnyData } from '../types'
+import type { HandleEvents, HandledEvents } from './types.js'
+import type { AnyData } from '../types.js'
 import { del, ref, set } from 'vue-demi'
-import { convertData, getId, hasOwn } from '../utils'
+import { convertData, getId, hasOwn } from '../utils/index.js'
 import _debounce from 'just-debounce'
-import type { PiniaService } from '../create-pinia-service'
+import type { PiniaService } from '../create-pinia-service.js'
 
 interface UseServiceStoreEventsOptions<M extends AnyData> {
   service: PiniaService<FeathersService>
@@ -13,7 +13,9 @@ interface UseServiceStoreEventsOptions<M extends AnyData> {
   handleEvents?: HandleEvents<M>
 }
 
-export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEventsOptions<M>) => {
+export const useServiceEvents = <M extends AnyData>(
+  options: UseServiceStoreEventsOptions<M>
+) => {
   if (!options.service || options.handleEvents === false) return
 
   const service = options.service
@@ -30,7 +32,7 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
     },
     options.debounceEventsTime || 20,
     undefined,
-    options.debounceEventsGuarantee,
+    options.debounceEventsGuarantee
   )
 
   function enqueueAddOrUpdate(item: any) {
@@ -53,7 +55,7 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
     },
     options.debounceEventsTime || 20,
     undefined,
-    options.debounceEventsGuarantee,
+    options.debounceEventsGuarantee
   )
 
   function enqueueRemoval(item: any) {
@@ -87,8 +89,11 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
     }
 
     if (!options.debounceEventsTime)
-      eventName === 'removed' ? service.store.removeFromStore(item) : service.store.createInStore(item)
-    else eventName === 'removed' ? enqueueRemoval(item) : enqueueAddOrUpdate(item)
+      eventName === 'removed'
+        ? service.store.removeFromStore(item)
+        : service.store.createInStore(item)
+    else
+      eventName === 'removed' ? enqueueRemoval(item) : enqueueAddOrUpdate(item)
   }
 
   // Listen to socket events when available.

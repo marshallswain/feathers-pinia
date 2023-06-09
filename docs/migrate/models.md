@@ -60,7 +60,7 @@ export class User extends BaseModel {
 ```ts [Old Model Fn]
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
 import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
-import { api } from '../feathers'
+import { api } from '../feathers.js'
 
 const service = api.service('users')
 

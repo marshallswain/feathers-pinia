@@ -1,5 +1,5 @@
-import { api, makeContactsData } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api, makeContactsData } from '../fixtures.js'
+import { resetService } from '../test-utils.js'
 import { vi } from 'vitest'
 import { _ } from '@feathersjs/commons'
 
@@ -26,7 +26,10 @@ describe('instance patch diffing', () => {
     await clone.save()
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: 'it was the size of texas', isComplete: true })
+    expect(callData).toEqual({
+      name: 'it was the size of texas',
+      isComplete: true,
+    })
   })
 
   test('turn diff off with diff:false', async () => {

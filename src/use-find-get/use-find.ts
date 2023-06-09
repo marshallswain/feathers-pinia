@@ -4,20 +4,37 @@ import { computed, ref, unref, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { useDebounceFn } from '@vueuse/core'
 import stringify from 'fast-json-stable-stringify'
-import { deepUnref, getExtendedQueryInfo } from '../utils'
-import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types'
-import { itemsFromPagination } from './utils'
-import { usePageData } from './utils-pagination'
-import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types'
+import { deepUnref, getExtendedQueryInfo } from '../utils/index.js'
+import type {
+  AnyData,
+  ExtendedQueryInfo,
+  Paginated,
+  Params,
+  Query,
+} from '../types.js'
+import { itemsFromPagination } from './utils/index.js'
+import { usePageData } from './utils-pagination.js'
+import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
 
-export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
-  const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOn = 'client' } = options
+export function useFind(
+  params: ComputedRef<UseFindParams | null>,
+  options: UseFindOptions = {},
+  deps: UseFindGetDeps
+) {
+  const {
+    pagination,
+    debounce = 100,
+    immediate = true,
+    watch: _watch = true,
+    paginateOn = 'client',
+  } = options
   const { service } = deps
   const { store } = service
 
   /** PARAMS **/
   const qid = computed(() => params.value?.qid || 'default')
-  const limit = pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit)
+  const limit =
+    pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit)
   const skip = pagination?.skip || ref(params.value?.query?.$skip || 0)
 
   const paramsWithPagination = computed(() => {
@@ -75,7 +92,8 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       const result = service.findInStore(deepUnref(localParams)).data.value
       return result.filter((i: any) => i)
     } else {
-      const result = service.findInStore(deepUnref(paramsWithPagination)).data.value
+      const result = service.findInStore(deepUnref(paramsWithPagination)).data
+        .value
       return result.filter((i: any) => i)
     }
   })
@@ -85,7 +103,9 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
     const allItems = allLocalData.value
     const firstOfCurrentPage = whichQuery.items.find((i: any) => i)
-    const indexInItems = allItems.findIndex((i: any) => i[store.idField] === firstOfCurrentPage[store.idField])
+    const indexInItems = allItems.findIndex(
+      (i: any) => i[store.idField] === firstOfCurrentPage[store.idField]
+    )
     // if indexInItems is higher than skip, use the skip value instead
     const adjustedIndex = Math.min(indexInItems, skip.value)
     const beforeCurrent = allItems.slice(0, adjustedIndex)
@@ -93,10 +113,11 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   })
   const allLocalData = computed(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null && paginateOn !== 'client')
-      return []
+    if (whichQuery == null && paginateOn !== 'client') return []
 
-    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
+    const allItems = service.findInStore(
+      deepUnref(paramsWithoutPagination.value)
+    ).data.value
     return allItems
   })
 
@@ -111,7 +132,12 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     if (!qidState) return null
 
     const queryInfo = store.getQueryInfo(cachedParams.value)
-    const extendedInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
+    const extendedInfo = getExtendedQueryInfo({
+      queryInfo,
+      service,
+      store,
+      qid,
+    })
     return extendedInfo
   })
 
@@ -120,7 +146,12 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     if (!qidState) return null
 
     const queryInfo = store.getQueryInfo(paramsWithPagination.value)
-    const extendedInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
+    const extendedInfo = getExtendedQueryInfo({
+      queryInfo,
+      service,
+      store,
+      qid,
+    })
     return extendedInfo
   })
 
@@ -150,10 +181,17 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
   async function find(__params?: Params<Query>) {
     // When `paginateOn: 'server'` is enabled, the computed params will always be used, __params ignored.
-    const ___params = unref(__params != null ? __params : paginateOn === 'client' ? paramsWithoutPagination.value : paramsWithPagination.value)
+    const ___params = unref(
+      __params != null
+        ? __params
+        : paginateOn === 'client'
+        ? paramsWithoutPagination.value
+        : paramsWithPagination.value
+    )
 
     // if queryWhen is falsey, return early with dummy data
-    if (!queryWhenFn()) return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
+    if (!queryWhenFn())
+      return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
 
     setupPendingState()
     requestCount.value++
@@ -164,8 +202,14 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       // Keep the two most-recent queries
       if (response.total) {
         const queryInfo = store.getQueryInfo(paramsWithPagination.value)
-        const extendedQueryInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
-        if (extendedQueryInfo) queries.value.push(extendedQueryInfo as unknown as ExtendedQueryInfo)
+        const extendedQueryInfo = getExtendedQueryInfo({
+          queryInfo,
+          service,
+          store,
+          qid,
+        })
+        if (extendedQueryInfo)
+          queries.value.push(extendedQueryInfo as unknown as ExtendedQueryInfo)
         if (queries.value.length > 2) queries.value.shift()
       }
       haveLoaded.value = true
@@ -209,7 +253,17 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     }
   })
   const pageData = usePageData({ limit, skip, total, request })
-  const { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev } = pageData
+  const {
+    pageCount,
+    currentPage,
+    canPrev,
+    canNext,
+    toStart,
+    toEnd,
+    toPage,
+    next,
+    prev,
+  } = pageData
 
   /** Query Watching **/
   if (['server', 'hybrid'].includes(paginateOn) && _watch) {
@@ -218,7 +272,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       () => {
         makeRequest()
       },
-      { immediate: false },
+      { immediate: false }
     )
 
     if (immediate) makeRequest()

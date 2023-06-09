@@ -1,7 +1,7 @@
 import type { ComputedRef, Ref } from 'vue-demi'
 import type { Id, Query } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
-import type { AnyData, Paginated, Params, QueryInfo } from '../types'
+import type { AnyData, Paginated, Params, QueryInfo } from '../types.js'
 import type { useFind } from '../use-find-get/use-find'
 
 export interface FindResponseAlwaysData<M extends AnyData> {
@@ -84,10 +84,18 @@ export type PaginationStateQuery = { [pageId: string]: PaginationStatePage } & {
   queryParams: Query
   total: number
 }
-export type PaginationStateQid = { [qid: string]: PaginationStateQuery } & { mostRecent: MostRecentQuery }
-export type PaginationState = { [qid: string]: PaginationStateQid } & { defaultLimit: number; defaultSkip: number }
+export type PaginationStateQid = { [qid: string]: PaginationStateQuery } & {
+  mostRecent: MostRecentQuery
+}
+export type PaginationState = { [qid: string]: PaginationStateQid } & {
+  defaultLimit: number
+  defaultSkip: number
+}
 
-export interface HandleFindResponseOptions<M extends AnyData, Q extends Query = Query> {
+export interface HandleFindResponseOptions<
+  M extends AnyData,
+  Q extends Query = Query
+> {
   params: Params<Q>
   response: M[] | Paginated<M>
 }
@@ -162,7 +170,9 @@ export interface QueryWhenContext {
   error: any
 }
 
-export type QueryWhenFunction = ComputedRef<(context: QueryWhenContext) => boolean>
+export type QueryWhenFunction = ComputedRef<
+  (context: QueryWhenContext) => boolean
+>
 
 export interface GetClassParams<Q extends Query = Query> extends Params<Q> {
   query?: Q
@@ -241,7 +251,10 @@ export interface AssociateFindUtils extends ReturnType<typeof useFind> {
 }
 
 export type HandledEvents = 'created' | 'patched' | 'updated' | 'removed'
-export type HandleEventsFunction<M extends AnyData> = (item: M, ctx: { model: M; models: any }) => any
+export type HandleEventsFunction<M extends AnyData> = (
+  item: M,
+  ctx: { model: M; models: any }
+) => any
 
 export type HandleEvents<M extends AnyData> =
   | {

@@ -1,5 +1,5 @@
-import type { AnyData, PatchParams } from '../types'
-import type { CloneOptions } from '../stores'
+import type { AnyData, PatchParams } from '../types.js'
+import type { CloneOptions } from '../stores/index.js'
 
 export interface BaseModelData {
   /**
@@ -53,20 +53,32 @@ export interface StoreInstanceProps<M extends AnyData = AnyData> {
    * @param data
    * @param options
    */
-  clone<N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions): N
+  clone<N extends AnyData>(
+    this: N,
+    data?: Partial<M>,
+    options?: CloneOptions
+  ): N
   /**
    * Copies a clone's data onto the original item or temp record.
    * @param data
    * @param options
    */
-  commit<N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions): N
+  commit<N extends AnyData>(
+    this: N,
+    data?: Partial<M>,
+    options?: CloneOptions
+  ): N
   /**
    * Resets a clone's data to match the original item or temp record. If additional properties were added to the clone,
    * they will be removed to exactly match the original.
    * @param data
    * @param options
    */
-  reset<N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions): N
+  reset<N extends AnyData>(
+    this: N,
+    data?: Partial<M>,
+    options?: CloneOptions
+  ): N
   /**
    * Adds the current instance to the appropriate store. If the instance is a clone, it will be added to `clones`. If it
    * has an `idField`, it will be added to items, otherwise it will be added to temps.
@@ -79,9 +91,14 @@ export interface StoreInstanceProps<M extends AnyData = AnyData> {
 }
 
 export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
-export type ModelInstance<M extends AnyData> = ModelInstanceData<M> & StoreInstanceProps<M>
+export type ModelInstance<M extends AnyData> = ModelInstanceData<M> &
+  StoreInstanceProps<M>
 
-export interface ServiceInstanceProps<M extends AnyData, Q extends AnyData, P extends PatchParams<Q> = PatchParams<Q>> {
+export interface ServiceInstanceProps<
+  M extends AnyData,
+  Q extends AnyData,
+  P extends PatchParams<Q> = PatchParams<Q>
+> {
   readonly isSavePending: boolean
   readonly isCreatePending: boolean
   readonly isPatchPending: boolean
@@ -91,6 +108,7 @@ export interface ServiceInstanceProps<M extends AnyData, Q extends AnyData, P ex
   patch: (this: ModelInstance<M>, params?: P) => Promise<M>
   remove: (this: ModelInstance<M>, params?: P) => Promise<M>
 }
-export type ServiceInstance<M extends AnyData, Q extends AnyData = AnyData> = ModelInstanceData<M> &
-  StoreInstanceProps<M> &
-  ServiceInstanceProps<M, Q>
+export type ServiceInstance<
+  M extends AnyData,
+  Q extends AnyData = AnyData
+> = ModelInstanceData<M> & StoreInstanceProps<M> & ServiceInstanceProps<M, Q>

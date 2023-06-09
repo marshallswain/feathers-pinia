@@ -1,4 +1,4 @@
-import { api } from '../fixtures'
+import { api } from '../fixtures.js'
 
 describe('whitelist', () => {
   test('adds whitelist to the state', async () => {

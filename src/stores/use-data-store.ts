@@ -1,11 +1,11 @@
 import type { Query } from '@feathersjs/feathers'
 
 import { computed, unref } from 'vue-demi'
-import type { AnyData } from '../types'
+import type { AnyData } from '../types.js'
 import { MaybeRef } from '@vueuse/core'
-import { useServiceLocal } from './local-queries'
+import { useServiceLocal } from './local-queries.js'
 
-import { useAllStorageTypes } from './all-storage-types'
+import { useAllStorageTypes } from './all-storage-types.js'
 import { useModelInstance } from '../modeling/use-model-instance'
 
 export interface UseDataStoreOptions {
@@ -19,7 +19,9 @@ const makeDefaultOptions = () => ({
   skipGetIfExists: false,
 })
 
-export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDataStoreOptions) => {
+export const useDataStore = <M extends AnyData, Q extends Query>(
+  _options: UseDataStoreOptions
+) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const { idField, customSiftOperators } = options
 
@@ -36,14 +38,24 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDa
 
     if (data.__isSetup) return asBaseModel
     else {
-      const afterSetup = options.setupInstance ? options.setupInstance(asBaseModel) : asBaseModel
+      const afterSetup = options.setupInstance
+        ? options.setupInstance(asBaseModel)
+        : asBaseModel
       Object.defineProperty(afterSetup, '__isSetup', { value: true })
       return afterSetup
     }
   }
 
   // storage
-  const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
+  const {
+    itemStorage,
+    tempStorage,
+    cloneStorage,
+    clone,
+    commit,
+    reset,
+    addItemToStorage,
+  } = useAllStorageTypes<M>({
     getIdField: (val: AnyData) => val[idField],
     setupInstance,
   })
@@ -60,15 +72,22 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDa
   }
 
   // local data filtering
-  const { findInStore, findOneInStore, countInStore, getFromStore, createInStore, patchInStore, removeFromStore } =
-    useServiceLocal<M, Q>({
-      idField,
-      itemStorage,
-      tempStorage,
-      cloneStorage,
-      addItemToStorage,
-      customSiftOperators,
-    })
+  const {
+    findInStore,
+    findOneInStore,
+    countInStore,
+    getFromStore,
+    createInStore,
+    patchInStore,
+    removeFromStore,
+  } = useServiceLocal<M, Q>({
+    idField,
+    itemStorage,
+    tempStorage,
+    cloneStorage,
+    addItemToStorage,
+    customSiftOperators,
+  })
 
   const store = {
     new: setupInstance,

@@ -4,9 +4,16 @@ import { _ } from '@feathersjs/commons'
 import { unref } from 'vue-demi'
 import isEqual from 'fast-deep-equal'
 import fastCopy from 'fast-copy'
-import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo } from '../types'
-import { defineValues } from './define-properties'
-import { convertData } from './convert-data'
+import type {
+  AnyData,
+  AnyDataOrArray,
+  DiffDefinition,
+  Params,
+  Query,
+  QueryInfo,
+} from '../types.js'
+import { defineValues } from './define-properties.js'
+import { convertData } from './convert-data.js'
 
 interface GetExtendedQueryInfoOptions {
   queryInfo: QueryInfo
@@ -14,7 +21,12 @@ interface GetExtendedQueryInfoOptions {
   store: any
   qid: Ref<string>
 }
-export function getExtendedQueryInfo({ queryInfo, service, store, qid }: GetExtendedQueryInfoOptions) {
+export function getExtendedQueryInfo({
+  queryInfo,
+  service,
+  store,
+  qid,
+}: GetExtendedQueryInfoOptions) {
   const qidState: any = store.pagination[qid.value]
   const queryState = qidState[queryInfo.queryId]
   if (!queryState) return null
@@ -49,17 +61,27 @@ export function pickDiff(obj: any, diffDef: DiffDefinition) {
   if (!diffDef) return obj
 
   // Normalize all types into an array and pick the keys
-  const keys = typeof diffDef === 'string' ? [diffDef] : Array.isArray(diffDef) ? diffDef : Object.keys(diffDef || obj)
+  const keys =
+    typeof diffDef === 'string'
+      ? [diffDef]
+      : Array.isArray(diffDef)
+      ? diffDef
+      : Object.keys(diffDef || obj)
   const topLevelKeys = keys.map((key) => key.toString().split('.')[0])
   return _.pick(obj, ...topLevelKeys)
 }
 
-export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition) {
+export function diff(
+  original: AnyData,
+  clone: AnyData,
+  diffDef: DiffDefinition
+) {
   const originalVal = pickDiff(original, diffDef)
   const cloneVal = pickDiff(clone, diffDef)
 
   // If diff was an object, merge the values into the cloneVal
-  if (typeof diffDef !== 'string' && !Array.isArray(diffDef)) Object.assign(cloneVal, diffDef)
+  if (typeof diffDef !== 'string' && !Array.isArray(diffDef))
+    Object.assign(cloneVal, diffDef)
 
   const areEqual = isEqual(originalVal, cloneVal)
 
@@ -87,7 +109,11 @@ export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition)
  * @param data item(s) before being passed to the server
  * @param responseData items(s) returned from the server
  */
-export function restoreTempIds(data: AnyDataOrArray<any>, resData: AnyDataOrArray<any>, tempIdField = '__tempId') {
+export function restoreTempIds(
+  data: AnyDataOrArray<any>,
+  resData: AnyDataOrArray<any>,
+  tempIdField = '__tempId'
+) {
   const { items: sourceItems, isArray } = getArray(data)
   const { items: responseItems } = getArray(resData)
 
@@ -115,7 +141,8 @@ function stringifyIfObject(val: any): string | any {
  */
 export function getId(item: any, idField: string) {
   if (!item) return
-  if (idField && item[idField] !== undefined) return stringifyIfObject(item[idField as string])
+  if (idField && item[idField] !== undefined)
+    return stringifyIfObject(item[idField as string])
 
   if (item.id !== undefined) return stringifyIfObject(item.id)
 

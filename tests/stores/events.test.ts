@@ -1,5 +1,5 @@
-import { api, makeContactsData } from '../fixtures'
-import { resetService, timeout } from '../test-utils'
+import { api, makeContactsData } from '../fixtures.js'
+import { resetService, timeout } from '../test-utils.js'
 import { vi } from 'vitest'
 
 const service = api.service('contacts')
@@ -13,21 +13,27 @@ afterEach(() => resetService(service))
 
 describe('useDataStore events', () => {
   it('handles created events', async () => {
-    api.service('contacts').emit('created', { _id: 'foo', name: 'Steve', age: 99 })
+    api
+      .service('contacts')
+      .emit('created', { _id: 'foo', name: 'Steve', age: 99 })
     await timeout(50)
     const item = api.service('contacts').getFromStore('foo')
     expect(item.value.name).toBe('Steve')
   })
 
   it('handles updated events', async () => {
-    api.service('contacts').emit('updated', { _id: 'foo', name: 'Steve', age: 99 })
+    api
+      .service('contacts')
+      .emit('updated', { _id: 'foo', name: 'Steve', age: 99 })
     await timeout(50)
     const item = api.service('contacts').getFromStore('foo')
     expect(item.value.name).toBe('Steve')
   })
 
   it('handles patched events', async () => {
-    api.service('contacts').emit('patched', { _id: 'foo', name: 'Steve', age: 99 })
+    api
+      .service('contacts')
+      .emit('patched', { _id: 'foo', name: 'Steve', age: 99 })
     await timeout(50)
     const item = api.service('contacts').getFromStore('foo')
     expect(item.value.name).toBe('Steve')

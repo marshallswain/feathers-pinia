@@ -1,7 +1,7 @@
 import type { Id } from '@feathersjs/feathers'
 import type { ComputedRef } from 'vue-demi'
-import type { AnyData } from '../types'
-import type { UseFindGetDeps, UseGetParams } from './types'
+import type { AnyData } from '../types.js'
+import type { UseFindGetDeps, UseGetParams } from './types.js'
 import type { MaybeRef } from '@vueuse/core'
 import { computed, ref, unref, watch, isRef } from 'vue-demi'
 
@@ -10,7 +10,7 @@ type MaybeComputed<M> = ComputedRef<M> | MaybeRef<M>
 export const useGet = (
   _id: MaybeComputed<Id | null>,
   _params: MaybeRef<UseGetParams> = ref({}),
-  deps: UseFindGetDeps,
+  deps: UseFindGetDeps
 ) => {
   const { service } = deps
 
@@ -35,7 +35,10 @@ export const useGet = (
   })
   const data = computed(() => {
     if (isPending.value && mostRecentId.value != null) {
-      const result = service.store.getFromStore(mostRecentId.value, params).value
+      const result = service.store.getFromStore(
+        mostRecentId.value,
+        params
+      ).value
       return result
     }
     const result = service.store.getFromStore(id.value, params).value
@@ -94,7 +97,7 @@ export const useGet = (
       async () => {
         await makeRequest()
       },
-      { immediate },
+      { immediate }
     )
 
   return {

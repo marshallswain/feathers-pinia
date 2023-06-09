@@ -1,5 +1,5 @@
-import { api } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api } from '../fixtures.js'
+import { resetService } from '../test-utils.js'
 
 beforeEach(async () => {
   resetService(api.service('posts'))
@@ -65,7 +65,9 @@ describe('storeAssociated', () => {
     })
 
     const author1 = api.service('authors').getFromStore(2)
-    const result = api.service('authors').patchInStore(author1.value.id, { name: 'Austin' })
+    const result = api
+      .service('authors')
+      .patchInStore(author1.value.id, { name: 'Austin' })
 
     expect(result.name).toBe('Austin')
     expect(post.author.name).toBe('Austin')

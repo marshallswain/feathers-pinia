@@ -1,5 +1,5 @@
 import type { Ref } from 'vue-demi'
-import type { AnyData, Params, Query } from '../types'
+import type { AnyData, Params, Query } from '../types.js'
 import type { MostRecentQuery, PaginationStateQuery } from '../stores/types'
 
 export interface UseFindPage {

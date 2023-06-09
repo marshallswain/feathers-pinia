@@ -1,7 +1,7 @@
 import type { Params as FeathersParams, Id } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
-import type { ServiceInstance } from './modeling'
-import type { PaginationStateQuery } from './stores'
+import type { ServiceInstance } from './modeling/index.js'
+import type { PaginationStateQuery } from './stores/index.js'
 
 export type MaybeArray<T> = T | T[]
 export type AnyData = Record<string, any>
@@ -28,7 +28,9 @@ export interface QueryInfo {
   query: Query
   queryId: string
   queryParams: Query
-  pageParams: { $limit: MaybeRef<number>; $skip: MaybeRef<number> | undefined } | undefined
+  pageParams:
+    | { $limit: MaybeRef<number>; $skip: MaybeRef<number> | undefined }
+    | undefined
   pageId: string | undefined
   isExpired: boolean
 }
@@ -42,7 +44,12 @@ export interface QueryInfoExtended extends QueryInfo {
 }
 export type ExtendedQueryInfo = QueryInfoExtended | null
 
-export type DiffDefinition = undefined | string | string[] | Record<string, any> | false
+export type DiffDefinition =
+  | undefined
+  | string
+  | string[]
+  | Record<string, any>
+  | false
 
 export interface PaginationOptions {
   default?: number | true

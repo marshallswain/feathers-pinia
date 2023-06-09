@@ -53,7 +53,7 @@ grab the data that you want. It's really quite simple when you're "populating" d
 look at some pretend component logic. It's pretty clean to pull in stored data.
 
 ```ts
-import { User, Post } from '../models'
+import { User, Post } from '../models.js'
 
 interface Props {
   userId: string | number
@@ -69,7 +69,7 @@ component receives a list of `userIds` and retrieves `users` and a big list of `
 matching users.
 
 ```ts
-import { User, Post } from '../models'
+import { User, Post } from '../models.js'
 
 interface Props {
   userIds: Array<string | number>
@@ -115,7 +115,7 @@ best place to create associations is in the Model function. In the following exa
 if it holds a `user` object, the `user` will be moved into the `users` store while still maintaining the association.
 
 ```ts
-import { User } from './users'
+import { User } from './users.js'
 
 const modelFn = (data: ModelInstance<Messages>) => {
   if (data.user) {
@@ -137,7 +137,7 @@ ES5 Accessors allow us to create virtual properties on a class. An ES5 "getter" 
 relationship. They have the benefit of being lazily evaluated when read, which prevents unnecessary processing.
 
 ```ts
-import { User } from './users'
+import { User } from './users.js'
 
 const modelFn = (data: ModelInstance<Messages>) => {
   if (message.user) {
@@ -214,7 +214,7 @@ onto each message:
 ```ts
 import type { Messages } from 'my-feathers-api'
 import { type ModelInstance, useInstanceDefaults, associateGet } from 'feathers-pinia'
-import { User } from './user'
+import { User } from './user.js'
 
 const modelFn = (data: ModelInstance<Messages>) => {
   const withDefaults = useInstanceDefaults({ text: '', userId: null }, data)
@@ -231,7 +231,7 @@ And here's an example of using `associateFind` to populate `messages` onto each 
 ```ts
 import type { Users } from 'my-feathers-api'
 import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
-import { Message } from './message'
+import { Message } from './message.js'
 
 const modelFn = (data: ModelInstance<Users>) => {
   const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)

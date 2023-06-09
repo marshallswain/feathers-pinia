@@ -5,10 +5,10 @@ import { computed, unref } from 'vue-demi'
 import { filterQuery, select, sorter } from '@feathersjs/adapter-commons'
 import sift from 'sift'
 import fastCopy from 'fast-copy'
-import type { AnyData, Params } from '../types'
-import { deepUnref, getArray } from '../utils'
-import { sqlOperations } from './utils-custom-operators'
-import type { StorageMapUtils } from './storage'
+import type { AnyData, Params } from '../types.js'
+import { deepUnref, getArray } from '../utils/index.js'
+import { sqlOperations } from './utils-custom-operators.js'
+import type { StorageMapUtils } from './storage.js'
 
 interface UseServiceLocalOptions<M extends AnyData> {
   idField: string
@@ -39,7 +39,9 @@ const additionalOperators = [
   '$elemMatch',
 ]
 
-export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: UseServiceLocalOptions<M>) {
+export function useServiceLocal<M extends AnyData, Q extends AnyData>(
+  options: UseServiceLocalOptions<M>
+) {
   const {
     idField,
     itemStorage,
@@ -55,7 +57,9 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
 
   /** @private */
   const _filterQueryOperators = computed(() => {
-    return additionalOperators.concat(whitelist || []).concat(Object.keys(operations))
+    return additionalOperators
+      .concat(whitelist || [])
+      .concat(Object.keys(operations))
   })
 
   const filterItems = (params: Params<Q>, startingValues: M[] = []) => {
@@ -94,14 +98,17 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
 
       if (filters.$skip) values = values.slice(filters.$skip)
 
-      if (typeof filters.$limit !== 'undefined') values = values.slice(0, filters.$limit)
+      if (typeof filters.$limit !== 'undefined')
+        values = values.slice(0, filters.$limit)
 
       return {
         total,
         limit: filters.$limit || 0,
         skip: filters.$skip || 0,
         data: params.clones
-          ? values.map((v: any) => (v.clone ? v.clone(undefined, { useExisting: true }) : v))
+          ? values.map((v: any) =>
+              v.clone ? v.clone(undefined, { useExisting: true }) : v
+            )
           : values,
       }
     })
@@ -140,14 +147,21 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       if (params.query) params.query = deepUnref(params.query)
 
       let item = null
-      const existingItem = itemStorage.getItem(id as Id) && select(params, idField)(itemStorage.getItem(id as Id))
+      const existingItem =
+        itemStorage.getItem(id as Id) &&
+        select(params, idField)(itemStorage.getItem(id as Id))
       const tempItem =
-        tempStorage && tempStorage.getItem(id as Id) && select(params, '__tempId')(tempStorage.getItem(id as Id))
+        tempStorage &&
+        tempStorage.getItem(id as Id) &&
+        select(params, '__tempId')(tempStorage.getItem(id as Id))
 
       if (existingItem) item = existingItem
       else if (tempItem) item = tempItem
 
-      const toReturn = params.clones && item.clone ? item.clone(undefined, { useExisting: true }) : item || null
+      const toReturn =
+        params.clones && item.clone
+          ? item.clone(undefined, { useExisting: true })
+          : item || null
       return toReturn
     })
   }
@@ -172,7 +186,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
   function patchInStore(
     _idOrData: MaybeRef<M | M[] | Id | null>,
     _data: MaybeRef<AnyData> = {},
-    _params: MaybeRef<Params<Q>> = {},
+    _params: MaybeRef<Params<Q>> = {}
   ) {
     const idOrData = unref(_idOrData)
     const data = unref(_data)
@@ -201,7 +215,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       // patching multiple cannot use an empty array
       if (params?.query && !Object.keys(params?.query).length) {
         throw new Error(
-          `cannot perform multiple patchInStore with an empty query. You must explicitly provide a query. To patch all items, try using a query that matches all items, like "{ id: { $exists: true } }"`,
+          `cannot perform multiple patchInStore with an empty query. You must explicitly provide a query. To patch all items, try using a query that matches all items, like "{ id: { $exists: true } }"`
         )
       }
       // patch by query

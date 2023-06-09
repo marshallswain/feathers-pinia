@@ -9,12 +9,17 @@ import { feathers, HookContext, Params } from '@feathersjs/feathers'
 import { memory, MemoryService } from '@feathersjs/memory'
 import { NotAuthenticated } from '@feathersjs/errors'
 import { createPinia } from 'pinia'
-import { timeout } from '../test-utils'
-import { createPiniaClient, defineGetters, defineSetters, useInstanceDefaults } from '../../src'
+import { timeout } from '../test-utils.js'
+import {
+  createPiniaClient,
+  defineGetters,
+  defineSetters,
+  useInstanceDefaults,
+} from '../../src'
 import rest from '@feathersjs/rest-client'
 import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
-import { makeContactsData } from './data'
+import { makeContactsData } from './data.js'
 import { computed, ref } from 'vue'
 import { vi } from 'vitest'
 import { AdapterParams } from '@feathersjs/adapter-commons'
@@ -45,7 +50,14 @@ const UserService = new CustomMemory({
   paginate: paginate(),
   whitelist: whitelist(),
 })
-export const usersMethods = ['find', 'get', 'create', 'patch', 'remove', 'customCreate'] as const
+export const usersMethods = [
+  'find',
+  'get',
+  'create',
+  'patch',
+  'remove',
+  'customCreate',
+] as const
 
 const TaskService = memory<Tasks, TasksData, Params<TasksQuery>>({
   paginate: paginate(),
@@ -155,7 +167,13 @@ export const api = createPiniaClient(feathersClient, {
           serviceCustom.value = val
         }
         const globalCustom = false
-        return { serviceCustom, serviceCustomOpposite, itemsLength, setServiceCustom, globalCustom }
+        return {
+          serviceCustom,
+          serviceCustomOpposite,
+          itemsLength,
+          setServiceCustom,
+          globalCustom,
+        }
       },
     },
     tasks: {
@@ -164,19 +182,27 @@ export const api = createPiniaClient(feathersClient, {
     authors: {
       idField: 'id',
       setupInstance(author, { app }) {
-        const withDefaults = useInstanceDefaults({ setInstanceRan: false }, author)
+        const withDefaults = useInstanceDefaults(
+          { setInstanceRan: false },
+          author
+        )
         const withAssociations = defineGetters(withDefaults, {
           posts(this: Authors) {
-            return app.service('posts').useFind({ query: { authorId: this.id } })
+            return app
+              .service('posts')
+              .useFind({ query: { authorId: this.id } })
           },
           comments(this: Authors) {
-            return app.service('comments').useFind({ query: { authorId: this.id } })
+            return app
+              .service('comments')
+              .useFind({ query: { authorId: this.id } })
           },
         })
         const withAssociationSetters = defineSetters(withAssociations, {
           posts(this: Posts, post: Posts) {
             author.setInstanceRan = true
-            if (post.id && !this.authorIds.includes(post.id)) post.authorIds.push(post.id)
+            if (post.id && !this.authorIds.includes(post.id))
+              post.authorIds.push(post.id)
           },
         })
         return withAssociationSetters
@@ -206,7 +232,10 @@ export const api = createPiniaClient(feathersClient, {
     comments: {
       idField: 'id',
       setupInstance(comment, { app }) {
-        const withDefaults = useInstanceDefaults({ description: '', isComplete: false }, comment)
+        const withDefaults = useInstanceDefaults(
+          { description: '', isComplete: false },
+          comment
+        )
         const withAssociations = defineGetters(withDefaults, {
           post(this: Comments) {
             return app.service('posts').useGet(this.postId)

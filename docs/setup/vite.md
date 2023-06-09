@@ -144,7 +144,7 @@ from this example app [feathers-pinia-vite](https://github.com/marshallswain/fea
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import { router } from './router'
+import { router } from './router.js'
 import { pinia } from './modules/pinia'
 import { createHead } from '@vueuse/head'
 
@@ -159,7 +159,7 @@ To make Feathers Client easily accessible, we'll create a composable called `use
 
 ```ts
 // src/composables/feathers.ts
-import { api } from '../feathers'
+import { api } from '../feathers.js'
 
 // Provides access to Feathers Client(s)
 export const useFeathers = () => {

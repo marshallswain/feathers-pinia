@@ -1,12 +1,15 @@
 import { createPinia, defineStore } from 'pinia'
 import { useAuth } from '../../src'
-import { api } from '../fixtures'
+import { api } from '../fixtures.js'
 
 describe('useAuth return values', () => {
   const utils = useAuth({ api })
 
   test('can authenticate', async () => {
-    const response = await utils.authenticate({ strategy: 'jwt', accessToken: 'hi' })
+    const response = await utils.authenticate({
+      strategy: 'jwt',
+      accessToken: 'hi',
+    })
     expect(response).toHaveProperty('accessToken')
     expect(response).toHaveProperty('payload')
   })

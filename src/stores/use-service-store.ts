@@ -1,14 +1,14 @@
 import type { Query } from '@feathersjs/feathers'
 
 import { computed, unref } from 'vue-demi'
-import type { AnyData } from '../types'
+import type { AnyData } from '../types.js'
 import { MaybeRef } from '@vueuse/core'
-import { useServiceLocal } from './local-queries'
+import { useServiceLocal } from './local-queries.js'
 
-import { useServicePagination } from './pagination'
-import { useServicePending } from './pending'
-import { useServiceEventLocks } from './event-locks'
-import { useAllStorageTypes } from './all-storage-types'
+import { useServicePagination } from './pagination.js'
+import { useServicePending } from './pending.js'
+import { useServiceEventLocks } from './event-locks.js'
+import { useAllStorageTypes } from './all-storage-types.js'
 import { useModelInstance } from '../modeling/use-model-instance'
 
 export interface UseServiceStoreOptions {
@@ -26,9 +26,17 @@ const makeDefaultOptions = () => ({
   skipGetIfExists: false,
 })
 
-export const useServiceStore = <M extends AnyData, Q extends Query>(_options: UseServiceStoreOptions) => {
+export const useServiceStore = <M extends AnyData, Q extends Query>(
+  _options: UseServiceStoreOptions
+) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const { idField, whitelist, paramsForServer, defaultLimit, customSiftOperators } = options
+  const {
+    idField,
+    whitelist,
+    paramsForServer,
+    defaultLimit,
+    customSiftOperators,
+  } = options
 
   function setupInstance<N extends M>(this: any, data: N) {
     const asBaseModel = useModelInstance(data, {
@@ -43,7 +51,9 @@ export const useServiceStore = <M extends AnyData, Q extends Query>(_options: Us
 
     if (data.__isSetup) return asBaseModel
     else {
-      const afterSetup = options.setupInstance ? options.setupInstance(asBaseModel) : asBaseModel
+      const afterSetup = options.setupInstance
+        ? options.setupInstance(asBaseModel)
+        : asBaseModel
       Object.defineProperty(afterSetup, '__isSetup', { value: true })
       return afterSetup
     }
@@ -53,7 +63,15 @@ export const useServiceStore = <M extends AnyData, Q extends Query>(_options: Us
   const pendingState = useServicePending()
 
   // storage
-  const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
+  const {
+    itemStorage,
+    tempStorage,
+    cloneStorage,
+    clone,
+    commit,
+    reset,
+    addItemToStorage,
+  } = useAllStorageTypes<M>({
     getIdField: (val: AnyData) => val[idField],
     setupInstance,
   })
@@ -64,7 +82,13 @@ export const useServiceStore = <M extends AnyData, Q extends Query>(_options: Us
   })
 
   // pagination
-  const { pagination, clearPagination, updatePaginationForQuery, getQueryInfo, unflagSsr } = useServicePagination({
+  const {
+    pagination,
+    clearPagination,
+    updatePaginationForQuery,
+    getQueryInfo,
+    unflagSsr,
+  } = useServicePagination({
     idField,
     isSsr,
     defaultLimit,
@@ -79,17 +103,24 @@ export const useServiceStore = <M extends AnyData, Q extends Query>(_options: Us
   }
 
   // local data filtering
-  const { findInStore, findOneInStore, countInStore, getFromStore, createInStore, patchInStore, removeFromStore } =
-    useServiceLocal<M, Q>({
-      idField,
-      itemStorage,
-      tempStorage,
-      cloneStorage,
-      addItemToStorage,
-      whitelist,
-      paramsForServer,
-      customSiftOperators,
-    })
+  const {
+    findInStore,
+    findOneInStore,
+    countInStore,
+    getFromStore,
+    createInStore,
+    patchInStore,
+    removeFromStore,
+  } = useServiceLocal<M, Q>({
+    idField,
+    itemStorage,
+    tempStorage,
+    cloneStorage,
+    addItemToStorage,
+    whitelist,
+    paramsForServer,
+    customSiftOperators,
+  })
 
   // event locks
   const eventLocks = useServiceEventLocks()

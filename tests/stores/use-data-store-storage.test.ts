@@ -1,5 +1,5 @@
-import { api, makeContactsData } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api, makeContactsData } from '../fixtures.js'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
 
@@ -33,25 +33,33 @@ describe('useModelInstance temps', () => {
   })
 
   test('call createInStore without id to add to tempStore', () => {
-    const task = service.new({ description: 'foo', isComplete: true }).createInStore()
+    const task = service
+      .new({ description: 'foo', isComplete: true })
+      .createInStore()
     expect(service.store.temps.length).toBe(1)
     expect(service.store.temps[0]).toBe(task)
   })
 
   test('call createInStore with id to add to itemStore', () => {
-    const task = service.new({ _id: '1', description: 'foo', isComplete: true }).createInStore()
+    const task = service
+      .new({ _id: '1', description: 'foo', isComplete: true })
+      .createInStore()
     expect(service.store.items.length).toBe(1)
     expect(service.store.items[0]).toBe(task)
   })
 
   test('call removeFromStore on temp', () => {
-    const task = service.new({ description: 'foo', isComplete: true }).createInStore()
+    const task = service
+      .new({ description: 'foo', isComplete: true })
+      .createInStore()
     task.removeFromStore()
     expect(service.store.temps.length).toBe(0)
   })
 
   test('call removeFromStore on item', () => {
-    const task = service.new({ _id: '1', description: 'foo', isComplete: true }).createInStore()
+    const task = service
+      .new({ _id: '1', description: 'foo', isComplete: true })
+      .createInStore()
     task.removeFromStore()
     expect(service.store.items.length).toBe(0)
   })

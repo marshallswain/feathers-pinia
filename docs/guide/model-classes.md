@@ -26,7 +26,7 @@ If neither of the above scenarios applies to your situation, you can shorten the
 
 ```ts
 import { defineStore, BaseModel } from './store.pinia'
-import { api } from '../feathers'
+import { api } from '../feathers.js'
 
 const servicePath = 'users'
 export const useUsers = defineStore({ servicePath })
@@ -124,7 +124,7 @@ It would look something like the example, below.
 ```ts
 import { defineStore, BaseModel } from 'feathers-pinia'
 import { Id } from '@feathersjs/feathers'
-import { api } from '../feathers'
+import { api } from '../feathers.js'
 
 // (1)^
 export class User extends BaseModel {

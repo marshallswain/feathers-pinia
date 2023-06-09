@@ -84,7 +84,7 @@ only assigns a value if it the attribute not already specified on the incoming o
 ```ts
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
 import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
-import { api } from '../feathers'
+import { api } from '../feathers.js'
 
 const service = api.service('users')
 
