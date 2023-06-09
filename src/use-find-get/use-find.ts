@@ -12,7 +12,7 @@ import type {
   Params,
   Query,
 } from "../types.js"
-import { itemsFromPagination } from "../utils/index.js"
+import { itemsFromPagination } from "./utils.js"
 import { usePageData } from "./utils-pagination.js"
 import type { UseFindGetDeps, UseFindOptions, UseFindParams } from "./types.js"
 
