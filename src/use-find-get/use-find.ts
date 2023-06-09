@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import type { ComputedRef, Ref } from 'vue-demi'
-import { computed, ref, unref, watch } from 'vue-demi'
-import { _ } from '@feathersjs/commons'
-import { useDebounceFn } from '@vueuse/core'
-import stringify from 'fast-json-stable-stringify'
-import { deepUnref, getExtendedQueryInfo } from '../utils/index.js'
+import type { ComputedRef, Ref } from "vue-demi"
+import { computed, ref, unref, watch } from "vue-demi"
+import { _ } from "@feathersjs/commons"
+import { useDebounceFn } from "@vueuse/core"
+import stringify from "fast-json-stable-stringify"
+import { deepUnref, getExtendedQueryInfo } from "../utils/index.js"
 import type {
   AnyData,
   ExtendedQueryInfo,
   Paginated,
   Params,
   Query,
-} from '../types.js'
-import { itemsFromPagination } from './utils/index.js'
-import { usePageData } from './utils-pagination.js'
-import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
+} from "../types.js"
+import { itemsFromPagination } from "../utils/index.js"
+import { usePageData } from "./utils-pagination.js"
+import type { UseFindGetDeps, UseFindOptions, UseFindParams } from "./types.js"
 
 export function useFind(
   params: ComputedRef<UseFindParams | null>,
@@ -26,13 +26,13 @@ export function useFind(
     debounce = 100,
     immediate = true,
     watch: _watch = true,
-    paginateOn = 'client',
+    paginateOn = "client",
   } = options
   const { service } = deps
   const { store } = service
 
   /** PARAMS **/
-  const qid = computed(() => params.value?.qid || 'default')
+  const qid = computed(() => params.value?.qid || "default")
   const limit =
     pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit)
   const skip = pagination?.skip || ref(params.value?.query?.$skip || 0)
@@ -50,7 +50,7 @@ export function useFind(
   })
   const paramsWithoutPagination = computed(() => {
     const queryShallowCopy = deepUnref(params.value?.query || {})
-    const query = _.omit(queryShallowCopy, '$limit', '$skip')
+    const query = _.omit(queryShallowCopy, "$limit", "$skip")
     const newParams = { ...params.value, query }
     return newParams
   })
@@ -85,10 +85,10 @@ export function useFind(
   })
 
   const data = computed(() => {
-    if (paginateOn === 'server') {
+    if (paginateOn === "server") {
       const values = itemsFromPagination(store, service, cachedParams.value)
       return values
-    } else if (paginateOn === 'hybrid') {
+    } else if (paginateOn === "hybrid") {
       const result = service.findInStore(deepUnref(localParams)).data.value
       return result.filter((i: any) => i)
     } else {
@@ -113,7 +113,7 @@ export function useFind(
   })
   const allLocalData = computed(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null && paginateOn !== 'client') return []
+    if (whichQuery == null && paginateOn !== "client") return []
 
     const allItems = service.findInStore(
       deepUnref(paramsWithoutPagination.value)
@@ -184,7 +184,7 @@ export function useFind(
     const ___params = unref(
       __params != null
         ? __params
-        : paginateOn === 'client'
+        : paginateOn === "client"
         ? paramsWithoutPagination.value
         : paramsWithPagination.value
     )
@@ -244,7 +244,7 @@ export function useFind(
 
   /** Pagination Data **/
   const total = computed(() => {
-    if (['server', 'hybrid'].includes(paginateOn)) {
+    if (["server", "hybrid"].includes(paginateOn)) {
       const whichQuery = currentQuery.value || cachedQuery.value
       return whichQuery?.total || 0
     } else {
@@ -266,7 +266,7 @@ export function useFind(
   } = pageData
 
   /** Query Watching **/
-  if (['server', 'hybrid'].includes(paginateOn) && _watch) {
+  if (["server", "hybrid"].includes(paginateOn) && _watch) {
     watch(
       paramsWithPagination,
       () => {
@@ -278,18 +278,18 @@ export function useFind(
     if (immediate) makeRequest()
   }
 
-  if (paginateOn === 'server') {
+  if (paginateOn === "server") {
     // watch realtime events and re-query
     // TODO: only re-query when relevant
-    service.on('created', () => {
+    service.on("created", () => {
       makeRequest()
     })
-    service.on('patched', () => {
+    service.on("patched", () => {
       makeRequest()
     })
 
     // if the current list had an item removed, re-query.
-    service.on('removed', () => {
+    service.on("removed", () => {
       // const id = item[service.store.idField]
       // const currentIds = data.value.map((i: any) => i[service.store.idField])
       // if (currentIds.includes(id))
