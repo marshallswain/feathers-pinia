@@ -1,14 +1,14 @@
-import { api } from '../fixtures.js'
-import { resetService, timeout, timeoutHook } from '../test-utils.js'
+import { api } from "../fixtures/index.js"
+import { resetService, timeout, timeoutHook } from "../test-utils.js"
 
-const service = api.service('contacts')
+const service = api.service("contacts")
 
 beforeEach(() => {
   resetService(service)
 })
 
-describe('PiniaService', () => {
-  test('instances have pending state', async () => {
+describe("PiniaService", () => {
+  test("instances have pending state", async () => {
     const contact = service.new({})
     expect(contact.isSavePending).toBeDefined()
     expect(contact.isCreatePending).toBeDefined()
@@ -16,7 +16,7 @@ describe('PiniaService', () => {
     expect(contact.isRemovePending).toBeDefined()
   })
 
-  test('isSavePending with isCreatePending state properly updates', async () => {
+  test("isSavePending with isCreatePending state properly updates", async () => {
     service.hooks({ before: { all: [timeoutHook(20)] } })
     const contact = service.new({})
 
@@ -30,10 +30,10 @@ describe('PiniaService', () => {
     expect(contact.isCreatePending).toBeFalsy()
   })
 
-  test('isSavePending with isPatchPending state properly updates', async () => {
+  test("isSavePending with isPatchPending state properly updates", async () => {
     service.hooks({ before: { all: [timeoutHook(20)] } })
     const contact = await service.new({}).save()
-    contact.name = 'foo'
+    contact.name = "foo"
 
     const request = contact.save()
     await timeout(0)
@@ -45,7 +45,7 @@ describe('PiniaService', () => {
     expect(contact.isPatchPending).toBeFalsy()
   })
 
-  test('isRemovePending properly updates', async () => {
+  test("isRemovePending properly updates", async () => {
     service.hooks({ before: { all: [timeoutHook(20)] } })
     const contact = await service.new({}).save()
 
@@ -57,50 +57,50 @@ describe('PiniaService', () => {
     expect(contact.isRemovePending).toBeFalsy()
   })
 
-  test('instances have methods', async () => {
+  test("instances have methods", async () => {
     const contact = service.new({})
-    expect(typeof contact.save).toBe('function')
-    expect(typeof contact.create).toBe('function')
-    expect(typeof contact.patch).toBe('function')
-    expect(typeof contact.remove).toBe('function')
+    expect(typeof contact.save).toBe("function")
+    expect(typeof contact.create).toBe("function")
+    expect(typeof contact.patch).toBe("function")
+    expect(typeof contact.remove).toBe("function")
   })
 
-  test('instance.create', async () => {
-    const contact = service.new({ _id: '1' })
+  test("instance.create", async () => {
+    const contact = service.new({ _id: "1" })
     const result = await contact.create()
-    expect(result._id).toBe('1')
+    expect(result._id).toBe("1")
 
     expect(service.store.items.length).toBe(1)
   })
 
-  test('instance.patch', async () => {
-    const contact = service.new({ _id: '1' })
-    expect(contact.name).toEqual('')
+  test("instance.patch", async () => {
+    const contact = service.new({ _id: "1" })
+    expect(contact.name).toEqual("")
     expect(contact.age).toEqual(0)
 
     await contact.create()
 
-    contact.name = 'do the dishes'
+    contact.name = "do the dishes"
 
     const result = await contact.patch()
-    expect(contact.name).toBe('do the dishes')
-    expect(result.name).toBe('do the dishes')
+    expect(contact.name).toBe("do the dishes")
+    expect(result.name).toBe("do the dishes")
   })
 
-  test('instance.remove', async () => {
-    const contact = service.new({ name: 'test' })
+  test("instance.remove", async () => {
+    const contact = service.new({ name: "test" })
     const saved = await contact.save()
 
     expect(saved._id).toBe(0)
-    expect(saved.name).toBe('test')
+    expect(saved.name).toBe("test")
 
-    const stored = await api.service('contacts').get(0)
+    const stored = await api.service("contacts").get(0)
 
-    expect(stored.name).toBe('test')
+    expect(stored.name).toBe("test")
 
     await contact.remove()
 
-    await expect(api.service('contacts').get(0)).rejects.toThrow(
+    await expect(api.service("contacts").get(0)).rejects.toThrow(
       "No record found for id '0'"
     )
   })
