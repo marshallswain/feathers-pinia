@@ -90,11 +90,7 @@ export function createPiniaClient<Client extends Application>(
       })
 
       // call the provided `setupInstance`
-      const utils = {
-        app: vueApp,
-        service: vueApp.service(location),
-        servicePath: location,
-      }
+      const utils = { app: vueApp, service: vueApp.service(location), servicePath: location }
       const fromGlobal = options.setupInstance ? options.setupInstance(asFeathersModel, utils) : asFeathersModel
       const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(data, utils) : fromGlobal
       return serviceLevel
@@ -140,10 +136,7 @@ export function createPiniaClient<Client extends Application>(
     }
 
     const clientService = client.service(location)
-    const piniaService = new PiniaService(clientService, {
-      store,
-      servicePath: location,
-    })
+    const piniaService = new PiniaService(clientService, { store, servicePath: location })
 
     useServiceEvents({
       service: piniaService,
