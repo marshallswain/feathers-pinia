@@ -24,12 +24,7 @@ export const syncStore = () => async (context: HookContext, next: NextFunction) 
     // Update pagination based on the qid
     if (method === 'find' && context.result.total) {
       const { qid = 'default', query, preserveSsr = false } = context.params
-      store.updatePaginationForQuery({
-        qid,
-        response: context.result,
-        query,
-        preserveSsr,
-      })
+      store.updatePaginationForQuery({ qid, response: context.result, query, preserveSsr })
     }
   }
 }

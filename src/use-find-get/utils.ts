@@ -42,6 +42,6 @@ export function itemsFromPagination(store: any, service: any, params: Params<Que
       const fromStore = service.getFromStore(id).value
       return fromStore
     })
-    .filter((i) => i) // filter out undefined values
+    .filter(i => i) // filter out undefined values
   return items
 }

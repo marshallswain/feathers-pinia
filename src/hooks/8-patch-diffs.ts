@@ -2,15 +2,13 @@ import type { HookContext, NextFunction } from '@feathersjs/feathers'
 import fastCopy from 'fast-copy'
 import { diff, pickDiff } from '../utils/index.js'
 
-export const patchDiffing =
-  () => async (context: HookContext, next: NextFunction) => {
+export const patchDiffing = () => async (context: HookContext, next: NextFunction) => {
     const { method, data, params, id } = context
     const store = context.service.store
 
     let rollbackData: any
     let clone: any
-    const shouldDiff =
-      method === 'patch' && !params.data && (data.__isClone || params.diff)
+  const shouldDiff = method === 'patch' && !params.data && (data.__isClone || params.diff)
 
     if (shouldDiff) {
       clone = data
@@ -25,8 +23,7 @@ export const patchDiffing =
       if (params.with) {
         const dataFromWith = pickDiff(clone, params.with)
         // If params.with was an object, merge the values into dataFromWith
-        if (typeof params.with !== 'string' && !Array.isArray(params.with))
-          Object.assign(dataFromWith, params.with)
+      if (typeof params.with !== 'string' && !Array.isArray(params.with)) Object.assign(dataFromWith, params.with)
 
         Object.assign(diffedData, dataFromWith)
       }

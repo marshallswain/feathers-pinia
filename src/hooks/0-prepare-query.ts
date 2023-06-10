@@ -4,8 +4,7 @@ import { deepUnref } from '../utils/index.js'
 /**
  * deeply unrefs `params.query`
  */
-export const unrefQuery =
-  () => async (context: HookContext, next: NextFunction) => {
+export const unrefQuery = () => async (context: HookContext, next: NextFunction) => {
     if (context.params.query) {
       context.params.query = deepUnref(context.params.query)
     }

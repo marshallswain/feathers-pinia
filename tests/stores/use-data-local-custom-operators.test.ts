@@ -102,30 +102,22 @@ describe('Filtering With findInStore', () => {
   })
 
   test('can filter objects by notLike', async () => {
-    const { data } = service.findInStore({
-      query: { name: { $notLike: '%Mo%' } },
-    })
+    const { data } = service.findInStore({ query: { name: { $notLike: '%Mo%' } } })
     expect(data.value.map((m) => m._id)).toEqual(['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'])
   })
 
   test('can filter objects by ilike', async () => {
-    const { data } = service.findInStore({
-      query: { name: { $ilike: '%Mo%' } },
-    })
+    const { data } = service.findInStore({ query: { name: { $ilike: '%Mo%' } } })
     expect(data.value.map((m) => m._id)).toEqual(['1', '2'])
   })
 
   test('can filter objects by iLike', async () => {
-    const { data } = service.findInStore({
-      query: { name: { $iLike: '%Mo%' } },
-    })
+    const { data } = service.findInStore({ query: { name: { $iLike: '%Mo%' } } })
     expect(data.value.map((m) => m._id)).toEqual(['1', '2'])
   })
 
   test('can filter objects by notILike', async () => {
-    const { data } = service.findInStore({
-      query: { name: { $notILike: '%Mo%' } },
-    })
+    const { data } = service.findInStore({ query: { name: { $notILike: '%Mo%' } } })
     expect(data.value.map((m) => m._id)).toEqual(['3', '4', '5', '6', '7', '8', '9', '10', '11', '12'])
   })
 })

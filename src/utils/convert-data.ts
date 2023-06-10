@@ -7,9 +7,9 @@ export function convertData(service: PiniaService<FeathersService>, result: AnyD
   if (!result) {
     return result
   } else if (Array.isArray(result)) {
-    return result.map((i: AnyData) => service.new(i)) as ServiceInstance<AnyData>[]
+    return result.map((i) => service.new(i)) as ServiceInstance<AnyData>[]
   } else if (result && Array.isArray(result.data)) {
-    result.data = result.data.map((i: AnyData) => service.new(i)) as ServiceInstance<AnyData>[]
+    result.data = result.data.map((i) => service.new(i)) as ServiceInstance<AnyData>[]
     return result
   } else {
     return service.new(result) as ServiceInstance<AnyData>

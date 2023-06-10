@@ -155,13 +155,7 @@ export const api = createPiniaClient(feathersClient, {
           serviceCustom.value = val
         }
         const globalCustom = false
-        return {
-          serviceCustom,
-          serviceCustomOpposite,
-          itemsLength,
-          setServiceCustom,
-          globalCustom,
-        }
+        return { serviceCustom, serviceCustomOpposite, itemsLength, setServiceCustom, globalCustom }
       },
     },
     tasks: {

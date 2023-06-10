@@ -28,9 +28,7 @@ export interface QueryInfo {
   query: Query
   queryId: string
   queryParams: Query
-  pageParams:
-    | { $limit: MaybeRef<number>; $skip: MaybeRef<number> | undefined }
-    | undefined
+  pageParams: { $limit: MaybeRef<number>; $skip: MaybeRef<number> | undefined } | undefined
   pageId: string | undefined
   isExpired: boolean
 }
@@ -44,12 +42,7 @@ export interface QueryInfoExtended extends QueryInfo {
 }
 export type ExtendedQueryInfo = QueryInfoExtended | null
 
-export type DiffDefinition =
-  | undefined
-  | string
-  | string[]
-  | Record<string, any>
-  | false
+export type DiffDefinition = undefined | string | string[] | Record<string, any> | false
 
 export interface PaginationOptions {
   default?: number | true

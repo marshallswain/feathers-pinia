@@ -15,9 +15,7 @@ describe('paginateOn: server', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { haveBeenRequested, data, request } = service.useFind(params, {
-      paginateOn: 'server',
-    })
+    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOn: 'server' })
     expect(haveBeenRequested.value).toBe(true)
     expect(data.value.length).toBe(0)
 
@@ -29,10 +27,7 @@ describe('paginateOn: server', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { haveBeenRequested, data, request } = service.useFind(params, {
-      paginateOn: 'server',
-      immediate: false,
-    })
+    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOn: 'server', immediate: false })
     expect(haveBeenRequested.value).toBe(false)
 
     await request.value

@@ -27,10 +27,7 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, request } = service.useFind(params, {
-      paginateOn: 'hybrid',
-      pagination,
-    })
+    const { data, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
     await request.value
     expect(data.value.length).toBe(10)

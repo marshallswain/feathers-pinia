@@ -36,10 +36,7 @@ export const useServicePagination = (options: UseServicePagination) => {
     const { data, total } = response
     const ids = data.map((i: any) => getId(i, idField))
     const queriedAt = new Date().getTime()
-    const { queryId, queryParams, pageId, pageParams } = getQueryInfo({
-      qid,
-      query,
-    })
+    const { queryId, queryParams, pageId, pageParams } = getQueryInfo({ qid, query })
 
     if (!pagination.value[qid]) set(pagination.value, qid, {})
 

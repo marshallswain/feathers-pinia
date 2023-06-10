@@ -26,10 +26,7 @@ describe('instance patch diffing', () => {
     await clone.save()
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({
-      name: 'it was the size of texas',
-      isComplete: true,
-    })
+    expect(callData).toEqual({ name: 'it was the size of texas', isComplete: true })
   })
 
   test('turn diff off with diff:false', async () => {

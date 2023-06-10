@@ -117,10 +117,7 @@ describe('Local Pagination', () => {
       return { query: { $limit: 3, $skip: 0 } }
     })
 
-    const { data, find } = service.useFind(params, {
-      paginateOn: 'server',
-      immediate: false,
-    })
+    const { data, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
 
     expect(hook).not.toHaveBeenCalled()
 
