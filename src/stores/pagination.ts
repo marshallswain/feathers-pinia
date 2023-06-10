@@ -94,13 +94,13 @@ export const useServicePagination = (options: UseServicePagination) => {
     const qid = params.qid || 'default'
     const $limit = query?.$limit || defaultLimit
     const $skip = query?.$skip || 0
-
+  
     const pageParams = $limit !== undefined ? { $limit, $skip } : undefined
     const pageId = pageParams ? stringify(pageParams) : undefined
-
+  
     const queryParams = _.omit(query, '$limit', '$skip')
     const queryId = stringify(queryParams)
-
+  
     return {
       qid,
       query,
