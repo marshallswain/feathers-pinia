@@ -4,7 +4,6 @@ export { createPiniaClient } from './create-pinia-client.js'
 export { PiniaService } from './create-pinia-service'
 export { OFetch } from './feathers-ofetch.js'
 export { feathersPiniaAutoImport } from './unplugin-auto-import-preset.js'
-
 export * from './hooks/index.js'
 export * from './localstorage/index.js'
 export * from './modeling/index.js'
