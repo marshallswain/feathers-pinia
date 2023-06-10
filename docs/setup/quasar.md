@@ -13,9 +13,7 @@ Learn how to setup Feathers-Pinia 3 with a Quasar CLI app.
 
 [[toc]]
 
-For Quasar SPA mode, you can adapt the instructions from the [Vite setup guide](./vite.md).
-
-A community contribution/PR will be required for this page to be updated any time soon.
+Check out this [community-contributed example](https://github.com/rabalyn/feathers-pinia-quasar).
 
 <!-- ## Generate your app
 
