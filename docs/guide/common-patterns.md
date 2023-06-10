@@ -245,7 +245,7 @@ For a fetch adapter that's compatible with Static Site Generation (SSG) and Serv
 While it's possible to manually import the Feathers Client using the module system, like this:
 
 ```ts
-import { api } from '../feathers.js'
+import { api } from '../feathers'
 ```
 
 Thanks to [Auto-Imports](/guide/auto-imports), we can decouple from the module path, completely, and define our own composable
@@ -253,7 +253,7 @@ function that returns an object which contains our app's Feathers Client instanc
 
 ```ts
 // src/composables/use-feathers.ts
-import { api } from '../feathers.js'
+import { api } from '../feathers'
 
 export const useFeathers = () => {
   return { api }
