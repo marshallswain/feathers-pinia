@@ -101,10 +101,7 @@ describe('paginateOn: server', () => {
       return { query: { $limit: 3, $skip: 0 } }
     })
 
-    const { error, clearError, find } = service.useFind(params, {
-      paginateOn: 'server',
-      immediate: false,
-    })
+    const { error, clearError, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
     expect(error.value).toBe(null)
     try {
       expect(await find()).toThrow()
@@ -132,10 +129,7 @@ describe('paginateOn: server', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { error, find } = service.useFind(params, {
-      paginateOn: 'server',
-      immediate: false,
-    })
+    const { error, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
     expect(error.value).toBe(null)
 
     try {
@@ -195,9 +189,7 @@ describe('latestQuery and previousQuery', () => {
       const _params = computed(() => {
         return { query: { $limit: 4, $skip: 0 } }
       })
-      const { allLocalData, find, next } = service.useFind(_params, {
-        paginateOn: 'server',
-      })
+      const { allLocalData, find, next } = service.useFind(_params, { paginateOn: 'server' })
       await find()
       await next()
       expect(allLocalData.value.length).toBe(8)
@@ -250,9 +242,7 @@ describe('latestQuery and previousQuery', () => {
       if (!shouldQuery.value) return null
       return { query: { name } }
     })
-    const { data, requestCount, request } = service.useFind(params, {
-      paginateOn: 'server',
-    })
+    const { data, requestCount, request } = service.useFind(params, { paginateOn: 'server' })
 
     await request.value
 
