@@ -5,10 +5,10 @@ import { computed, unref } from 'vue-demi'
 import { filterQuery, select, sorter } from '@feathersjs/adapter-commons'
 import sift from 'sift'
 import fastCopy from 'fast-copy'
-import type { AnyData, Params } from '../types'
-import { deepUnref, getArray } from '../utils'
-import { sqlOperations } from './utils-custom-operators'
-import type { StorageMapUtils } from './storage'
+import type { AnyData, Params } from '../types.js'
+import { deepUnref, getArray } from '../utils/index.js'
+import { sqlOperations } from './utils-custom-operators.js'
+import type { StorageMapUtils } from './storage.js'
 
 interface UseServiceLocalOptions<M extends AnyData> {
   idField: string

@@ -1,9 +1,9 @@
 import { BadRequest } from '@feathersjs/errors'
 import type { FeathersService, Params } from '@feathersjs/feathers'
-import type { AnyData } from '../types'
+import type { AnyData } from '../types.js'
 import { defineValues, defineGetters } from '../utils/define-properties'
-import type { ServiceInstanceProps } from './types'
-import type { PiniaService } from '../create-pinia-service'
+import type { ServiceInstanceProps } from './types.js'
+import type { PiniaService } from '../create-pinia-service.js'
 
 type Service = FeathersService | PiniaService<FeathersService>
 

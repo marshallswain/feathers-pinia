@@ -1,5 +1,5 @@
-import { api } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('users')
 

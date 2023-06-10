@@ -1,6 +1,6 @@
 import { createPinia, defineStore } from 'pinia'
 import { useAuth } from '../../src'
-import { api } from '../fixtures'
+import { api } from '../fixtures/index.js'
 
 describe('useAuth return values', () => {
   const utils = useAuth({ api })

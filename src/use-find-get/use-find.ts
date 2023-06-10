@@ -4,11 +4,11 @@ import { computed, ref, unref, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { useDebounceFn } from '@vueuse/core'
 import stringify from 'fast-json-stable-stringify'
-import { deepUnref, getExtendedQueryInfo } from '../utils'
-import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types'
-import { itemsFromPagination } from './utils'
-import { usePageData } from './utils-pagination'
-import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types'
+import { deepUnref, getExtendedQueryInfo } from '../utils/index.js'
+import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types.js'
+import { itemsFromPagination } from './utils.js'
+import { usePageData } from './utils-pagination.js'
+import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
 
 export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
   const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOn = 'client' } = options

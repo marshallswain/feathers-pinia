@@ -1,14 +1,14 @@
 import type { Application, FeathersService } from '@feathersjs/feathers'
-import type { HandleEvents } from './stores'
-import type { AnyData } from './types'
+import type { HandleEvents } from './stores/index.js'
+import type { AnyData } from './types.js'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
-import { PiniaService } from './create-pinia-service'
-import { useServiceStore, useServiceEvents } from './stores'
-import { feathersPiniaHooks } from './hooks'
-import { storeAssociated, useServiceInstance } from './modeling'
-import { defineGetters } from './utils'
-import { clearStorage, syncWithStorage as __sync } from './localstorage'
+import { PiniaService } from './create-pinia-service.js'
+import { useServiceStore, useServiceEvents } from './stores/index.js'
+import { feathersPiniaHooks } from './hooks/index.js'
+import { storeAssociated, useServiceInstance } from './modeling/index.js'
+import { defineGetters } from './utils/index.js'
+import { clearStorage, syncWithStorage as __sync } from './localstorage/index.js'
 
 interface SetupInstanceUtils {
   app?: any

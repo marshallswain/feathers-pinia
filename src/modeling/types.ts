@@ -1,5 +1,5 @@
-import type { AnyData, PatchParams } from '../types'
-import type { CloneOptions } from '../stores'
+import type { AnyData, PatchParams } from '../types.js'
+import type { CloneOptions } from '../stores/index.js'
 
 export interface BaseModelData {
   /**

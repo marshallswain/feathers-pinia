@@ -1,7 +1,7 @@
 import sift, { createEqualsOperation } from 'sift'
-import { api, makeContactsData } from '../fixtures'
+import { api, makeContactsData } from '../fixtures/index.js'
 import { like, iLike, sqlOperations } from '../../src/stores/utils-custom-operators'
-import { resetService } from '../test-utils'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
 

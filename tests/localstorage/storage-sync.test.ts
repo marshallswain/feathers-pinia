@@ -1,5 +1,5 @@
-import { api, localStorageMock } from '../fixtures'
-import { resetService, timeout } from '../test-utils'
+import { api, localStorageMock } from '../fixtures/index.js'
+import { resetService, timeout } from '../test-utils.js'
 
 const service = api.service('contacts')
 

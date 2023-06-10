@@ -1,4 +1,4 @@
-import { defineValues } from '../utils'
+import { defineValues } from '../utils/index.js'
 
 export function storeAssociated(this: any, data: any, config: Record<string, string>) {
   const updatedValues: any = {}

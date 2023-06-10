@@ -1,6 +1,6 @@
 import { syncWithStorage, clearStorage } from '../../src'
-import { api } from '../fixtures'
-import { resetService, timeout } from '../test-utils'
+import { api } from '../fixtures/index.js'
+import { resetService, timeout } from '../test-utils.js'
 import { vi } from 'vitest'
 
 const service = api.service('contacts')

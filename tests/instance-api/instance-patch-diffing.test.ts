@@ -1,5 +1,5 @@
-import { api, makeContactsData } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api, makeContactsData } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 import { vi } from 'vitest'
 import { _ } from '@feathersjs/commons'
 

@@ -1,4 +1,4 @@
-import type { AnyData } from '../types'
+import type { AnyData } from '../types.js'
 
 /**
  * Defines all provided properties as non-enumerable, configurable, values

@@ -1,7 +1,7 @@
-import type { AnyData, MakeCopyOptions } from '../types'
-import type { CloneOptions, beforeWriteFn, onReadFn } from './types'
-import type { StorageMapUtils } from './storage'
-import { useServiceStorage } from './storage'
+import type { AnyData, MakeCopyOptions } from '../types.js'
+import type { CloneOptions, beforeWriteFn, onReadFn } from './types.js'
+import type { StorageMapUtils } from './storage.js'
+import { useServiceStorage } from './storage.js'
 import { del as vueDelete } from 'vue-demi'
 import fastCopy from 'fast-copy'
 

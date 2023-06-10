@@ -1,6 +1,6 @@
-import type { CloneOptions } from '../stores'
-import type { AnyData, ById, Params } from '../types'
-import type { BaseModelData, StoreInstanceProps, ModelInstanceData } from './types'
+import type { CloneOptions } from '../stores/index.js'
+import type { AnyData, ById, Params } from '../types.js'
+import type { BaseModelData, StoreInstanceProps, ModelInstanceData } from './types.js'
 import ObjectID from 'isomorphic-mongo-objectid'
 import { defineValues } from '../utils/define-properties'
 

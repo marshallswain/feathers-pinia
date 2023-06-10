@@ -1,5 +1,5 @@
 import fastCopy from 'fast-copy'
-import { AnyData } from '../types'
+import { AnyData } from '../types.js'
 import { _ } from '@feathersjs/commons'
 
 export const useInstanceDefaults = <D extends AnyData, M extends AnyData>(defaults: D, data: M) => {

@@ -1,2 +1,2 @@
-export * from './storage-sync'
-export * from './clear-storage'
+export * from './storage-sync.js'
+export * from './clear-storage.js'

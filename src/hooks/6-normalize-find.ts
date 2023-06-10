@@ -1,5 +1,5 @@
 import type { HookContext, NextFunction } from '@feathersjs/feathers'
-import { hasOwn } from '../utils'
+import { hasOwn } from '../utils/index.js'
 
 /**
  * Normalizes two things

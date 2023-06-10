@@ -1,7 +1,7 @@
-import { vi } from 'vitest';
+import { vi } from 'vitest'
 import { computed, ref } from 'vue-demi'
-import { api, makeContactsData } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api, makeContactsData } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
 

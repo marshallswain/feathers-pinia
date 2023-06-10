@@ -4,9 +4,9 @@ import { _ } from '@feathersjs/commons'
 import { unref } from 'vue-demi'
 import isEqual from 'fast-deep-equal'
 import fastCopy from 'fast-copy'
-import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo } from '../types'
-import { defineValues } from './define-properties'
-import { convertData } from './convert-data'
+import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo } from '../types.js'
+import { defineValues } from './define-properties.js'
+import { convertData } from './convert-data.js'
 
 interface GetExtendedQueryInfoOptions {
   queryInfo: QueryInfo

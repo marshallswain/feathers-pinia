@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue-demi'
-import { api, makeContactsDataRandom } from '../fixtures'
-import { resetService } from '../test-utils'
+import { api, makeContactsDataRandom } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
 

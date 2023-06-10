@@ -2,8 +2,8 @@ import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { unref } from 'vue-demi'
-import type { Params, Query } from '../types'
-import type { UseFindParams } from './types'
+import type { Params, Query } from '../types.js'
+import type { UseFindParams } from './types.js'
 
 export function makeParamsWithoutPage(params: MaybeRef<UseFindParams>) {
   params = unref(params)

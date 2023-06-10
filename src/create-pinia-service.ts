@@ -1,13 +1,13 @@
 import type { Params as FeathersParams, FeathersService, Id } from '@feathersjs/feathers'
-import type { AnyData, Params, Query } from './types'
+import type { AnyData, Params, Query } from './types.js'
 import type { MaybeRef } from '@vueuse/core'
-import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get'
+import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get/index.js'
 import type { ComputedRef } from 'vue-demi'
 import { reactive, computed, isRef, ref, unref } from 'vue-demi'
-import { getParams, existingServiceMethods } from './utils'
-import { useFind, useGet } from './use-find-get'
+import { getParams, existingServiceMethods } from './utils/index.js'
+import { useFind, useGet } from './use-find-get/index.js'
 import { convertData } from './utils/convert-data'
-import { ServiceInstance } from './modeling'
+import { ServiceInstance } from './modeling/index.js'
 
 interface PiniaServiceOptions {
   servicePath: string

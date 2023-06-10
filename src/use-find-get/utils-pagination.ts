@@ -1,6 +1,6 @@
 import type { Ref } from 'vue-demi'
 import { computed } from 'vue-demi'
-import { timeout } from '../utils'
+import { timeout } from '../utils/index.js'
 
 interface Options {
   limit: Ref<number>

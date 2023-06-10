@@ -1,7 +1,7 @@
-import type { AnyData } from '../types'
-import type { beforeWriteFn, onReadFn } from './types'
-import type { StorageMapUtils } from './storage'
-import { useServiceStorage } from './storage'
+import type { AnyData } from '../types.js'
+import type { beforeWriteFn, onReadFn } from './types.js'
+import type { StorageMapUtils } from './storage.js'
+import { useServiceStorage } from './storage.js'
 
 interface UseServiceTempsOptions<M extends AnyData> {
   getId: (item: M) => string

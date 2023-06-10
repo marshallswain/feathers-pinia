@@ -1,5 +1,5 @@
 import type { HookContext, NextFunction } from '@feathersjs/feathers'
-import { restoreTempIds } from '../utils'
+import { restoreTempIds } from '../utils/index.js'
 
 export const syncStore = () => async (context: HookContext, next: NextFunction) => {
   const { method, params } = context

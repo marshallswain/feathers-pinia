@@ -1,6 +1,6 @@
 import type { Id } from '@feathersjs/feathers'
-import type { ById, AnyData } from '../types'
-import type { AssignFn, beforeWriteFn, onReadFn } from './types'
+import type { ById, AnyData } from '../types.js'
+import type { AssignFn, beforeWriteFn, onReadFn } from './types.js'
 import { computed, reactive, del as vueDel, set as vueSet } from 'vue-demi'
 
 interface UseServiceStorageOptions<M extends AnyData> {
