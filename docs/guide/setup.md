@@ -122,7 +122,7 @@ Adding `.pinia.` to each store's filename will help disambiguate utilities from 
 // store/store.pinia.ts
 import { createPinia } from 'pinia'
 import { setupFeathersPinia } from 'feathers-pinia'
-import { api } from '../feathers.js'
+import { api } from '../feathers'
 
 export const pinia = createPinia()
 
@@ -139,7 +139,7 @@ The final step to setup `pinia` is to add `pinia` as an app plugin, like this:
 ```ts
 // src/main.ts
 import { createApp, App as AppType } from 'vue-demi'
-import { router } from './routes.js'
+import { router } from './routes'
 import { pinia } from './store/store.pinia' // import from the file you just created.
 import App from './App.vue'
 
@@ -156,7 +156,7 @@ Now that we've created the main `pinia` store, we are ready to setup our first s
 ```ts
 // src/store/users.ts
 import { defineStore, BaseModel } from './store.pinia'
-import { api } from '../feathers.js'
+import { api } from '../feathers'
 
 export class User extends BaseModel {}
 
@@ -173,7 +173,7 @@ Small tweaks are needed for SSR apps:
 
 ```js
 import { defineStore, BaseModel } from 'feathers-pinia' // (1)
-import { api } from '../feathers.js'
+import { api } from '../feathers'
 
 export class User extends BaseModel {}
 
