@@ -1,9 +1,9 @@
-import { api, makeContactsData } from "../fixtures/index.js"
-import { resetService } from "../test-utils.js"
-import { vi } from "vitest"
-import { _ } from "@feathersjs/commons"
+import { api, makeContactsData } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
+import { vi } from 'vitest'
+import { _ } from '@feathersjs/commons'
 
-const service = api.service("contacts")
+const service = api.service('contacts')
 
 beforeEach(async () => {
   resetService(service)
@@ -11,11 +11,11 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 
-describe("instance patch diffing", () => {
-  test("diff by default ", async () => {
+describe('instance patch diffing', () => {
+  test('diff by default ', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
     clone.isComplete = true
 
     const hook = vi.fn(async (context) => {
@@ -27,15 +27,15 @@ describe("instance patch diffing", () => {
 
     const callData = hook.mock.results[0].value.data
     expect(callData).toEqual({
-      name: "it was the size of texas",
+      name: 'it was the size of texas',
       isComplete: true,
     })
   })
 
-  test("turn diff off with diff:false", async () => {
+  test('turn diff off with diff:false', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
@@ -43,33 +43,33 @@ describe("instance patch diffing", () => {
     await clone.save({ diff: false })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "it was the size of texas" })
+    expect(callData).toEqual({ name: 'it was the size of texas' })
   })
 
-  test("diff string overrides the default diffing algorithm", async () => {
+  test('diff string overrides the default diffing algorithm', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
     clone.isComplete = true
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    await clone.save({ diff: "name" })
+    await clone.save({ diff: 'name' })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "it was the size of texas" })
+    expect(callData).toEqual({ name: 'it was the size of texas' })
   })
 
-  test("diff with invalid string produces empty diff, does not send a request", async () => {
+  test('diff with invalid string produces empty diff, does not send a request', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    const returned = await clone.save({ diff: "scooby-doo" })
+    const returned = await clone.save({ diff: 'scooby-doo' })
 
     expect(returned).toEqual(clone)
     const callData = hook.mock.results[0].value.data
@@ -78,117 +78,117 @@ describe("instance patch diffing", () => {
     expect(callData).toEqual({})
   })
 
-  test("diff array of strings", async () => {
+  test('diff array of strings', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    await clone.save({ diff: ["name", "test"] })
+    await clone.save({ diff: ['name', 'test'] })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "it was the size of texas", test: false })
+    expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
-  test("diff array of strings, only one value changes", async () => {
+  test('diff array of strings, only one value changes', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
     clone.test = true
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    await clone.save({ diff: ["name", "test"] })
+    await clone.save({ diff: ['name', 'test'] })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "it was the size of texas", test: true })
+    expect(callData).toEqual({ name: 'it was the size of texas', test: true })
   })
 
-  test("diff with object", async () => {
+  test('diff with object', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    await clone.save({ diff: { name: "test" } })
+    await clone.save({ diff: { name: 'test' } })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "test" })
+    expect(callData).toEqual({ name: 'test' })
   })
 
-  test("diff and with as string", async () => {
-    const contact = await service.new({ test: "foo" }).save()
+  test('diff and with as string', async () => {
+    const contact = await service.new({ test: 'foo' }).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    await clone.save({ diff: "name", with: "test" })
+    await clone.save({ diff: 'name', with: 'test' })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "it was the size of texas", test: "foo" })
+    expect(callData).toEqual({ name: 'it was the size of texas', test: 'foo' })
   })
 
-  test("diff and with as array", async () => {
+  test('diff and with as array', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
     clone.test = false
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    await clone.save({ diff: "name", with: ["test"] })
+    await clone.save({ diff: 'name', with: ['test'] })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "it was the size of texas", test: false })
+    expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
-  test("diff and with as object", async () => {
+  test('diff and with as object', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
     clone.test = true
 
     const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
-    await clone.save({ diff: "name", with: { test: false } })
+    await clone.save({ diff: 'name', with: { test: false } })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: "it was the size of texas", test: false })
+    expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
-  test("eager updates are reversed if saving fails", async () => {
-    const contact = await service.new({ name: "hi" }).save()
+  test('eager updates are reversed if saving fails', async () => {
+    const contact = await service.new({ name: 'hi' }).save()
     Object.assign(contact, { test: false })
     const clone = contact.clone()
-    clone.name = "it was the size of texas"
+    clone.name = 'it was the size of texas'
 
     let hasHookRun = false
 
     const hook = () => {
       if (!hasHookRun) {
         hasHookRun = true
-        throw new Error("fail")
+        throw new Error('fail')
       }
     }
     service.hooks({ before: { patch: [hook] } })
 
-    return clone.save({ diff: "text", with: "test" }).catch(() => {
-      expect(_.omit(Object.assign({}, contact), "_id")).toEqual({
-        name: "hi",
+    return clone.save({ diff: 'text', with: 'test' }).catch(() => {
+      expect(_.omit(Object.assign({}, contact), '_id')).toEqual({
+        name: 'hi',
         test: false,
         age: 0,
       })

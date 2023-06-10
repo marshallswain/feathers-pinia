@@ -1,8 +1,8 @@
-import { computed } from "vue-demi"
-import { api, makeContactsData } from "../fixtures/index.js"
-import { resetService } from "../test-utils.js"
+import { computed } from 'vue-demi'
+import { api, makeContactsData } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 
-const service = api.service("contacts")
+const service = api.service('contacts')
 
 beforeEach(async () => {
   resetService(service)
@@ -10,10 +10,10 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 
-describe("useFind", () => {
-  test("correct default immediate values", async () => {
+describe('useFind', () => {
+  test('correct default immediate values', async () => {
     const p = computed(() => {
-      return { query: { name: "Moose" } }
+      return { query: { name: 'Moose' } }
     })
     const {
       allLocalData,
@@ -59,29 +59,29 @@ describe("useFind", () => {
     expect(cachedQuery.value).toBeNull()
     expect(latestQuery.value).toBeNull()
     expect(previousQuery.value).toBeNull()
-    expect(qid.value).toBe("default")
+    expect(qid.value).toBe('default')
     expect(request.value).toBeNull()
     expect(requestCount.value).toBe(0)
     expect(limit.value).toBe(20)
     expect(skip.value).toBe(0)
     expect(total.value).toBe(0)
     // utils
-    expect(typeof clearError).toBe("function")
-    expect(typeof find).toBe("function")
-    expect(typeof queryWhen).toBe("function")
+    expect(typeof clearError).toBe('function')
+    expect(typeof find).toBe('function')
+    expect(typeof queryWhen).toBe('function')
     // pagination
     expect(canNext.value).toEqual(false)
     expect(canPrev.value).toEqual(false)
     expect(currentPage.value).toBe(1)
     expect(pageCount.value).toBe(1)
-    expect(typeof next).toBe("function")
-    expect(typeof prev).toBe("function")
-    expect(typeof toEnd).toBe("function")
-    expect(typeof toPage).toBe("function")
-    expect(typeof toStart).toBe("function")
+    expect(typeof next).toBe('function')
+    expect(typeof prev).toBe('function')
+    expect(typeof toEnd).toBe('function')
+    expect(typeof toPage).toBe('function')
+    expect(typeof toStart).toBe('function')
   })
 
-  test("applies default limit to query", async () => {
+  test('applies default limit to query', async () => {
     const result = await service.find()
     // defaultLimit is 20 but there are only 12 records.
     expect(result.data.length).toBe(12)

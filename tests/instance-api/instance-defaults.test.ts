@@ -1,7 +1,7 @@
-import { api, makeContactsData } from "../fixtures/index.js"
-import { resetService } from "../test-utils.js"
+import { api, makeContactsData } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 
-const service = api.service("contacts")
+const service = api.service('contacts')
 
 beforeEach(async () => {
   resetService(service)
@@ -10,16 +10,16 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 
-describe("useInstanceDefaults", () => {
-  test("has defaults", async () => {
+describe('useInstanceDefaults', () => {
+  test('has defaults', async () => {
     const contact = service.new({})
-    expect(contact.name).toBe("")
+    expect(contact.name).toBe('')
     expect(contact.age).toBe(0)
   })
 
-  test("overwrite defaults with data", async () => {
-    const contact = service.new({ name: "foo", age: 55 })
-    expect(contact.name).toBe("foo")
+  test('overwrite defaults with data', async () => {
+    const contact = service.new({ name: 'foo', age: 55 })
+    expect(contact.name).toBe('foo')
     expect(contact.age).toBe(55)
   })
 })

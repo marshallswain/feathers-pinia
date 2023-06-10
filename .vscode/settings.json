@@ -9,5 +9,5 @@
     "<node_internals>/**",
     "**/node_modules/**"
   ],
-  "prettier.configPath": "./.prettierrc"
+  "prettier.useEditorConfig": false
 }
