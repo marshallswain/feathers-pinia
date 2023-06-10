@@ -92,10 +92,7 @@ export type PaginationState = { [qid: string]: PaginationStateQid } & {
   defaultSkip: number
 }
 
-export interface HandleFindResponseOptions<
-  M extends AnyData,
-  Q extends Query = Query
-> {
+export interface HandleFindResponseOptions<M extends AnyData, Q extends Query = Query> {
   params: Params<Q>
   response: M[] | Paginated<M>
 }
@@ -170,9 +167,7 @@ export interface QueryWhenContext {
   error: any
 }
 
-export type QueryWhenFunction = ComputedRef<
-  (context: QueryWhenContext) => boolean
->
+export type QueryWhenFunction = ComputedRef<(context: QueryWhenContext) => boolean>
 
 export interface GetClassParams<Q extends Query = Query> extends Params<Q> {
   query?: Q
@@ -251,10 +246,7 @@ export interface AssociateFindUtils extends ReturnType<typeof useFind> {
 }
 
 export type HandledEvents = 'created' | 'patched' | 'updated' | 'removed'
-export type HandleEventsFunction<M extends AnyData> = (
-  item: M,
-  ctx: { model: M; models: any }
-) => any
+export type HandleEventsFunction<M extends AnyData> = (item: M, ctx: { model: M; models: any }) => any
 
 export type HandleEvents<M extends AnyData> =
   | {

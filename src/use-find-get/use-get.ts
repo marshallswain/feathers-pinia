@@ -10,7 +10,7 @@ type MaybeComputed<M> = ComputedRef<M> | MaybeRef<M>
 export const useGet = (
   _id: MaybeComputed<Id | null>,
   _params: MaybeRef<UseGetParams> = ref({}),
-  deps: UseFindGetDeps
+  deps: UseFindGetDeps,
 ) => {
   const { service } = deps
 
@@ -35,10 +35,7 @@ export const useGet = (
   })
   const data = computed(() => {
     if (isPending.value && mostRecentId.value != null) {
-      const result = service.store.getFromStore(
-        mostRecentId.value,
-        params
-      ).value
+      const result = service.store.getFromStore(mostRecentId.value, params).value
       return result
     }
     const result = service.store.getFromStore(id.value, params).value
@@ -97,7 +94,7 @@ export const useGet = (
       async () => {
         await makeRequest()
       },
-      { immediate }
+      { immediate },
     )
 
   return {

@@ -10,9 +10,7 @@ interface UseServiceTempsOptions<M extends AnyData> {
   beforeWrite?: beforeWriteFn<M>
 }
 
-export const useServiceTemps = <M extends AnyData>(
-  options: UseServiceTempsOptions<M>
-) => {
+export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptions<M>) => {
   const { getId, itemStorage, onRead, beforeWrite } = options
 
   const tempStorage = useServiceStorage<M>({

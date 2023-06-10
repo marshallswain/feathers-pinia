@@ -13,10 +13,7 @@ export function makeParamsWithoutPage(params: MaybeRef<UseFindParams>) {
 }
 
 // Updates the _params with everything from _newParams except `$limit` and `$skip`
-export function updateParamsExcludePage(
-  _params: Ref<UseFindParams>,
-  _newParams: MaybeRef<UseFindParams>
-) {
+export function updateParamsExcludePage(_params: Ref<UseFindParams>, _newParams: MaybeRef<UseFindParams>) {
   _params.value.query = {
     ...unref(_newParams).query,
     ..._.pick(unref(_params).query, '$limit', '$skip'),
@@ -35,11 +32,7 @@ export function getIdsFromQueryInfo(pagination: any, queryInfo: any): any[] {
 /**
  * A wrapper for findInStore that can return server-paginated data
  */
-export function itemsFromPagination(
-  store: any,
-  service: any,
-  params: Params<Query>
-) {
+export function itemsFromPagination(store: any, service: any, params: Params<Query>) {
   const qid = params.qid || 'default'
   const pagination = store.pagination[qid] || {}
   const queryInfo = store.getQueryInfo(params)

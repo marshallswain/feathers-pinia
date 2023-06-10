@@ -19,9 +19,7 @@ const makeDefaultOptions = () => ({
   skipGetIfExists: false,
 })
 
-export const useDataStore = <M extends AnyData, Q extends Query>(
-  _options: UseDataStoreOptions
-) => {
+export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDataStoreOptions) => {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const { idField, customSiftOperators } = options
 
@@ -38,24 +36,14 @@ export const useDataStore = <M extends AnyData, Q extends Query>(
 
     if (data.__isSetup) return asBaseModel
     else {
-      const afterSetup = options.setupInstance
-        ? options.setupInstance(asBaseModel)
-        : asBaseModel
+      const afterSetup = options.setupInstance ? options.setupInstance(asBaseModel) : asBaseModel
       Object.defineProperty(afterSetup, '__isSetup', { value: true })
       return afterSetup
     }
   }
 
   // storage
-  const {
-    itemStorage,
-    tempStorage,
-    cloneStorage,
-    clone,
-    commit,
-    reset,
-    addItemToStorage,
-  } = useAllStorageTypes<M>({
+  const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
     getIdField: (val: AnyData) => val[idField],
     setupInstance,
   })
@@ -72,22 +60,15 @@ export const useDataStore = <M extends AnyData, Q extends Query>(
   }
 
   // local data filtering
-  const {
-    findInStore,
-    findOneInStore,
-    countInStore,
-    getFromStore,
-    createInStore,
-    patchInStore,
-    removeFromStore,
-  } = useServiceLocal<M, Q>({
-    idField,
-    itemStorage,
-    tempStorage,
-    cloneStorage,
-    addItemToStorage,
-    customSiftOperators,
-  })
+  const { findInStore, findOneInStore, countInStore, getFromStore, createInStore, patchInStore, removeFromStore } =
+    useServiceLocal<M, Q>({
+      idField,
+      itemStorage,
+      tempStorage,
+      cloneStorage,
+      addItemToStorage,
+      customSiftOperators,
+    })
 
   const store = {
     new: setupInstance,

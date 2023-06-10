@@ -13,9 +13,7 @@ interface UseServiceStoreEventsOptions<M extends AnyData> {
   handleEvents?: HandleEvents<M>
 }
 
-export const useServiceEvents = <M extends AnyData>(
-  options: UseServiceStoreEventsOptions<M>
-) => {
+export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEventsOptions<M>) => {
   if (!options.service || options.handleEvents === false) return
 
   const service = options.service
@@ -32,7 +30,7 @@ export const useServiceEvents = <M extends AnyData>(
     },
     options.debounceEventsTime || 20,
     undefined,
-    options.debounceEventsGuarantee
+    options.debounceEventsGuarantee,
   )
 
   function enqueueAddOrUpdate(item: any) {
@@ -55,7 +53,7 @@ export const useServiceEvents = <M extends AnyData>(
     },
     options.debounceEventsTime || 20,
     undefined,
-    options.debounceEventsGuarantee
+    options.debounceEventsGuarantee,
   )
 
   function enqueueRemoval(item: any) {
@@ -89,11 +87,8 @@ export const useServiceEvents = <M extends AnyData>(
     }
 
     if (!options.debounceEventsTime)
-      eventName === 'removed'
-        ? service.store.removeFromStore(item)
-        : service.store.createInStore(item)
-    else
-      eventName === 'removed' ? enqueueRemoval(item) : enqueueAddOrUpdate(item)
+      eventName === 'removed' ? service.store.removeFromStore(item) : service.store.createInStore(item)
+    else eventName === 'removed' ? enqueueRemoval(item) : enqueueAddOrUpdate(item)
   }
 
   // Listen to socket events when available.

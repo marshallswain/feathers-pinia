@@ -13,15 +13,9 @@ export interface UseServiceClonesOptions<M extends AnyData> {
   makeCopy?: (item: M, data: AnyData, { isClone }: MakeCopyOptions) => M
 }
 
-export const useServiceClones = <M extends AnyData>(
-  options: UseServiceClonesOptions<M>
-) => {
+export const useServiceClones = <M extends AnyData>(options: UseServiceClonesOptions<M>) => {
   const { itemStorage, tempStorage, onRead, beforeWrite } = options
-  const defaultMakeCopy = (
-    item: M,
-    data: AnyData = {},
-    { isClone }: MakeCopyOptions
-  ) => {
+  const defaultMakeCopy = (item: M, data: AnyData = {}, { isClone }: MakeCopyOptions) => {
     return fastCopy(Object.assign({}, item, data, { __isClone: isClone }))
   }
   const makeCopy = options.makeCopy || defaultMakeCopy

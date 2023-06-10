@@ -26,12 +26,10 @@ export function handleFindSsr() {
           total: queryData.total,
           fromSsr: true,
         }
-        if (!params.preserveSsr)
-          store.unflagSsr(params)
+        if (!params.preserveSsr) store.unflagSsr(params)
       }
     }
 
-    if (next)
-      await next()
+    if (next) await next()
   }
 }

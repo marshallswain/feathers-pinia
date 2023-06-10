@@ -8,6 +8,5 @@
   "vitest.debugExclude": [
     "<node_internals>/**",
     "**/node_modules/**"
-  ],
-  "prettier.useEditorConfig": false
+  ]
 }

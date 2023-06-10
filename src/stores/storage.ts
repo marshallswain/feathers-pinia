@@ -10,9 +10,7 @@ interface UseServiceStorageOptions<M extends AnyData> {
   assign?: AssignFn<M>
 }
 
-export type StorageMapUtils<M extends AnyData> = ReturnType<
-  typeof useServiceStorage<M>
->
+export type StorageMapUtils<M extends AnyData> = ReturnType<typeof useServiceStorage<M>>
 
 /**
  * General storage adapter

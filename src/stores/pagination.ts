@@ -1,8 +1,5 @@
 import type { ComputedRef, Ref } from 'vue-demi'
-import type {
-  PaginationState,
-  UpdatePaginationForQueryOptions,
-} from './types.js'
+import type { PaginationState, UpdatePaginationForQueryOptions } from './types.js'
 import { ref, set } from 'vue-demi'
 import { deepUnref, getId, hasOwn } from '../utils/index.js'
 import stringify from 'fast-json-stable-stringify'
@@ -46,11 +43,9 @@ export const useServicePagination = (options: UseServicePagination) => {
 
     if (!pagination.value[qid]) set(pagination.value, qid, {})
 
-    if (!hasOwn(query, '$limit') && hasOwn(response, 'limit'))
-      set(pagination.value, 'defaultLimit', response.limit)
+    if (!hasOwn(query, '$limit') && hasOwn(response, 'limit')) set(pagination.value, 'defaultLimit', response.limit)
 
-    if (!hasOwn(query, '$skip') && hasOwn(response, 'skip'))
-      set(pagination.value, 'defaultSkip', response.skip)
+    if (!hasOwn(query, '$skip') && hasOwn(response, 'skip')) set(pagination.value, 'defaultSkip', response.skip)
 
     const mostRecent = {
       query,
@@ -62,8 +57,7 @@ export const useServicePagination = (options: UseServicePagination) => {
       total,
     }
 
-    const existingPageData =
-      pagination.value[qid]?.[queryId]?.[pageId as string]
+    const existingPageData = pagination.value[qid]?.[queryId]?.[pageId as string]
 
     const qidData = pagination.value[qid] || {}
     Object.assign(qidData, { mostRecent })

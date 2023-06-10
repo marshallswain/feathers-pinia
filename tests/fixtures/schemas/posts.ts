@@ -11,7 +11,7 @@ export const postsSchema = Type.Object(
     authors: Type.Optional(Type.Array(Type.Record(Type.String(), Type.Any()))),
     comments: Type.Optional(Type.Array(commentsSchema)),
   },
-  { $id: 'Posts', additionalProperties: false }
+  { $id: 'Posts', additionalProperties: false },
 )
 export type Posts = Static<typeof postsSchema>
 

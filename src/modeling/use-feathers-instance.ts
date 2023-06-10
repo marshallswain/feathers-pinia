@@ -12,13 +12,9 @@ export interface useServiceInstanceOptions<S extends Service> {
   store: any
 }
 
-export const useServiceInstance = <
-  M extends AnyData,
-  S extends Service,
-  P extends Params = Params
->(
+export const useServiceInstance = <M extends AnyData, S extends Service, P extends Params = Params>(
   data: M,
-  options: useServiceInstanceOptions<S>
+  options: useServiceInstanceOptions<S>,
 ) => {
   if (data.__isServiceInstance) return data
 
@@ -33,10 +29,7 @@ export const useServiceInstance = <
       return this.isCreatePending || this.isPatchPending
     },
     isCreatePending() {
-      return !!(
-        store.createPendingById[this[store.idField]] ||
-        store.createPendingById[this.__tempId]
-      )
+      return !!(store.createPendingById[this[store.idField]] || store.createPendingById[this.__tempId])
     },
     isPatchPending() {
       return !!store.patchPendingById[this[store.idField]]
@@ -58,9 +51,7 @@ export const useServiceInstance = <
     patch(this: M, params?: P): Promise<M> {
       const id = this[store.idField]
       if (id === undefined) throw new BadRequest('the item has no id')
-      return service
-        .patch(id, this, params)
-        .then((result) => merge(this, result))
+      return service.patch(id, this, params).then((result) => merge(this, result))
     },
     remove(this: M, params?: P): Promise<M> {
       if (this.__isTemp) {

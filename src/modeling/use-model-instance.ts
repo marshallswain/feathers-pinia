@@ -1,10 +1,6 @@
 import type { CloneOptions } from '../stores/index.js'
 import type { AnyData, ById, Params } from '../types.js'
-import type {
-  BaseModelData,
-  StoreInstanceProps,
-  ModelInstanceData,
-} from './types.js'
+import type { BaseModelData, StoreInstanceProps, ModelInstanceData } from './types.js'
 import ObjectID from 'isomorphic-mongo-objectid'
 import { defineValues } from '../utils/define-properties'
 
@@ -20,19 +16,11 @@ interface UseModelInstanceOptions<M, Q extends AnyData> {
 
 export const useModelInstance = <M extends AnyData, Q extends AnyData>(
   data: ModelInstanceData<M>,
-  options: UseModelInstanceOptions<M, Q>
+  options: UseModelInstanceOptions<M, Q>,
 ) => {
   if (data.__isStoreInstance) return data
 
-  const {
-    idField,
-    clonesById,
-    clone,
-    commit,
-    reset,
-    createInStore,
-    removeFromStore,
-  } = options
+  const { idField, clonesById, clone, commit, reset, createInStore, removeFromStore } = options
   const __isClone = data.__isClone || false
 
   // instance.__isTemp
@@ -49,10 +37,7 @@ export const useModelInstance = <M extends AnyData, Q extends AnyData>(
     __isStoreInstance: true,
     __isClone,
     __idField: idField,
-    __tempId:
-      data[idField] == null && data.__tempId == null
-        ? new ObjectID().toString()
-        : data.__tempId || undefined,
+    __tempId: data[idField] == null && data.__tempId == null ? new ObjectID().toString() : data.__tempId || undefined,
     hasClone(this: M) {
       const id = this[this.__idField] || this.__tempId
       const item = clonesById[id]

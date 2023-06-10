@@ -11,11 +11,9 @@ export const eventLocks = () => async (context: HookContext, next: NextFunction)
   }
   const eventName = eventNames[method]
 
-  if (isLockableMethod && id && !store.isSsr)
-    store.toggleEventLock(id, eventName)
+  if (isLockableMethod && id && !store.isSsr) store.toggleEventLock(id, eventName)
 
   await next()
 
-  if (isLockableMethod && id && !store.isSsr)
-    store.clearEventLock(id, eventName)
+  if (isLockableMethod && id && !store.isSsr) store.clearEventLock(id, eventName)
 }

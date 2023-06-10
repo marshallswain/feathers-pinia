@@ -27,9 +27,7 @@ interface PiniaServiceConfig {
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
   setupInstance?: (data: any, utils: SetupInstanceUtils) => any
-  customizeStore?: (
-    data: ReturnType<typeof useServiceStore>
-  ) => Record<string, any>
+  customizeStore?: (data: ReturnType<typeof useServiceStore>) => Record<string, any>
   customSiftOperators?: Record<string, any>
 }
 
@@ -52,7 +50,7 @@ interface AppExtensions {
 
 export function createPiniaClient<Client extends Application>(
   client: Client,
-  options: CreatePiniaClientConfig
+  options: CreatePiniaClientConfig,
 ): Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions {
   const vueApp = feathers()
 
@@ -61,19 +59,12 @@ export function createPiniaClient<Client extends Application>(
 
     // combine service and global options
     const idField = serviceOptions.idField || options.idField
-    const defaultLimit =
-      serviceOptions.defaultLimit || options.defaultLimit || 10
-    const whitelist = (serviceOptions.whitelist || []).concat(
-      options.whitelist || []
-    )
-    const paramsForServer = (serviceOptions.paramsForServer || []).concat(
-      options.paramsForServer || []
-    )
+    const defaultLimit = serviceOptions.defaultLimit || options.defaultLimit || 10
+    const whitelist = (serviceOptions.whitelist || []).concat(options.whitelist || [])
+    const paramsForServer = (serviceOptions.paramsForServer || []).concat(options.paramsForServer || [])
     const handleEvents = serviceOptions.handleEvents || options.handleEvents
     const debounceEventsTime =
-      serviceOptions.debounceEventsTime != null
-        ? serviceOptions.debounceEventsTime
-        : options.debounceEventsTime
+      serviceOptions.debounceEventsTime != null ? serviceOptions.debounceEventsTime : options.debounceEventsTime
     const debounceEventsGuarantee =
       serviceOptions.debounceEventsGuarantee != null
         ? serviceOptions.debounceEventsGuarantee
@@ -81,18 +72,13 @@ export function createPiniaClient<Client extends Application>(
     const customSiftOperators = Object.assign(
       {},
       serviceOptions.customSiftOperators || {},
-      options.customSiftOperators || {}
+      options.customSiftOperators || {},
     )
     function customizeStore(utils: any) {
-      const fromGlobal = Object.assign(
-        utils,
-        options.customizeStore ? options.customizeStore(utils) : utils
-      )
+      const fromGlobal = Object.assign(utils, options.customizeStore ? options.customizeStore(utils) : utils)
       const fromService = Object.assign(
         fromGlobal,
-        serviceOptions.customizeStore
-          ? serviceOptions.customizeStore(fromGlobal)
-          : fromGlobal
+        serviceOptions.customizeStore ? serviceOptions.customizeStore(fromGlobal) : fromGlobal,
       )
       return fromService
     }
@@ -109,12 +95,8 @@ export function createPiniaClient<Client extends Application>(
         service: vueApp.service(location),
         servicePath: location,
       }
-      const fromGlobal = options.setupInstance
-        ? options.setupInstance(asFeathersModel, utils)
-        : asFeathersModel
-      const serviceLevel = serviceOptions.setupInstance
-        ? serviceOptions.setupInstance(data, utils)
-        : fromGlobal
+      const fromGlobal = options.setupInstance ? options.setupInstance(asFeathersModel, utils) : asFeathersModel
+      const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(data, utils) : fromGlobal
       return serviceLevel
     }
 
@@ -150,9 +132,7 @@ export function createPiniaClient<Client extends Application>(
           : Array.isArray(serviceOptions.syncWithStorage)
           ? serviceOptions.syncWithStorage
           : []
-      const syncWithStorage = [
-        ...new Set([...globalStorageKeys, ...serviceStorageKeys]),
-      ]
+      const syncWithStorage = [...new Set([...globalStorageKeys, ...serviceStorageKeys])]
       const shouldSyncStorage = syncWithStorage.length > 0
       if (shouldSyncStorage) {
         __sync(store, syncWithStorage, options.storage)
@@ -205,6 +185,5 @@ export function createPiniaClient<Client extends Application>(
 
   Object.assign(vueApp, { storeAssociated })
 
-  return vueApp as Application<CreatePiniaServiceTypes<Client['services']>> &
-    AppExtensions
+  return vueApp as Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions
 }

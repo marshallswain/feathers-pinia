@@ -1,7 +1,10 @@
-
-let __unconfig_data;
-let __unconfig_stub = function (data = {}) { __unconfig_data = data };
-__unconfig_stub.default = (data = {}) => { __unconfig_data = data };
+let __unconfig_data
+let __unconfig_stub = function (data = {}) {
+  __unconfig_data = data
+}
+__unconfig_stub.default = (data = {}) => {
+  __unconfig_data = data
+}
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import path from 'path'
@@ -9,7 +12,7 @@ import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
 
 // https://vitejs.dev/config/
-const __unconfig_default =  defineConfig({
+const __unconfig_default = defineConfig({
   plugins: [vue(), dts()],
   server: {
     hmr: {
@@ -54,4 +57,5 @@ const __unconfig_default =  defineConfig({
   },
 })
 
-if (typeof __unconfig_default === "function") __unconfig_default(...[{"command":"serve","mode":"development"}]);export default __unconfig_data;
+if (typeof __unconfig_default === 'function') __unconfig_default(...[{ command: 'serve', mode: 'development' }])
+export default __unconfig_data

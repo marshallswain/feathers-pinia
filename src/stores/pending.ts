@@ -16,18 +16,10 @@ const defaultPending = () => ({
 export const useServicePending = () => {
   const isPending = ref(defaultPending())
 
-  const createPendingById = ref({}) as Ref<
-    Record<string | number | symbol, true>
-  >
-  const updatePendingById = ref({}) as Ref<
-    Record<string | number | symbol, true>
-  >
-  const patchPendingById = ref({}) as Ref<
-    Record<string | number | symbol, true>
-  >
-  const removePendingById = ref({}) as Ref<
-    Record<string | number | symbol, true>
-  >
+  const createPendingById = ref({}) as Ref<Record<string | number | symbol, true>>
+  const updatePendingById = ref({}) as Ref<Record<string | number | symbol, true>>
+  const patchPendingById = ref({}) as Ref<Record<string | number | symbol, true>>
+  const removePendingById = ref({}) as Ref<Record<string | number | symbol, true>>
 
   const isFindPending = computed(() => {
     return isPending.value.find > 0
@@ -42,46 +34,27 @@ export const useServicePending = () => {
   })
 
   const isCreatePending = computed(() => {
-    return (
-      isPending.value.create > 0 ||
-      Object.keys(createPendingById.value).length > 0
-    )
+    return isPending.value.create > 0 || Object.keys(createPendingById.value).length > 0
   })
 
   const isUpdatePending = computed(() => {
-    return (
-      isPending.value.update > 0 ||
-      Object.keys(updatePendingById.value).length > 0
-    )
+    return isPending.value.update > 0 || Object.keys(updatePendingById.value).length > 0
   })
 
   const isPatchPending = computed(() => {
-    return (
-      isPending.value.patch > 0 ||
-      Object.keys(patchPendingById.value).length > 0
-    )
+    return isPending.value.patch > 0 || Object.keys(patchPendingById.value).length > 0
   })
 
   const isRemovePending = computed(() => {
-    return (
-      isPending.value.remove > 0 ||
-      Object.keys(removePendingById.value).length > 0
-    )
+    return isPending.value.remove > 0 || Object.keys(removePendingById.value).length > 0
   })
 
-  function setPending(
-    method: 'find' | 'count' | 'get' | 'create' | 'update' | 'patch' | 'remove',
-    value: boolean
-  ) {
+  function setPending(method: 'find' | 'count' | 'get' | 'create' | 'update' | 'patch' | 'remove', value: boolean) {
     if (value) isPending.value[method]++
     else isPending.value[method]--
   }
 
-  function setPendingById(
-    id: NullableId,
-    method: RequestTypeById,
-    val: boolean
-  ) {
+  function setPendingById(id: NullableId, method: RequestTypeById, val: boolean) {
     if (id == null) return
 
     let place
