@@ -82,7 +82,7 @@ describe('useFind', () => {
   })
 
   test('applies default limit to query', async () => {
-    const result = await service.find()
+    const result = await service.find()    
     // defaultLimit is 20 but there are only 12 records.
     expect(result.data.length).toBe(12)
   })

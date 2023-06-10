@@ -114,9 +114,7 @@ describe('useGet', () => {
 
     test.skip('can disable watch', async () => {
       const id = ref('1')
-      const { get, requestCount, request } = service.useGet(id, {
-        watch: false,
-      })
+      const { get, requestCount, request } = service.useGet(id, { watch: false })
       expect(requestCount.value).toBe(0)
 
       await get()
@@ -160,10 +158,7 @@ describe('useGet', () => {
       await service.find({ query: { $limit: 20 } })
 
       const id = ref('1')
-      const { data, request, requestCount } = service.useGet(id, {
-        watch: false,
-        immediate: false,
-      })
+      const { data, request, requestCount } = service.useGet(id, { watch: false, immediate: false })
       await request.value
       expect(data.value?._id).toBe('1')
       expect(requestCount.value).toBe(0)
@@ -221,9 +216,7 @@ describe('useGet', () => {
       }
       service.hooks({ before: { get: [hook] } })
 
-      const { error, clearError, get, request } = service.useGet('1', {
-        immediate: false,
-      })
+      const { error, clearError, get, request } = service.useGet('1', { immediate: false })
       expect(error.value).toBe(null)
 
       await get()
@@ -239,9 +232,7 @@ describe('useGet', () => {
     })
 
     test('swallows error and sets error ref if a service error is received', async () => {
-      const { data, error, clearError, get, request } = service.useGet('A', {
-        immediate: false,
-      })
+      const { data, error, clearError, get, request } = service.useGet('A', { immediate: false })
 
       await get()
       // wait extra time to make sure the request happened
