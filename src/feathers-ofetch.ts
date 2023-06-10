@@ -16,9 +16,8 @@ export class OFetch extends FetchClient {
 
       if (status === 204) return null
       return _data
-    } catch (error) {
-      console.error('feathers-ofetch request error', error)
-      throw error
+    } catch (error: any) {
+      throw error.data
     }
   }
 }
