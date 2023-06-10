@@ -34,7 +34,7 @@ hooks**, not app-level hooks.
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
 import { type ModelInstance, useFeathersModel, useInstanceDefaults, feathersPiniaHooks } from 'feathers-pinia'
-import { api } from '../feathers.js'
+import { api } from '../feathers'
 
 const service = api.service('tasks')
 
