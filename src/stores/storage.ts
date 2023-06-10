@@ -137,21 +137,5 @@ export const useServiceStorage = <M extends AnyData>({
     })
   }
 
-  return {
-    byId,
-    list,
-    ids,
-    getId,
-    clear,
-    has,
-    hasItem,
-    get,
-    getItem,
-    set,
-    setItem,
-    remove,
-    removeItem,
-    getKeys,
-    merge,
-  }
+  return { byId, list, ids, getId, clear, has, hasItem, get, getItem, set, setItem, remove, removeItem, getKeys, merge }
 }

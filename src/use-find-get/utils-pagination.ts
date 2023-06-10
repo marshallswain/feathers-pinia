@@ -73,15 +73,5 @@ export function usePageData(options: Options) {
     return wait()
   }
 
-  return {
-    pageCount,
-    currentPage,
-    canPrev,
-    canNext,
-    toStart,
-    toEnd,
-    toPage,
-    next,
-    prev,
-  }
+  return { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev }
 }

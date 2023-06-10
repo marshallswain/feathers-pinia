@@ -84,13 +84,8 @@ export type PaginationStateQuery = { [pageId: string]: PaginationStatePage } & {
   queryParams: Query
   total: number
 }
-export type PaginationStateQid = { [qid: string]: PaginationStateQuery } & {
-  mostRecent: MostRecentQuery
-}
-export type PaginationState = { [qid: string]: PaginationStateQid } & {
-  defaultLimit: number
-  defaultSkip: number
-}
+export type PaginationStateQid = { [qid: string]: PaginationStateQuery } & { mostRecent: MostRecentQuery }
+export type PaginationState = { [qid: string]: PaginationStateQid } & { defaultLimit: number; defaultSkip: number }
 
 export interface HandleFindResponseOptions<M extends AnyData, Q extends Query = Query> {
   params: Params<Q>

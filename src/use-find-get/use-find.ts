@@ -93,7 +93,8 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   })
   const allLocalData = computed(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null && paginateOn !== 'client') return []
+    if (whichQuery == null && paginateOn !== 'client')
+      return []
 
     const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
     return allItems
@@ -110,12 +111,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     if (!qidState) return null
 
     const queryInfo = store.getQueryInfo(cachedParams.value)
-    const extendedInfo = getExtendedQueryInfo({
-      queryInfo,
-      service,
-      store,
-      qid,
-    })
+    const extendedInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
     return extendedInfo
   })
 
@@ -124,12 +120,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     if (!qidState) return null
 
     const queryInfo = store.getQueryInfo(paramsWithPagination.value)
-    const extendedInfo = getExtendedQueryInfo({
-      queryInfo,
-      service,
-      store,
-      qid,
-    })
+    const extendedInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
     return extendedInfo
   })
 
@@ -159,13 +150,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
   async function find(__params?: Params<Query>) {
     // When `paginateOn: 'server'` is enabled, the computed params will always be used, __params ignored.
-    const ___params = unref(
-      __params != null
-        ? __params
-        : paginateOn === 'client'
-        ? paramsWithoutPagination.value
-        : paramsWithPagination.value,
-    )
+    const ___params = unref(__params != null ? __params : paginateOn === 'client' ? paramsWithoutPagination.value : paramsWithPagination.value)
 
     // if queryWhen is falsey, return early with dummy data
     if (!queryWhenFn()) return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
@@ -179,12 +164,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       // Keep the two most-recent queries
       if (response.total) {
         const queryInfo = store.getQueryInfo(paramsWithPagination.value)
-        const extendedQueryInfo = getExtendedQueryInfo({
-          queryInfo,
-          service,
-          store,
-          qid,
-        })
+        const extendedQueryInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
         if (extendedQueryInfo) queries.value.push(extendedQueryInfo as unknown as ExtendedQueryInfo)
         if (queries.value.length > 2) queries.value.shift()
       }
