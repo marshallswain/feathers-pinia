@@ -140,4 +140,5 @@ Feathers-Pinia does not have a `preferUpdate` option, nor does it support `updat
 
 ## Migrate `handleClones`
 
-The `handleClones` utility is now `useClones` and has a cleaner API. See the page on [Migrating handleClones](/migrate/handle-clones)
+The `handleClones` and `useClones` utilities have been replaced by `params.clones`. See the page on
+[Migrating handleClones](/migrate/handle-clones)
