@@ -56,20 +56,20 @@
     "vue-demi": "latest"
   },
   "optionalDependencies": {
-    "@feathersjs/rest-client": "5.0.5"
+    "@feathersjs/rest-client": "5.0.8"
   },
   "devDependencies": {
     "@babel/types": "^7.21.5",
     "@cspell/dict-fr-fr": "^2.2.1",
     "@faker-js/faker": "^7.6.0",
-    "@feathersjs/adapter-commons": "^5.0.5",
-    "@feathersjs/commons": "^5.0.5",
-    "@feathersjs/feathers": "^5.0.5",
-    "@feathersjs/authentication-client": "^5.0.5",
+    "@feathersjs/adapter-commons": "^5.0.8",
+    "@feathersjs/commons": "^5.0.8",
+    "@feathersjs/feathers": "^5.0.8",
+    "@feathersjs/authentication-client": "^5.0.8",
     "@feathersjs/authentication-jwt": "^2.0.10",
-    "@feathersjs/memory": "^5.0.5",
+    "@feathersjs/memory": "^5.0.8",
     "@feathersjs/rest-client": "^5.0.5",
-    "@feathersjs/typebox": "^5.0.5",
+    "@feathersjs/typebox": "^5.0.8",
     "@types/jest": "^29.5.1",
     "@types/lodash": "^4.14.194",
     "@types/node": "^18.16.3",
@@ -95,7 +95,7 @@
     "tailwindcss": "^3.3.2",
     "typescript": "5.0.4",
     "vite": "^4.3.3",
-    "vite-plugin-dts": "^2.3.0",
+    "vite-plugin-dts": "^3.5.2",
     "vitepress": "^1.0.0-alpha.74",
     "vitepress-plugin-search": "^1.0.4-alpha.20",
     "vitest": "^0.30.1",
