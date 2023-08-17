@@ -5,7 +5,7 @@ import { defineValues, defineGetters } from '../utils/define-properties'
 import type { ServiceInstanceProps } from './types.js'
 import type { PiniaService } from '../create-pinia-service.js'
 
-type Service = FeathersService | PiniaService<FeathersService>
+export type Service = FeathersService | PiniaService<FeathersService>
 
 export interface useServiceInstanceOptions<S extends Service> {
   service: S

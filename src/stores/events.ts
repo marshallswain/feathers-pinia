@@ -7,7 +7,7 @@ import _debounce from 'just-debounce'
 import type { PiniaService } from '../create-pinia-service.js'
 
 interface UseServiceStoreEventsOptions<M extends AnyData> {
-  service: PiniaService<FeathersService>
+  service: PiniaService<FeathersService<any, any>>
   debounceEventsTime?: number
   debounceEventsGuarantee?: boolean
   handleEvents?: HandleEvents<M>

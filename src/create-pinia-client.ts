@@ -4,6 +4,7 @@ import type { AnyData } from './types.js'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
 import { PiniaService } from './create-pinia-service.js'
+import type { Service } from './modeling/use-feathers-instance.js'
 import { useServiceStore, useServiceEvents } from './stores/index.js'
 import { feathersPiniaHooks } from './hooks/index.js'
 import { storeAssociated, useServiceInstance } from './modeling/index.js'
@@ -84,8 +85,9 @@ export function createPiniaClient<Client extends Application>(
     }
 
     function wrappedSetupInstance(data: any) {
+      const svc = vueApp.service(location) as Service
       const asFeathersModel = useServiceInstance(data, {
-        service: vueApp.service(location),
+        service: svc,
         store,
       })
 
