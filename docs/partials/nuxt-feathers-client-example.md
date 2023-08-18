@@ -56,7 +56,7 @@ export default defineNuxtPlugin(async (nuxt) => {
 
 ```ts [Manual setup]
 // plugins/1.feathers.ts
-import { feathers } from '@feathersjs/feathers'
+import { feathers, type FeathersService } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import { createPiniaClient } from 'feathers-pinia'
 
@@ -91,7 +91,7 @@ export default defineNuxtPlugin(async (nuxt) => {
     : socketio(io(host, { transports: ['websocket'] }))
 
   // create the feathers client
-  const feathersClient = feathers()
+  const feathersClient = feathers<Record<string, FeathersService>>()
     .configure(connection)
     .configure(authenticationClient({ storage, storageKey }))
 

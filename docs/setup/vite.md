@@ -58,7 +58,7 @@ const feathersClient = createClient(rest(host).fetch(fetch), { storage: window.l
 
 ```ts [Socket.io]
 // src/feathers.ts
-import { feathers } from '@feathersjs/feathers'
+import { feathers, type FeathersService } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
@@ -66,21 +66,21 @@ import io from 'socket.io-client'
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
 const socket = io(host, { transports: ['websocket'] })
 
-export const feathersClient = feathers()
+export const feathersClient = feathers<Record<string, FeathersService>>()
   .configure(socketio(socket))
   .configure(authenticationClient({ storage: window.localStorage }))
 ```
 
 ```ts [fetch]
 // src/feathers.ts
-import { feathers } from '@feathersjs/feathers'
+import { feathers, type FeathersService } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import rest from '@feathersjs/rest-client'
 
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
 const fetch = window.fetch.bind(window)
 
-export const feathersClient = feathers()
+export const feathersClient = feathers<Record<string, FeathersService>>()
   .configure(rest(host).fetch(fetch))
   .configure(authenticationClient({ storage: window.localStorage }))
 ```
