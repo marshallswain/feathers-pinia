@@ -162,7 +162,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       const response = await service.find(___params as any)
 
       // Keep the two most-recent queries
-      if (response.total) {
+      if (response.total != null) {
         const queryInfo = store.getQueryInfo(paramsWithPagination.value)
         const extendedQueryInfo = getExtendedQueryInfo({ queryInfo, service, store, qid })
         if (extendedQueryInfo) queries.value.push(extendedQueryInfo as unknown as ExtendedQueryInfo)
