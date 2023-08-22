@@ -22,7 +22,7 @@ only assigns a value if it the attribute not already specified on the incoming o
 
 ```ts
 function setupInstance (data: any) {
-  const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
+  const withDefaults = useInstanceDefaults({ name: 'Marshall', email: '', password: '' }, data)
   return withDefaults
 }
 ```
