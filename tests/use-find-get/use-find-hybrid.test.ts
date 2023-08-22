@@ -15,11 +15,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 0 } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
   test('limit: 10, skip: 0', async () => {
@@ -27,22 +27,22 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
   test('limit: 10, skip: 10', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10 } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -61,11 +61,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -83,11 +83,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 20 } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -106,11 +106,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -128,11 +128,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 30 } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '30',
       '31',
       '32',
@@ -150,15 +150,15 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 0 } }
     })
-    const { data, next, prev, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
 
-    await next()
+    await contacts$.next()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -171,9 +171,9 @@ describe('useFind', () => {
       '19',
     ])
 
-    await next()
+    await contacts$.next()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -186,9 +186,9 @@ describe('useFind', () => {
       '29',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -207,15 +207,15 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, next, prev, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
 
-    await next()
+    await contacts$.next()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -228,9 +228,9 @@ describe('useFind', () => {
       '19',
     ])
 
-    await next()
+    await contacts$.next()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -243,9 +243,9 @@ describe('useFind', () => {
       '29',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -263,11 +263,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 30 } }
     })
-    const { data, prev, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '30',
       '31',
       '32',
@@ -280,9 +280,9 @@ describe('useFind', () => {
       '39',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -295,9 +295,9 @@ describe('useFind', () => {
       '29',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -310,9 +310,9 @@ describe('useFind', () => {
       '19',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
   test('paginating from middle', async () => {
@@ -320,11 +320,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, prev, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '30',
       '31',
       '32',
@@ -337,9 +337,9 @@ describe('useFind', () => {
       '39',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -352,9 +352,9 @@ describe('useFind', () => {
       '29',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '10',
       '11',
       '12',
@@ -367,20 +367,20 @@ describe('useFind', () => {
       '19',
     ])
 
-    await prev()
+    await contacts$.prev()
 
-    expect(data.value.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
   test('paginating from middle to middle forwards', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 20 } }
     })
-    const { data, toPage, currentPage, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -393,9 +393,9 @@ describe('useFind', () => {
       '29',
     ])
 
-    await toPage(currentPage.value + 2)
+    await contacts$.toPage(contacts$.currentPage + 2)
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '40',
       '41',
       '42',
@@ -414,11 +414,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, toPage, currentPage, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -431,9 +431,9 @@ describe('useFind', () => {
       '29',
     ])
 
-    await toPage(currentPage.value + 2)
+    await contacts$.toPage(contacts$.currentPage + 2)
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '40',
       '41',
       '42',
@@ -451,11 +451,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 40 } }
     })
-    const { data, toPage, currentPage, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '40',
       '41',
       '42',
@@ -468,9 +468,9 @@ describe('useFind', () => {
       '49',
     ])
 
-    await toPage(currentPage.value - 2)
+    await contacts$.toPage(contacts$.currentPage - 2)
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -489,11 +489,11 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: {} }
     })
-    const { data, toPage, currentPage, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '40',
       '41',
       '42',
@@ -506,9 +506,9 @@ describe('useFind', () => {
       '49',
     ])
 
-    await toPage(currentPage.value - 2)
+    await contacts$.toPage(contacts$.currentPage - 2)
 
-    expect(data.value.map((item: any) => item._id)).toEqual([
+    expect(contacts$.data.map((item: any) => item._id)).toEqual([
       '20',
       '21',
       '22',
@@ -526,16 +526,16 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate + 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value[1]).toEqual(copyOfFirst)
+    expect(contacts$.data[1]).toEqual(copyOfFirst)
   })
 
   test('live list after first with sort - item appears on the page', async () => {
@@ -543,32 +543,32 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate + 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value[1]).toEqual(copyOfFirst)
+    expect(contacts$.data[1]).toEqual(copyOfFirst)
   })
 
   test('live list before first with sort - item not present because it fits in the 10-item $skip buffer', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
   })
 
   test('live list before first with sort - item not present because it fits in the 10-item $skip buffer', async () => {
@@ -576,32 +576,32 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
   })
 
   test('live list before first with sort - added item moves to top because there is no $skip buffer', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 0, $sort: { birthdate: 1 } } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value[0]).toEqual(copyOfFirst)
+    expect(contacts$.data[0]).toEqual(copyOfFirst)
   })
 
   test('live list before first with sort - added item moves to top because there is no $skip buffer', async () => {
@@ -609,38 +609,38 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
     })
-    const { data, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value[0]).toEqual(copyOfFirst)
+    expect(contacts$.data[0]).toEqual(copyOfFirst)
   })
 
   test('live list before first with sort - added item appears in second page after prev and next', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
-    const { data, next, prev, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await prev()
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    await contacts$.prev()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await next()
-    expect(data.value.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
+    await contacts$.next()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
   })
 
   test('live list before first with sort - added item appears in second page after prev and next', async () => {
@@ -648,49 +648,49 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
     })
-    const { data, next, prev, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await prev()
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    await contacts$.prev()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await next()
-    expect(data.value.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
+    await contacts$.next()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
   })
 
   test('live list before first with sort - added item appears in second page after prev and next', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
-    const { data, next, prev, request } = service.useFind(params, { paginateOn: 'hybrid' })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid' })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await prev()
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    await contacts$.prev()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await next()
-    expect(data.value.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
+    await contacts$.next()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
 
     service.removeFromStore(100)
-    expect(data.value)
-    expect(data.value.length).toBe(10)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data)
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
   })
 
   test('live list before first with sort - added item appears in second page after prev and next', async () => {
@@ -698,26 +698,26 @@ describe('useFind', () => {
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
     })
-    const { data, next, prev, request } = service.useFind(params, { paginateOn: 'hybrid', pagination })
+    const contacts$ = service.useFind(params, { paginateOn: 'hybrid', pagination })
 
-    await request.value
-    expect(data.value.length).toBe(10)
-    const first = data.value[0]
+    await contacts$.request
+    expect(contacts$.data.length).toBe(10)
+    const first = contacts$.data[0]
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
     service.createInStore(copyOfFirst)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await prev()
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    await contacts$.prev()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
 
-    await next()
-    expect(data.value.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
+    await contacts$.next()
+    expect(contacts$.data.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
 
     service.removeFromStore(100)
-    expect(data.value)
-    expect(data.value.length).toBe(10)
-    expect(data.value.find((item: any) => item._id === 100)).toBeUndefined()
+    expect(contacts$.data)
+    expect(contacts$.data.length).toBe(10)
+    expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
   })
 })

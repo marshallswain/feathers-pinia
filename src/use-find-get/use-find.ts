@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import type { ComputedRef, Ref } from 'vue-demi'
-import { computed, ref, unref, watch } from 'vue-demi'
+import { computed, reactive, ref, unref, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { useDebounceFn } from '@vueuse/core'
 import stringify from 'fast-json-stable-stringify'
@@ -93,8 +93,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   })
   const allLocalData = computed(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null && paginateOn !== 'client')
-      return []
+    if (whichQuery == null && paginateOn !== 'client') return []
 
     const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
     return allItems
@@ -150,7 +149,13 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
   async function find(__params?: Params<Query>) {
     // When `paginateOn: 'server'` is enabled, the computed params will always be used, __params ignored.
-    const ___params = unref(__params != null ? __params : paginateOn === 'client' ? paramsWithoutPagination.value : paramsWithPagination.value)
+    const ___params = unref(
+      __params != null
+        ? __params
+        : paginateOn === 'client'
+        ? paramsWithoutPagination.value
+        : paramsWithPagination.value,
+    )
 
     // if queryWhen is falsey, return early with dummy data
     if (!queryWhenFn()) return Promise.resolve({ data: [] as AnyData[] } as Paginated<AnyData>)
@@ -243,7 +248,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     })
   }
 
-  return {
+  return reactive({
     paramsWithPagination,
     isSsr: computed(() => {
       // hack: read total early during SSR to prevent hydration mismatch
@@ -290,5 +295,5 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     toStart, // () => Promise<void>
     toEnd, // () => Promise<void>
     toPage, // (page: number) => Promise<void>
-  }
+  })
 }

@@ -15,23 +15,23 @@ describe('paginateOn: server', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOn: 'server' })
-    expect(haveBeenRequested.value).toBe(true)
-    expect(data.value.length).toBe(0)
+    const contacts$ = service.useFind(params, { paginateOn: 'server' })
+    expect(contacts$.haveBeenRequested).toBe(true)
+    expect(contacts$.data.length).toBe(0)
 
-    await request.value
-    expect(data.value.length).toBe(3)
+    await contacts$.request
+    expect(contacts$.data.length).toBe(3)
   })
 
   test('paginateOn: server with `immediate` false', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { haveBeenRequested, data, request } = service.useFind(params, { paginateOn: 'server', immediate: false })
-    expect(haveBeenRequested.value).toBe(false)
+    const contacts$ = service.useFind(params, { paginateOn: 'server', immediate: false })
+    expect(contacts$.haveBeenRequested).toBe(false)
 
-    await request.value
-    expect(data.value.length).toBe(0)
+    await contacts$.request
+    expect(contacts$.data.length).toBe(0)
   })
 
   test('use `queryWhen` to control queries', async () => {
@@ -41,49 +41,49 @@ describe('paginateOn: server', () => {
         qid: 'test',
       }
     })
-    const { request, currentQuery, requestCount, queryWhen, next, prev } = service.useFind(params, {
+    const contacts$ = service.useFind(params, {
       paginateOn: 'server',
     })
 
     // run the query if we don't already have items.
-    queryWhen(() => {
-      if (!currentQuery.value || !currentQuery.value.items.length) {
+    contacts$.queryWhen(() => {
+      if (!contacts$.currentQuery || !contacts$.currentQuery.items.length) {
         return true
       }
       return false
     })
 
-    await request.value
-    expect(requestCount.value).toBe(1)
+    await contacts$.request
+    expect(contacts$.requestCount).toBe(1)
 
     // Will make another request, since we don't have the page
-    await next()
-    expect(requestCount.value).toBe(2)
+    await contacts$.next()
+    expect(contacts$.requestCount).toBe(2)
 
     // no request will be made, since we already have data for this page
-    await prev()
-    expect(requestCount.value).toBe(2)
+    await contacts$.prev()
+    expect(contacts$.requestCount).toBe(2)
   })
 
   test('loading indicators during server pagination', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { isPending, haveBeenRequested, haveLoaded, request, skip, next } = service.useFind(params, {
+    const contacts$ = service.useFind(params, {
       paginateOn: 'server',
     })
-    expect(isPending.value).toBe(true)
-    expect(haveLoaded.value).toBe(false)
-    expect(haveBeenRequested.value).toBe(true)
+    expect(contacts$.isPending).toBe(true)
+    expect(contacts$.haveLoaded).toBe(false)
+    expect(contacts$.haveBeenRequested).toBe(true)
 
-    await request.value
+    await contacts$.request
 
-    expect(isPending.value).toBe(false)
-    expect(haveLoaded.value).toBe(true)
-    expect(haveBeenRequested.value).toBe(true)
+    expect(contacts$.isPending).toBe(false)
+    expect(contacts$.haveLoaded).toBe(true)
+    expect(contacts$.haveBeenRequested).toBe(true)
 
-    await next()
-    expect(skip.value).toBe(3)
+    await contacts$.next()
+    expect(contacts$.skip).toBe(3)
   })
 
   test('errors populate during server pagination, manually clear error', async () => {
@@ -101,17 +101,17 @@ describe('paginateOn: server', () => {
       return { query: { $limit: 3, $skip: 0 } }
     })
 
-    const { error, clearError, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
-    expect(error.value).toBe(null)
+    const contacts$ = service.useFind(params, { paginateOn: 'server', immediate: false })
+    expect(contacts$.error).toBe(null)
     try {
-      expect(await find()).toThrow()
+      expect(await contacts$.find()).toThrow()
     } catch (err: any) {
       expect(err.message).toBe('fail')
-      expect(error.value.message).toBe('fail')
+      expect(contacts$.error.message).toBe('fail')
 
-      clearError()
+      contacts$.clearError()
 
-      expect(error.value).toBe(null)
+      expect(contacts$.error).toBe(null)
     }
   })
 
@@ -129,18 +129,18 @@ describe('paginateOn: server', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { error, find } = service.useFind(params, { paginateOn: 'server', immediate: false })
-    expect(error.value).toBe(null)
+    const contacts$ = service.useFind(params, { paginateOn: 'server', immediate: false })
+    expect(contacts$.error).toBe(null)
 
     try {
-      expect(await find()).toThrow()
+      expect(await contacts$.find()).toThrow()
     } catch (err: any) {
       expect(err.message).toBe('fail')
-      expect(error.value.message).toBe('fail')
+      expect(contacts$.error.message).toBe('fail')
 
-      await find()
+      await contacts$.find()
 
-      expect(error.value).toBe(null)
+      expect(contacts$.error).toBe(null)
     }
   })
 })
@@ -150,14 +150,14 @@ describe('latestQuery and previousQuery', () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
-    const { latestQuery, previousQuery, find, next } = service.useFind(params, {
+    const contacts$ = service.useFind(params, {
       paginateOn: 'server',
       immediate: false,
     })
 
-    expect(latestQuery.value).toBe(null)
+    expect(contacts$.latestQuery).toBe(null)
 
-    await find()
+    await contacts$.find()
 
     const keys = [
       'qid',
@@ -175,13 +175,13 @@ describe('latestQuery and previousQuery', () => {
       'ssr',
     ]
 
-    expect(Object.keys(latestQuery.value as any)).toEqual(keys)
-    expect(previousQuery.value).toBe(null)
+    expect(Object.keys(contacts$.latestQuery as any)).toEqual(keys)
+    expect(contacts$.previousQuery).toBe(null)
 
-    await next()
+    await contacts$.next()
 
-    expect(Object.keys(latestQuery.value as any)).toEqual(keys)
-    expect(Object.keys(previousQuery.value as any)).toEqual(keys)
+    expect(Object.keys(contacts$.latestQuery as any)).toEqual(keys)
+    expect(Object.keys(contacts$.previousQuery as any)).toEqual(keys)
   })
 
   describe('Has `allLocalData`', () => {
@@ -189,10 +189,10 @@ describe('latestQuery and previousQuery', () => {
       const _params = computed(() => {
         return { query: { $limit: 4, $skip: 0 } }
       })
-      const { allLocalData, find, next } = service.useFind(_params, { paginateOn: 'server' })
-      await find()
-      await next()
-      expect(allLocalData.value.length).toBe(8)
+      const contacts$ = service.useFind(_params, { paginateOn: 'server' })
+      await contacts$.find()
+      await contacts$.next()
+      expect(contacts$.allLocalData.length).toBe(8)
     })
 
     test('shows current data while loading new data', async () => {
@@ -208,27 +208,27 @@ describe('latestQuery and previousQuery', () => {
       const params = computed(() => {
         return { query: { $limit: 4, $skip: 0 } }
       })
-      const { data, find, next, request, isPending } = service.useFind(params, {
+      const contacts$ = service.useFind(params, {
         paginateOn: 'server',
         immediate: false,
       })
-      await find()
+      await contacts$.find()
 
-      const idsFromFirstPage = data.value.map((i) => i._id)
+      const idsFromFirstPage = contacts$.data.map((i) => i._id)
       expect(idsFromFirstPage).toEqual(['1', '2', '3', '4'])
 
-      next()
+      contacts$.next()
 
-      expect(isPending.value).toBe(false)
+      expect(contacts$.isPending).toBe(false)
 
       await timeout(0)
 
-      const idsWhilePending = data.value.map((i) => i._id)
+      const idsWhilePending = contacts$.data.map((i) => i._id)
       expect(idsWhilePending).toEqual(idsFromFirstPage)
 
-      await request.value
+      await contacts$.request
 
-      const idsAfterRequest = data.value.map((i) => i._id)
+      const idsAfterRequest = contacts$.data.map((i) => i._id)
       expect(idsAfterRequest).not.toEqual(idsFromFirstPage)
       expect(idsAfterRequest).not.toEqual(idsWhilePending)
     }, 400000)
@@ -242,27 +242,27 @@ describe('latestQuery and previousQuery', () => {
       if (!shouldQuery.value) return null
       return { query: { name } }
     })
-    const { data, requestCount, request } = service.useFind(params, { paginateOn: 'server' })
+    const contacts$ = service.useFind(params, { paginateOn: 'server' })
 
-    await request.value
+    await contacts$.request
 
-    expect(data.value.length).toBe(1)
-    expect(requestCount.value).toBe(1)
+    expect(contacts$.data.length).toBe(1)
+    expect(contacts$.requestCount).toBe(1)
 
     shouldQuery.value = false
     name.value = 'Goose'
 
-    await request.value
+    await contacts$.request
 
     // no request send because params were null
-    expect(requestCount.value).toBe(1)
+    expect(contacts$.requestCount).toBe(1)
 
     shouldQuery.value = true
 
     // wait for watcher to update the `request`
     await timeout(0)
-    await request.value
+    await contacts$.request
 
-    expect(requestCount.value).toBe(2)
+    expect(contacts$.requestCount).toBe(2)
   })
 })
