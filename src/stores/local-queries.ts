@@ -1,7 +1,7 @@
 import { MaybeRef } from '@vueuse/core'
 import type { Id } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
-import { computed, unref } from 'vue-demi'
+import { computed, reactive, unref } from 'vue-demi'
 import { filterQuery, select, sorter } from '@feathersjs/adapter-commons'
 import sift from 'sift'
 import fastCopy from 'fast-copy'
@@ -105,18 +105,18 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
           : values,
       }
     })
-    return {
+    return reactive({
       total: computed(() => result.value.total),
       limit: computed(() => result.value.limit),
       skip: computed(() => result.value.skip),
       data: computed(() => result.value.data),
-    }
+    })
   }
 
   function findOneInStore(params: MaybeRef<Params<Q>>) {
     const result = findInStore(params)
     const item = computed(() => {
-      return result.data.value[0] || null
+      return result.data[0] || null
     })
     return item
   }
@@ -128,7 +128,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       if (!params.query) throw new Error('params must contain a query object')
 
       params.query = _.omit(params.query, ...FILTERS)
-      return findInStore(params).total.value
+      return findInStore(params).total
     })
     return value
   }
@@ -205,7 +205,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
         )
       }
       // patch by query
-      const fromStore = findInStore(params).data.value
+      const fromStore = findInStore(params).data
       const items = updateItems(fromStore)
 
       return items

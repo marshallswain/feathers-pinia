@@ -28,7 +28,7 @@ describe('storeAssociated', () => {
 
     expect(author1.value.name).toBe('Marshall')
     expect(author2.value.name).toBe('Myriah')
-    expect(comments.data.value.length).toBe(2)
+    expect(comments.data.length).toBe(2)
   })
 
   it('replaces values with non-enumerable values', async () => {

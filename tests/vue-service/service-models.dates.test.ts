@@ -19,7 +19,7 @@ describe('Working with Dates', () => {
       },
     }
     const results = service.findInStore({ query })
-    expect(results.data.value.length).toBe(5)
+    expect(results.data.length).toBe(5)
   })
 
   it('findInStore with Date objects returns no results against string data', async () => {
@@ -30,6 +30,6 @@ describe('Working with Dates', () => {
       },
     }
     const results = service.findInStore({ query })
-    expect(results.data.value.length).toBe(0)
+    expect(results.data.length).toBe(0)
   })
 })

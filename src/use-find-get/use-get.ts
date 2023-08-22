@@ -3,7 +3,7 @@ import type { ComputedRef } from 'vue-demi'
 import type { AnyData } from '../types.js'
 import type { UseFindGetDeps, UseGetParams } from './types.js'
 import type { MaybeRef } from '@vueuse/core'
-import { computed, ref, unref, watch, isRef } from 'vue-demi'
+import { computed, ref, unref, watch, isRef, reactive } from 'vue-demi'
 
 type MaybeComputed<M> = ComputedRef<M> | MaybeRef<M>
 
@@ -97,7 +97,7 @@ export const useGet = (
       { immediate },
     )
 
-  return {
+  return reactive({
     params, // Ref<GetClassParams>
     isSsr, // ComputedRef<boolean>
 
@@ -118,5 +118,5 @@ export const useGet = (
     hasLoaded: computed(() => hasLoaded.value), // ComputedRef<boolean>
     error: computed(() => error.value), // ComputedRef<any>
     clearError, // () => void
-  }
+  })
 }

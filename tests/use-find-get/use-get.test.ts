@@ -14,39 +14,39 @@ afterEach(() => resetService(service))
 describe('useGet', () => {
   describe('Default behavior fetched data from the server', () => {
     test('can pass a primitive id', async () => {
-      const { data, requestCount, request } = service.useGet('1')
-      await request.value
-      expect(data.value?._id).toBe('1')
-      expect(requestCount.value).toBe(1)
+      const contact$ = service.useGet('1')
+      await contact$.request
+      expect(contact$.data?._id).toBe('1')
+      expect(contact$.requestCount).toBe(1)
     })
 
     test('can pass a ref id', async () => {
       const id = ref('1')
-      const { data, request } = service.useGet(id)
-      await request.value
-      expect(data.value?._id).toBe('1')
+      const contact$ = service.useGet(id)
+      await contact$.request
+      expect(contact$.data?._id).toBe('1')
     })
 
     test.skip('changing id updates data', async () => {
       const id = ref('1')
-      const { data, request } = service.useGet(id)
-      await request.value
+      const contact$ = service.useGet(id)
+      await contact$.request
 
-      expect(data.value?._id).toBe('1')
+      expect(contact$.data?._id).toBe('1')
 
       id.value = '2'
 
       // wait for watcher to run
       await timeout(0)
-      await request.value
+      await contact$.request
 
-      expect(data.value?._id).toBe('2')
+      expect(contact$.data?._id).toBe('2')
     })
 
     test('id can be null', async () => {
       const id = ref(null)
-      const { data } = service.useGet(id, {})
-      expect(data.value).toBe(null)
+      const contact$ = service.useGet(id, {})
+      expect(contact$.data).toBe(null)
     })
 
     test.skip('can show previous record while a new one loads', async () => {
@@ -61,94 +61,94 @@ describe('useGet', () => {
       service.hooks({ before: { get: [hook] } })
 
       const id = ref('1')
-      const { data, request, isPending } = service.useGet(id)
+      const contact$ = service.useGet(id)
 
-      await request.value
+      await contact$.request
 
-      expect(isPending.value).toBe(false)
-      expect(data.value?._id).toBe('1')
+      expect(contact$.isPending).toBe(false)
+      expect(contact$.data?._id).toBe('1')
 
       id.value = '2'
 
       await timeout(20)
 
-      expect(isPending.value).toBe(true)
-      expect(data.value?._id).toBe('1')
+      expect(contact$.isPending).toBe(true)
+      expect(contact$.data?._id).toBe('1')
 
-      await request.value
+      await contact$.request
 
-      expect(isPending.value).toBe(false)
-      expect(data.value?._id).toBe('2')
+      expect(contact$.isPending).toBe(false)
+      expect(contact$.data?._id).toBe('2')
     })
 
     test.skip('can prevent a query with queryWhen', async () => {
       const id = ref('1')
-      const { data, get, requestCount, queryWhen, request } = service.useGet(id, {
+      const contact$ = service.useGet(id, {
         immediate: false,
       })
       const queryWhenFn = vi.fn(() => {
-        return !data.value
+        return !contact$.data
       })
-      queryWhen(queryWhenFn)
-      expect(requestCount.value).toBe(0)
+      contact$.queryWhen(queryWhenFn)
+      expect(contact$.requestCount).toBe(0)
 
-      await get()
+      await contact$.get()
 
       // queryWhen is called even when manually calling `get`
       expect(queryWhenFn).toHaveBeenCalled()
-      expect(requestCount.value).toBe(1)
+      expect(contact$.requestCount).toBe(1)
 
       id.value = '2'
       await timeout(20)
-      await request.value
+      await contact$.request
 
-      expect(requestCount.value).toBe(2)
+      expect(contact$.requestCount).toBe(2)
 
       id.value = '1'
       await timeout(20)
-      await request.value
+      await contact$.request
 
-      expect(requestCount.value).toBe(2)
+      expect(contact$.requestCount).toBe(2)
       expect(queryWhenFn).toHaveBeenCalledTimes(3)
     })
 
     test.skip('can disable watch', async () => {
       const id = ref('1')
-      const { get, requestCount, request } = service.useGet(id, { watch: false })
-      expect(requestCount.value).toBe(0)
+      const contact$ = service.useGet(id, { watch: false })
+      expect(contact$.requestCount).toBe(0)
 
-      await get()
+      await contact$.get()
 
-      expect(requestCount.value).toBe(1)
+      expect(contact$.requestCount).toBe(1)
 
       id.value = '2'
       await timeout(20)
-      await request.value
+      await contact$.request
 
-      expect(requestCount.value).toBe(1)
+      expect(contact$.requestCount).toBe(1)
 
       id.value = '1'
       await timeout(20)
-      await request.value
+      await contact$.request
 
-      expect(requestCount.value).toBe(1)
+      expect(contact$.requestCount).toBe(1)
     })
   })
 
   describe('Manual Get with Ref', () => {
     test('can update ref and manually get correct data', async () => {
       const id = ref('1')
-      const { data, get } = service.useGet(id, { immediate: false })
-      expect(data.value).toBeNull()
+      const contact$ = service.useGet(id, { immediate: false })
+      expect(contact$.data).toBeNull()
 
-      await get()
-      expect(data.value?._id).toBe('1')
+      await contact$.get()
+      expect(contact$.data?._id).toBe('1')
 
       id.value = '2'
-      expect(data.value).toBeNull()
+      expect(contact$.data).toBeNull()
 
-      await get()
-      expect(data.value?._id).toBe('2')
+      await contact$.get()
+      expect(contact$.data?._id).toBe('2')
     })
   })
 
@@ -158,49 +158,49 @@ describe('useGet', () => {
       await service.find({ query: { $limit: 20 } })
 
       const id = ref('1')
-      const { data, request, requestCount } = service.useGet(id, { watch: false, immediate: false })
-      await request.value
-      expect(data.value?._id).toBe('1')
-      expect(requestCount.value).toBe(0)
+      const contact$ = service.useGet(id, { watch: false, immediate: false })
+      await contact$.request
+      expect(contact$.data?._id).toBe('1')
+      expect(contact$.requestCount).toBe(0)
     })
   })
 
   describe('clones', () => {
     test('can return clones', async () => {
       const id = ref('1')
-      const { data, request } = service.useGet(id, { clones: true })
-      await request.value
-      expect(data.value?._id).toBe('1')
-      expect(data.value?.__isClone).toBe(true)
+      const contact$ = service.useGet(id, { clones: true })
+      await contact$.request
+      expect(contact$.data?._id).toBe('1')
+      expect(contact$.data?.__isClone).toBe(true)
     })
   })
 
   describe('useGetOnce', () => {
     test('store.useGetOnce only queries once per id', async () => {
       const id = ref('1')
-      const { data, get, requestCount, request } = service.useGetOnce(id)
-      expect(requestCount.value).toBe(1)
-      expect(data.value).toBe(null)
+      const contact$ = service.useGetOnce(id)
+      expect(contact$.requestCount).toBe(1)
+      expect(contact$.data).toBe(null)
 
       // Wait for the internal request and for the data to fill the store.
-      await request.value
+      await contact$.request
       await timeout(20)
-      await get()
+      await contact$.get()
 
       // queryWhen is called even when manually calling `get`
-      expect(requestCount.value).toBe(1)
+      expect(contact$.requestCount).toBe(1)
 
       id.value = '2'
       await timeout(20)
-      await request.value
+      await contact$.request
 
-      expect(requestCount.value).toBe(2)
+      expect(contact$.requestCount).toBe(2)
 
       id.value = '1'
       await timeout(20)
-      await request.value
+      await contact$.request
 
-      expect(requestCount.value).toBe(2)
+      expect(contact$.requestCount).toBe(2)
     })
   })
 
@@ -216,35 +216,35 @@ describe('useGet', () => {
       }
       service.hooks({ before: { get: [hook] } })
 
-      const { error, clearError, get, request } = service.useGet('1', { immediate: false })
-      expect(error.value).toBe(null)
+      const contact$ = service.useGet('1', { immediate: false })
+      expect(contact$.error).toBe(null)
 
-      await get()
+      await contact$.get()
       // wait extra time to make sure the request happened
       await timeout(10)
-      await request.value
+      await contact$.request
 
-      expect(error.value.message).toBe('fail')
+      expect(contact$.error.message).toBe('fail')
 
-      clearError()
+      contact$.clearError()
 
-      expect(error.value).toBe(null)
+      expect(contact$.error).toBe(null)
     })
 
     test('swallows error and sets error ref if a service error is received', async () => {
-      const { data, error, clearError, get, request } = service.useGet('A', { immediate: false })
+      const contact$ = service.useGet('A', { immediate: false })
 
-      await get()
+      await contact$.get()
       // wait extra time to make sure the request happened
       await timeout(10)
-      await request.value
+      await contact$.request
 
-      expect(data.value).toBe(null)
-      expect(error.value.message).toBe("No record found for id 'A'")
+      expect(contact$.data).toBe(null)
+      expect(contact$.error.message).toBe("No record found for id 'A'")
 
-      clearError()
+      contact$.clearError()
 
-      expect(error.value).toBe(null)
+      expect(contact$.error).toBe(null)
     })
   })
 })

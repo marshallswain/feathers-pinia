@@ -72,10 +72,10 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       const values = itemsFromPagination(store, service, cachedParams.value)
       return values
     } else if (paginateOn === 'hybrid') {
-      const result = service.findInStore(deepUnref(localParams)).data.value
+      const result = service.findInStore(deepUnref(localParams)).data
       return result.filter((i: any) => i)
     } else {
-      const result = service.findInStore(deepUnref(paramsWithPagination)).data.value
+      const result = service.findInStore(deepUnref(paramsWithPagination)).data
       return result.filter((i: any) => i)
     }
   })
@@ -95,7 +95,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
     if (whichQuery == null && paginateOn !== 'client') return []
 
-    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data.value
+    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data
     return allItems
   })
 

@@ -120,12 +120,12 @@ export class PiniaService<Svc extends FeathersService> {
    */
   findInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.findInStore(params)
-    return {
+    return reactive({
       ...result,
       data: computed(() => {
-        return result.data.value.map((i: any) => convertData(this, i))
+        return result.data.map((i: any) => convertData(this, i))
       }),
-    }
+    })
   }
 
   /**
@@ -203,7 +203,7 @@ export class PiniaService<Svc extends FeathersService> {
     const _params = isRef(params) ? params : ref(params)
     Object.assign(_params.value, { immediate: false })
     const results = this.useGet(_id, _params)
-    results.queryWhen(() => !results.data.value)
+    results.queryWhen(() => !results.data)
     results.get()
     return results
   }

@@ -27,7 +27,7 @@ describe('use-service-local', () => {
   })
   test('findInStore', () => {
     const results = findInStore({ query: {} })
-    expect(results.data.value.length).toBe(5)
+    expect(results.data.length).toBe(5)
   })
 
   test('findInStore with $and', () => {
@@ -36,7 +36,7 @@ describe('use-service-local', () => {
         $and: [{ id: 1 }, { name: 'Goose' }],
       },
     })
-    expect(results.data.value.length).toBe(1)
+    expect(results.data.length).toBe(1)
   })
 
   test('findInStore with $or', () => {
@@ -45,25 +45,25 @@ describe('use-service-local', () => {
         $or: [{ id: 1 }, { name: 'Moose' }],
       },
     })
-    expect(results.data.value.length).toBe(2)
+    expect(results.data.length).toBe(2)
   })
 
   test('findInStore with exact filter', () => {
     const results = findInStore({ query: { name: 'Juice' } })
-    expect(results.data.value.length).toBe(1)
+    expect(results.data.length).toBe(1)
   })
 
   test('findInStore with regex filter', () => {
     const results = findInStore({ query: { name: { $regex: /oose/ } } })
-    expect(results.data.value.length).toBe(5)
+    expect(results.data.length).toBe(5)
   })
 
   test('findInStore with params.clones does nothing when items are not instances (no service)', () => {
     const results = findInStore({ query: {}, clones: true })
-    results.data.value.forEach((item) => {
+    results.data.forEach((item) => {
       expect(item.__isClone).not.toBeDefined()
     })
-    expect(results.data.value.length).toBe(5)
+    expect(results.data.length).toBe(5)
   })
 
   test('countInStore', () => {

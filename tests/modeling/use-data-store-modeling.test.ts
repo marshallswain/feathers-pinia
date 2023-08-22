@@ -47,7 +47,7 @@ describe('standalone stores', () => {
       store.createInStore(records)
 
       const { data } = store.findInStore({ query: { id: 2 } })
-      expect(data.value[0].id).toBe(2)
+      expect(data[0].id).toBe(2)
     })
 
     it('can findInStore with ref params object', async () => {
@@ -58,7 +58,7 @@ describe('standalone stores', () => {
       store.createInStore(records)
 
       const { data } = store.findInStore(ref({ query: { id: 2 } }))
-      expect(data.value[0].id).toBe(2)
+      expect(data[0].id).toBe(2)
     })
 
     it('can findInStore with computed params object', async () => {
@@ -69,7 +69,7 @@ describe('standalone stores', () => {
       store.createInStore(records)
 
       const { data } = store.findInStore(computed(() => ({ query: { id: 2 } })))
-      expect(data.value[0].id).toBe(2)
+      expect(data[0].id).toBe(2)
     })
 
     it('findInStore with computed params is reactive', async () => {
@@ -80,9 +80,9 @@ describe('standalone stores', () => {
       store.createInStore(records)
 
       const id = ref(2)
-      const { data } = store.findInStore(computed(() => ({ query: { id } })))
+      const result = store.findInStore(computed(() => ({ query: { id } })))
       id.value = 3
-      expect(data.value[0].id).toBe(3)
+      expect(result.data[0].id).toBe(3)
     })
 
     it('can findOneInStore with plain params object', async () => {
@@ -92,8 +92,8 @@ describe('standalone stores', () => {
       ]
       store.createInStore(records)
 
-      const results = store.findOneInStore({ query: { id: 2 } })
-      expect(results.value.id).toBe(2)
+      const result = store.findOneInStore({ query: { id: 2 } })
+      expect(result.value.id).toBe(2)
     })
 
     it('can findOneInStore with ref params object', async () => {
@@ -418,7 +418,7 @@ describe('standalone stores', () => {
       expect(added.__isStoreInstance).toBe(true)
 
       const { data } = store.findInStore({ query: {} })
-      expect(data.value[0].__isStoreInstance).toBe(true)
+      expect(data[0].__isStoreInstance).toBe(true)
     })
   })
 })
