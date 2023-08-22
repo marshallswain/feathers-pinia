@@ -80,7 +80,7 @@ API request goes out. If an API errors occurs, the change will be rolled back.
 Sometimes eager commits aren't desirable, so you can turn them off when needed by passing `{ eager: false }`, like this:
 
 ```ts
-await clone.save({ eager: false )
+await clone.save({ eager: false })
 ```
 
 With `eager: false`, the commit will happen after the API server responds to the patch request.
