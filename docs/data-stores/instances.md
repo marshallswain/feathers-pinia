@@ -76,7 +76,7 @@ console.log(task.__idField) // --> `id`
 ```ts
 const task = api.service('tasks').new({ description: 'Do the dishes' })
 
-console.log(task.__idField) // --> `id`
+console.log(task.__isTemp) // --> `id`
 ```
 
 ### __tempId
