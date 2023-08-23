@@ -37,6 +37,10 @@ export default defineConfig({
             link: 'https://github.com/marshallswain/feathers-pinia/releases',
           },
           {
+            text: 'Docs v3',
+            link: 'https://v3.feathers-pinia.pages.dev/',
+          },
+          {
             text: 'Docs v2',
             link: 'https://v2.feathers-pinia.pages.dev/',
           },
