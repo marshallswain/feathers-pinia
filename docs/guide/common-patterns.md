@@ -12,56 +12,13 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 ## Common Pitfalls
 
-This is a list of potential issues you may face and how to solve them.
-
-### Missing Service Method Types
-
-When setting up a new project, TypeScript may report that the FeathersPinia service methods are missing. This is due to a missing `ServiceTypes` generic when creating a `feathers` instance. If any of the below-listed methods are missing, you're probably missing a generic.
-
-- `new`
-- `findOne`
-- `count`
-- `findInStore`
-- `findOneInStore`
-- `countInStore`
-- `getFromStore`
-- `createInStore`
-- `patchInStore`
-- `removeFromStore`
-- `useFind`
-- `useGet`
-- `useGetOnce`
-
-The [setup examples](/setup/) show how to properly setup the Feathers client for your framework. If you don't have custom types provided from a Feathers v5 Dove API, you can use the following generic:
-
-```ts
-// import the FeathersService type
-import { feathers, type FeathersService } from '@feathersjs/feathers'
-
-// Create a ServiceTypes generic
-type ServiceTypes = Record<string, FeathersService>
-
-// Provide `ServiceTypes` in angle brackets before the parentheses
-const feathersClient = feathers<ServiceTypes>()
-```
-
-### Avoid npm Install Errors
-
-If you're using npm to install packages and keep getting errors about `vue-demi` and `peerDependencies`, you can silence
-these errors by creating an `.npmrc` file in the root of your project with the following contents:
-
-```txt
-shamefully-hoist=true
-strict-peer-dependencies=false
-legacy-peer-deps=true
-```
+See the [Common Pitfalls](/guide/troubleshooting) page for solutions to common issues.
 
 ## Accessing a Store From Hooks
 
 First, get the `app` instance from `context`. Then lookup a service and use its methods:
 
 ```ts
-
 async (context: HookContext, next: NextFunction) => {
   const { app } = context
   // use service methods
@@ -101,7 +58,7 @@ export const useFeatureStore = defineStore('my-feature-store', () => {
   const usersNamedFred = computed(() => {
     return api.service('users').findInStore({ query: { name: 'Fred' } }).data.value
   })
-  
+
   return { usersNamedFred }
 })
 ```
@@ -160,7 +117,7 @@ exists.
 ```ts
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
 
-const setupInstance (data: Users) {
+function setupInstance(data: Users) {
   const withDefaults = useInstanceDefaults({ firstName: '', lastName: '' }, data)
 
   // Define a non-enumerable, configurable property
@@ -217,7 +174,7 @@ const task = api.service('tasks').new({
 })
 
 const clone = task.clone()
-clone.description = 'Plant half of the garden."
+clone.description = 'Plant half of the garden.'
 clone.commit()
 ```
 
@@ -301,7 +258,7 @@ function that returns an object which contains our app's Feathers Client instanc
 // src/composables/use-feathers.ts
 import { api } from '../feathers'
 
-export const useFeathers = () => {
+export function useFeathers() {
   return { api }
 }
 ```
