@@ -23,6 +23,17 @@ old ways and the new way:
 ::: code-group
 
 ```vue [handleClones (0.x)]
+<script setup lang="ts">
+import { handleClones } from 'feathers-pinia'
+
+const props = defineProps({
+  user: { type: Object },
+})
+
+const { clones, saveHandlers } = handleClones(props)
+const { save_user } = saveHandlers
+</script>
+
 <template>
   <div>
     <input
@@ -36,20 +47,19 @@ old ways and the new way:
     </button>
   </div>
 </template>
+```
 
+```vue [useClones (2.x)]
 <script setup lang="ts">
-import { handleClones } from 'feathers-pinia'
+import { useClones } from 'feathers-pinia'
 
 const props = defineProps({
   user: { type: Object },
 })
 
-const { clones, saveHandlers } = handleClones(props)
-const { save_user } = saveHandlers
+const clones = useClones(props)
 </script>
-```
 
-```vue [useClones (2.x)]
 <template>
   <div>
     <input
@@ -63,19 +73,24 @@ const { save_user } = saveHandlers
     </button>
   </div>
 </template>
+```
 
+```vue [service.getFromStore (3.x)]
 <script setup lang="ts">
-import { useClones } from 'feathers-pinia'
-
 const props = defineProps({
   user: { type: Object },
 })
 
-const clones = useClones(props)
-</script>
-```
+const { api } = useFeathers()
 
-```vue [service.getFromStore (3.x)]
+const id = computed(() => props.user._id)
+const clone = api.service('users').getFromStore(id, { clones: true })
+
+function save() {
+  clone.value.save()
+}
+</script>
+
 <template>
   <div>
     <input
@@ -89,20 +104,6 @@ const clones = useClones(props)
     </button>
   </div>
 </template>
-
-<script setup lang="ts">
-const { api } = useFeathers()
-
-const props = defineProps({
-  user: { type: Object },
-})
-const id = computed(() => props.user._id)
-const clone = api.service('users').getFromStore(id, { clones: true })
-
-function save() {
-  clone.value.save()
-}
-</script>
 ```
 
 :::

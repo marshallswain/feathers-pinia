@@ -33,7 +33,9 @@ If you use `npm` as your package manager and you see the error `ERESOLVE unable 
 your package.json:
 
 ```json
-"overrides": { 
-  "vue": "latest"
+{
+  "overrides": {
+    "vue": "latest"
+  }
 }
 ```

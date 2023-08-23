@@ -33,12 +33,12 @@ hooks**, not app-level hooks.
 
 ```ts
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
-import { type ModelInstance, useFeathersModel, useInstanceDefaults, feathersPiniaHooks } from 'feathers-pinia'
+import { type ModelInstance, feathersPiniaHooks, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
 
 const service = api.service('tasks')
 
-const modelFn = (data: ModelInstance<Tasks>) => {
+function modelFn(data: ModelInstance<Tasks>) {
   const withDefaults = useInstanceDefaults({ description: 'default', isComplete: false }, data)
   return withDefaults
 }

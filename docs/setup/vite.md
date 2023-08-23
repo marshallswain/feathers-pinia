@@ -58,7 +58,7 @@ const feathersClient = createClient(rest(host).fetch(fetch), { storage: window.l
 
 ```ts [Socket.io]
 // src/feathers.ts
-import { feathers, type FeathersService } from '@feathersjs/feathers'
+import { type FeathersService, feathers } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
@@ -73,7 +73,7 @@ export const feathersClient = feathers<Record<string, FeathersService>>()
 
 ```ts [fetch]
 // src/feathers.ts
-import { feathers, type FeathersService } from '@feathersjs/feathers'
+import { type FeathersService, feathers } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import rest from '@feathersjs/rest-client'
 
@@ -94,8 +94,8 @@ Now add this code to the bottom of the same file:
 
 ```ts
 // src/feathers.ts
-export const api = createPiniaClient(feathersClient, { 
-  pinia, 
+export const api = createPiniaClient(feathersClient, {
+  pinia,
   idField: '_id',
   // optional
   ssr: false,
@@ -162,7 +162,7 @@ To make Feathers Client easily accessible, we'll create a composable called `use
 import { api } from '../feathers'
 
 // Provides access to Feathers Client(s)
-export const useFeathers = () => {
+export function useFeathers() {
   return { api }
 }
 ```
@@ -190,7 +190,7 @@ We'll keep this example simple. To implement auth, create the file below:
 
 ```ts
 // stores/auth.ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
@@ -199,9 +199,8 @@ export const useAuthStore = defineStore('auth', () => {
   return auth
 })
 
-if (import.meta.hot) {
+if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-}
 ```
 
 Notice that we've called `useAuth` with the `api` and `userStore`. Providing the `userStore`automatically adds the
@@ -260,9 +259,8 @@ router.beforeEach(async (to, from) => {
 
   const publicRoutes = ['/', '/login']
   const is404 = to.matched[0].name === 'NotFound'
-  if (publicRoutes.includes(to.path) || is404) {
+  if (publicRoutes.includes(to.path) || is404)
     return true
-  }
 
   // for non-public routes, check auth and apply login redirect
   await authStore.getPromise()

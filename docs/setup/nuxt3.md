@@ -77,7 +77,7 @@ Let's create a composable that gives us universal access to our Feathers-Pinia C
 // composables/feathers.ts
 
 // Provides access to Feathers clients
-export const useFeathers = () => {
+export function useFeathers() {
   const { $api: api } = useNuxtApp()
   return { api }
 }
@@ -123,7 +123,6 @@ export const useAuthStore = defineStore('auth', () => {
 
 if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-
 ```
 
 Notice that we've called `useAuth` by providing the `api` and `servicePath` to the users service. By providing the
@@ -146,7 +145,6 @@ export default defineNuxtPlugin(async (_nuxtApp) => {
   const auth = useAuthStore()
   await auth.reAuthenticate()
 })
-
 ```
 
 ### 4.3 Route Middleware
@@ -172,7 +170,6 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
       return navigateTo('/')
   }
 })
-
 ```
 
 Instead of blindly redirecting to the login page, the middleware allows the 404 page to work by checking the current

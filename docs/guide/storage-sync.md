@@ -80,16 +80,15 @@ The `syncWithStorage` utility is also available to use with any Pinia store, inc
 is an example:
 
 ```ts
-import { useDataStore } from 'feathers-pinia'
+import { syncWithStorage, useDataStore } from 'feathers-pinia'
 import { createPinia, defineStore } from 'pinia'
-import { syncWithStorage } from 'feathers-pinia'
 
 const pinia = createPinia()
 
 const useStore = defineStore('custom-tasks', () => {
   const utils = useDataStore({
     idField: 'id',
-    customSiftOperators: {}
+    customSiftOperators: {},
     setupInstance: (data: any, { api, service, servicePath }) => data
   })
   return { ...utils }

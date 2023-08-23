@@ -15,7 +15,7 @@ const clone = user.clone()
 // make changes
 clone.name = 'Feathers is Amazing!'
 // save
-await clone.save(). // --> Only the changed props go to the server!
+await clone.save() // --> Only the changed props go to the server!
 ```
 
 <BlockQuote label="How It Works" type="info">
@@ -33,13 +33,13 @@ You can use the `diff` option to customize which values are compared.  Only prop
 
 ```ts
 // string: diff only this prop
-await clone.save({ diff: 'teamId' )
+await clone.save({ diff: 'teamId' })
 
 // array: diff only these props
-await clone.save({ diff: ['teamId', 'username'] )
+await clone.save({ diff: ['teamId', 'username'] })
 
 // object: merge and diff these props
-await clone.save({ diff: { teamId: 1, username: 'foo' } )
+await clone.save({ diff: { teamId: 1, username: 'foo' } })
 
 // or turn off diffing and send everything
 await clone.save({ diff: false })
@@ -51,13 +51,13 @@ If there are certain props that need to always go with the request, use the `wit
 
 ```ts
 // string: always include this prop
-await clone.save({ with: 'teamId' )
+await clone.save({ with: 'teamId' })
 
 // array: always include these props
-await clone.save({ with: ['teamId', 'username'] )
+await clone.save({ with: ['teamId', 'username'] })
 
 // object: merge and include these props
-await clone.save({ with: { teamId: 1, username: 'foo' } )
+await clone.save({ with: { teamId: 1, username: 'foo' } })
 ```
 
 ### Specify Patch Data
@@ -80,7 +80,7 @@ API request goes out. If an API errors occurs, the change will be rolled back.
 Sometimes eager commits aren't desirable, so you can turn them off when needed by passing `{ eager: false }`, like this:
 
 ```ts
-await clone.save({ eager: false )
+await clone.save({ eager: false })
 ```
 
 With `eager: false`, the commit will happen after the API server responds to the patch request.
