@@ -10,4 +10,4 @@ import Badge from '../components/Badge.vue'
 
 [[toc]]
 
-BaseModel has been replaced by the [FeathersPiniaService api](/services).
+BaseModel has been replaced by the [FeathersPiniaService api](/services/).
