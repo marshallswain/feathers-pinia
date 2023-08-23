@@ -1,19 +1,19 @@
-import pkg from '../../package.json'
 import { defineConfig } from 'vitepress'
+import pkg from '../../package.json'
 
 export default defineConfig({
   title: 'Feathers-Pinia',
   description: 'Connect Vue to Feathers',
   lang: 'en-US',
   head: [
-    ['link', { 
-      rel: 'icon', 
-      href: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍍</text></svg>'
+    ['link', {
+      rel: 'icon',
+      href: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍍</text></svg>',
     }],
   ],
   themeConfig: {
     search: {
-      provider: 'local'
+      provider: 'local',
     },
     socialLinks: [
       {
@@ -48,7 +48,7 @@ export default defineConfig({
             text: 'Docs v0',
             link: 'https://v0.feathers-pinia.pages.dev/',
           },
-        ]
+        ],
       },
     ],
     sidebar: {
@@ -74,7 +74,7 @@ function getSetupSidebar() {
             { text: 'Vite', link: '/setup/vite' },
             { text: 'Nuxt 3', link: '/setup/nuxt3' },
             { text: 'Quasar', link: '/setup/quasar' },
-          ]
+          ],
         },
         { text: 'Example Apps', link: '/setup/example-apps' },
         { text: 'Other Setup Examples', link: '/setup/other' },
@@ -97,7 +97,7 @@ function getGuideSidebar() {
     {
       text: 'Introduction',
       items: [
-        { text: "What's New 🎁", link: '/guide/whats-new' },
+        { text: 'What\'s New 🎁', link: '/guide/whats-new' },
         { text: 'Introduction', link: '/guide/' },
         { text: 'Module Overview', link: '/guide/module-overview' },
       ],
@@ -107,24 +107,24 @@ function getGuideSidebar() {
       items: [
         { text: 'Client API', link: '/guide/create-pinia-client' },
         { text: 'Common Pitfalls', link: '/guide/troubleshooting' },
-      ]
+      ],
     },
     {
       text: 'Feathers-Pinia Services',
       items: [
-        { text: 'Service API', link: '/services/', },
-        { text: 'Service Stores', link: '/services/stores', },
-        { text: 'Instance API', link: '/services/instances', },
+        { text: 'Service API', link: '/services/' },
+        { text: 'Service Stores', link: '/services/stores' },
+        { text: 'Instance API', link: '/services/instances' },
         {
           text: 'Hybrid Queries',
           link: '/services/hybrid-queries',
-          items:[
-            { text: 'useFind', link: '/services/use-find', },
-            { text: 'useGet', link: '/services/use-get', },
-          ]
+          items: [
+            { text: 'useFind', link: '/services/use-find' },
+            { text: 'useGet', link: '/services/use-get' },
+          ],
         },
         { text: 'Common Patterns', link: '/guide/common-patterns' },
-      ]
+      ],
     },
     {
       text: 'Data Modeling',
@@ -132,7 +132,7 @@ function getGuideSidebar() {
         { text: 'useInstanceDefaults', link: '/guide/use-instance-defaults' },
         { text: 'storeAssociated', link: '/guide/store-associated' },
         { text: 'Utilities', link: '/guide/utilities' },
-      ]
+      ],
     },
     {
       text: 'Standalone Data Stores',
@@ -144,7 +144,7 @@ function getGuideSidebar() {
     },
     {
       text: 'Auth Stores',
-      items: [ { text: 'useAuth - Auth Stores', link: '/guide/use-auth' }, ],
+      items: [{ text: 'useAuth - Auth Stores', link: '/guide/use-auth' }],
     },
     {
       text: 'Other Tools',
