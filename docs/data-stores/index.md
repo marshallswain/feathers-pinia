@@ -24,7 +24,7 @@ const pinia = createPinia()
 const useStore = defineStore('custom-tasks', () => {
   const utils = useDataStore({
     idField: 'id',
-    customSiftOperators: {}
+    customSiftOperators: {},
     setupInstance: (data: any, { api, service, servicePath }) => data
   })
   return { ...utils }
@@ -32,9 +32,8 @@ const useStore = defineStore('custom-tasks', () => {
 const store = useStore(pinia) // --> See API, below
 
 // Adds HMR support
-if (import.meta.hot) {
+if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useStore, import.meta.hot))
-}
 ```
 
 Similar to a Pinia store, the top-level of the store is a `reactive`, which means nested `computed` properties will be
@@ -99,7 +98,8 @@ explicitly obvious that you are clearing the store by calling `Model.store.clear
 ### findInStore(params)
 
 ```ts
-service.findInStore(params) => ({ data, limit, skip, total })
+// returns reactive({ data, limit, skip, total })
+service.findInStore(params)
 ```
 
 Returns records from the store matching `params.query`. The response is synchronous and always returns a results object
@@ -109,7 +109,8 @@ with an array of `data`. Paginated responses also include `limit`, `skip`, and `
 ### findOneInStore(params)
 
 ```ts
-service.findOneInStore(params) => Computed<Record>
+// returns Computed<Record>
+service.findOneInStore(params)
 ```
 
 Returns the first record that matches `params.query`. The response is synchronous and returns an object.
@@ -117,7 +118,8 @@ Returns the first record that matches `params.query`. The response is synchronou
 ### countInStore(params)
 
 ```ts
-service.countInStore(params) => Computed<number>
+// returns  Computed<number>
+service.countInStore(params)
 ```
 
 Returns the number of records in the store which match `params.query`.
@@ -131,7 +133,7 @@ if a record is not found.
 
 ```ts
 service.createInStore(record)
-service.createInStore(record[])
+service.createInStore(record as Id[])
 ```
 
 Adds the data object or array to the correct internal storage (items or temps), depending on if an idField is present.
@@ -141,9 +143,9 @@ Adds the data object or array to the correct internal storage (items or temps), 
 ```ts
 // several overrides
 service.patchInStore(id, data)
-service.patchInStore(id[], data)
+service.patchInStore(id as Id[], data)
 service.patchInStore(item, data)
-service.patchInStore(item[], data)
+service.patchInStore(item as Record<string, any>[], data)
 service.patchInStore(null, data, paramsWithQuery)
 ```
 
@@ -154,9 +156,9 @@ Updates each of the provided items or items that match the ids with the provided
 ```ts
 // several overrides
 service.removeFromStore(id, params)
-service.removeFromStore(id[], params)
+service.removeFromStore(id as Id[], params)
 service.removeFromStore(record, params)
-service.removeFromStore(record[], params)
+service.removeFromStore(record as Record<string, any>[], params)
 service.removeFromStore(null, paramsWithQuery)
 ```
 

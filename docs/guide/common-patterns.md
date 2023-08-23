@@ -56,7 +56,7 @@ export const useFeatureStore = defineStore('my-feature-store', () => {
   const { api } = useFeathers()
 
   const usersNamedFred = computed(() => {
-    return api.service('users').findInStore({ query: { name: 'Fred' } }).data.value
+    return api.service('users').findInStore({ query: { name: 'Fred' } })
   })
 
   return { usersNamedFred }

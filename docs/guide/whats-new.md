@@ -46,8 +46,8 @@ import { createVueClient } from 'feathers-pinia'
 import { pinia } from './plugins/pinia'
 
 const feathersClient = {} // See the Feathers Client install/setup pages
-const api = createVueClient(feathersClient, { 
-  pinia, 
+const api = createVueClient(feathersClient, {
+  pinia,
   idField: '_id',
   services: {
     users: {
@@ -120,7 +120,7 @@ Create ultra-flexible auth stores with the new [useAuth](/guide/use-auth) utilit
 
 ```ts
 // src/store/store.auth.ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -217,7 +217,7 @@ Let's have a look at them in action. First, assume that we have the following me
   { "id": 1, "text": "Moose" },
   { "id": 2, "text": "moose" },
   { "id": 3, "text": "Goose" },
-  { "id": 4, "text": "Loose" },
+  { "id": 4, "text": "Loose" }
 ]
 ```
 
@@ -227,43 +227,42 @@ Now see the fancy new query operators in action:
 const { api } = useFeathers()
 
 // $like
-const { data } = api.service('messages').findInStore({
+const messages$ = api.service('messages').findInStore({
   query: { text: { $like: '%Mo%' } }
 })
-expect(data.value.map((m) => m.id)).toEqual([1])
+expect(messages$.data.map(m => m.id)).toEqual([1])
 ```
 
 ```ts
 // $notLike
-const { data } = api.service('messages').findInStore({
+const messages$ = api.service('messages').findInStore({
   query: { text: { $notLike: '%Mo%' } }
 })
-expect(data.value.map((m) => m.id)).toEqual([2, 3, 4])
+expect(messages$.data.map(m => m.id)).toEqual([2, 3, 4])
 ```
 
 ```ts
 // $ilike
-const { data } = api.service('messages').findInStore({
+const messages$ = api.service('messages').findInStore({
   query: { text: { $ilike: '%Mo%' } }
 })
-expect(data.value.map((m) => m.id)).toEqual([1, 2])
-
+expect(messages$.data.map(m => m.id)).toEqual([1, 2])
 ```
 
 ```ts
 // $iLike
-const { data } = api.service('messages').findInStore({
+const messages$ = api.service('messages').findInStore({
   query: { text: { $iLike: '%Mo%' } }
 })
-expect(data.value.map((m) => m.id)).toEqual([1, 2])
+expect(messages$.data.map(m => m.id)).toEqual([1, 2])
 ```
 
 ```ts
 // $notILike
-const { data } = api.service('messages').findInStore({
+const messages$ = api.service('messages').findInStore({
   query: { text: { $notILike: '%Mo%' } }
 })
-expect(data.value.map((m) => m.id)).toEqual([3, 4])
+expect(messages$.data.map(m => m.id)).toEqual([3, 4])
 ```
 
 These new operators support queries made with SQL-backed adapters like the official, core SQL service adapter in
@@ -307,7 +306,7 @@ Thanks to the built-in modeling API, all instances are now always reactive, even
 
 ```ts
 const { api } = useFeathers()
-const task = api.service('tasks').new({ 
+const task = api.service('tasks').new({
   description: 'Bind me to a template. I am ready.'
 })
 ```
