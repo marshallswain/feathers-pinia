@@ -101,7 +101,8 @@ function getGuideSidebar() {
     {
       text: 'Introduction',
       items: [
-        { text: 'What\'s New 🎁', link: '/guide/whats-new' },
+        { text: '🎁 What\'s New in v4', link: '/guide/whats-new' },
+        { text: '🎁 What\'s New in v3', link: '/guide/whats-new-v3' },
         { text: 'Introduction', link: '/guide/' },
         { text: 'Module Overview', link: '/guide/module-overview' },
       ],
