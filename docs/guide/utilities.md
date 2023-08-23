@@ -78,7 +78,8 @@ export const api = createPiniaClient(feathersClient, {
         const withAssociationSetters = defineSetters(withAssociations, {
           posts(this: Posts, post: Posts) {
             author.setInstanceRan = true
-            if (post.id && !this.authorIds.includes(post.id)) post.authorIds.push(post.id)
+            if (post.id && !this.authorIds.includes(post.id))
+              post.authorIds.push(post.id)
           },
         })
         return withAssociationSetters

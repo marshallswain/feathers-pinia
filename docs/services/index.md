@@ -21,14 +21,6 @@ Here's an overview of the full Feathers-Pinia Service Interface:
 
 <!--@include: ../partials/service-interface.md-->
 
-Learn more about the service methods:
-
-- [The "new" Method](#the-new-method)
-- [API Methods](#api-methods)
-- [Store Methods](#store-methods)
-- [Hybrid Methods](#hybrid-methods)
-- [Event Methods](#event-methods)
-
 ## The "new" Method
 
 ```ts

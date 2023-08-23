@@ -76,24 +76,20 @@ getters.
 const params = computed(() => {
   return { query: {} }
 })
-const { isPending, find } = api.service('appointments').useFind(params)
+const { find } = api.service('appointments').useFind(params)
 
 // future appointments
-const futureParams = computed(() => {
-  return { query: { date: { $gt: new Date() } } }
-})
-const { data: futureAppointments } = api.service('appointments').useFind(futureParams)
+const futureParams = computed(() => ({ query: { date: { $gt: new Date() } } }))
+const futureAppointments$ = api.service('appointments').useFind(futureParams)
 
 // past appointments
-const pastParams = computed(() => {
-  return { query: { date: { $lt: new Date() } } }
-})
-const { data: pastAppointments } = api.service('appointments').useFind(pastParams)
+const pastParams = computed(() => ({ query: { date: { $lt: new Date() } } }))
+const pastAppointments$ = api.service('appointments').useFind(pastParams)
 ```
 
-in the above example of component code, the `future` and `pastAppointments` will automatically update as more data is
-fetched using the `find` utility.  New items will show up in one of the lists, automatically.  `feathers-pinia` listens
-to socket events automatically, so you don't have to manually wire any of this up!
+in the above example of component code, the `futureAppointments$.data` and `pastAppointments$.data` will automatically
+update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.  
+`feathers-pinia` listens to socket events automatically, so you don't have to manually wire any of this up!
 
 ## Query Once Per Record
 
