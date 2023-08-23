@@ -1,24 +1,23 @@
+import ObjectID from 'isomorphic-mongo-objectid'
 import type { CloneOptions } from '../stores/index.js'
 import type { AnyData, ById, Params } from '../types.js'
-import type { BaseModelData, StoreInstanceProps, ModelInstanceData } from './types.js'
-import ObjectID from 'isomorphic-mongo-objectid'
 import { defineValues } from '../utils/define-properties'
+import type { BaseModelData, ModelInstanceData, StoreInstanceProps } from './types.js'
 
 interface UseModelInstanceOptions<M, Q extends AnyData> {
   idField: string
   clonesById: ById<AnyData>
-  clone: (item: M, data?: {}, options?: CloneOptions) => M
+  clone: (item: M, data?: Record<string, any>, options?: CloneOptions) => M
   commit: (item: M, data?: Partial<M>) => M
-  reset: (item: M, data?: {}) => M
+  reset: (item: M, data?: Record<string, any>) => M
   createInStore: (data: M | M[]) => M | M[]
   removeFromStore: (data: M | M[] | null, params?: Params<Q>) => M | M[] | null
 }
 
-export const useModelInstance = <M extends AnyData, Q extends AnyData>(
-  data: ModelInstanceData<M>,
-  options: UseModelInstanceOptions<M, Q>,
-) => {
-  if (data.__isStoreInstance) return data
+export function useModelInstance<M extends AnyData, Q extends AnyData>(data: ModelInstanceData<M>,
+  options: UseModelInstanceOptions<M, Q>) {
+  if (data.__isStoreInstance)
+    return data
 
   const { idField, clonesById, clone, commit, reset, createInStore, removeFromStore } = options
   const __isClone = data.__isClone || false

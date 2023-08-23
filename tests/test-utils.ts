@@ -10,6 +10,8 @@ export function resetService(service: any) {
 
 export { timeout }
 
-export const timeoutHook = (ms: number) => async () => {
-  await timeout(ms)
+export function timeoutHook(ms: number) {
+  return async () => {
+    await timeout(ms)
+  }
 }

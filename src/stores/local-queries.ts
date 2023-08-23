@@ -1,4 +1,4 @@
-import { MaybeRef } from '@vueuse/core'
+import type { MaybeRef } from '@vueuse/core'
 import type { Id } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import { computed, reactive, unref } from 'vue-demi'
@@ -68,11 +68,14 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     })
     let values = startingValues.concat(itemStorage.list.value)
 
-    if (tempStorage && params.temps) values.push(...tempStorage.list.value)
+    if (tempStorage && params.temps)
+      values.push(...tempStorage.list.value)
 
-    if (filters.$or) query.$or = filters.$or
+    if (filters.$or)
+      query.$or = filters.$or
 
-    if (filters.$and) query.$and = filters.$and
+    if (filters.$and)
+      query.$and = filters.$and
 
     values = values.filter(sift(query, { operations }))
     return { values, filters }
@@ -82,7 +85,8 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     const result = computed(() => {
       const params = unref(_params)
       // clean up any nested refs
-      if (params.query) params.query = deepUnref(params.query)
+      if (params.query)
+        params.query = deepUnref(params.query)
 
       const filtered = filterItems(params)
       const filters = filtered.filters
@@ -90,11 +94,14 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
 
       const total = values.length
 
-      if (filters.$sort) values.sort(sorter(filters.$sort))
+      if (filters.$sort)
+        values.sort(sorter(filters.$sort))
 
-      if (filters.$skip) values = values.slice(filters.$skip)
+      if (filters.$skip)
+        values = values.slice(filters.$skip)
 
-      if (typeof filters.$limit !== 'undefined') values = values.slice(0, filters.$limit)
+      if (typeof filters.$limit !== 'undefined')
+        values = values.slice(0, filters.$limit)
 
       return {
         total,
@@ -125,7 +132,8 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     const value = computed(() => {
       params = { ...unref(params) }
 
-      if (!params.query) throw new Error('params must contain a query object')
+      if (!params.query)
+        throw new Error('params must contain a query object')
 
       params.query = _.omit(params.query, ...FILTERS)
       return findInStore(params).total
@@ -133,19 +141,22 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     return value
   }
 
-  const getFromStore = (id: MaybeRef<Id | null>, params?: Params<Q>) => {
+  const getFromStore = (_id: MaybeRef<Id | null>, params?: Params<Q>) => {
     return computed((): M | null => {
-      id = unref(id)
+      const id = unref(_id)
       params = fastCopy(unref(params) || {})
-      if (params.query) params.query = deepUnref(params.query)
+      if (params.query)
+        params.query = deepUnref(params.query)
 
       let item = null
       const existingItem = itemStorage.getItem(id as Id) && select(params, idField)(itemStorage.getItem(id as Id))
-      const tempItem =
-        tempStorage && tempStorage.getItem(id as Id) && select(params, '__tempId')(tempStorage.getItem(id as Id))
+      const tempItem
+        = tempStorage && tempStorage.getItem(id as Id) && select(params, '__tempId')(tempStorage.getItem(id as Id))
 
-      if (existingItem) item = existingItem
-      else if (tempItem) item = tempItem
+      if (existingItem)
+        item = existingItem
+      else if (tempItem)
+        item = tempItem
 
       const toReturn = params.clones && item.clone ? item.clone(undefined, { useExisting: true }) : item || null
       return toReturn
@@ -184,16 +195,17 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
         .map((item: M | Id | null) => {
           item = unref(item)
           // convert ids to items from the store
-          if (typeof item === 'number' || typeof item === 'string') {
+          if (typeof item === 'number' || typeof item === 'string')
             item = getFromStore(item as Id).value
-          }
-          if (item == null) return null
+
+          if (item == null)
+            return null
 
           const toWrite = { ...item, ...data }
           const stored = addItemToStorage(toWrite)
           return stored
         })
-        .filter((i) => i)
+        .filter(i => i)
       return patched
     }
 
@@ -201,7 +213,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       // patching multiple cannot use an empty array
       if (params?.query && !Object.keys(params?.query).length) {
         throw new Error(
-          `cannot perform multiple patchInStore with an empty query. You must explicitly provide a query. To patch all items, try using a query that matches all items, like "{ id: { $exists: true } }"`,
+          'cannot perform multiple patchInStore with an empty query. You must explicitly provide a query. To patch all items, try using a query that matches all items, like "{ id: { $exists: true } }"',
         )
       }
       // patch by query
@@ -209,7 +221,8 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       const items = updateItems(fromStore)
 
       return items
-    } else {
+    }
+    else {
       // patch provided data
       const { items, isArray } = getArray(idOrData)
       const patchedItems = updateItems(items)
@@ -231,7 +244,8 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       const { values } = filterItems(params, clones)
       const result = removeItems(values)
       return result
-    } else if (data !== null) {
+    }
+    else if (data !== null) {
       removeItems(data)
     }
 
@@ -245,10 +259,13 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
         itemStorage.removeItem(item)
         tempStorage?.removeItem(item)
         cloneStorage?.removeItem(item)
-      } else {
-        if ((item as M).__isClone) return cloneStorage?.remove(item as M)
+      }
+      else {
+        if ((item as M).__isClone)
+          return cloneStorage?.remove(item as M)
 
-        if ((item as M).__isTemp) return tempStorage?.remove(item as M)
+        if ((item as M).__isTemp)
+          return tempStorage?.remove(item as M)
 
         itemStorage.remove(item)
         tempStorage?.remove(item)

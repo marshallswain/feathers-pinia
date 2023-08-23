@@ -10,14 +10,16 @@ import { patchDiffing } from './8-patch-diffs.js'
 
 export { syncStore, setPending, eventLocks, normalizeFind, skipGetIfExists, makeModelInstances }
 
-export const feathersPiniaHooks = () => [
-  unrefQuery(),
-  setPending(),
-  eventLocks(),
-  syncStore(),
-  makeModelInstances(),
-  handleFindSsr(),
-  normalizeFind(),
-  skipGetIfExists(),
-  patchDiffing(),
-]
+export function feathersPiniaHooks() {
+  return [
+    unrefQuery(),
+    setPending(),
+    eventLocks(),
+    syncStore(),
+    makeModelInstances(),
+    handleFindSsr(),
+    normalizeFind(),
+    skipGetIfExists(),
+    patchDiffing(),
+  ]
+}

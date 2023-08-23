@@ -10,7 +10,7 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 
-describe(`Temporary Records`, () => {
+describe('Temporary Records', () => {
   test('store can hold temps', () => {
     expect(service.store).toHaveProperty('tempsById')
     expect(service.store).toHaveProperty('temps')

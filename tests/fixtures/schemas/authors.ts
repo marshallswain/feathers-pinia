@@ -1,10 +1,10 @@
-import { Type, querySyntax, type Static } from '@feathersjs/typebox'
+import { type Static, Type, querySyntax } from '@feathersjs/typebox'
 
 // Main data model schema
 export const authorsSchema = Type.Object(
   {
     id: Type.Number(),
-    name: Type.String({ description: `The author's name` }),
+    name: Type.String({ description: 'The author\'s name' }),
     /**
      * We define relationship data here only if we want to be able to create new instances with related data. This
      * scenario is the same as pre-populating data on the API server and sending it to the client.

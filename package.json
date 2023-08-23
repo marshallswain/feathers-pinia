@@ -38,7 +38,7 @@
     "spell-check": "cspell-cli '{src,docs,tests,example}/**/*'",
     "format": "prettier -w .",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "eslint --fix src/ tests/ docs/",
     "sfl": "npm run spell-check && npm run format && npm run lint"
   },
   "peerDependencies": {

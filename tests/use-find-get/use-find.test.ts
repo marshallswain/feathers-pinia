@@ -1,7 +1,7 @@
 import { computed } from 'vue-demi'
+import { toRefs } from '@vueuse/core'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService } from '../test-utils.js'
-import { toRefs } from '@vueuse/core'
 
 const service = api.service('contacts')
 

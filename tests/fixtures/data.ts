@@ -21,7 +21,7 @@ export function makeContactsDataRandom(count = 100) {
   const placeholders = Array.from(Array(count).keys())
   const contacts = placeholders.map((item: number) => {
     const _id = item.toString()
-    const name = faker.name.fullName()
+    const name = faker.person.fullName()
     const birthdate = new Date(faker.date.birthdate())
     const age = calculateAge(birthdate)
 

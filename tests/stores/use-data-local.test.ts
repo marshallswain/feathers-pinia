@@ -3,7 +3,7 @@ import { useAllStorageTypes, useServiceLocal } from '../../src'
 const idField = 'id'
 const { itemStorage, tempStorage, addItemToStorage } = useAllStorageTypes({
   getIdField: (val: any) => val[idField],
-  setupInstance: (data) => data,
+  setupInstance: data => data,
 })
 const { findInStore, countInStore, getFromStore } = useServiceLocal({
   idField: 'id',
@@ -23,7 +23,7 @@ describe('use-service-local', () => {
       { id: 4, name: 'Juice' },
       { id: 5, name: 'King Bob' },
     ]
-    items.forEach((i) => itemStorage.set(i))
+    items.forEach(i => itemStorage.set(i))
   })
   test('findInStore', () => {
     const results = findInStore({ query: {} })

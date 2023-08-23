@@ -1,7 +1,7 @@
-import { api, makeContactsData } from '../fixtures/index.js'
-import { resetService } from '../test-utils.js'
 import { vi } from 'vitest'
 import { _ } from '@feathersjs/commons'
+import { api, makeContactsData } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
 
@@ -34,7 +34,7 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: false })
@@ -49,7 +49,7 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name' })
@@ -63,7 +63,7 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     const returned = await clone.save({ diff: 'scooby-doo' })
@@ -82,7 +82,7 @@ describe('instance patch diffing', () => {
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: ['name', 'test'] })
@@ -98,7 +98,7 @@ describe('instance patch diffing', () => {
     clone.test = true
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: ['name', 'test'] })
@@ -114,7 +114,7 @@ describe('instance patch diffing', () => {
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: { name: 'test' } })
@@ -128,7 +128,7 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: 'test' })
@@ -143,7 +143,7 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.test = false
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: ['test'] })
@@ -158,7 +158,7 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.test = true
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: { test: false } })

@@ -1,6 +1,6 @@
-import { useDataStore } from '../../src'
 import { createPinia, defineStore } from 'pinia'
-import { ref, computed } from 'vue-demi'
+import { computed, ref } from 'vue-demi'
+import { useDataStore } from '../../src'
 
 const pinia = createPinia()
 
@@ -357,7 +357,8 @@ describe('standalone stores', () => {
       try {
         store.patchInStore(null, ref({ description: 'foo' }), { query: {} })
         expect(false)
-      } catch (err) {
+      }
+      catch (err) {
         expect(err.message.includes('cannot perform multiple patchInStore with an empty query'))
       }
     })

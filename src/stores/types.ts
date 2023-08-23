@@ -156,9 +156,9 @@ export interface QueryWhenContext {
   qidData: PaginationStateQid
   queryData: PaginationStateQuery
   pageData: PaginationStatePage
-  isPending: ComputedRef<Boolean>
-  haveBeenRequested: ComputedRef<Boolean>
-  haveLoaded: ComputedRef<Boolean>
+  isPending: ComputedRef<boolean>
+  haveBeenRequested: ComputedRef<boolean>
+  haveLoaded: ComputedRef<boolean>
   error: any
 }
 
@@ -245,8 +245,8 @@ export type HandleEventsFunction<M extends AnyData> = (item: M, ctx: { model: M;
 
 export type HandleEvents<M extends AnyData> =
   | {
-      [event in HandledEvents]: HandleEventsFunction<M>
-    }
+    [event in HandledEvents]: HandleEventsFunction<M>
+  }
   | boolean
 
 export type onReadFn<M extends AnyData> = (item: M) => M | Partial<M>

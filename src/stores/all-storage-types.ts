@@ -1,5 +1,5 @@
-import type { AnyData, MakeCopyOptions } from '../types.js'
 import fastCopy from 'fast-copy'
+import type { AnyData, MakeCopyOptions } from '../types.js'
 import { defineValues } from '../utils/index.js'
 import { useServiceTemps } from './temps.js'
 import { useServiceClones } from './clones.js'
@@ -10,7 +10,7 @@ interface UseAllStorageOptions {
   setupInstance: any
 }
 
-export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOptions) => {
+export function useAllStorageTypes<M extends AnyData>(options: UseAllStorageOptions) {
   const { getIdField, setupInstance } = options
 
   /**
@@ -44,7 +44,7 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
 
   // temp item storage
   const { tempStorage, moveTempToItems } = useServiceTemps<M>({
-    getId: (item) => item.__tempId,
+    getId: item => item.__tempId,
     itemStorage,
     beforeWrite: setupInstance,
     onRead: setupInstance,
@@ -71,10 +71,14 @@ export const useAllStorageTypes = <M extends AnyData>(options: UseAllStorageOpti
     const id = getIdField(item)
     item = setupInstance(item)
 
-    if (item.__isClone) return cloneStorage.merge(item)
-    else if (id != null && item.__tempId != null) return moveTempToItems(item)
-    else if (id != null) return itemStorage.merge(item)
-    else if (tempStorage && item.__tempId != null) return tempStorage?.merge(item)
+    if (item.__isClone)
+      return cloneStorage.merge(item)
+    else if (id != null && item.__tempId != null)
+      return moveTempToItems(item)
+    else if (id != null)
+      return itemStorage.merge(item)
+    else if (tempStorage && item.__tempId != null)
+      return tempStorage?.merge(item)
 
     return itemStorage.merge(item)
   }

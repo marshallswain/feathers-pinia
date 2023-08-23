@@ -1,7 +1,7 @@
 import { ref } from 'vue-demi'
+import { vi } from 'vitest'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService, timeout } from '../test-utils.js'
-import { vi } from 'vitest'
 
 const service = api.service('contacts')
 
@@ -240,7 +240,7 @@ describe('useGet', () => {
       await contact$.request
 
       expect(contact$.data).toBe(null)
-      expect(contact$.error.message).toBe("No record found for id 'A'")
+      expect(contact$.error.message).toBe('No record found for id \'A\'')
 
       contact$.clearError()
 

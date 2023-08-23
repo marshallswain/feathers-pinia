@@ -1,13 +1,13 @@
 import type { Params as FeathersParams, FeathersService, Id } from '@feathersjs/feathers'
-import type { AnyData, Params, Query } from './types.js'
 import type { MaybeRef } from '@vueuse/core'
-import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get/index.js'
 import type { ComputedRef } from 'vue-demi'
-import { reactive, computed, isRef, ref, unref } from 'vue-demi'
-import { getParams, existingServiceMethods } from './utils/index.js'
+import { computed, isRef, reactive, ref, unref } from 'vue-demi'
+import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get/index.js'
+import type { AnyData, Params, Query } from './types.js'
+import { existingServiceMethods, getParams } from './utils/index.js'
 import { useFind, useGet } from './use-find-get/index.js'
 import { convertData } from './utils/convert-data'
-import { ServiceInstance } from './modeling/index.js'
+import type { ServiceInstance } from './modeling/index.js'
 
 interface PiniaServiceOptions {
   servicePath: string
@@ -107,9 +107,9 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * remove a record from the API server.
    */
-  async remove(id: Id, _params?: MaybeRef<Params<Query>>) {
+  async remove(id: MaybeRef<Id>, _params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
-    const result = await this.service.remove(id, params)
+    const result = await this.service.remove(unref(id), params)
     return result
   }
 
@@ -147,7 +147,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * get a single record from the store by id
    */
-  getFromStore(id: Id, params?: MaybeRef<Params<Query>>): ComputedRef<ServiceInstance<AnyData>> {
+  getFromStore(id: MaybeRef<Id>, params?: MaybeRef<Params<Query>>): ComputedRef<ServiceInstance<AnyData>> {
     const result = this.store.getFromStore(id, params)
     return result
   }
@@ -180,7 +180,8 @@ export class PiniaService<Svc extends FeathersService> {
     if (item) {
       const result = this.store.removeFromStore(item)
       return result
-    } else if (id == null && unref(params)?.query) {
+    }
+    else if (id == null && unref(params)?.query) {
       const result = this.store.removeByQuery(params)
       return result
     }

@@ -8,8 +8,7 @@ export function clearStorage(storage: Storage = window.localStorage) {
   const prefix = 'service:' // replace this with your prefix
   for (let i = 0; i < storage.length; i++) {
     const key = storage.key(i)
-    if (key?.startsWith(prefix)) {
+    if (key?.startsWith(prefix))
       storage.removeItem(key)
-    }
   }
 }

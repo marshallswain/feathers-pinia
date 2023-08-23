@@ -47,9 +47,9 @@ describe('paginateOn: server', () => {
 
     // run the query if we don't already have items.
     contacts$.queryWhen(() => {
-      if (!contacts$.currentQuery || !contacts$.currentQuery.items.length) {
+      if (!contacts$.currentQuery || !contacts$.currentQuery.items.length)
         return true
-      }
+
       return false
     })
 
@@ -105,7 +105,8 @@ describe('paginateOn: server', () => {
     expect(contacts$.error).toBe(null)
     try {
       expect(await contacts$.find()).toThrow()
-    } catch (err: any) {
+    }
+    catch (err: any) {
       expect(err.message).toBe('fail')
       expect(contacts$.error.message).toBe('fail')
 
@@ -134,7 +135,8 @@ describe('paginateOn: server', () => {
 
     try {
       expect(await contacts$.find()).toThrow()
-    } catch (err: any) {
+    }
+    catch (err: any) {
       expect(err.message).toBe('fail')
       expect(contacts$.error.message).toBe('fail')
 
@@ -214,7 +216,7 @@ describe('latestQuery and previousQuery', () => {
       })
       await contacts$.find()
 
-      const idsFromFirstPage = contacts$.data.map((i) => i._id)
+      const idsFromFirstPage = contacts$.data.map(i => i._id)
       expect(idsFromFirstPage).toEqual(['1', '2', '3', '4'])
 
       contacts$.next()
@@ -223,12 +225,12 @@ describe('latestQuery and previousQuery', () => {
 
       await timeout(0)
 
-      const idsWhilePending = contacts$.data.map((i) => i._id)
+      const idsWhilePending = contacts$.data.map(i => i._id)
       expect(idsWhilePending).toEqual(idsFromFirstPage)
 
       await contacts$.request
 
-      const idsAfterRequest = contacts$.data.map((i) => i._id)
+      const idsAfterRequest = contacts$.data.map(i => i._id)
       expect(idsAfterRequest).not.toEqual(idsFromFirstPage)
       expect(idsAfterRequest).not.toEqual(idsWhilePending)
     }, 400000)
@@ -239,7 +241,8 @@ describe('latestQuery and previousQuery', () => {
     const name = ref('Moose')
 
     const params = computed(() => {
-      if (!shouldQuery.value) return null
+      if (!shouldQuery.value)
+        return null
       return { query: { name } }
     })
     const contacts$ = service.useFind(params, { paginateOn: 'server' })

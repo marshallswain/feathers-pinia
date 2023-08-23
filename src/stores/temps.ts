@@ -10,7 +10,7 @@ interface UseServiceTempsOptions<M extends AnyData> {
   beforeWrite?: beforeWriteFn<M>
 }
 
-export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptions<M>) => {
+export function useServiceTemps<M extends AnyData>(options: UseServiceTempsOptions<M>) {
   const { getId, itemStorage, onRead, beforeWrite } = options
 
   const tempStorage = useServiceStorage<M>({
@@ -20,7 +20,8 @@ export const useServiceTemps = <M extends AnyData>(options: UseServiceTempsOptio
   })
 
   function moveTempToItems(data: M) {
-    if (tempStorage.has(data)) tempStorage.remove(data)
+    if (tempStorage.has(data))
+      tempStorage.remove(data)
 
     return itemStorage.set(data)
   }

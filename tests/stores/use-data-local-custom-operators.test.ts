@@ -1,6 +1,6 @@
 import sift, { createEqualsOperation } from 'sift'
 import { api, makeContactsData } from '../fixtures/index.js'
-import { like, iLike, sqlOperations } from '../../src/stores/utils-custom-operators'
+import { iLike, like, sqlOperations } from '../../src/stores/utils-custom-operators'
 import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
@@ -8,7 +8,7 @@ const service = api.service('contacts')
 describe('Custom Getter Operators', () => {
   test('can implement custom operator', () => {
     function $customMod(params, ownerQuery, options) {
-      return createEqualsOperation((value) => value % params !== 0, ownerQuery, options)
+      return createEqualsOperation(value => value % params !== 0, ownerQuery, options)
     }
     const filter = sift({ $customMod: 2 }, { operations: { $customMod } })
     const values = [1, 2, 3, 4, 5].filter(filter) // 1, 3, 5
@@ -98,26 +98,26 @@ describe('Filtering With findInStore', () => {
 
   test('can filter objects by like', async () => {
     const { data } = service.findInStore({ query: { name: { $like: '%Mo%' } } })
-    expect(data.map((m) => m._id)).toEqual(['1'])
+    expect(data.map(m => m._id)).toEqual(['1'])
   })
 
   test('can filter objects by notLike', async () => {
     const { data } = service.findInStore({ query: { name: { $notLike: '%Mo%' } } })
-    expect(data.map((m) => m._id)).toEqual(['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'])
+    expect(data.map(m => m._id)).toEqual(['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'])
   })
 
   test('can filter objects by ilike', async () => {
     const { data } = service.findInStore({ query: { name: { $ilike: '%Mo%' } } })
-    expect(data.map((m) => m._id)).toEqual(['1', '2'])
+    expect(data.map(m => m._id)).toEqual(['1', '2'])
   })
 
   test('can filter objects by iLike', async () => {
     const { data } = service.findInStore({ query: { name: { $iLike: '%Mo%' } } })
-    expect(data.map((m) => m._id)).toEqual(['1', '2'])
+    expect(data.map(m => m._id)).toEqual(['1', '2'])
   })
 
   test('can filter objects by notILike', async () => {
     const { data } = service.findInStore({ query: { name: { $notILike: '%Mo%' } } })
-    expect(data.map((m) => m._id)).toEqual(['3', '4', '5', '6', '7', '8', '9', '10', '11', '12'])
+    expect(data.map(m => m._id)).toEqual(['3', '4', '5', '6', '7', '8', '9', '10', '11', '12'])
   })
 })

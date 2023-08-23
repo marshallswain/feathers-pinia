@@ -1,15 +1,15 @@
 import type { Application, FeathersService } from '@feathersjs/feathers'
-import type { HandleEvents } from './stores/index.js'
-import type { AnyData } from './types.js'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
+import type { HandleEvents } from './stores/index.js'
+import type { AnyData } from './types.js'
 import { PiniaService } from './create-pinia-service.js'
 import type { Service } from './modeling/use-feathers-instance.js'
-import { useServiceStore, useServiceEvents } from './stores/index.js'
+import { useServiceEvents, useServiceStore } from './stores/index.js'
 import { feathersPiniaHooks } from './hooks/index.js'
 import { storeAssociated, useServiceInstance } from './modeling/index.js'
 import { defineGetters } from './utils/index.js'
-import { clearStorage, syncWithStorage as __sync } from './localstorage/index.js'
+import { syncWithStorage as __sync, clearStorage } from './localstorage/index.js'
 
 interface SetupInstanceUtils {
   app?: any
@@ -55,7 +55,7 @@ export function createPiniaClient<Client extends Application>(
 ): Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions {
   const vueApp = feathers()
 
-  vueApp.defaultService = function (location: string) {
+    ;(vueApp as any).defaultService = function (location: string) {
     const serviceOptions = options.services?.[location] || {}
 
     // combine service and global options
@@ -64,10 +64,10 @@ export function createPiniaClient<Client extends Application>(
     const whitelist = (serviceOptions.whitelist || []).concat(options.whitelist || [])
     const paramsForServer = (serviceOptions.paramsForServer || []).concat(options.paramsForServer || [])
     const handleEvents = serviceOptions.handleEvents || options.handleEvents
-    const debounceEventsTime =
-      serviceOptions.debounceEventsTime != null ? serviceOptions.debounceEventsTime : options.debounceEventsTime
-    const debounceEventsGuarantee =
-      serviceOptions.debounceEventsGuarantee != null
+    const debounceEventsTime
+      = serviceOptions.debounceEventsTime != null ? serviceOptions.debounceEventsTime : options.debounceEventsTime
+    const debounceEventsGuarantee
+      = serviceOptions.debounceEventsGuarantee != null
         ? serviceOptions.debounceEventsGuarantee
         : options.debounceEventsGuarantee
     const customSiftOperators = Object.assign(
@@ -88,6 +88,7 @@ export function createPiniaClient<Client extends Application>(
       const svc = vueApp.service(location) as Service
       const asFeathersModel = useServiceInstance(data, {
         service: svc,
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         store,
       })
 
@@ -118,23 +119,22 @@ export function createPiniaClient<Client extends Application>(
     // storage-sync
     if (!options.ssr && options.storage) {
       const defaultStorageKeys = ['itemsById', 'pagination']
-      const globalStorageKeys =
-        options.syncWithStorage === true
+      const globalStorageKeys
+        = options.syncWithStorage === true
           ? defaultStorageKeys
           : Array.isArray(options.syncWithStorage)
-          ? options.syncWithStorage
-          : []
-      const serviceStorageKeys =
-        serviceOptions.syncWithStorage === true
+            ? options.syncWithStorage
+            : []
+      const serviceStorageKeys
+        = serviceOptions.syncWithStorage === true
           ? defaultStorageKeys
           : Array.isArray(serviceOptions.syncWithStorage)
-          ? serviceOptions.syncWithStorage
-          : []
+            ? serviceOptions.syncWithStorage
+            : []
       const syncWithStorage = [...new Set([...globalStorageKeys, ...serviceStorageKeys])]
       const shouldSyncStorage = syncWithStorage.length > 0
-      if (shouldSyncStorage) {
+      if (shouldSyncStorage)
         __sync(store, syncWithStorage, options.storage)
-      }
     }
 
     const clientService = client.service(location)
@@ -172,9 +172,8 @@ export function createPiniaClient<Client extends Application>(
       return (client as any).logout
     },
     clearStorage() {
-      if (!options.ssr && options.storage) {
+      if (!options.ssr && options.storage)
         return clearStorage(options.storage)
-      }
     },
   })
 

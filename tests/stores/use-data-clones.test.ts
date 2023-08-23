@@ -1,7 +1,7 @@
 import { useServiceClones, useServiceStorage } from '../../src'
 
-const itemStorage = useServiceStorage({ getId: (item) => item.id })
-const tempStorage = useServiceStorage({ getId: (item) => item.tempId })
+const itemStorage = useServiceStorage({ getId: item => item.id })
+const tempStorage = useServiceStorage({ getId: item => item.tempId })
 const { cloneStorage, clone, commit, reset } = useServiceClones({ itemStorage, tempStorage })
 
 describe('use-service-clones', () => {

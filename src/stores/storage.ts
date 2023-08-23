@@ -1,7 +1,7 @@
 import type { Id } from '@feathersjs/feathers'
-import type { ById, AnyData } from '../types.js'
-import type { AssignFn, beforeWriteFn, onReadFn } from './types.js'
 import { computed, reactive, del as vueDel, set as vueSet } from 'vue-demi'
+import type { AnyData, ById } from '../types.js'
+import type { AssignFn, beforeWriteFn, onReadFn } from './types.js'
 
 interface UseServiceStorageOptions<M extends AnyData> {
   getId: (item: M) => string
@@ -15,12 +15,12 @@ export type StorageMapUtils<M extends AnyData> = ReturnType<typeof useServiceSto
 /**
  * General storage adapter
  */
-export const useServiceStorage = <M extends AnyData>({
+export function useServiceStorage<M extends AnyData>({
   getId,
-  onRead = (item) => item,
-  beforeWrite = (item) => item,
+  onRead = item => item,
+  beforeWrite = item => item,
   assign = (dest, src) => Object.assign(dest, src),
-}: UseServiceStorageOptions<M>) => {
+}: UseServiceStorageOptions<M>) {
   const byId: ById<M> = reactive({})
 
   const list = computed(() => {
@@ -30,6 +30,15 @@ export const useServiceStorage = <M extends AnyData>({
   const ids = computed(() => {
     return Object.keys(byId)
   })
+
+  /**
+   * Checks if an item with the provided `id` is stored.
+   * @param id
+   * @returns
+   */
+  const hasItem = (id: Id) => {
+    return !!byId[id]
+  }
 
   /**
    * Checks if the provided `item` is stored.
@@ -42,12 +51,31 @@ export const useServiceStorage = <M extends AnyData>({
   }
 
   /**
-   * Checks if an item with the provided `id` is stored.
+   * Retrives the stored record that matches the provided `id`.
    * @param id
    * @returns
    */
-  const hasItem = (id: Id) => {
-    return !!byId[id]
+  const getItem = (id: Id) => {
+    const inStore = byId[id]
+    const _item = inStore ? onRead(inStore) : null
+    return _item as M
+  }
+
+  const setItem = (id: Id, item: M) => {
+    if (id == null)
+      throw new Error('item has no id')
+    vueSet(byId, id, beforeWrite(item))
+    return getItem(id)
+  }
+
+  /**
+   * Writes the provided item to the store
+   * @param item item to store
+   * @returns
+   */
+  const set = (item: M) => {
+    const id = getId(item) as Id
+    return setItem(id, item)
   }
 
   /**
@@ -59,7 +87,8 @@ export const useServiceStorage = <M extends AnyData>({
   const merge = (item: M) => {
     const id = getId(item) as Id
     const existing = getItem(id)
-    if (existing) assign(existing, item)
+    if (existing)
+      assign(existing, item)
     else setItem(id, item)
 
     return getItem(id)
@@ -76,30 +105,16 @@ export const useServiceStorage = <M extends AnyData>({
   }
 
   /**
-   * Retrives the stored record that matches the provided `id`.
+   * Remove item with matching `id`, if found.
    * @param id
-   * @returns
+   * @returns boolean indicating if an item was removed
    */
-  const getItem = (id: Id) => {
-    const inStore = byId[id]
-    const _item = inStore ? onRead(inStore) : null
-    return _item as M
-  }
+  const removeItem = (id: Id) => {
+    const hadItem = hasItem(id)
+    if (hadItem)
+      vueDel(byId, id)
 
-  /**
-   * Writes the provided item to the store
-   * @param item item to store
-   * @returns
-   */
-  const set = (item: M) => {
-    const id = getId(item) as Id
-    return setItem(id, item)
-  }
-
-  const setItem = (id: Id, item: M) => {
-    if (id == null) throw new Error('item has no id')
-    vueSet(byId, id, beforeWrite(item))
-    return getItem(id)
+    return hadItem
   }
 
   /**
@@ -110,18 +125,6 @@ export const useServiceStorage = <M extends AnyData>({
   const remove = (item: M) => {
     const id = getId(item) as Id
     return removeItem(id)
-  }
-
-  /**
-   * Remove item with matching `id`, if found.
-   * @param id
-   * @returns boolean indicating if an item was removed
-   */
-  const removeItem = (id: Id) => {
-    const hadItem = hasItem(id)
-    if (hadItem) vueDel(byId, id)
-
-    return hadItem
   }
 
   const getKeys = () => {

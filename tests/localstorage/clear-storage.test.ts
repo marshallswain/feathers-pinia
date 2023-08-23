@@ -1,21 +1,22 @@
-import { syncWithStorage, clearStorage } from '../../src'
+/* eslint-disable @typescript-eslint/no-invalid-this */
+import { vi } from 'vitest'
+import { clearStorage, syncWithStorage } from '../../src'
 import { api } from '../fixtures/index.js'
 import { resetService, timeout } from '../test-utils.js'
-import { vi } from 'vitest'
 
 const service = api.service('contacts')
 
 const localStorageMock: Storage = {
-  getItem: vi.fn(),
-  setItem: vi.fn(function () {
+  'getItem': vi.fn(),
+  'setItem': vi.fn(function () {
     this.length++
   }),
-  removeItem: vi.fn(function () {
+  'removeItem': vi.fn(function () {
     this.length--
   }),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(function () {
+  'clear': vi.fn(),
+  'length': 0,
+  'key': vi.fn(() => {
     return 'service:contacts'
   }),
 

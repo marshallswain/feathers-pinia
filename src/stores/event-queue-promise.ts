@@ -11,15 +11,18 @@ interface QueuePromiseState {
 const events = ['created', 'updated', 'patched', 'removed']
 const state: { [key: string]: QueuePromiseState } = {}
 
-export const makeGetterName = (event: EventName) =>
-  `is${event.slice(0, 1).toUpperCase()}${event.slice(1, event.length - 1)}Pending`
+export function makeGetterName(event: EventName) {
+  return `is${event.slice(0, 1).toUpperCase()}${event.slice(1, event.length - 1)}Pending`
+}
 
-export const makeState = (event: EventName) => ({
-  promise: null,
-  isResolved: false,
-  getter: makeGetterName(event),
-})
-export const resetState = () => {
+export function makeState(event: EventName) {
+  return {
+    promise: null,
+    isResolved: false,
+    getter: makeGetterName(event),
+  }
+}
+export function resetState() {
   events.forEach((e) => {
     delete state[e]
   })

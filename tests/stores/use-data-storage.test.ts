@@ -1,7 +1,7 @@
 import { useServiceStorage } from '../../src'
 
 const storage = useServiceStorage({
-  getId: (item) => item.id,
+  getId: item => item.id,
 })
 
 describe('use-service-storage', () => {
@@ -15,8 +15,8 @@ describe('use-service-storage', () => {
       { id: 2, name: 'Two' },
       { id: 3, name: 'Three' },
     ]
-    const ids = items.map((i) => i.id.toString())
-    items.map((item) => storage.set(item))
+    const ids = items.map(i => i.id.toString())
+    items.map(item => storage.set(item))
     expect(storage.list.value).toEqual(items)
     expect(storage.ids.value).toEqual(ids)
   })
@@ -98,7 +98,7 @@ describe('use-service-storage', () => {
       { id: 2, name: 'Two' },
       { id: 3, name: 'Three' },
     ]
-    items.map((item) => storage.set(item))
+    items.map(item => storage.set(item))
     expect(storage.list.value.length).toEqual(3)
     storage.clear()
     expect(storage.list.value.length).toEqual(0)

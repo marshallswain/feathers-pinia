@@ -49,7 +49,8 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   // user
   const userId = ref<NullableId>(null)
   const user = computed(() => {
-    if (!entityService) return null
+    if (!entityService)
+      return null
     const u = entityService?.getFromStore(userId)
     return u.value || null
   })
@@ -96,7 +97,8 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
     try {
       const payload = decode(jwt) as any
       return new Date().getTime() > payload.exp * 1000
-    } catch (error) {
+    }
+    catch (error) {
       return false
     }
   }

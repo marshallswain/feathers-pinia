@@ -1,7 +1,7 @@
 import type { HookContext, NextFunction } from '@feathersjs/feathers'
 import type { AnyData } from '../types.js'
 
-export const makeModelInstances = () => {
+export function makeModelInstances() {
   return async (context: HookContext, next: NextFunction) => {
     if (next)
       await next()

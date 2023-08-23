@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
+import path from 'node:path'
 import { defineConfig } from 'vite'
-import path from 'path'
 import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
 
@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [vue(), dts()],
   server: {
     hmr: {
-      port: parseInt(process.env.KUBERNETES_SERVICE_PORT as string, 10) || 3000,
+      port: Number.parseInt(process.env.KUBERNETES_SERVICE_PORT as string, 10) || 3000,
     },
   },
   build: {
@@ -37,8 +37,8 @@ export default defineConfig({
         // for externalized deps
         globals: {
           'vue-demi': 'VueDemi',
-          vue: 'Vue',
-          pinia: 'pinia',
+          'vue': 'Vue',
+          'pinia': 'pinia',
           '@feathersjs/commons': 'commons',
           '@feathersjs/errors': 'errors',
           '@feathersjs/adapter-commons': 'adapterCommons',

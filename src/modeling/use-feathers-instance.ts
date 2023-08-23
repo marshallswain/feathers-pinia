@@ -1,9 +1,9 @@
 import { BadRequest } from '@feathersjs/errors'
 import type { FeathersService, Params } from '@feathersjs/feathers'
 import type { AnyData } from '../types.js'
-import { defineValues, defineGetters } from '../utils/define-properties'
-import type { ServiceInstanceProps } from './types.js'
+import { defineGetters, defineValues } from '../utils/define-properties'
 import type { PiniaService } from '../create-pinia-service.js'
+import type { ServiceInstanceProps } from './types.js'
 
 export type Service = FeathersService | PiniaService<FeathersService>
 
@@ -12,11 +12,10 @@ export interface useServiceInstanceOptions<S extends Service> {
   store: any
 }
 
-export const useServiceInstance = <M extends AnyData, S extends Service, P extends Params = Params>(
-  data: M,
-  options: useServiceInstanceOptions<S>,
-) => {
-  if (data.__isServiceInstance) return data
+export function useServiceInstance<M extends AnyData, S extends Service, P extends Params = Params>(data: M,
+  options: useServiceInstanceOptions<S>) {
+  if (data.__isServiceInstance)
+    return data
 
   const { service, store } = options
   const merge = (data: M, toMerge: AnyData) => Object.assign(data, toMerge)
@@ -46,20 +45,22 @@ export const useServiceInstance = <M extends AnyData, S extends Service, P exten
       return id != null ? this.patch(params) : this.create(params)
     },
     create(this: M, params?: P): Promise<M> {
-      return service.create(this, params).then((result) => merge(this, result))
+      return service.create(this, params).then(result => merge(this, result))
     },
     patch(this: M, params?: P): Promise<M> {
       const id = this[store.idField]
-      if (id === undefined) throw new BadRequest('the item has no id')
-      return service.patch(id, this, params).then((result) => merge(this, result))
+      if (id === undefined)
+        throw new BadRequest('the item has no id')
+      return service.patch(id, this, params).then(result => merge(this, result))
     },
     remove(this: M, params?: P): Promise<M> {
       if (this.__isTemp) {
         store.removeFromStore(this.__tempId)
         return Promise.resolve(this)
-      } else {
+      }
+      else {
         const id = this[store.idField]
-        return service.remove(id, params).then((result) => merge(this, result))
+        return service.remove(id, params).then(result => merge(this, result))
       }
     },
   })

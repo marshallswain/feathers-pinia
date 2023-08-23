@@ -1,12 +1,12 @@
 import type { Query } from '@feathersjs/feathers'
 
 import { computed, unref } from 'vue-demi'
+import type { MaybeRef } from '@vueuse/core'
 import type { AnyData } from '../types.js'
-import { MaybeRef } from '@vueuse/core'
+import { useModelInstance } from '../modeling/use-model-instance'
 import { useServiceLocal } from './local-queries.js'
 
 import { useAllStorageTypes } from './all-storage-types.js'
-import { useModelInstance } from '../modeling/use-model-instance'
 
 export interface UseDataStoreOptions {
   idField: string
@@ -15,13 +15,32 @@ export interface UseDataStoreOptions {
   setupInstance?: any
 }
 
-const makeDefaultOptions = () => ({
-  skipGetIfExists: false,
-})
+function makeDefaultOptions() {
+  return {
+    skipGetIfExists: false,
+  }
+}
 
-export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDataStoreOptions) => {
+export function useDataStore<M extends AnyData, Q extends Query>(_options: UseDataStoreOptions) {
   const options = Object.assign({}, makeDefaultOptions(), _options)
   const { idField, customSiftOperators } = options
+
+  // storage
+  const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
+    getIdField: (val: AnyData) => val[idField],
+    setupInstance,
+  })
+
+  // local data filtering
+  const { findInStore, findOneInStore, countInStore, getFromStore, createInStore, patchInStore, removeFromStore }
+    = useServiceLocal<M, Q>({
+      idField,
+      itemStorage,
+      tempStorage,
+      cloneStorage,
+      addItemToStorage,
+      customSiftOperators,
+    })
 
   function setupInstance<N extends M>(this: any, data: N) {
     const asBaseModel = useModelInstance(data, {
@@ -34,19 +53,15 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDa
       removeFromStore,
     })
 
-    if (data.__isSetup) return asBaseModel
+    if (data.__isSetup) {
+      return asBaseModel
+    }
     else {
       const afterSetup = options.setupInstance ? options.setupInstance(asBaseModel) : asBaseModel
       Object.defineProperty(afterSetup, '__isSetup', { value: true })
       return afterSetup
     }
   }
-
-  // storage
-  const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
-    getIdField: (val: AnyData) => val[idField],
-    setupInstance,
-  })
 
   const isSsr = computed(() => {
     const ssr = unref(options.ssr)
@@ -58,17 +73,6 @@ export const useDataStore = <M extends AnyData, Q extends Query>(_options: UseDa
     tempStorage.clear()
     cloneStorage.clear()
   }
-
-  // local data filtering
-  const { findInStore, findOneInStore, countInStore, getFromStore, createInStore, patchInStore, removeFromStore } =
-    useServiceLocal<M, Q>({
-      idField,
-      itemStorage,
-      tempStorage,
-      cloneStorage,
-      addItemToStorage,
-      customSiftOperators,
-    })
 
   const store = {
     new: setupInstance,
