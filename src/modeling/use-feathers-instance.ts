@@ -51,7 +51,7 @@ export function useServiceInstance<M extends AnyData, S extends Service, P exten
       const id = this[store.idField]
       if (id === undefined)
         throw new BadRequest('the item has no id')
-      return service.patch(id, this, params).then(result => merge(this, result))
+      return (service as FeathersService).patch(id as any, this as any, params as any).then(result => merge(this, result))
     },
     remove(this: M, params?: P): Promise<M> {
       if (this.__isTemp) {
@@ -60,7 +60,7 @@ export function useServiceInstance<M extends AnyData, S extends Service, P exten
       }
       else {
         const id = this[store.idField]
-        return service.remove(id, params).then(result => merge(this, result))
+        return (service as FeathersService).remove(id, params).then(result => merge(this, result))
       }
     },
   })
