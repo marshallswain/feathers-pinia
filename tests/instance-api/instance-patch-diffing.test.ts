@@ -14,7 +14,7 @@ afterEach(() => resetService(service))
 describe('instance patch diffing', () => {
   test('diff by default ', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
@@ -45,7 +45,7 @@ describe('instance patch diffing', () => {
 
   test('diff string overrides the default diffing algorithm', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
@@ -77,7 +77,7 @@ describe('instance patch diffing', () => {
 
   test('diff array of strings', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
@@ -93,7 +93,7 @@ describe('instance patch diffing', () => {
 
   test('diff array of strings, only one value changes', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = true
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
@@ -109,7 +109,7 @@ describe('instance patch diffing', () => {
 
   test('diff with object', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
@@ -124,7 +124,7 @@ describe('instance patch diffing', () => {
   })
 
   test('diff and with as string', async () => {
-    const contact = await service.new({ test: 'foo' }).save()
+    const contact = await service.new({ test: 'foo' } as any).save()
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
@@ -139,7 +139,7 @@ describe('instance patch diffing', () => {
 
   test('diff and with as array', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = false
 
@@ -154,7 +154,7 @@ describe('instance patch diffing', () => {
 
   test('diff and with as object', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = true
 

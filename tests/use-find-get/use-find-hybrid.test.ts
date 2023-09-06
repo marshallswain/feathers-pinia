@@ -530,7 +530,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate + 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -547,7 +547,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate + 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -563,7 +563,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -580,7 +580,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -596,7 +596,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -613,7 +613,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -629,7 +629,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -652,7 +652,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -674,7 +674,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
@@ -702,7 +702,7 @@ describe('useFind', () => {
 
     await contacts$.request
     expect(contacts$.data.length).toBe(10)
-    const first = contacts$.data[0]
+    const first = contacts$.data[0] as any
     const birthdate = first.birthdate - 1
     const copyOfFirst = { _id: 100, name: 'Steve', age: first.age, birthdate, added: true }
 
