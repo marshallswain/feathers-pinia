@@ -10,7 +10,7 @@ import { feathersPiniaHooks } from './hooks/index.js'
 import { storeAssociated, useServiceInstance } from './modeling/index.js'
 import { defineGetters } from './utils/index.js'
 import { clearStorage, syncWithStorage as __sync } from './localstorage/index.js'
-import { clearStorage as clearStoragePlugin, syncWithStorage as __syncPlugin } from './storageplugin/index.js'
+import { StoragePlugin, clearStorage as clearStoragePlugin, syncWithStorage as __syncPlugin } from './storageplugin/index.js'
 
 interface SetupInstanceUtils {
   app?: any
@@ -37,7 +37,8 @@ interface CreatePiniaClientConfig extends PiniaServiceConfig {
   idField: string
   pinia: any
   ssr?: boolean
-  storage?: Storage
+  storage?: Storage,
+  storagePlugin?: StoragePlugin,
   services?: Record<string, PiniaServiceConfig>
 }
 
@@ -134,10 +135,10 @@ export function createPiniaClient<Client extends Application>(
       const syncWithStorage = [...new Set([...globalStorageKeys, ...serviceStorageKeys])]
       const shouldSyncStorage = syncWithStorage.length > 0
       if (shouldSyncStorage) {
-        if (options.storage instanceof Storage) {
-          __sync(store, syncWithStorage, options.storage)
-        } else {
+        if (options.storagePlugin) {
           __syncPlugin(store, syncWithStorage, options.storage)
+        } else {
+          __sync(store, syncWithStorage, options.storage)
         }
       }
     }
@@ -177,11 +178,11 @@ export function createPiniaClient<Client extends Application>(
       return (client as any).logout
     },
     clearStorage() {
-      if (!options.ssr && options.storage) {
-        if (options.storage instanceof Storage) {
-          return clearStorage(options.storage)
-        } else {
+      if (!options.ssr && (options.storage || options.storagePlugin)) {
+        if (options.storagePlugin) {
           return clearStoragePlugin(options.storage)
+        } else {
+          return clearStorage(options.storage)
         }
       }
     },
