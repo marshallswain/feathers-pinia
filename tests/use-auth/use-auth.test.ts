@@ -57,6 +57,28 @@ describe('useAuth in Pinia store', () => {
       return { ...utils }
     })
   })
+
+  test('reAuthenticate', async () => {
+    const useAuthStore = defineStore('auth', () => {
+      const utils = useAuth({ api })
+      utils.reAuthenticate()
+      return { ...utils }
+    })
+
+    const authStore = useAuthStore()
+    const expectedResponse = {
+      accessToken: 'jwt-access-token',
+      payload: {
+        test: true,
+      },
+      user: {
+        email: 'test@test.com',
+        id: 1,
+      },
+    }
+    const request = await authStore.reAuthenticate()
+    expect(request).toEqual(expectedResponse)
+  })
 })
 
 describe('useAuth in Pinia store with userStore', () => {

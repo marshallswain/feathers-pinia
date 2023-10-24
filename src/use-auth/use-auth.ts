@@ -106,8 +106,7 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   const isInitDone = ref(false)
   const reAuthenticate = async () => {
     authCounter.add()
-    promise.value = api.authentication
-      .then(() => api.reAuthenticate())
+    promise.value = api.reAuthenticate()
       .then(handleAuthResult)
       .then(async (result: Record<string, any>) => {
         const _result = await onInitSuccess(result)
