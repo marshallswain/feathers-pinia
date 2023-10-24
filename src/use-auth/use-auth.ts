@@ -1,7 +1,6 @@
 import type { Ref } from 'vue-demi'
 import type { NullableId } from '@feathersjs/feathers'
 import { computed, ref } from 'vue-demi'
-import { BadRequest } from '@feathersjs/errors'
 import decode from 'jwt-decode'
 import { useCounter } from '../utils/use-counter'
 
@@ -108,13 +107,6 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   const reAuthenticate = async () => {
     authCounter.add()
     promise.value = api.authentication
-      .getAccessToken()
-      .then((accessToken: string) => {
-        if (accessToken && !skipTokenCheck && isTokenExpired(accessToken)) {
-          api.authentication.removeAccessToken()
-          throw new BadRequest('accessToken expired')
-        }
-      })
       .then(() => api.reAuthenticate())
       .then(handleAuthResult)
       .then(async (result: Record<string, any>) => {
