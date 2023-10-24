@@ -83,7 +83,7 @@ export const useAuth = defineAuthStore({
 
 ```ts [useAuth (new)]
 // src/stores/auth.ts (new way)
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -95,9 +95,8 @@ export const useAuthStore = defineStore('auth', () => {
   return { ...utils }
 })
 
-if (import.meta.hot) {
+if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-}
 ```
 
 :::

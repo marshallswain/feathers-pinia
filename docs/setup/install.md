@@ -107,7 +107,7 @@ named the same as your API's `name` attribute in the api repo's `package.json`.
 ```json
 {
   "dependencies": {
-    "feathers-pinia-api": "http://localhost:3030/feathers-pinia-api-0.0.3.tgz",
+    "feathers-pinia-api": "http://localhost:3030/feathers-pinia-api-0.0.3.tgz"
   }
 }
 ```

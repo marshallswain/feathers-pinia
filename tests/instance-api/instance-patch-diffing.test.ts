@@ -1,7 +1,7 @@
-import { api, makeContactsData } from '../fixtures/index.js'
-import { resetService } from '../test-utils.js'
 import { vi } from 'vitest'
 import { _ } from '@feathersjs/commons'
+import { api, makeContactsData } from '../fixtures/index.js'
+import { resetService } from '../test-utils.js'
 
 const service = api.service('contacts')
 
@@ -14,7 +14,7 @@ afterEach(() => resetService(service))
 describe('instance patch diffing', () => {
   test('diff by default ', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
@@ -34,7 +34,7 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: false })
@@ -45,11 +45,11 @@ describe('instance patch diffing', () => {
 
   test('diff string overrides the default diffing algorithm', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name' })
@@ -63,7 +63,7 @@ describe('instance patch diffing', () => {
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     const returned = await clone.save({ diff: 'scooby-doo' })
@@ -77,12 +77,12 @@ describe('instance patch diffing', () => {
 
   test('diff array of strings', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: ['name', 'test'] })
@@ -93,12 +93,12 @@ describe('instance patch diffing', () => {
 
   test('diff array of strings, only one value changes', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = true
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: ['name', 'test'] })
@@ -109,12 +109,12 @@ describe('instance patch diffing', () => {
 
   test('diff with object', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = false
     clone.foo = new Date() // won't get diffed because it's excluded in params.diff
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: { name: 'test' } })
@@ -124,11 +124,11 @@ describe('instance patch diffing', () => {
   })
 
   test('diff and with as string', async () => {
-    const contact = await service.new({ test: 'foo' }).save()
+    const contact = await service.new({ test: 'foo' } as any).save()
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: 'test' })
@@ -139,11 +139,11 @@ describe('instance patch diffing', () => {
 
   test('diff and with as array', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = false
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: ['test'] })
@@ -154,11 +154,11 @@ describe('instance patch diffing', () => {
 
   test('diff and with as object', async () => {
     const contact = await service.new({}).save()
-    const clone = contact.clone()
+    const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.test = true
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save({ diff: 'name', with: { test: false } })

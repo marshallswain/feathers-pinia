@@ -25,8 +25,8 @@ In Feathers-Pinia, model classes are not required in all cases. Model classes ar
 If neither of the above scenarios applies to your situation, you can shorten the service setup and remove the `Model`.
 
 ```ts
-import { defineStore, BaseModel } from './store.pinia'
 import { api } from '../feathers'
+import { BaseModel, defineStore } from './store.pinia'
 
 const servicePath = 'users'
 export const useUsers = defineStore({ servicePath })
@@ -55,7 +55,7 @@ usersService.addToStore({ id: 0, name: 'Marshall' })
 Another potential caveat with using Model classes in Feathers-Pinia is that any default values defined on a class will override and overwrite the values provided in `instanceDefaults` UNLESS you assign them again in the extending class's constructor. Read the comment and string values in the next example for more information.
 
 ```ts
-import { defineStore, BaseModel } from './store.pinia'
+import { BaseModel, defineStore } from './store.pinia'
 
 class Message extends BaseModel {
   // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
@@ -64,7 +64,7 @@ class Message extends BaseModel {
   static instanceDefaults(data: Message) {
     return {
       text: 'this gets overwritten by the class-level `text`',
-      otherText: `this won't get overwritten and works great for a default value`,
+      otherText: 'this won\'t get overwritten and works great for a default value',
     }
   }
 }
@@ -76,8 +76,8 @@ console.log(message.text) // --> 'The text in the model always wins. You can onl
 Notice in the above example how even though we've provided `text: 'hello there!'` to the new message, the value ends up being the default value defined in the class definition. This is an important part of how extending classes works in JavaScript. If you definitely require to define instance properties inside the class definition, the workaround is to add a `constructor` to the class and re-assign the properties in the same way that the `BaseModel` constructor does it. Here's what it looks like:
 
 ```ts
-import { defineStore, BaseModel } from './store.pinia'
 import { models } from 'feathers-pinia'
+import { BaseModel, defineStore } from './store.pinia'
 
 class Message extends BaseModel {
   // This doesn't work as a default value. It will overwrite all passed-in values and always be this value.
@@ -98,7 +98,7 @@ class Message extends BaseModel {
   static instanceDefaults(data: Message, store: any) {
     return {
       text: 'gets overwritten by the class-level `text`',
-      otherText: `this works great for a default value because there's not a default initialized at the class level. But this could also be moved into the class definition`,
+      otherText: 'this works great for a default value because there\'s not a default initialized at the class level. But this could also be moved into the class definition',
     }
   }
 }
@@ -122,7 +122,7 @@ I've not tried this, but it might be possible to support compound keys in the `i
 It would look something like the example, below.
 
 ```ts
-import { defineStore, BaseModel } from 'feathers-pinia'
+import { BaseModel, defineStore } from 'feathers-pinia'
 import { Id } from '@feathersjs/feathers'
 import { api } from '../feathers'
 
@@ -138,6 +138,7 @@ export class User extends BaseModel {
   get myCompoundKey() {
     return `${this.name}:${this.timezone}`
   }
+
   // This would be necessary if you were going to manually set the key on the frontend.
   set myCompoundKey(val: string) {
     const [name, timezone] = val.split(':')

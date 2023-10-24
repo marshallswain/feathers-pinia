@@ -100,6 +100,6 @@ describe('PiniaService', () => {
 
     await contact.remove()
 
-    await expect(api.service('contacts').get(0)).rejects.toThrow("No record found for id '0'")
+    await expect(api.service('contacts').get(0)).rejects.toThrow('No record found for id \'0\'')
   })
 })

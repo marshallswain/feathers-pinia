@@ -27,7 +27,7 @@ so we'll get to that next.
 
 ```ts
 // src/stores/auth.ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -41,9 +41,8 @@ export const useAuthStore = defineStore('auth', () => {
   return { ...utils }
 })
 
-if (import.meta.hot) {
+if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-}
 ```
 
 ## useAuth with `userStore`
@@ -95,7 +94,7 @@ const state = reactive({
   confirmPassword: ''
 })
 // Check that passwords match, create the user, login, and redirect
-const submit = async () => {
+async function submit() {
   if (state.password === state.confirmPassword) {
     const { email, password } = state
     await userStore.create({ email, password })
@@ -103,7 +102,7 @@ const submit = async () => {
     redirect()
   }
 }
-const redirect = () => {
+function redirect() {
   const redirectTo = authStore.loginRedirect || '/app'
   authStore.loginRedirect = null
   router.push(redirectTo)
@@ -112,10 +111,12 @@ const redirect = () => {
 
 <template>
   <form>
-    <input type="text" v-model="state.email" placeholder="Enter E-mail" />
-    <input type="password" v-model="state.password" placeholder="Enter Password" />
-    <input type="password" v-model="state.confirmPassword" placeholder="Enter Password" />
-    <button type="submit" @click.prevent="submit">Signup</button>
+    <input v-model="state.email" type="text" placeholder="Enter E-mail">
+    <input v-model="state.password" type="password" placeholder="Enter Password">
+    <input v-model="state.confirmPassword" type="password" placeholder="Enter Password">
+    <button type="submit" @click.prevent="submit">
+      Signup
+    </button>
   </form>
 </template>
 ```
@@ -134,12 +135,12 @@ const state = reactive({
   password: '',
 })
 // login then redirect
-const submit = async () => {
+async function submit() {
   authStore.clearError()
   await authStore.authenticate({ strategy: 'local', ...state })
   redirect()
 }
-const redirect = () => {
+function redirect() {
   const redirectTo = authStore.loginRedirect || '/app'
   authStore.loginRedirect = null
   router.push(redirectTo)
@@ -148,9 +149,11 @@ const redirect = () => {
 
 <template>
   <form>
-    <input type="text" v-model="state.email" placeholder="Enter E-mail" />
-    <input type="password" v-model="state.password" placeholder="Enter Password" />
-    <button type="submit" @click.prevent="submit">Login</button>
+    <input v-model="state.email" type="text" placeholder="Enter E-mail">
+    <input v-model="state.password" type="password" placeholder="Enter Password">
+    <button type="submit" @click.prevent="submit">
+      Login
+    </button>
   </form>
 </template>
 ```
@@ -169,13 +172,15 @@ custom.  When an error occurs, the [error ref](#error) will update with the erro
 ```vue
 <template>
   <form>
-    <input type="text" v-model="state.email" placeholder="Enter E-mail" />
-    <input type="password" v-model="state.password" placeholder="Enter Password" />
+    <input v-model="state.email" type="text" placeholder="Enter E-mail">
+    <input v-model="state.password" type="password" placeholder="Enter Password">
     <!-- conditionally show the error -->
     <div v-if="authStore.error">
       {{ authStore.error?.message }}
     </div>
-    <button type="submit" @click.prevent="submit">Login</button>
+    <button type="submit" @click.prevent="submit">
+      Login
+    </button>
   </form>
 </template>
 ```
@@ -235,7 +240,7 @@ response in a ref:
 
     ```ts
     // src/store/store.auth.ts
-    import { defineStore, acceptHMRUpdate } from 'pinia'
+    import { acceptHMRUpdate, defineStore } from 'pinia'
     import { useAuth } from 'feathers-pinia'
 
     export const useAuthStore = defineStore('auth', () => {
@@ -244,10 +249,10 @@ response in a ref:
       const authResponse = ref<null | Record<string, any>>(null)
       const auth = useAuth({
         api,
-        onSuccess: async(result: any) => {
+        onSuccess: async (result: any) => {
           authResponse.value = result
         },
-        onInitSuccess: async(result: any) => {
+        onInitSuccess: async (result: any) => {
           authResponse.value = result
         }
       })
@@ -258,9 +263,8 @@ response in a ref:
       }
     })
 
-    if (import.meta.hot) {
+    if (import.meta.hot)
       import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-    }
     ```
 
 - Get the response from the [getPromise utility](#getpromise):
@@ -348,11 +352,11 @@ The `onSuccess` function is for handling `authenticate` success responses. The r
 [getPromise utility](#getpromise), which can be useful for route guards.
 
 ```ts
-onSuccess: async (result: AuthResult) => {
+async function onSuccess(result: AuthResult) {
   // transform the result, populate some data, initialize the app
   const newResult = await doSomeInitStuff(result)
   return newResults
-},
+}
 ```
 
 #### onError
@@ -362,8 +366,9 @@ onSuccess: async (result: AuthResult) => {
 Handles `authenticate` errors.
 
 ```ts
-onError: async (error: any) => {
+async function onError(error: any) {
   // handle the error according to business logic / requirements
+  console.log(error)
 }
 ```
 
@@ -374,7 +379,7 @@ onError: async (error: any) => {
 Handles `reAuthenticate` success.
 
 ```ts
-onInitSuccess: async (result: AuthResult) => {
+async function onInitSuccess(result: AuthResult) {
   // transform the result, populate some data, initialize the app
   const newResult = await doSomeInitStuff(result)
   return newResults
@@ -388,8 +393,9 @@ onInitSuccess: async (result: AuthResult) => {
 Handles `reAuthenticate` errors.
 
 ```ts
-onInitError: async (error: any) => {
+async function onInitError(error: any) {
   // handle the error according to business logic / requirements
+  console.log(error)
 }
 ```
 
@@ -400,7 +406,7 @@ onInitError: async (error: any) => {
 Handles `logout` success.
 
 ```ts
-onLogoutSuccess: async (result: any) => {
+async function onLogoutSuccess(result: any) {
   // clear data, etc.
   // return is optional
 }
@@ -413,8 +419,9 @@ onLogoutSuccess: async (result: any) => {
 Handles `logout` errors.
 
 ```ts
-onLogoutError: async (error: any) => {
+async function onLogoutError(error: any) {
   // handle the error according to business logic / requirements
+  console.log(error)
 }
 ```
 
@@ -426,7 +433,7 @@ to miss it.
 
 ```ts
 // src/store/store.auth.ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { userStore } = useUserStore()
@@ -434,13 +441,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   const setup = async ({ user }) => {
     await sleep(500)
-    // Make additional requests, populate data, 
+    // Make additional requests, populate data,
     // return additional data, if desired.
     return { user, foo: 'bar' }
   }
   const handleError = async (error: any) => {
     await sleep(500)
     // handle the error as you see fit.
+    console.log(error)
   }
 
   const utils = useAuth({
@@ -475,11 +483,10 @@ export const useAuthStore = defineStore('auth', () => {
   return { ...utils }
 })
 
-if (import.meta.hot) {
+if (import.meta.hot)
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-}
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 ```
 
 ### Returned Utils

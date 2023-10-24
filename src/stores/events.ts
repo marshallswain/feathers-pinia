@@ -1,10 +1,10 @@
 import type { FeathersService } from '@feathersjs/feathers'
-import type { HandleEvents, HandledEvents } from './types.js'
-import type { AnyData } from '../types.js'
 import { del, ref, set } from 'vue-demi'
-import { convertData, getId, hasOwn } from '../utils/index.js'
 import _debounce from 'just-debounce'
+import type { AnyData } from '../types.js'
+import { convertData, getId, hasOwn } from '../utils/index.js'
 import type { PiniaService } from '../create-pinia-service.js'
+import type { HandleEvents, HandledEvents } from './types.js'
 
 interface UseServiceStoreEventsOptions<M extends AnyData> {
   service: PiniaService<FeathersService<any, any>>
@@ -13,8 +13,9 @@ interface UseServiceStoreEventsOptions<M extends AnyData> {
   handleEvents?: HandleEvents<M>
 }
 
-export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEventsOptions<M>) => {
-  if (!options.service || options.handleEvents === false) return
+export function useServiceEvents<M extends AnyData>(options: UseServiceStoreEventsOptions<M>) {
+  if (!options.service || options.handleEvents === false)
+    return
 
   const service = options.service
 
@@ -24,7 +25,8 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
   const flushAddOrUpdateQueue = _debounce(
     async () => {
       const values = Object.values(addOrUpdateById.value)
-      if (values.length === 0) return
+      if (values.length === 0)
+        return
       service.store.createInStore(values)
       addOrUpdateById.value = {}
     },
@@ -35,11 +37,13 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
 
   function enqueueAddOrUpdate(item: any) {
     const id = getId(item, service.store.idField)
-    if (!id) return
+    if (!id)
+      return
 
     set(addOrUpdateById, id, item)
 
-    if (hasOwn(removeItemsById.value, id)) del(removeItemsById, id)
+    if (hasOwn(removeItemsById.value, id))
+      del(removeItemsById, id)
 
     flushAddOrUpdateQueue()
   }
@@ -47,7 +51,8 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
   const flushRemoveItemQueue = _debounce(
     () => {
       const values = Object.values(removeItemsById.value)
-      if (values.length === 0) return
+      if (values.length === 0)
+        return
       service.store.removeFromStore(values)
       removeItemsById.value = {}
     },
@@ -58,18 +63,21 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
 
   function enqueueRemoval(item: any) {
     const id = getId(item, service.store.idField)
-    if (!id) return
+    if (!id)
+      return
 
     set(removeItemsById, id, item)
 
-    if (hasOwn(addOrUpdateById.value, id)) del(addOrUpdateById.value, id)
+    if (hasOwn(addOrUpdateById.value, id))
+      del(addOrUpdateById.value, id)
 
     flushRemoveItemQueue()
   }
 
   function handleEvent(eventName: HandledEvents, item: any) {
     const handler = (options.handleEvents as any)?.[eventName]
-    if (handler === false) return
+    if (handler === false)
+      return
 
     /**
      * For `created` events, we don't know the id since it gets assigned on the server. Also, since `created` events
@@ -83,7 +91,8 @@ export const useServiceEvents = <M extends AnyData>(options: UseServiceStoreEven
 
     if (handler) {
       const handled = handler(item, { service })
-      if (!handled) return
+      if (!handled)
+        return
     }
 
     if (!options.debounceEventsTime)

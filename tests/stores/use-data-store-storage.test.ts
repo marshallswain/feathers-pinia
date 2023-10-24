@@ -26,32 +26,32 @@ describe('useModelInstance temps', () => {
   })
 
   test('not added to Model store by default', () => {
-    service.new({ description: 'foo', isComplete: true })
+    service.new({ description: 'foo', isComplete: true } as any)
     expect(service.store.items.length).toBe(0)
     expect(service.store.temps.length).toBe(0)
     expect(service.store.clones.length).toBe(0)
   })
 
   test('call createInStore without id to add to tempStore', () => {
-    const task = service.new({ description: 'foo', isComplete: true }).createInStore()
+    const task = service.new({ description: 'foo', isComplete: true } as any).createInStore()
     expect(service.store.temps.length).toBe(1)
     expect(service.store.temps[0]).toBe(task)
   })
 
   test('call createInStore with id to add to itemStore', () => {
-    const task = service.new({ _id: '1', description: 'foo', isComplete: true }).createInStore()
+    const task = service.new({ _id: '1', description: 'foo', isComplete: true } as any).createInStore()
     expect(service.store.items.length).toBe(1)
     expect(service.store.items[0]).toBe(task)
   })
 
   test('call removeFromStore on temp', () => {
-    const task = service.new({ description: 'foo', isComplete: true }).createInStore()
+    const task = service.new({ description: 'foo', isComplete: true } as any).createInStore()
     task.removeFromStore()
     expect(service.store.temps.length).toBe(0)
   })
 
   test('call removeFromStore on item', () => {
-    const task = service.new({ _id: '1', description: 'foo', isComplete: true }).createInStore()
+    const task = service.new({ _id: '1', description: 'foo', isComplete: true } as any).createInStore()
     task.removeFromStore()
     expect(service.store.items.length).toBe(0)
   })

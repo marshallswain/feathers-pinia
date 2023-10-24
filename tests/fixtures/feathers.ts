@@ -1,23 +1,23 @@
-import type { Tasks, TasksData, TasksQuery } from './schemas/tasks'
-import type { Users, UsersData } from './schemas/users'
-import type { Contacts, ContactsData, ContactsQuery } from './schemas/contacts'
-import type { Posts } from './schemas/posts'
-import type { Authors } from './schemas/authors'
-import type { Comments } from './schemas/comments'
-
-import { Application, feathers, FeathersService, HookContext, Params } from '@feathersjs/feathers'
-import { memory, MemoryService } from '@feathersjs/memory'
+import type { Application, FeathersService, HookContext, Params } from '@feathersjs/feathers'
+import { feathers } from '@feathersjs/feathers'
+import { MemoryService, memory } from '@feathersjs/memory'
 import { NotAuthenticated } from '@feathersjs/errors'
 import { createPinia } from 'pinia'
-import { timeout } from '../test-utils.js'
-import { createPiniaClient, defineGetters, defineSetters, useInstanceDefaults } from '../../src'
 import rest from '@feathersjs/rest-client'
 import axios from 'axios'
 import auth from '@feathersjs/authentication-client'
-import { makeContactsData } from './data.js'
 import { computed, ref } from 'vue'
 import { vi } from 'vitest'
-import { AdapterParams } from '@feathersjs/adapter-commons'
+import type { AdapterParams } from '@feathersjs/adapter-commons'
+import { createPiniaClient, defineGetters, defineSetters, useInstanceDefaults } from '../../src'
+import { timeout } from '../test-utils.js'
+import { makeContactsData } from './data.js'
+import type { Comments } from './schemas/comments'
+import type { Authors } from './schemas/authors'
+import type { Posts } from './schemas/posts'
+import type { Contacts, ContactsData, ContactsQuery } from './schemas/contacts'
+import type { Users, UsersData } from './schemas/users'
+import type { Tasks, TasksData, TasksQuery } from './schemas/tasks'
 
 const pinia = createPinia()
 const restClient = rest()
@@ -95,7 +95,8 @@ function createFeathers<F extends Application>(feathers: F) {
           const { data } = context
           if (data.accessToken === 'invalid') {
             throw new NotAuthenticated('invalid token')
-          } else if (data.strategy === 'jwt') {
+          }
+          else if (data.strategy === 'jwt') {
             context.result = {
               accessToken: 'jwt-access-token',
               payload: { test: true },
@@ -185,7 +186,8 @@ function wrapPiniaClient<F extends Application>(feathersClient: F) {
           const withAssociationSetters = defineSetters(withAssociations, {
             posts(this: Posts, post: Posts) {
               author.setInstanceRan = true
-              if (post.id && !this.authorIds.includes(post.id)) post.authorIds.push(post.id)
+              if (post.id && !this.authorIds.includes(post.id))
+                post.authorIds.push(post.id)
             },
           })
           return withAssociationSetters

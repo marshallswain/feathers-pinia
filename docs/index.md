@@ -5,7 +5,7 @@ hero:
   text:  Build Lightweight, Real-Time Vue Apps
   tagline: Outstanding Data Modeling for FeathersJS and Next-Generation Vue
   image:
-    src: ./feathers-pinia.png
+    src: ./feathers-pinia-bird.svg
     alt: Feathers-Pinia Logo
   actions:
     - theme: brand
@@ -49,25 +49,3 @@ features:
 import Badge from './components/Badge.vue'
 import pkg from '../package.json'
 </script>
-
-<style>
-.VPImage {
-  max-height: 240px;
-}
-@screen sm {
-  .VPImage {
-    max-height: 320px;
-  }
-}
-@screen md {
-  .VPImage {
-    max-width: 190px !important;
-  }
-}
-@screen lg {
-  .VPImage {
-    max-width: 190px !important;
-    max-height: initial;
-  }
-}
-</style>

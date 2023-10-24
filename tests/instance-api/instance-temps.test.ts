@@ -10,7 +10,7 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 
-describe(`Temporary Records`, () => {
+describe('Temporary Records', () => {
   test('store can hold temps', () => {
     expect(service.store).toHaveProperty('tempsById')
     expect(service.store).toHaveProperty('temps')
@@ -72,13 +72,13 @@ describe(`Temporary Records`, () => {
   test('find getter does not returns temps when params.temps is falsy', async () => {
     service.new({ name: 'this is a test' }).createInStore()
     const { data } = service.findInStore({ query: {} })
-    expect(data.value.length).toBe(12)
+    expect(data.length).toBe(12)
   })
 
   test('find getter returns temps when temps param is true', async () => {
     service.new({ name: 'this is a test' }).createInStore()
-    const { data } = service.findInStore({ query: {}, temps: true })
-    expect(data.value.length).toBe(13)
+    const contact$ = service.findInStore({ query: {}, temps: true } as any)
+    expect(contact$.data.length).toBe(13)
   })
 
   test('temps can be removed from the store', async () => {

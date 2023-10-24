@@ -13,8 +13,8 @@ Learn how to perform automatic queries with built-in pagination support.
 
 [[toc]]
 
-The `service.useFind` function is a Vue Composition API utility that takes the work out of retrieving lists of records from the
-store or API server.
+The `service.useFind` function is a Vue Composition API utility that takes the work out of retrieving lists of records
+from the store or API server.
 
 ## Overview of Features
 
@@ -27,16 +27,11 @@ manually refresh data.
 - **Server-Side Pagination** - Also built in and made super easy.
 - **Infinite Pagination Support** - Bind to `allData` and tell it when to load more data.
 - **Declarative Workflow Support** - Compose computed params and let query as they change.
-- **Imperative Workflow Support** - Pass reactive params for imperative control.
+- **Conditional Querying** - Use the `queryWhen` API to prevent extra queries.
 
 ## Usage
 
 In Feathers-Pinia 3.0, the `useFind` utility is only available as a service method.
-
-### Recommended
-
-You can call `useFind` directly from the Model. avoiding the need to manually pass the `store` in the params, as shown
-here:
 
 ```ts
 interface Props {
@@ -51,19 +46,27 @@ const params = computed(() => {
 })
 
 // client-side pagination with manual fetch
-const { data, prev, next } = api.service('messages').useFind(params)
+const messages$ = api.service('messages').useFind(params)
 await api.service('messages').find({ query: { $limit: 100 } }) // retrieve data for the current query
 
-await next() // show the next page of results
-await prev() // show the previous page of results
+await messages$.next() // show the next page of results
+await messages$.prev() // show the previous page of results
+```
 
+Or use hybrid pagination, which is server-side pagination with realtime updates:
+
+```ts
 // server-side pagination with auto fetch
-const { data, prev, next } = api.service('messages').useFind(params, { paginateOn: 'server' })
-await next() // retrieve the next page of results
-await prev() // retrieve the previous page of results
+const messages$ = api.service('messages').useFind(params, { paginateOn: 'hybrid' })
+await messages$.next() // retrieve the next page of results
+await messages$.prev() // retrieve the previous page of results
 ```
 
 ## API
+
+Important: starting in Feathers-Pinia 4.0, `useFind` returns a `reactive` object instead of an object of refs. If you
+destructure the object, reactivity will break. See [Common Pitfalls](/guide/troubleshooting) for more ways to
+troubleshoot reactivity.
 
 ### `service.useFind(params)`
 
@@ -180,20 +183,17 @@ page size. It then retrieves 25 pages of data (`$limit: 250`) in a separate quer
 ```ts
 const { api } = useFeathers()
 
-const params = computed(() => {
-  return query: { $limit: 10, $skip: 0 }
-})
+const params = computed(() => ({ query: { $limit: 10, $skip: 0 } }))
 // Set page size with $limit in the initial query
-const { data, next, prev, find } = api.service('posts').useFind(params)
+const posts$ = api.service('posts').useFind(params)
 // fetch multiple pages of data
 await api.service('posts').find({ query: { $limit: 250 } })
 
-
 // move to the next page
-await next()
+await posts$.next()
 
 // move to the previous page
-await prev()
+await posts$.prev()
 ```
 
 ### Server Paging, Auto Fetch
@@ -212,20 +212,18 @@ lists, use client-side pagination, as shown in the previous example.
 ```ts
 const { api } = useFeathers()
 
-// pagination attributes can go inside params if you don't need external control, 
+// pagination attributes can go inside params if you don't need external control,
 // like for Vuetify or other components.
 const pagination = { $limit: ref(10), $skip: ref(0) }
-const params = computed(() => {
-  return query: {}
-})
-const { data, next, prev, isPending } = api.service('posts').useFind(params, { 
-  pagination, 
+const params = computed(() => ({ query: {} }))
+const posts$ = api.service('posts').useFind(params, {
+  pagination,
   paginateOn: 'server'
 })
 
 // move to the next page
-await next()
+await posts$.next()
 
 // move to the previous page
-await prev()
+await posts$.prev()
 ```

@@ -544,7 +544,7 @@ backend.
   ```
 
   ```ts
-  service.findInStore({ query: { qty: { $mod: [ 4, 0 ] } } })
+  service.findInStore({ query: { qty: { $mod: [4, 0] } } })
   ```
 
   ```ts
@@ -619,7 +619,7 @@ backend.
 
   ```ts
   // Match any `name` with an "o" in it
-  service.findInStore({ name: { $regex: 'o', $options 'igm' } })
+  service.findInStore({ name: { $regex: 'o', $options: 'igm' } })
   ```
 
   ```ts
@@ -651,7 +651,7 @@ Can only be used with the `$regex` operator. See above.
 
   ```ts
   // Match any `name` without an "o" in it
-  service.findInStore({ name: { $not: { $regex: 'o', $options 'igm' } } })
+  service.findInStore({ name: { $not: { $regex: 'o', $options: 'igm' } } })
   ```
 
   ```ts
@@ -701,16 +701,16 @@ for store queries. Even then, you likely don't need it, since the entire query i
 #### $elemMatch 🌱
 
 ```ts
-  [
+[
   {
-    month: "july",
+    month: 'july',
     casts: [
       { id: 1, value: 200 },
       { id: 2, value: 1000 }
     ]
   },
   {
-    month: "august",
+    month: 'august',
     casts: [
       { id: 3, value: 1000 },
       { id: 4, value: 4000 }
@@ -726,7 +726,7 @@ for store queries. Even then, you likely don't need it, since the entire query i
   ```ts
   [
     {
-      month: "august",
+      month: 'august',
       casts: [
         { id: 3, value: 1000 },
         { id: 4, value: 4000 } // matches since 4000 > 1000

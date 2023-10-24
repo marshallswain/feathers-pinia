@@ -34,13 +34,13 @@ interface DefineStoreOptions {
   paramsForServer?: string[]
   state?: () => { [k: string]: any }
   getters?: { [k: string]: (state: any) => any }
-  actions?: { [k: string]: Function }
+  actions?: { [k: string]: (args) => any }
 }
 interface HandleEvents {
-  created?: Function
-  patched?: Function
-  updated?: Function
-  removed?: Function
+  created?: (data: any) => boolean
+  patched?: (data: any) => boolean
+  updated?: (data: any) => boolean
+  removed?: (data: any) => boolean
 }
 ```
 

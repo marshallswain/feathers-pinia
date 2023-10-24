@@ -1,4 +1,5 @@
 import { computed } from 'vue-demi'
+import { toRefs } from '@vueuse/core'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService } from '../test-utils.js'
 
@@ -47,7 +48,7 @@ describe('useFind', () => {
       toEnd,
       toPage,
       toStart,
-    } = service.useFind(p)
+    } = toRefs(service.useFind(p))
     expect(allLocalData.value).toEqual([])
     expect(data.value).toEqual([])
     expect(error.value).toBeNull()
@@ -66,23 +67,23 @@ describe('useFind', () => {
     expect(skip.value).toBe(0)
     expect(total.value).toBe(0)
     // utils
-    expect(typeof clearError).toBe('function')
-    expect(typeof find).toBe('function')
-    expect(typeof queryWhen).toBe('function')
+    expect(typeof clearError.value).toBe('function')
+    expect(typeof find.value).toBe('function')
+    expect(typeof queryWhen.value).toBe('function')
     // pagination
     expect(canNext.value).toEqual(false)
     expect(canPrev.value).toEqual(false)
     expect(currentPage.value).toBe(1)
     expect(pageCount.value).toBe(1)
-    expect(typeof next).toBe('function')
-    expect(typeof prev).toBe('function')
-    expect(typeof toEnd).toBe('function')
-    expect(typeof toPage).toBe('function')
-    expect(typeof toStart).toBe('function')
+    expect(typeof next.value).toBe('function')
+    expect(typeof prev.value).toBe('function')
+    expect(typeof toEnd.value).toBe('function')
+    expect(typeof toPage.value).toBe('function')
+    expect(typeof toStart.value).toBe('function')
   })
 
   test('applies default limit to query', async () => {
-    const result = await service.find()    
+    const result = await service.find()
     // defaultLimit is 20 but there are only 12 records.
     expect(result.data.length).toBe(12)
   })

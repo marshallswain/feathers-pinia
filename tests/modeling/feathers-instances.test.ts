@@ -104,8 +104,9 @@ describe('useFeathersModel', () => {
     await contact.remove()
     try {
       await api.service('contacts').get('1')
-    } catch (error) {
-      expect(error.message).toBe("No record found for id '1'")
+    }
+    catch (error) {
+      expect(error.message).toBe('No record found for id \'1\'')
     }
     expect.assertions(2)
   })

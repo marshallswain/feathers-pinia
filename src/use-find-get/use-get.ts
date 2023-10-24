@@ -1,17 +1,15 @@
 import type { Id } from '@feathersjs/feathers'
 import type { ComputedRef } from 'vue-demi'
+import type { MaybeRef } from '@vueuse/core'
+import { computed, isRef, reactive, ref, unref, watch } from 'vue-demi'
 import type { AnyData } from '../types.js'
 import type { UseFindGetDeps, UseGetParams } from './types.js'
-import type { MaybeRef } from '@vueuse/core'
-import { computed, ref, unref, watch, isRef } from 'vue-demi'
 
 type MaybeComputed<M> = ComputedRef<M> | MaybeRef<M>
 
-export const useGet = (
-  _id: MaybeComputed<Id | null>,
+export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
   _params: MaybeRef<UseGetParams> = ref({}),
-  deps: UseFindGetDeps,
-) => {
+  deps: UseFindGetDeps) {
   const { service } = deps
 
   // normalize args into refs
@@ -20,7 +18,7 @@ export const useGet = (
 
   /** ID & PARAMS **/
   const { immediate = true, watch: _watch = true } = params.value
-  const isSsr = computed(() => service.store.isSsr)
+  const isSsr = computed<boolean>(() => service.store.isSsr)
 
   /** REQUEST STATE **/
   const isPending = ref(false)
@@ -33,7 +31,7 @@ export const useGet = (
   const mostRecentId = computed(() => {
     return ids.value.length && ids.value[ids.value.length - 1]
   })
-  const data = computed(() => {
+  const data = computed<M | null>(() => {
     if (isPending.value && mostRecentId.value != null) {
       const result = service.store.getFromStore(mostRecentId.value, params).value
       return result
@@ -58,9 +56,11 @@ export const useGet = (
     const _id = unref(id)
     const _params = unref(params)
 
-    if (!queryWhenFn()) return
+    if (!queryWhenFn())
+      return
 
-    if (_id == null) return null
+    if (_id == null)
+      return null
 
     requestCount.value++
     hasBeenRequested.value = true // never resets
@@ -71,12 +71,15 @@ export const useGet = (
       const response = await service.get(_id, _params)
 
       // Keep a list of retrieved ids
-      if (response && _id) ids.value.push(_id)
+      if (response && _id)
+        ids.value.push(_id)
 
       return response
-    } catch (err: any) {
+    }
+    catch (err: any) {
       error.value = err
-    } finally {
+    }
+    finally {
       isPending.value = false
     }
   }
@@ -88,7 +91,7 @@ export const useGet = (
   }
 
   // Watch the id
-  if (_watch)
+  if (_watch) {
     watch(
       id,
       async () => {
@@ -96,8 +99,9 @@ export const useGet = (
       },
       { immediate },
     )
+  }
 
-  return {
+  return reactive({
     params, // Ref<GetClassParams>
     isSsr, // ComputedRef<boolean>
 
@@ -118,5 +122,5 @@ export const useGet = (
     hasLoaded: computed(() => hasLoaded.value), // ComputedRef<boolean>
     error: computed(() => error.value), // ComputedRef<any>
     clearError, // () => void
-  }
+  })
 }

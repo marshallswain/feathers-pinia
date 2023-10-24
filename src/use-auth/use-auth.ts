@@ -1,7 +1,6 @@
 import type { Ref } from 'vue-demi'
 import type { NullableId } from '@feathersjs/feathers'
 import { computed, ref } from 'vue-demi'
-import { BadRequest } from '@feathersjs/errors'
 import decode from 'jwt-decode'
 import { useCounter } from '../utils/use-counter'
 
@@ -49,7 +48,8 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   // user
   const userId = ref<NullableId>(null)
   const user = computed(() => {
-    if (!entityService) return null
+    if (!entityService)
+      return null
     const u = entityService?.getFromStore(userId)
     return u.value || null
   })
@@ -96,7 +96,8 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
     try {
       const payload = decode(jwt) as any
       return new Date().getTime() > payload.exp * 1000
-    } catch (error) {
+    }
+    catch (error) {
       return false
     }
   }
@@ -106,13 +107,6 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   const reAuthenticate = async () => {
     authCounter.add()
     promise.value = api.authentication
-      .getAccessToken()
-      .then((accessToken: string) => {
-        if (accessToken && !skipTokenCheck && isTokenExpired(accessToken)) {
-          api.authentication.removeAccessToken()
-          throw new BadRequest('accessToken expired')
-        }
-      })
       .then(() => api.reAuthenticate())
       .then(handleAuthResult)
       .then(async (result: Record<string, any>) => {

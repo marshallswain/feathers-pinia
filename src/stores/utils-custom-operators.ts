@@ -17,19 +17,19 @@ export function iLike(str: string, search: string) {
   return like(str, search, 'ig')
 }
 
-export const $like = (params: any, ownerQuery: any, options: any) => {
+export function $like(params: any, ownerQuery: any, options: any) {
   return createEqualsOperation((value: any) => like(value, params), ownerQuery, options)
 }
 
-export const $notLike = (params: any, ownerQuery: any, options: any) => {
+export function $notLike(params: any, ownerQuery: any, options: any) {
   return createEqualsOperation((value: any) => !like(value, params), ownerQuery, options)
 }
 
-export const $ilike = (params: any, ownerQuery: any, options: any) => {
+export function $ilike(params: any, ownerQuery: any, options: any) {
   return createEqualsOperation((value: any) => iLike(value, params), ownerQuery, options)
 }
 
-const $notILike = (params: any, ownerQuery: any, options: any) => {
+function $notILike(params: any, ownerQuery: any, options: any) {
   return createEqualsOperation((value: any) => !iLike(value, params), ownerQuery, options)
 }
 

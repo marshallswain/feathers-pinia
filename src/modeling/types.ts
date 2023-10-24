@@ -92,5 +92,5 @@ export interface ServiceInstanceProps<M extends AnyData, Q extends AnyData, P ex
   remove: (this: ModelInstance<M>, params?: P) => Promise<M>
 }
 export type ServiceInstance<M extends AnyData, Q extends AnyData = AnyData> = ModelInstanceData<M> &
-  StoreInstanceProps<M> &
-  ServiceInstanceProps<M, Q>
+StoreInstanceProps<M> &
+ServiceInstanceProps<M, Q>

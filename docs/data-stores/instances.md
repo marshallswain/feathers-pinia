@@ -30,7 +30,7 @@ methods to create your own non-enumerable properties. With Feathers-Pinia Model 
 
 ```ts
 Object.defineProperty(data, 'myProp', {
-  enumerable: false
+  enumerable: false,
   configurable: true,
   value: 5
 })

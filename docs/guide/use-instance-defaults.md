@@ -21,8 +21,8 @@ The `useInstanceDefaults` utility allows you to specify default values to assign
 only assigns a value if it the attribute not already specified on the incoming object.
 
 ```ts
-function setupInstance (data: any) {
-  const withDefaults = useInstanceDefaults({ name: 'Marshall', email: '', password: '' }, data)
+function setupInstance(data: any) {
+  const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
   return withDefaults
 }
 ```

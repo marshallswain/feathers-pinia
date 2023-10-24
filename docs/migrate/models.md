@@ -44,15 +44,12 @@ export class User extends BaseModel {
     this.init(data)
   }
 
+  // optional for setting up data objects and/or associations
   static setupInstance(message: Partial<Task>) {
     const { store, models } = this
-    return { 
+    return {
       /* default properties used to go here */
-    }  
-  }
-
-  static setupInstance(data: Partial<User>) {
-    // optional for setting up data objects and/or associations
+    }
   }
 }
 ```
@@ -64,7 +61,7 @@ import { api } from '../feathers'
 
 const service = api.service('users')
 
-const modelFn = (data: ModelInstance<Users>) => {
+function modelFn(data: ModelInstance<Users>) {
   const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
   return withDefaults
 }

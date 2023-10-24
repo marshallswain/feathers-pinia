@@ -35,19 +35,20 @@ createPiniaClient(feathersClient, {
   customSiftOperators: {}, // see sift docs
   // runs for every service
   setupInstance: (data = {}, { api, service, servicePath }) => {
-    if (servicePath.startsWith('my-'))
+    if (servicePath.startsWith('my-')) {
       Object.defineProperty(data, 'belongsToMe', {
         get() {
           return true
         }
       })
+    }
     return data
   },
   customizeStore(defaultStore) {
     // You can directly modify the defaultStore object
     defaultStore.globalValue = ref(true)
-  }
-  // Service config, keyed by path, See service configuration to 
+  },
+  // Service config, keyed by path, See service configuration to
   // learn how options are merged with the global config.
   services: {
     users: {
@@ -56,7 +57,7 @@ createPiniaClient(feathersClient, {
     contacts: {
       whitelist: ['$test'],
       // runs after the global setupInstance
-      setupInstance(data: any, , { api, service, servicePath }) {
+      setupInstance(data: any, { api, service, servicePath }) {
         const withDefaults = useInstanceDefaults({ name: '', age: 0 }, data)
         return withDefaults
       },
@@ -84,20 +85,20 @@ are required and have no default value.
 interface CreatePiniaClientConfig {
   idField: string
   pinia: Pinia
-  ssr?: false,
-  storage?: undefined,
-  services?: {},
+  ssr?: false
+  storage?: undefined
+  services?: Record<string, PiniaServiceConfig>
   // global and per-service options
-  syncWithStorage?: undefined,
-  whitelist?: string[],
-  paramsForServer?: string[],
-  skipGetIfExists?: true,
+  syncWithStorage?: undefined
+  whitelist?: string[]
+  paramsForServer?: string[]
+  skipGetIfExists?: true
   handleEvents?: HandleEvents<AnyData>
   debounceEventsTime?: 20
   debounceEventsGuarantee?: false
-  customSiftOperators?: {},
-  setupInstance?: (data = {}, , { api, service, servicePath }) => ({})
-  customizeStore?: (defaultStore) => {}
+  customSiftOperators?: Record<string, SiftOperator>
+  setupInstance?: (data = {}, { api, service, servicePath }) => (modifiedData)
+  customizeStore?: (defaultStore) => modifiedStore
 }
 ```
 
@@ -125,7 +126,7 @@ record, if one exists. If not, the request will be made as normal.
 
   ```ts
   function eventHandler(data, { service }) {
-     // handle event
+    // handle event
   }
   const handleEvents = {
     created: eventHandler,

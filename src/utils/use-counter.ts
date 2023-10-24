@@ -3,7 +3,7 @@ import { ref } from 'vue-demi'
 /**
  * Use a counter to track the number of pending queries. Prevents collisions with overlapping queries.
  */
-export const useCounter = () => {
+export function useCounter() {
   const count = ref(0)
   const add = () => {
     count.value = count.value + 1

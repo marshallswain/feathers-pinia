@@ -4,21 +4,22 @@ import { deepUnref } from '../utils/index.js'
 /**
  * deeply unrefs `params.query`
  */
-export const unrefQuery = () => async (context: HookContext, next: NextFunction) => {
-    if (context.params.query) {
+export function unrefQuery() {
+  return async (context: HookContext, next: NextFunction) => {
+    if (context.params.query)
       context.params.query = deepUnref(context.params.query)
-    }
 
     if (context.method === 'find') {
       const query = context.params.query || {}
-      if (query.$limit == null) {
+      if (query.$limit == null)
         query.$limit = context.service.store.defaultLimit
-      }
-      if (query.$skip == null) {
+
+      if (query.$skip == null)
         query.$skip = 0
-      }
+
       context.params.query = query
     }
 
-    await next()
+    next && await next()
   }
+}

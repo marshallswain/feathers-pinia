@@ -32,9 +32,9 @@ With the `memory` adapter in place, you'll be able to make requests as though yo
 One more thing: you can start the memory adapter with fixture data in place, if wanted. Provide the `store` option with the the data keyed by id, as shown below. You can also provide this option during instantiation.
 
 ```ts
-api.use(servicePath, memory({ 
-  paginate: { default: 10, max: 100 }, 
-  whitelist: ['$options'], 
+api.use(servicePath, memory({
+  paginate: { default: 10, max: 100 },
+  whitelist: ['$options'],
   store: {
     1: { id: 1, name: 'Marshall' },
     2: { id: 2, name: 'David' },
@@ -42,7 +42,7 @@ api.use(servicePath, memory({
     10: { id: 10, name: 'Gambit' },
     11: { id: 11, name: 'Rogue' },
     12: { id: 12, name: 'Jubilee' },
-  } 
+  }
 }))
 ```
 

@@ -34,7 +34,7 @@ const props = defineProps<Props>()
 const { api } = useFeathers()
 const id = computed(() => props.id)
 
-const { data: user, isPending, error } = api.service('users').useGet(id)
+const user$ = api.service('users').useGet(id)
 ```
 
 For a client-only solution, you can just use the `getFromStore` method:

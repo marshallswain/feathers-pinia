@@ -3,12 +3,11 @@
 ```ts [createClient]
 // plugins/1.feathers.ts
 import { createClient } from 'feathers-pinia-api'
-import { createPiniaClient } from 'feathers-pinia'
+import { OFetch, createPiniaClient } from 'feathers-pinia'
 
 // rest imports for the server
 import { $fetch } from 'ofetch'
 import rest from '@feathersjs/rest-client'
-import { OFetch } from 'feathers-pinia'
 
 // socket.io imports for the browser
 import socketio from '@feathersjs/socketio-client'
@@ -56,14 +55,13 @@ export default defineNuxtPlugin(async (nuxt) => {
 
 ```ts [Manual setup]
 // plugins/1.feathers.ts
-import { feathers, type FeathersService } from '@feathersjs/feathers'
+import { type FeathersService, feathers } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
-import { createPiniaClient } from 'feathers-pinia'
+import { OFetch, createPiniaClient } from 'feathers-pinia'
 
 // rest imports for the server
 import { $fetch } from 'ofetch'
 import rest from '@feathersjs/rest-client'
-import { OFetch } from 'feathers-pinia'
 
 // socket.io imports for the browser
 import socketio from '@feathersjs/socketio-client'

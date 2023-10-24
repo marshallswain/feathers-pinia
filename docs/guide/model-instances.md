@@ -57,6 +57,7 @@ You can call an instance's `addToStore()` method to make it reactive. Before add
 
 ```ts
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 // Plain, Non-Reactive JS Object
@@ -78,6 +79,7 @@ You can manually remove an instance from the store by calling `.removeFromStore(
 
 ```ts
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 // Instance is in the store
@@ -93,6 +95,7 @@ The `save` method is a convenience wrapper for the `create/patch` methods, by de
 
 ```ts
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 // Call addToStore to get a reactive Vue object
@@ -117,6 +120,7 @@ You might not ever need to use `.create()`, but can instead use the `.save()` me
 
 ```js
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new Todo({ description: 'Do something!' })
@@ -132,6 +136,7 @@ Similar to the `.create()` method, you might not ever need to use `.patch()` if 
 
 ```js
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new TodotodoStore.Model({ id: 1, description: 'Do something!' })
@@ -143,6 +148,7 @@ You can provide an object as `params.data`, and Feathers-Pinia will use it as th
 
 ```js
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new todoStore.Model({ description: 'Do Something', isComplete: false })
@@ -157,6 +163,7 @@ Use `.update()` whenever you want to completely replace the data on the server w
 
 ```js
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new todoStore.Model({ id: 1, description: 'Do something!' })
@@ -170,6 +177,7 @@ The `remove` method calls the `remove` action (service method) using the instanc
 
 ```js
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new todoStore.Model({ id: 1, description: 'Do something!' })
@@ -184,6 +192,7 @@ The `.clone()` method creates a deep copy of the record and stores it on `store.
 
 ```ts
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new todoStore.Model({ id: 1, description: 'Do something!' })
@@ -204,6 +213,7 @@ Calling `instance.commit()` will copy any changes from the clone to the original
 
 ```ts
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new todoStore.Model({ id: 1, description: 'Do something!' })
@@ -220,6 +230,7 @@ To reset an instance, call `.reset()`.
 
 ```js
 import { useTodos } from '../store/todos'
+
 const todoStore = useTodos()
 
 const todo = new todoStore.Model({ id: 1, description: 'Do something!' })

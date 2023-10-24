@@ -1,10 +1,10 @@
 import type { ComputedRef, Ref } from 'vue-demi'
-import type { PaginationState, UpdatePaginationForQueryOptions } from './types.js'
 import { ref, set } from 'vue-demi'
-import { deepUnref, getId, hasOwn } from '../utils/index.js'
 import stringify from 'fast-json-stable-stringify'
 import { _ } from '@feathersjs/commons/lib'
-import { Params, Query, QueryInfo } from '../types.js'
+import { deepUnref, getId, hasOwn } from '../utils/index.js'
+import type { Params, Query, QueryInfo } from '../types.js'
+import type { PaginationState, UpdatePaginationForQueryOptions } from './types.js'
 
 export interface UseServicePagination {
   idField: string
@@ -12,7 +12,7 @@ export interface UseServicePagination {
   defaultLimit?: number
 }
 
-export const useServicePagination = (options: UseServicePagination) => {
+export function useServicePagination(options: UseServicePagination) {
   const { idField, isSsr } = options
   const defaultLimit = options.defaultLimit || 10
 
@@ -38,11 +38,14 @@ export const useServicePagination = (options: UseServicePagination) => {
     const queriedAt = new Date().getTime()
     const { queryId, queryParams, pageId, pageParams } = getQueryInfo({ qid, query })
 
-    if (!pagination.value[qid]) set(pagination.value, qid, {})
+    if (!pagination.value[qid])
+      set(pagination.value, qid, {})
 
-    if (!hasOwn(query, '$limit') && hasOwn(response, 'limit')) set(pagination.value, 'defaultLimit', response.limit)
+    if (!hasOwn(query, '$limit') && hasOwn(response, 'limit'))
+      set(pagination.value, 'defaultLimit', response.limit)
 
-    if (!hasOwn(query, '$skip') && hasOwn(response, 'skip')) set(pagination.value, 'defaultSkip', response.skip)
+    if (!hasOwn(query, '$skip') && hasOwn(response, 'skip'))
+      set(pagination.value, 'defaultSkip', response.skip)
 
     const mostRecent = {
       query,
@@ -94,13 +97,13 @@ export const useServicePagination = (options: UseServicePagination) => {
     const qid = params.qid || 'default'
     const $limit = query?.$limit || defaultLimit
     const $skip = query?.$skip || 0
-  
+
     const pageParams = $limit !== undefined ? { $limit, $skip } : undefined
     const pageId = pageParams ? stringify(pageParams) : undefined
-  
+
     const queryParams = _.omit(query, '$limit', '$skip')
     const queryId = stringify(queryParams)
-  
+
     return {
       qid,
       query,

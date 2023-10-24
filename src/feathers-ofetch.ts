@@ -8,15 +8,18 @@ export class OFetch extends FetchClient {
 
     fetchOptions.headers = Object.assign({ Accept: 'application/json' }, this.options.headers, fetchOptions.headers)
 
-    if (options.body) fetchOptions.body = options.body
+    if (options.body)
+      fetchOptions.body = options.body
 
     try {
       const response = await this.connection.raw(options.url, fetchOptions)
       const { _data, status } = response
 
-      if (status === 204) return null
+      if (status === 204)
+        return null
       return _data
-    } catch (error: any) {
+    }
+    catch (error: any) {
       throw error.data
     }
   }

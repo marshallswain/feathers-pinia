@@ -7,7 +7,7 @@ export function storeAssociated(this: any, data: any, config: Record<string, str
     const servicePath = config[key]
     const service = this.service(servicePath)
     if (!service)
-      console.error('there is no service at path ' + servicePath + 'check your storeAssociated config', data, config)
+      console.error(`there is no service at path ${servicePath}. Check your storeAssociated config`, data, config)
     if (related && service) {
       const created = service.createInStore(related)
       updatedValues[key] = created
@@ -15,6 +15,4 @@ export function storeAssociated(this: any, data: any, config: Record<string, str
   })
 
   defineValues(data, updatedValues)
-
-  return
 }
