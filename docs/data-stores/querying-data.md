@@ -36,7 +36,7 @@ By default, queries do not include temporary records. You can add temporary reco
 `params.temps` to true.
 
 ```ts
-const { data } = service.findInStoreInStore({ query: {}, temps: true })
+const { data } = service.findInStore({ query: {}, temps: true })
 ```
 
 ### params.clones
@@ -46,8 +46,8 @@ Store queries normally return data from `items` (or `temps` if `params.temps` is
 model and store:
 
 ```ts
-const { data } = service.findInStoreInStore({ query: {}, clones: true })
-data.forEach((item) => {
+const { data } = service.findInStore({ query: {}, clones: true })
+data.forEach(item => {
   console.log(item.__isClone) // --> true
 })
 ```
@@ -55,7 +55,7 @@ data.forEach((item) => {
 The `clones` param can be used together with `temps`, as well:
 
 ```ts
-const { data } = service.findInStoreInStore({ query: {}, clones: true, temps: true })
+const { data } = service.findInStore({ query: {}, clones: true, temps: true })
 ```
 
 Note that any existing clones are re-used, so if you need the clone to match the latest data you need to call
