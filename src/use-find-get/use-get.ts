@@ -7,7 +7,7 @@ import type { UseFindGetDeps, UseGetParams } from './types.js'
 
 type MaybeComputed<M> = ComputedRef<M> | MaybeRef<M>
 
-export function useGet(_id: MaybeComputed<Id | null>,
+export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
   _params: MaybeRef<UseGetParams> = ref({}),
   deps: UseFindGetDeps) {
   const { service } = deps
@@ -18,7 +18,7 @@ export function useGet(_id: MaybeComputed<Id | null>,
 
   /** ID & PARAMS **/
   const { immediate = true, watch: _watch = true } = params.value
-  const isSsr = computed(() => service.store.isSsr)
+  const isSsr = computed<boolean>(() => service.store.isSsr)
 
   /** REQUEST STATE **/
   const isPending = ref(false)
@@ -31,7 +31,7 @@ export function useGet(_id: MaybeComputed<Id | null>,
   const mostRecentId = computed(() => {
     return ids.value.length && ids.value[ids.value.length - 1]
   })
-  const data = computed(() => {
+  const data = computed<M | null>(() => {
     if (isPending.value && mostRecentId.value != null) {
       const result = service.store.getFromStore(mostRecentId.value, params).value
       return result

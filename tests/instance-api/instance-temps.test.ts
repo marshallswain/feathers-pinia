@@ -77,7 +77,7 @@ describe('Temporary Records', () => {
 
   test('find getter returns temps when temps param is true', async () => {
     service.new({ name: 'this is a test' }).createInStore()
-    const contact$ = service.findInStore({ query: {}, temps: true })
+    const contact$ = service.findInStore({ query: {}, temps: true } as any)
     expect(contact$.data.length).toBe(13)
   })
 

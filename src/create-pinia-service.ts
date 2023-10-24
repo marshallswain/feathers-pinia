@@ -1,4 +1,4 @@
-import type { Params as FeathersParams, FeathersService, Id } from '@feathersjs/feathers'
+import type { Params as FeathersParams, FeathersService, Id, Paginated, PaginationOptions } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
 import type { ComputedRef } from 'vue-demi'
 import { computed, isRef, reactive, ref, unref } from 'vue-demi'
@@ -13,6 +13,14 @@ interface PiniaServiceOptions {
   servicePath: string
   store: any
 }
+
+// FIXME: Those are very hacky, there should be a simpler way of recovering service types
+type SvcResult<S extends FeathersService> = S extends { get: (...args: any[]) => Promise<infer T> } ? T : never
+type SvcParams<S extends FeathersService> = S extends { find: (params: infer T) => any } ? T : never
+type SvcData<S extends FeathersService> = S extends { create: (data: (infer T)[]) => any } ? T : never
+type SvcPatchData<S extends FeathersService> = S extends { patch: (id: any, data: infer T) => any } ? T : never
+
+type SvcModel<S extends FeathersService> = S & ServiceInstance<SvcResult<S>>
 
 export class PiniaService<Svc extends FeathersService> {
   store
@@ -38,7 +46,7 @@ export class PiniaService<Svc extends FeathersService> {
    * Functionally upgrades plain data to a service model "instance".
    * - flags each record with `__isSetup` to avoid duplicate work.
    */
-  new(data: AnyData = {}) {
+  new(data: Partial<SvcResult<Svc>> = {}): SvcModel<Svc> {
     const asInstance = this.store.new(data)
     return reactive(asInstance)
   }
@@ -49,6 +57,10 @@ export class PiniaService<Svc extends FeathersService> {
    * finds records from the API server by query. Each record is reactive. Lists are non reactive.
    * For reactive lists, use `findInStore`.
    */
+  async find(params?: MaybeRef<SvcParams<Svc> & { paginate?: PaginationOptions }>): Promise<Paginated<SvcModel<Svc>>>
+  async find(params?: MaybeRef<SvcParams<Svc> & { paginate: false }>): Promise<SvcModel<Svc>[]>
+  async find(params?: MaybeRef<SvcParams<Svc>>): Promise<Paginated<SvcModel<Svc>> | SvcModel<Svc>[]>
+  async find(params?: MaybeRef<SvcParams<Svc>>): Promise<Paginated<SvcModel<Svc>> | SvcModel<Svc>[]>
   async find(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.find(params as FeathersParams)
@@ -58,6 +70,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * finds a single record from the API server by query. The record is reactive.
    */
+  async findOne(params?: MaybeRef<SvcParams<Svc>>): Promise<SvcModel<Svc>>
   async findOne(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     params.query = params.query || {}
@@ -70,6 +83,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * count records on the API server by query. Returns the number of matching records.
    */
+  async count(params?: MaybeRef<SvcParams<Svc>>): Promise<Paginated<never>>
   async count(_params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     params.query = params.query || {}
@@ -81,6 +95,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * retrieve a record from the API server by id. The record is reactive.
    */
+  async get(id: Id, params?: MaybeRef<SvcParams<Svc>>): Promise<SvcModel<Svc>>
   async get(id: Id, _params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.get(id, params)
@@ -90,6 +105,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * create a record on the API server.
    */
+  async create(data: SvcData<Svc>): Promise<SvcModel<Svc>>
   async create(data: AnyData) {
     const result = await this.service.create(data)
     return result
@@ -98,7 +114,9 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * patch a record on the API server.
    */
-  async patch(id: Id, data: AnyData, _params?: MaybeRef<Params<Query>>) {
+  async patch(id: Id, data: SvcPatchData<Svc>, params?: MaybeRef<SvcParams<Svc>>): Promise<SvcModel<Svc>>
+  async patch(id: null, data: SvcPatchData<Svc>, params: MaybeRef<SvcParams<Svc>>): Promise<SvcModel<Svc>[]>
+  async patch(id: Id | null, data: AnyData, _params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.patch(id, data, params)
     return result
@@ -107,7 +125,9 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * remove a record from the API server.
    */
-  async remove(id: MaybeRef<Id>, _params?: MaybeRef<Params<Query>>) {
+  async remove(id: MaybeRef<Id>, params?: MaybeRef<SvcParams<Svc>>): Promise<SvcModel<Svc>>
+  async remove(id: MaybeRef<null>, params: MaybeRef<SvcParams<Svc>>): Promise<SvcModel<Svc>[]>
+  async remove(id: MaybeRef<Id | null>, _params?: MaybeRef<Params<Query>>) {
     const params = getParams(_params)
     const result = await this.service.remove(unref(id), params)
     return result
@@ -118,6 +138,10 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * find records in the local store. The returned list and records are reactive.
    */
+  findInStore(params?: MaybeRef<SvcParams<Svc> & { paginate?: PaginationOptions }>): Paginated<SvcModel<Svc>>
+  findInStore(params?: MaybeRef<SvcParams<Svc> & { paginate: false }>): SvcModel<Svc>[]
+  findInStore(params?: MaybeRef<SvcParams<Svc>>): Paginated<SvcModel<Svc>> | SvcModel<Svc>[]
+  findInStore(params?: MaybeRef<SvcParams<Svc>>): Paginated<SvcModel<Svc>> | SvcModel<Svc>[]
   findInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.findInStore(params)
     return reactive({
@@ -131,6 +155,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * find a single record in the local store by query.
    */
+  findOneInStore(params?: MaybeRef<SvcParams<Svc>>): SvcModel<Svc>
   findOneInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.findOneInStore(params)
     return result
@@ -139,6 +164,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * count records matching a query in the store.
    */
+  countInStore(params?: MaybeRef<SvcParams<Svc>>): Paginated<never>
   countInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.countInStore(params)
     return result
@@ -147,7 +173,9 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * get a single record from the store by id
    */
-  getFromStore(id: MaybeRef<Id>, params?: MaybeRef<Params<Query>>): ComputedRef<ServiceInstance<AnyData>> {
+  getFromStore(id: MaybeRef<undefined | null>, params: MaybeRef<SvcParams<Svc>>): ComputedRef<SvcModel<Svc>>
+  getFromStore(id: MaybeRef<Id>, params?: MaybeRef<SvcParams<Svc>>): ComputedRef<SvcModel<Svc>>
+  getFromStore(id: MaybeRef<Id | undefined | null>, params?: MaybeRef<Params<Query>>): ComputedRef<SvcModel<Svc>> {
     const result = this.store.getFromStore(id, params)
     return result
   }
@@ -155,6 +183,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * creates or adds an item to the store.
    */
+  createInStore(data: SvcData<Svc>): SvcModel<Svc>
   createInStore(data: AnyData) {
     const result = this.store.createInStore(data)
     return result
@@ -163,10 +192,12 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * patches an item in the store
    */
-  patchInStore<M extends AnyData, Q extends AnyData>(
-    idOrData: MaybeRef<M | M[] | Id | null>,
+  patchInStore(id: MaybeRef<Id | SvcResult<Svc>>, data: SvcPatchData<Svc>, params?: MaybeRef<SvcParams<Svc>>): SvcModel<Svc>
+  patchInStore(id: MaybeRef<null | SvcResult<Svc>[]>, data: SvcPatchData<Svc>, params: MaybeRef<SvcPatchData<Svc>>): SvcModel<Svc>[]
+  patchInStore(
+    idOrData: MaybeRef<SvcResult<Svc> | SvcResult<Svc>[] | Id | null>,
     data: MaybeRef<AnyData> = {},
-    params: MaybeRef<Params<Q>> = {},
+    params: MaybeRef<AnyData> = {},
   ) {
     const result = this.store.patchInStore(idOrData, data, params)
     return result
@@ -175,7 +206,9 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * removes one or more items from the store.
    */
-  removeFromStore(id?: Id, params?: MaybeRef<Params<Query>>) {
+  removeFromStore(id: Id, params?: MaybeRef<SvcParams<Svc>>): SvcModel<Svc>
+  removeFromStore(id: undefined | null, params: MaybeRef<SvcParams<Svc>>): SvcModel<Svc>[]
+  removeFromStore(id?: Id | null, params?: MaybeRef<Params<Query>>) {
     const item = id != null ? this.getFromStore(id).value : null
     if (item) {
       const result = this.store.removeFromStore(item)
@@ -191,13 +224,13 @@ export class PiniaService<Svc extends FeathersService> {
 
   useFind(params: ComputedRef<UseFindParams | null>, options?: UseFindOptions) {
     const _params = isRef(params) ? params : ref(params)
-    return useFind(_params, options, { service: this })
+    return useFind<SvcModel<Svc>>(_params, options, { service: this })
   }
 
   useGet(id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = ref({})) {
     const _id = isRef(id) ? id : ref(id)
     const _params = isRef(params) ? params : ref(params)
-    return useGet(_id, _params, { service: this })
+    return useGet<SvcModel<Svc>>(_id, _params, { service: this })
   }
 
   useGetOnce(_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {

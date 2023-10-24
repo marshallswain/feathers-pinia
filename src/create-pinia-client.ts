@@ -17,7 +17,7 @@ interface SetupInstanceUtils {
   servicePath?: string
 }
 
-interface PiniaServiceConfig {
+export interface PiniaServiceConfig {
   idField?: string
   defaultLimit?: number
   syncWithStorage?: boolean | string[]
@@ -32,7 +32,7 @@ interface PiniaServiceConfig {
   customSiftOperators?: Record<string, any>
 }
 
-interface CreatePiniaClientConfig extends PiniaServiceConfig {
+export interface CreatePiniaClientConfig extends PiniaServiceConfig {
   idField: string
   pinia: any
   ssr?: boolean
@@ -40,11 +40,11 @@ interface CreatePiniaClientConfig extends PiniaServiceConfig {
   services?: Record<string, PiniaServiceConfig>
 }
 
-type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
+export type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
   [Key in keyof T]: PiniaService<T[Key]> & T[Key]
 }
 
-interface AppExtensions {
+export interface AppExtensions {
   storeAssociated: (data: any, config: Record<string, string>) => void
   clearStorage: () => void
 }

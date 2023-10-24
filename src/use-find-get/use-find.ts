@@ -10,15 +10,15 @@ import { itemsFromPagination } from './utils.js'
 import { usePageData } from './utils-pagination.js'
 import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
 
-export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
+export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
   const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOn = 'client' } = options
   const { service } = deps
   const { store } = service
 
   /** PARAMS **/
   const qid = computed(() => params.value?.qid || 'default')
-  const limit = pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit)
-  const skip = pagination?.skip || ref(params.value?.query?.$skip || 0)
+  const limit = pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit as number)
+  const skip = pagination?.skip || ref(params.value?.query?.$skip || 0 as number)
 
   const paramsWithPagination = computed(() => {
     const query = deepUnref(params.value?.query || {})
@@ -67,7 +67,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     return params
   })
 
-  const data = computed(() => {
+  const data = computed<M[]>(() => {
     if (paginateOn === 'server') {
       const values = itemsFromPagination(store, service, cachedParams.value)
       return values
@@ -94,7 +94,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     const beforeCurrent = allItems.slice(0, adjustedIndex)
     return beforeCurrent
   })
-  const allLocalData = computed(() => {
+  const allLocalData = computed<M[]>(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
     if (whichQuery == null && paginateOn !== 'client')
       return []
@@ -222,7 +222,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   }
 
   /** Pagination Data **/
-  const total = computed(() => {
+  const total = computed<number>(() => {
     if (['server', 'hybrid'].includes(paginateOn)) {
       const whichQuery = currentQuery.value || cachedQuery.value
       return whichQuery?.total || 0
@@ -275,7 +275,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       setTimeout(() => {
         ref(total.value)
       }, 0)
-      return store.isSsr
+      return store.isSsr as boolean
     }), // ComputedRef<boolean>
     qid, // WritableComputedRef<string>
 
