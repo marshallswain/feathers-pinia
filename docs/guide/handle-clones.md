@@ -2,6 +2,6 @@
 outline: deep
 ---
 
-# `handleClones` is now `useClones`
+# `handleClones` is now `params.clones`
 
-`handleClones` is now deprecated and has been [renamed to `useClones`](./use-clones).
+In 3.0 `handleClones` was removed and [replaced by `params.clones`](/migrate/handle-clones).

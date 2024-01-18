@@ -1,24 +1,16 @@
-export { setupFeathersPinia } from './setup'
-export { defineStore } from './service-store/define-store'
-export { defineAuthStore } from './define-auth-store'
-export { makeServiceStore, BaseModel } from './service-store/index'
-export { makeState } from './service-store/make-state'
+export * from './types.js'
 
-export { models } from './models'
-export { clients, registerClient } from './clients'
+export { createPiniaClient } from './create-pinia-client.js'
+export type * from './create-pinia-client.js'
+export { PiniaService } from './create-pinia-service'
+export { OFetch } from './feathers-ofetch.js'
 
-export { useFind } from './use-find'
-export { useGet } from './use-get'
-export { usePagination } from './use-pagination'
-export { useClones } from './use-clones'
-/**
- * @deprecated `handleClones` has been renamed to `useClones`.
- */
-export { useClones as handleClones } from './use-clones'
+export { feathersPiniaAutoImport } from './unplugin-auto-import-preset.js'
 
-export { syncWithStorage } from './storage-sync'
-export { syncWithStorageCompressed } from './storage-sync-compressed'
-export { clearStorage } from './clear-storage'
-
-export * from './types'
-export * from './service-store/types'
+export * from './hooks/index.js'
+export * from './localstorage/index.js'
+export * from './modeling/index.js'
+export * from './use-auth/index.js'
+export * from './use-find-get/index.js'
+export * from './stores/index.js'
+export { useInstanceDefaults, defineGetters, defineSetters, defineValues } from './utils/index.js'

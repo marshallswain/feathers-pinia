@@ -52,7 +52,7 @@ You can optionally configure TypeScript to not require the `!` on every property
   "strictPropertyInitialization": false,
   "compilerOptions": {
     // not in here
-  },
+  }
 }
 ```
 
@@ -80,7 +80,7 @@ import feathers from '@feathersjs/feathers'
 import socketio from '@feathersjs/socketio-client'
 import auth from '@feathersjs/authentication-client'
 import io from 'socket.io-client'
-import { iff, discard } from 'feathers-hooks-common'
+import { discard, iff } from 'feathers-hooks-common'
 
 const socket = io('http://localhost:3030', { transports: ['websocket'] })
 
@@ -138,8 +138,9 @@ The final step to setup `pinia` is to add `pinia` as an app plugin, like this:
 
 ```ts
 // src/main.ts
-import { createApp, App as AppType } from 'vue-demi'
+import { App as AppType, createApp } from 'vue-demi'
 import { router } from './routes'
+
 import { pinia } from './store/store.pinia' // import from the file you just created.
 import App from './App.vue'
 
@@ -155,8 +156,8 @@ Now that we've created the main `pinia` store, we are ready to setup our first s
 
 ```ts
 // src/store/users.ts
-import { defineStore, BaseModel } from './store.pinia'
 import { api } from '../feathers'
+import { BaseModel, defineStore } from './store.pinia'
 
 export class User extends BaseModel {}
 
@@ -172,7 +173,7 @@ Small tweaks are needed for SSR apps:
 2. Pass all options to `defineStore`
 
 ```js
-import { defineStore, BaseModel } from 'feathers-pinia' // (1)
+import { BaseModel, defineStore } from 'feathers-pinia' // (1)
 import { api } from '../feathers'
 
 export class User extends BaseModel {}

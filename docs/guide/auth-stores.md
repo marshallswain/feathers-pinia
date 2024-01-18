@@ -39,8 +39,8 @@ Let's take a look at the example:
 
 ```ts
 import { defineAuthStore } from 'feathers-pinia'
-import { api as feathersClient } from '~/feathers'
 import { User } from './users.ts'
+import { api as feathersClient } from '~/feathers'
 
 const authStore = defineAuthStore({
   feathersClient,
@@ -85,7 +85,7 @@ interface SetupAuthOptions {
   id?: string
   state?: () => { [k: string]: any }
   getters?: { [k: string]: (state: any) => any }
-  actions?: { [k: string]: Function }
+  actions?: { [k: string]: () => any }
 }
 ```
 

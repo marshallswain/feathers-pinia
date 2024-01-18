@@ -1,6 +1,37 @@
 {
-  "editor.rulers": [100],
-  "html.format.wrapLineLength": 100,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "vitest.enable": true
+  "editor.rulers": [
+    120
+  ],
+  "explorer.autoRevealExclude": {
+    // "**/node_modules": false
+  },
+  "vitest.debugExclude": [
+    "<node_internals>/**",
+    "**/node_modules/**"
+  ],
+  "prettier.enable": false,
+  "editor.formatOnSave": false,
+  "[markdown]": {
+    "editor.formatOnSave": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": false
+  },
+  // The following is optional.
+  // It's better to put under project setting `.vscode/settings.json`
+  // to avoid conflicts with working with different eslint configs
+  // that does not support all formats.
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue",
+    "html",
+    "markdown",
+    "json",
+    "jsonc",
+    "yaml"
+  ]
 }

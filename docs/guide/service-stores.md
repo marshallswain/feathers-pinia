@@ -34,13 +34,13 @@ interface DefineStoreOptions {
   paramsForServer?: string[]
   state?: () => { [k: string]: any }
   getters?: { [k: string]: (state: any) => any }
-  actions?: { [k: string]: Function }
+  actions?: { [k: string]: (args) => any }
 }
 interface HandleEvents {
-  created?: Function
-  patched?: Function
-  updated?: Function
-  removed?: Function
+  created?: (data: any) => boolean
+  patched?: (data: any) => boolean
+  updated?: (data: any) => boolean
+  removed?: (data: any) => boolean
 }
 ```
 
@@ -236,7 +236,7 @@ You can customize a store using the `state`, `getters` and `actions` options. It
 
 Normally, during SSR, after the rendered page has been delivered to the client, the browser takes any inline JSON payload and pushes it into the store. This is called hydration. A common problem with hydration is that it doesn't know about Feathers-Pinia Model classes, or that records should be instances. You recognize the problem when the browser throws an error stating something like:
 
-```text
+```txt
 Error: object has no method named `.save()`
 ```
 

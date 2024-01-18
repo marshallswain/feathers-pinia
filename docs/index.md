@@ -3,63 +3,49 @@ layout: home
 hero:
   name: Feathers-Pinia
   text:  Build Lightweight, Real-Time Vue Apps
-  tagline: Connect your Feathers app to the new-generation Vue store.
+  tagline: Outstanding Data Modeling for FeathersJS and Next-Generation Vue
   image:
-    src: ./feathers-pinia.png
+    src: ./feathers-pinia-bird.svg
     alt: Feathers-Pinia Logo
   actions:
     - theme: brand
-      text: Get Started
-      link: /guide/setup
+      text: What's New
+      link: /guide/whats-new
     - theme: alt
-      text: Compare
+      text: Start a Project
+      link: /setup/
+    - theme: alt
+      text: API Guides
       link: /guide/
 
 features:
+  - icon: 🕊️
+    title: FeathersJS v5 Dove Support
+    details: Feathers-Pinia v3 now directly wraps the Feathers Client. Effortlessly use types directly from your backend API.
+
   - icon: 🍍
     title: Powered by Pinia
-    details: Pinia is Vuex 5. It's a joy to use with a clean API and memorable syntax.
+    details: It's a joy to use with a clean API and memorable syntax. It's also crazy fast. Really, the speed difference is ludicrous. ➳
 
   - icon: 🧁
     title: Best Practices Baked In
-    details: Vue 3 + Composition API 😎 Common Redux patterns included. SWR Fall-through cache by default. Query the store like a local database.
+    details: Vue 3 + Composition API 😎 Common Redux patterns built in. Intelligent Fall-Through Cache. Query the store like a local database.
 
   - icon: ⚡️
     title: Realtime by Default
-    details: Realtime isn't an afterthought or add-on. With Live Queries, watch your data update as new data arrives from the Feathers server.
+    details: Realtime isn't an afterthought. Live Queries mean your UI updates as new data arrives from the Feathers server. No effort required.
 
   - icon: 🐮
     title: SWR with more Cowbell
-    details: Feathers-Pinia can intelligently re-use data across different queries, making apps feel faster. Or go realtime and make SWR obsolete.
-
-  - icon: ➳
-    title: Super Speedy Fast
-    details: When paired with Vue 3, you'll enjoy a massive speed increase over the same app built with Feathers-Vuex. Really, it's huge.
+    details: Feathers-Pinia can intelligently re-use data across different queries, making apps feel faster. Go Realtime and make SWR obsolete!
 
   - icon: 🥷
-    title: Powerful Data Modeling
-    details: Define data structures. Write cleaner code with model-level computed properties.
+    title: Data Modeling Beyond Class
+    details: v3.0 brings simplified setup and implicit Data Modeling. We've ditched classes for functions and baked it into the Feathers Client.
 
 ---
 
-<style>
-.VPImage {
-  max-height: 240px;
-}
-@screen sm {
-  .VPImage {
-    max-height: 320px;
-  }
-}
-@screen md {
-  .VPImage {
-    max-width: 190px !important;
-  }
-}
-@screen lg {
-  .VPImage {
-    max-width: 190px !important;
-    max-height: initial;
-  }
-}
-</style>
+<script setup>
+import Badge from './components/Badge.vue'
+import pkg from '../package.json'
+</script>
