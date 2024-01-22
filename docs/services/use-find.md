@@ -25,7 +25,7 @@ The `service.useFind` utility is a workflow-driven utility. Here's an overview o
 manually refresh data.
 - **Client-Side Pagination** - Built in, sharing the same logic with `usePagination`.
 - **Server-Side Pagination** - Also built in and made super easy.
-- **Infinite Pagination Support** - Bind to `allData` and tell it when to load more data.
+- **Infinite Pagination Support** - Bind to `allLocalData` and tell it when to load more data.
 - **Declarative Workflow Support** - Compose computed params and let query as they change.
 - **Conditional Querying** - Use the `queryWhen` API to prevent extra queries.
 
@@ -109,7 +109,7 @@ store. Useful for awaint the `request` during SSR.
 #### Data
 
 - **`data` {Ref Array}** the array of results.
-- **`allData` {Ref Array}** all results for the matching query or server-retrieved data. With `paginateOn: 'server'`,
+- **`allLocalData` {Ref Array}** all results for the matching query or server-retrieved data. With `paginateOn: 'server'`,
 will return the correct results, even with custom query params that the store does not understand.
 - **`total` {Computed number}** One of two things: For client-side results, the total number of records in the store
 that match the query. For `paginateOn: 'server'` results, the total number of records on the server that match the query.

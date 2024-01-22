@@ -32,9 +32,8 @@ import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
-  const userStore = useUserStore()
 
-  const utils = useAuth({ api, userStore })
+  const utils = useAuth({ api })
 
   utils.reAuthenticate()
 
@@ -47,7 +46,7 @@ if (import.meta.hot)
 
 ## useAuth with `userStore`
 
-Now let's see what it takes to add `user` support. The `userStore` option takes advantage of the service store interface
+Now let's see what it takes to add `user` support. The `servicePath` option takes advantage of the service store interface
 to automate the process.
 
 This example, like others on this page, uses auto-imports as shown in the [Vite](/setup/vite) and
