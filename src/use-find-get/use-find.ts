@@ -242,7 +242,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       () => {
         makeRequest()
       },
-      { immediate: false },
+      { immediate: false, flush: 'sync' },
     )
 
     if (immediate)
