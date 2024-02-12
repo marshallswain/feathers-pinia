@@ -11,6 +11,13 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 Learn how to store associated data in its proper stores.
 
+<BlockQuote type="danger">
+
+As of Feathers-Pinia v4.2, the `storeAssociated` utility has been replaced with a suite of smaller, more-flexible, 
+single-purpose utilities. See [Data Modeling](/guide/data-modeling) for the new way to store associated data.
+
+</BlockQuote>
+
 [[toc]]
 
 Every Feathers-Pinia Client includes a `storeAssociated` method, which receives a `data` object and a `config` object which
