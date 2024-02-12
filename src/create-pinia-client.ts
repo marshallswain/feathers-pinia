@@ -18,6 +18,17 @@ interface SetupInstanceUtils {
 }
 
 export interface PiniaServiceConfig {
+  /**
+   * The name of the store to use for this service. Defaults to `service:${servicePath}`.
+   * You can also use storeName to make two services share the same store.
+   */
+  storeName?: string
+  /**
+   * Overrides the service used for instance-level service methods, like patch, and remove.
+   * Useful for "proxy" services. For example: `pages/full` loads the page record with populated
+   * data, but you want to patch/remove the record through the `pages` service.
+   */
+  instanceServicePath?: string
   idField?: string
   defaultLimit?: number
   syncWithStorage?: boolean | string[]
@@ -88,36 +99,47 @@ export function createPiniaClient<Client extends Application>(
     }
 
     function wrappedSetupInstance(data: any) {
-      const svc = vueApp.service(location) as Service
+      // if serviceOptions.instanceServicePath is set, it's an instance-level override, so use that instead of location
+      const servicePath = serviceOptions.instanceServicePath || location
+      const service = vueApp.service(servicePath) as Service
+
       const asFeathersModel = useServiceInstance(data, {
-        service: svc,
+        service,
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         store,
       })
 
       // call the provided `setupInstance`
-      const utils = { app: vueApp, service: vueApp.service(location), servicePath: location }
+      const utils = { app: vueApp, service, servicePath }
       const fromGlobal = options.setupInstance ? options.setupInstance(asFeathersModel, utils) : asFeathersModel
-      const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(data, utils) : fromGlobal
+      const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(fromGlobal, utils) : fromGlobal
       return serviceLevel
     }
 
-    // create pinia store
-    const storeName = `service:${location}`
-    const useStore = defineStore(storeName, () => {
-      const utils = useServiceStore({
-        idField,
-        defaultLimit,
-        whitelist,
-        paramsForServer,
-        customSiftOperators,
-        ssr: options.ssr,
-        setupInstance: wrappedSetupInstance,
+    // create pinia store, or reuse existing one by storeName
+    const storeName = serviceOptions.storeName || `service:${location}`
+    const existingStore = options.pinia._s.get(storeName)
+    let store: any
+    if (existingStore) {
+      store = existingStore
+    }
+    else {
+      const useStore = defineStore(storeName, () => {
+        const utils = useServiceStore({
+          idField,
+          servicePath: location,
+          defaultLimit,
+          whitelist,
+          paramsForServer,
+          customSiftOperators,
+          ssr: options.ssr,
+          setupInstance: wrappedSetupInstance,
+        })
+        const custom = customizeStore(utils)
+        return { ...utils, ...custom }
       })
-      const custom = customizeStore(utils)
-      return { ...utils, ...custom }
-    })
-    const store = useStore(options.pinia)
+      store = useStore(options.pinia)
+    }
 
     // storage-sync
     if (!options.ssr && options.storage) {

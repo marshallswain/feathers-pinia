@@ -170,6 +170,20 @@ or an object to merge into the store.
 
 ```ts
 interface PiniaServiceConfig {
+  /**
+   * The name of the store to use for this service. Defaults to `service:${servicePath}`.
+   * You can also use storeName to make two services share the same store.
+   */
+  storeName?: string
+  /**
+   * Overrides the service used for instance-level service methods, like patch, and remove.
+   * Useful for "proxy" services. For example: `pages/full` loads the page record with populated
+   * data, but you want to patch/remove the record through the `pages` service.
+   */
+  instanceServicePath?: string
+  /**
+   * The name of the id field for this service. Overrides the global idField.
+   */
   idField?: string
   whitelist?: string[]
   paramsForServer?: string[]
@@ -188,6 +202,15 @@ interface SetupInstanceUtils {
   servicePath?: string
 }
 ```
+
+The `storeName` and `instanceServicePath` options were introduced in Feathers-Pinia 4.2. They are not configurable at 
+the global level.
+
+- **`storeName {String}`** is the name of the store to use for this service. Defaults to `service:${servicePath}`. You can
+also use `storeName` to make two services share the same store.
+- **`instanceServicePath {String}`** overrides the service used for instance-level service methods, like `patch`, and
+`remove`. Useful for "proxy" services. For example: `pages/full` loads the page record with populated data, but you
+want to patch/remove the record through the `pages` service.
 
 These options are all configurable at the global and service levels. See descriptions in the global configuration
 section. Here is a description of how each option is handled when it's also configured globally:
