@@ -249,7 +249,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
       makeRequest()
   }
 
-  if (paginateOn === 'server') {
+  if (paginateOn === 'server' && service.on) {
     // watch realtime events and re-query
     // TODO: only re-query when relevant
     service.on('created', () => {
