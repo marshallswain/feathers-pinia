@@ -38,7 +38,8 @@ export const books: PiniaServiceConfig = {
 }
 ```
 
-The above example uses `app.pushToStore` to replace `data.pages` with the pages in the `pages` service store. The 
+The above example uses `app.pushToStore` to replace `data.pages` with the pages in the `pages` service store. If the
+data didn't exist already, it will be added. If it did exist, the store record will be patched with any new data. The 
 `data.pages` array will be a static array, not adjusting its length when new data arrives. So we need another 
 utility to make it reactive: `defineVirtualProperty`.
 
