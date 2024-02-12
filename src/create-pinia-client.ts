@@ -11,7 +11,7 @@ import { storeAssociated, useServiceInstance } from './modeling/index.js'
 import { defineGetters, defineVirtualProperties, defineVirtualProperty, pushToStore } from './utils/index.js'
 import { syncWithStorage as __sync, clearStorage } from './localstorage/index.js'
 
-interface SetupInstanceUtils {
+export interface SetupInstanceUtils {
   app?: any
   service?: any
   servicePath?: string
@@ -51,8 +51,12 @@ export interface CreatePiniaClientConfig extends PiniaServiceConfig {
   services?: Record<string, PiniaServiceConfig>
 }
 
-export type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
-  [Key in keyof T]: PiniaService<T[Key]> & T[Key]
+export type AppWithServices = {
+  services: { [key: string]: FeathersService }
+}
+
+export type CreatePiniaServiceTypes<T extends AppWithServices> = {
+  [Key in keyof T['services']]: PiniaService<T['services'][Key]> & T['services'][Key]
 }
 
 export interface AppExtensions {
@@ -63,10 +67,26 @@ export interface AppExtensions {
   defineVirtualProperties: <Data>(data: Data, getters: Record<string, any>) => void
 }
 
-export function createPiniaClient<Client extends Application>(
-  client: Client,
+/**
+ * ```ts
+ * import { FeathersPiniaClient } from 'feathers-pinia'
+ * import { Application, Service } from '@feathersjs/feathers'
+ * interface Book {
+ *   id: string
+ *   title: string
+ * }
+ * interface ServiceTypes {
+ *   books: Service<Book>
+ * }
+ * export type MyFeathersPiniaApp = FeathersPiniaClient<Application<ServiceTypes>>
+ * ```
+ */
+export type FeathersPiniaClient<App extends Application> = Application<CreatePiniaServiceTypes<App>> & AppExtensions
+
+export function createPiniaClient<App extends Application>(
+  client: App,
   options: CreatePiniaClientConfig,
-): Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions {
+): Application<CreatePiniaServiceTypes<App>> & AppExtensions {
   const vueApp = feathers()
 
     ;(vueApp as any).defaultService = function (location: string) {
@@ -213,5 +233,5 @@ export function createPiniaClient<Client extends Application>(
     defineVirtualProperties,
   })
 
-  return vueApp as Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions
+  return vueApp as FeathersPiniaClient<App>
 }

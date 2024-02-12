@@ -16,11 +16,11 @@ interface PiniaServiceOptions {
 
 // FIXME: Those are very hacky, there should be a simpler way of recovering service types
 type SvcResult<S extends FeathersService> = S extends { get: (...args: any[]) => Promise<infer T> } ? T : never
-type SvcParams<S extends FeathersService> = S extends { find: (params: infer T) => any } ? T : never
+type SvcParams<S extends FeathersService> = (S extends { find: (params: infer T) => any } ? T : never) & Params<Query>
 type SvcData<S extends FeathersService> = S extends { create: (data: (infer T)[]) => any } ? T : never
 type SvcPatchData<S extends FeathersService> = S extends { patch: (id: any, data: infer T) => any } ? T : never
 
-type SvcModel<S extends FeathersService> = S & ServiceInstance<SvcResult<S>>
+type SvcModel<S extends FeathersService> = ServiceInstance<SvcResult<S>>
 
 export class PiniaService<Svc extends FeathersService> {
   store

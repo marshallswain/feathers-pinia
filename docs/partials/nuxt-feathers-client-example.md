@@ -55,7 +55,7 @@ export default defineNuxtPlugin(async (nuxt) => {
 
 ```ts [Manual setup]
 // plugins/1.feathers.ts
-import { type FeathersService, feathers } from '@feathersjs/feathers'
+import { type Service, feathers } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import { OFetch, createPiniaClient } from 'feathers-pinia'
 
@@ -66,6 +66,17 @@ import rest from '@feathersjs/rest-client'
 // socket.io imports for the browser
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
+
+// Define your custom types (usually imported from another file)
+export interface Book {
+  _id: string
+  title: string
+}
+
+// Define ServiceTypes by wrapping your custom type in the `Service` type
+export interface ServiceTypes {
+  'book': Service<Book>
+}
 
 /**
  * Creates a Feathers Rest client for the SSR server and a Socket.io client for the browser.
@@ -89,7 +100,7 @@ export default defineNuxtPlugin(async (nuxt) => {
     : socketio(io(host, { transports: ['websocket'] }))
 
   // create the feathers client
-  const feathersClient = feathers<Record<string, FeathersService>>()
+  const feathersClient = feathers<ServiceTypes>>()
     .configure(connection)
     .configure(authenticationClient({ storage, storageKey }))
 
