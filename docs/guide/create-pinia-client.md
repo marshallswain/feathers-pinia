@@ -74,7 +74,17 @@ createPiniaClient(feathersClient, {
 })
 ```
 
-Let's take a look at the possible configuration values.
+See the configuration sections, below, for the possible configuration values.
+
+## Client Properties
+
+The `createPiniaClient` utility returns a wrapped FeathersPinia Client with the following added properties:
+
+- `pushToStore(data: any, servicePath: string)` pushes data into another service store.
+- `defineVirtualProperty(data: any, key: string, getter: Function)` sets up a virtual property on an object.
+- `defineVirtualProperties(data: any, virtuals: Record<string, Function>)` sets up many virtual properties on an object.
+
+Learn more about these properties in the [Data Modeling](/guide/data-modeling) guide.
 
 ## Global Configuration
 

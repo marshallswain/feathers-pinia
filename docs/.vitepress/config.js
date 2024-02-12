@@ -134,6 +134,7 @@ function getGuideSidebar() {
     {
       text: 'Data Modeling',
       items: [
+        { text: 'Data Modeling in v4.2+', link: '/guide/data-modeling' },
         { text: 'useInstanceDefaults', link: '/guide/use-instance-defaults' },
         { text: 'storeAssociated', link: '/guide/store-associated' },
         { text: 'Utilities', link: '/guide/utilities' },

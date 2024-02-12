@@ -8,7 +8,7 @@ import type { Service } from './modeling/use-feathers-instance.js'
 import { useServiceEvents, useServiceStore } from './stores/index.js'
 import { feathersPiniaHooks } from './hooks/index.js'
 import { storeAssociated, useServiceInstance } from './modeling/index.js'
-import { defineGetters } from './utils/index.js'
+import { defineGetters, defineVirtualProperties, defineVirtualProperty, pushToStore } from './utils/index.js'
 import { syncWithStorage as __sync, clearStorage } from './localstorage/index.js'
 
 interface SetupInstanceUtils {
@@ -47,6 +47,9 @@ export type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }
 export interface AppExtensions {
   storeAssociated: (data: any, config: Record<string, string>) => void
   clearStorage: () => void
+  pushToStore: <Data>(data: Data, servicePath: string) => void
+  defineVirtualProperty: <Data>(data: Data, key: string, getter: any) => void
+  defineVirtualProperties: <Data>(data: Data, getters: Record<string, any>) => void
 }
 
 export function createPiniaClient<Client extends Application>(
@@ -177,7 +180,16 @@ export function createPiniaClient<Client extends Application>(
     },
   })
 
-  Object.assign(vueApp, { storeAssociated })
+  Object.assign(vueApp, {
+    // TODO: remove in v5
+    storeAssociated,
+    pushToStore<Data>(data: Data, servicePath: string) {
+      const service = vueApp.service(servicePath) as unknown as { createInStore: any }
+      return pushToStore(data, service)
+    },
+    defineVirtualProperty,
+    defineVirtualProperties,
+  })
 
   return vueApp as Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions
 }
