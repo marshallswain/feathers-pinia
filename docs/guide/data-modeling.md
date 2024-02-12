@@ -25,7 +25,9 @@ In all of the below examples, the exported `books` object can be passed to the `
 The FeathersPinia client's `pushToStore` method pushes data into a related store.
 
 ```ts
-export const books = {
+import { PiniaServiceConfig } from 'feathers-pinia'
+
+export const books: PiniaServiceConfig = {
   setupInstance(data: any, { app }: any) {
 
     // replace data.pages with stored pages
@@ -47,7 +49,9 @@ define reactive properties on instances. In the following example, we no longer 
 Instead, we overwrite the `pages` property with a virtual getter that returns the stored pages.
 
 ```ts
-export const books = {
+import { PiniaServiceConfig } from 'feathers-pinia'
+
+export const books: PiniaServiceConfig = {
   setupInstance(data: any, { app }: any) {
 
     // store the page records
@@ -74,7 +78,9 @@ it to define lots of reactive properties on our instances. In the following exam
 `pages` and `creator`.
 
 ```ts
-export const books = {
+import { PiniaServiceConfig } from 'feathers-pinia'
+
+export const books: PiniaServiceConfig = {
   setupInstance(data: any, { app }: any) {
 
     // store related data
@@ -106,7 +112,7 @@ create a client-side Feathers hook to send them if you wanted to.
 This example begins by showing how to use the `ServiceInstance` type to define a `Book` type.
 
 ```ts
-import { type ServiceInstance, defineVirtualProperties, pushToStore, useInstanceDefaults } from 'feathers-pinia'
+import { type ServiceInstance, type PiniaServiceConfig, defineVirtualProperties, pushToStore, useInstanceDefaults } from 'feathers-pinia'
 import type { UserWithIncludes } from './users'
 import type { PageWithIncludes } from './pages'
 
@@ -128,7 +134,7 @@ export interface BookWithIncludes extends Book {
 }
 
 // Create the books service configuration
-export const books = {
+export const books: PiniaServiceConfig = {
   setupInstance(data: BookWithIncludes, { app }: any) {
     data = useInstanceDefaults({
       title: '🐸 Book',
