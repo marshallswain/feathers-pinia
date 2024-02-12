@@ -7,12 +7,34 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# What's New in 4.0
+# What's New in v4
 
 [[toc]]
 
-Version 4.0 of Feathers-Pinia is about improving developer experience.  It focuses on the `useFind`, `findInStore`, and
+Version 4 of Feathers-Pinia is about improving developer experience.  It focuses on the `useFind`, `findInStore`, and
 `useGet` APIs.
+
+## New in v4.2
+
+### 🎁 useBackup
+
+The new [useBackup utility]() is the opposite of working with clones. Instead of binding your form to a clone, you use 
+the original record. It keeps a copy, letting you call `backup` or `restore` to revert changes. The `save` method
+auto-diffs from the backup, keeping data size to a minimum.  
+
+### 🎁 New Relationship Utilities
+
+New methods have been added to the FeathersPinia Client. These utilities can be used inside `setupInstance` functions to
+help form relationships between services:
+
+- [app.pushToStore](/guide/data-modeling#pushtostore) pushes data into other service stores. It replaces `storeAssociated`. 
+- [app.defineVirtualProperty](/guide/data-modeling#definevirtualproperty) sets up a virtual property on an object.
+- [app.defineVirtualProperties](/guide/data-modeling#definevirtualproperties) sets up many virtual properties on an object.
+
+### 🔥 `storeAssociated` Deprecated 
+
+As of Feathers-Pinia v4.2, the `storeAssociated` utility has been replaced with a suite of smaller, more-flexible,
+single-purpose utilities. See [Data Modeling](/guide/data-modeling) for the new way to store associated data.
 
 ## API Changes
 

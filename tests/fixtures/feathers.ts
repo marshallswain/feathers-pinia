@@ -90,6 +90,8 @@ function createFeathers<F extends Application>(feathers: F) {
     .use('authors', AuthorService)
     .use('posts', PostService)
     .use('comments', CommentService)
+    .use('books', BookService)
+    .use('pages', PageService)
 
   // hooks to simulate auth responses
   feathersClient.authentication.service.hooks({
