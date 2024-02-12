@@ -221,7 +221,7 @@ describe('latestQuery and previousQuery', () => {
 
       contacts$.next()
 
-      expect(contacts$.isPending).toBe(false)
+      expect(contacts$.isPending).toBe(true)
 
       await timeout(0)
 

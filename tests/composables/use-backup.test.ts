@@ -59,7 +59,7 @@ describe('useBackup', () => {
     const bookBackup = useBackup(computed(() => props.book))
     const { data: book } = bookBackup
 
-    book.value.title = 'New Title'
+    book.value.title = 'Book 1 Revised Edition'
 
     await bookBackup.save()
 
