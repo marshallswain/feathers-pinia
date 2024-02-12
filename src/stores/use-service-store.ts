@@ -10,6 +10,7 @@ import { useServicePagination } from './pagination.js'
 import { useServicePending } from './pending.js'
 import { useServiceEventLocks } from './event-locks.js'
 import { useAllStorageTypes } from './all-storage-types.js'
+import { useSsrQueryCache } from './ssr-query-cache.js'
 
 export interface UseServiceStoreOptions {
   idField: string
@@ -87,12 +88,16 @@ export function useServiceStore<M extends AnyData, Q extends Query>(_options: Us
     defaultLimit,
   })
 
+  // ssr qid cache
+  const { resultsByQid, getQid, setQid, clearQid, clearAllQids } = useSsrQueryCache()
+
   function clearAll() {
     itemStorage.clear()
     tempStorage.clear()
     cloneStorage.clear()
     clearPagination()
     pendingState.clearAllPending()
+    clearAllQids()
   }
 
   // event locks
@@ -131,6 +136,13 @@ export function useServiceStore<M extends AnyData, Q extends Query>(_options: Us
     patchInStore,
     removeFromStore,
     clearAll,
+
+    // ssr qid cache
+    resultsByQid,
+    getQid,
+    setQid,
+    clearQid,
+    clearAllQids,
 
     // server options
     whitelist,
