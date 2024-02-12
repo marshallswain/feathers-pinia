@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref } from 'vue-demi'
+import type { ComputedRef, Ref, UnwrapNestedRefs, WritableComputedRef } from 'vue-demi'
 import { computed, reactive, ref, unref, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import { useDebounceFn } from '@vueuse/core'
@@ -9,7 +9,45 @@ import { itemsFromPagination } from './utils.js'
 import { usePageData } from './utils-pagination.js'
 import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
 
-export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
+export type UseFindReturn<M = AnyData> = UnwrapNestedRefs<{
+  paramsWithPagination: ComputedRef<Params<Query>>
+  isSsr: ComputedRef<boolean>
+  qid: WritableComputedRef<string>
+
+  data: ComputedRef<M[]>
+  allLocalData: ComputedRef<M[]>
+  total: ComputedRef<number>
+  limit: Ref<number>
+  skip: number
+
+  currentQuery: ComputedRef<ExtendedQueryInfo | null>
+  cachedQuery: ComputedRef<ExtendedQueryInfo | null>
+  latestQuery: ComputedRef<ExtendedQueryInfo | null>
+  previousQuery: ComputedRef<ExtendedQueryInfo | null>
+
+  find: () => Promise<void>
+  request: Ref<Promise<Paginated<M>> | null>
+  requestCount: Ref<number>
+  queryWhen: (queryWhenFn: () => boolean) => void
+
+  isPending: ComputedRef<boolean>
+  haveBeenRequested: ComputedRef<boolean>
+  haveLoaded: ComputedRef<boolean>
+  error: ComputedRef<any>
+  clearError: () => void
+
+  pageCount: Ref<number>
+  currentPage: Ref<number>
+  canPrev: ComputedRef<boolean>
+  canNext: ComputedRef<boolean>
+  next: () => Promise<void>
+  prev: () => Promise<void>
+  toStart: () => Promise<void>
+  toEnd: () => Promise<void>
+  toPage: (page: number) => Promise<void>
+}>
+
+export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps): UseFindReturn<M> {
   const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOn = 'client' } = options
   const { service } = deps
   const { store } = service
@@ -19,7 +57,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
   const limit = pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit)
   const skip = pagination?.skip || ref(params.value?.query?.$skip || 0)
 
-  const paramsWithPagination = computed(() => {
+  const paramsWithPagination = computed<Params<Query>>(() => {
     const query = deepUnref(params.value?.query || {})
     return {
       ...params.value,
@@ -114,7 +152,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     return params
   })
 
-  const data = computed(() => {
+  const data = computed<M[]>(() => {
     if (paginateOn === 'server') {
       const values = itemsFromPagination(store, service, cachedParams.value)
       return values
@@ -140,7 +178,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
 
   /** SERVER FETCHING */
   const requestCount = ref(0)
-  const request = ref<Promise<Paginated<AnyData>> | null>(null)
+  const request = ref<Promise<Paginated<M>> | null>(null)
 
   // pulled into its own function so it can be called from `makeRequest` or `find`
   function setupPendingState() {
@@ -268,7 +306,7 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     })
   }
 
-  return reactive({
+  const toReturn = reactive({
     paramsWithPagination,
     isSsr: computed(() => {
       // hack: read total early during SSR to prevent hydration mismatch
@@ -316,4 +354,6 @@ export function useFind(params: ComputedRef<UseFindParams | null>, options: UseF
     toEnd, // () => Promise<void>
     toPage, // (page: number) => Promise<void>
   })
+
+  return toReturn
 }

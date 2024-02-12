@@ -224,7 +224,7 @@ export class PiniaService<Svc extends FeathersService> {
 
   useFind(params: ComputedRef<UseFindParams | null>, options?: UseFindOptions) {
     const _params = isRef(params) ? params : ref(params)
-    return useFind<SvcModel<Svc>>(_params, options, { service: this })
+    return useFind<SvcModel<Svc>>(_params as ComputedRef<UseFindParams | null>, options, { service: this })
   }
 
   useGet(id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = ref({})) {
