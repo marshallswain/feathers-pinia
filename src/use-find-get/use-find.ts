@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import type { ComputedRef, Ref } from 'vue-demi'
 import { computed, reactive, ref, unref, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
@@ -10,15 +9,15 @@ import { itemsFromPagination } from './utils.js'
 import { usePageData } from './utils-pagination.js'
 import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
 
-export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
+export function useFind(params: ComputedRef<UseFindParams | null>, options: UseFindOptions = {}, deps: UseFindGetDeps) {
   const { pagination, debounce = 100, immediate = true, watch: _watch = true, paginateOn = 'client' } = options
   const { service } = deps
   const { store } = service
 
-  /** PARAMS **/
+  /** PARAMS */
   const qid = computed(() => params.value?.qid || 'default')
-  const limit = pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit as number)
-  const skip = pagination?.skip || ref(params.value?.query?.$skip || 0 as number)
+  const limit = pagination?.limit || ref(params.value?.query?.$limit || store.defaultLimit)
+  const skip = pagination?.skip || ref(params.value?.query?.$skip || 0)
 
   const paramsWithPagination = computed(() => {
     const query = deepUnref(params.value?.query || {})
@@ -38,72 +37,21 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
     return newParams
   })
 
-  /** REQUEST STATE **/
+  /** REQUEST STATE */
   const isPending = ref(false)
   const haveBeenRequested = ref(false)
   const haveLoaded = ref(false)
   const error = ref<any>(null)
   const clearError = () => (error.value = null)
 
-  /** Cached Params **/
+  /** Cached Params */
   const cachedParams = ref(deepUnref(params.value || {}))
   function updateCachedParams() {
     if (stringify(cachedParams.value) !== stringify(paramsWithPagination.value))
       cachedParams.value = paramsWithPagination.value
   }
 
-  /** STORE ITEMS **/
-  const localParams = computed(() => {
-    const beforeCurrent = itemsBeforeCurrent.value
-    const adjustedSkip = skip.value + (beforeCurrent.length - skip.value)
-    const params = {
-      ...paramsWithPagination.value,
-      query: {
-        ...paramsWithPagination.value.query,
-        $limit: limit.value,
-        $skip: adjustedSkip,
-      },
-    }
-    return params
-  })
-
-  const data = computed<M[]>(() => {
-    if (paginateOn === 'server') {
-      const values = itemsFromPagination(store, service, cachedParams.value)
-      return values
-    }
-    else if (paginateOn === 'hybrid') {
-      const result = service.findInStore(deepUnref(localParams)).data
-      return result.filter((i: any) => i)
-    }
-    else {
-      const result = service.findInStore(deepUnref(paramsWithPagination)).data
-      return result.filter((i: any) => i)
-    }
-  })
-  const itemsBeforeCurrent = computed(() => {
-    const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null)
-      return []
-
-    const allItems = allLocalData.value
-    const firstOfCurrentPage = whichQuery.items.find((i: any) => i)
-    const indexInItems = allItems.findIndex((i: any) => i[store.idField] === firstOfCurrentPage[store.idField])
-    // if indexInItems is higher than skip, use the skip value instead
-    const adjustedIndex = Math.min(indexInItems, skip.value)
-    const beforeCurrent = allItems.slice(0, adjustedIndex)
-    return beforeCurrent
-  })
-  const allLocalData = computed<M[]>(() => {
-    const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
-    if (whichQuery == null && paginateOn !== 'client')
-      return []
-
-    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data
-    return allItems
-  })
-
-  /** QUERY WHEN **/
+  /** QUERY WHEN */
   let queryWhenFn = () => true
   const queryWhen = (_queryWhenFn: () => boolean) => {
     queryWhenFn = _queryWhenFn
@@ -129,7 +77,59 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
     return extendedInfo
   })
 
-  /** QUERIES **/
+  const allLocalData = computed(() => {
+    const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
+    if (whichQuery == null && paginateOn !== 'client')
+      return []
+
+    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data
+    return allItems
+  })
+  const itemsBeforeCurrent = computed(() => {
+    const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
+    if (whichQuery == null)
+      return []
+
+    const allItems = allLocalData.value
+    const firstOfCurrentPage = whichQuery.items.find((i: any) => i)
+    const indexInItems = allItems.findIndex((i: any) => i[store.idField] === firstOfCurrentPage[store.idField])
+    // if indexInItems is higher than skip, use the skip value instead
+    const adjustedIndex = Math.min(indexInItems, skip.value)
+    const beforeCurrent = allItems.slice(0, adjustedIndex)
+    return beforeCurrent
+  })
+
+  /** STORE ITEMS */
+  const localParams = computed(() => {
+    const beforeCurrent = itemsBeforeCurrent.value
+    const adjustedSkip = skip.value + (beforeCurrent.length - skip.value)
+    const params = {
+      ...paramsWithPagination.value,
+      query: {
+        ...paramsWithPagination.value.query,
+        $limit: limit.value,
+        $skip: adjustedSkip,
+      },
+    }
+    return params
+  })
+
+  const data = computed(() => {
+    if (paginateOn === 'server') {
+      const values = itemsFromPagination(store, service, cachedParams.value)
+      return values
+    }
+    else if (paginateOn === 'hybrid') {
+      const result = service.findInStore(deepUnref(localParams)).data
+      return result.filter((i: any) => i)
+    }
+    else {
+      const result = service.findInStore(deepUnref(paramsWithPagination)).data
+      return result.filter((i: any) => i)
+    }
+  })
+
+  /** QUERIES */
   const queries: Ref<ExtendedQueryInfo[]> = ref([]) // query info after the response returns
   const latestQuery = computed(() => {
     return queries.value[queries.value.length - 1] || null
@@ -138,7 +138,7 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
     return queries.value[queries.value.length - 2] || null
   })
 
-  /** SERVER FETCHING **/
+  /** SERVER FETCHING */
   const requestCount = ref(0)
   const request = ref<Promise<Paginated<AnyData>> | null>(null)
 
@@ -200,7 +200,7 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
   }
   const findDebounced = useDebounceFn<any>(find, debounce)
 
-  /** Query Gatekeeping **/
+  /** Query Gatekeeping */
   const makeRequest = async (p?: Params<Query>) => {
     // If params are null, do nothing
     if (params.value === null)
@@ -221,8 +221,8 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
     updateCachedParams()
   }
 
-  /** Pagination Data **/
-  const total = computed<number>(() => {
+  /** Pagination Data */
+  const total = computed(() => {
     if (['server', 'hybrid'].includes(paginateOn)) {
       const whichQuery = currentQuery.value || cachedQuery.value
       return whichQuery?.total || 0
@@ -235,7 +235,7 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
   const pageData = usePageData({ limit, skip, total, request })
   const { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev } = pageData
 
-  /** Query Watching **/
+  /** Query Watching */
   if (['server', 'hybrid'].includes(paginateOn) && _watch) {
     watch(
       paramsWithPagination,
@@ -275,7 +275,7 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
       setTimeout(() => {
         ref(total.value)
       }, 0)
-      return store.isSsr as boolean
+      return store.isSsr
     }), // ComputedRef<boolean>
     qid, // WritableComputedRef<string>
 
