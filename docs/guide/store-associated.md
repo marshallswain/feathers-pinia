@@ -13,8 +13,9 @@ Learn how to store associated data in its proper stores.
 
 <BlockQuote type="danger">
 
-As of Feathers-Pinia v4.2, the `storeAssociated` utility has been replaced with a suite of smaller, more-flexible, 
-single-purpose utilities. See [Data Modeling](/guide/data-modeling) for the new way to store associated data.
+The `storeAssociated` API is deprecated.  As of Feathers-Pinia v4.2 it has been replaced with a suite of smaller, 
+more-flexible, single-purpose utilities. See [Data Modeling](/guide/data-modeling) for the new way to store associated 
+data.
 
 </BlockQuote>
 
@@ -23,7 +24,7 @@ single-purpose utilities. See [Data Modeling](/guide/data-modeling) for the new 
 Every Feathers-Pinia Client includes a `storeAssociated` method, which receives a `data` object and a `config` object which
 tells the utility the service in which to store the associated data.
 
-## storeAssociated
+## storeAssociated <Badge type="danger"> Deprecated </Badge>
 
 ```ts
 storeAssociated(data, config)

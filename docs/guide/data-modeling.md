@@ -47,7 +47,14 @@ utility to make it reactive: `defineVirtualProperty`.
 
 The FeathersPinia client's `defineVirtualProperty` method sets up a virtual property on an object. We can use it to 
 define reactive properties on instances. In the following example, we no longer replace `data.pages` with stored pages. 
-Instead, we overwrite the `pages` property with a virtual getter that returns the stored pages.
+Instead, we overwrite the `pages` property with a virtual getter that returns the stored pages.  
+
+<BlockQuote type="warning">
+
+if you're defining more than one virtual property, use [defineVirtualProperties](#definevirtualproperties) instead.
+
+</BlockQuote>
+
 
 ```ts
 import { PiniaServiceConfig } from 'feathers-pinia'
@@ -57,10 +64,16 @@ export const books: PiniaServiceConfig = {
 
     // store the page records
     app.pushToStore(data.pages, 'pages')
-
-    // define a virtual property
+    // define a findInStore virtual property
     app.defineVirtualProperty(data, 'pages', (item: any) => {
       return app.service('pages').findInStore({ query: { book_id: item.id } }).data
+    })
+
+    // store the creator record
+    app.pushToStore(data.creator, 'users')
+    // define a getFromStore virtual property
+    app.defineVirtualProperty(data, 'creator', (item: any) => {
+      return app.service('users').getFromStore(item.created_by)
     })
 
     return data
@@ -68,9 +81,12 @@ export const books: PiniaServiceConfig = {
 }
 ```
 
-All virtual properties are lazily evaluated (they only run when you reference them), making them very lightweight. Now 
-let's see how to define many virtual properties at once. Virtual properties are non-enumerable, so they'll never be
-accidentally sent to the API server. But you could create a client-side Feathers hook to send them if you wanted to.
+All virtual properties are lazily evaluated (they only run when you reference them), making them very lightweight.
+Virtual properties are non-enumerable, so they'll never be accidentally sent to the API server. But you could create a 
+client-side Feathers hook to send them if you wanted to.
+
+It's a bit verbose when you need to define more than one virtual property, so let's instead define many at once with
+[defineVirtualProperties](#definevirtualproperties)
 
 ## defineVirtualProperties
 
@@ -90,9 +106,11 @@ export const books: PiniaServiceConfig = {
 
     // overwrite the original properties with virtual properties
     app.defineVirtualProperties(data, {
+      // findInStore example
       pages: (item: any) => {
         return app.service('pages').findInStore({ query: { book_id: item.id } }).data
       },
+      // getFromStore example
       creator: (item: any) => {
         return app.service('users').getFromStore(item.created_by)
       },
@@ -141,14 +159,17 @@ export const books: PiniaServiceConfig = {
       title: '🐸 Book',
     }, data)
 
+    // move related data to the correct stores
     app.pushToStore(data.pages, 'pages')
     app.pushToStore(data.creator, 'users')
 
     // virtual properties
     app.defineVirtualProperties(data, {
+      // findInStore example
       pages: (item: Book) => {
         return app.service('pages').findInStore({ query: { book_id: item.id } }).data
       },
+      // getFromStore example
       creator: (item: Book) => {
         return app.service('users').getFromStore(item.created_by)
       },

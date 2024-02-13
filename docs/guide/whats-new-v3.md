@@ -313,9 +313,12 @@ const task = api.service('tasks').new({
 
 ## Handle Associations
 
+Update: `storeAssociated` has been replaced by new lower-level [Data Modeling utilities](/guide/data-modeling) in 
+Feathers-Pinia 4.2.
+
 Use the [modeling utilities](/guide/utilities) to define associations on your data. The new methods assure that new
-instances are not enumerable, so they won't be sent to the API server. The [storeAssociated](/guide/store-associated) utility
-automatically distributes related data into correct service stores with a simple config.
+instances are not enumerable, so they won't be sent to the API server. ~~The [storeAssociated](/guide/store-associated) utility
+automatically distributes related data into correct service stores with a simple config.~~
 
 ## New `service.useFind` API 🎁
 
