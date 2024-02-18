@@ -58,6 +58,7 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
   const skip = pagination?.skip || ref(params.value?.query?.$skip || 0)
 
   const paramsWithPagination = computed<Params<Query>>(() => {
+    debugger
     const query = deepUnref(params.value?.query || {})
     return {
       ...params.value,
@@ -280,7 +281,7 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
       () => {
         makeRequest()
       },
-      { immediate: false, flush: 'sync' },
+      { immediate: false, flush: 'pre' },
     )
 
     if (immediate)
