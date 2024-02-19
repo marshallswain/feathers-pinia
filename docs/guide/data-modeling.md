@@ -136,7 +136,7 @@ import type { UserWithIncludes } from './users'
 import type { PageWithIncludes } from './pages'
 
 // Define the `Book` type
-export interface BookBase {
+export interface Book {
   id?: string
   title: string
   description?: string
@@ -144,13 +144,12 @@ export interface BookBase {
   created_at?: number
   updated_at?: number
 }
-export type Book = ServiceInstance<BookBase>
-
 // Define types for related data
-export interface BookWithIncludes extends Book {
+export interface BookIncludes {
   pages: PageWithIncludes[]
   creator: UserWithIncludes
 }
+export type BookWithIncludes = ServiceInstance<Book & BookIncludes>
 
 // Create the books service configuration
 export const books: PiniaServiceConfig = {
