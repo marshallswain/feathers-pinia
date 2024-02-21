@@ -10,9 +10,11 @@ import { useServicePagination } from './pagination.js'
 import { useServicePending } from './pending.js'
 import { useServiceEventLocks } from './event-locks.js'
 import { useAllStorageTypes } from './all-storage-types.js'
+import { useSsrQueryCache } from './ssr-query-cache.js'
 
 export interface UseServiceStoreOptions {
   idField: string
+  servicePath: string
   defaultLimit?: number
   whitelist?: string[]
   paramsForServer?: string[]
@@ -30,7 +32,7 @@ function makeDefaultOptions() {
 
 export function useServiceStore<M extends AnyData, Q extends Query>(_options: UseServiceStoreOptions) {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const { idField, whitelist, paramsForServer, defaultLimit, customSiftOperators } = options
+  const { idField, servicePath, whitelist, paramsForServer, defaultLimit, customSiftOperators } = options
 
   // storage
   const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
@@ -87,12 +89,16 @@ export function useServiceStore<M extends AnyData, Q extends Query>(_options: Us
     defaultLimit,
   })
 
+  // ssr qid cache
+  const { resultsByQid, getQid, setQid, clearQid, clearAllQids } = useSsrQueryCache()
+
   function clearAll() {
     itemStorage.clear()
     tempStorage.clear()
     cloneStorage.clear()
     clearPagination()
     pendingState.clearAllPending()
+    clearAllQids()
   }
 
   // event locks
@@ -101,6 +107,7 @@ export function useServiceStore<M extends AnyData, Q extends Query>(_options: Us
   const store = {
     new: setupInstance,
     idField,
+    servicePath,
     isSsr,
     defaultLimit,
 
@@ -131,6 +138,13 @@ export function useServiceStore<M extends AnyData, Q extends Query>(_options: Us
     patchInStore,
     removeFromStore,
     clearAll,
+
+    // ssr qid cache
+    resultsByQid,
+    getQid,
+    setQid,
+    clearQid,
+    clearAllQids,
 
     // server options
     whitelist,

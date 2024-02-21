@@ -8,5 +8,6 @@ export const feathersPiniaAutoImport = {
     'defineGetters',
     'defineSetters',
     'defineValues',
+    'useBackup',
   ],
 }

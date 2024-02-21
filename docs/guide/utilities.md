@@ -9,6 +9,13 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 # Modeling Utilities
 
+<BlockQuote type="danger" label="Deprecated APIs">
+
+The `defineValues`, `defineGetters`, and `defineSetters` utilities are all deprecated. They have been replaced by new 
+[Data Modeling utilities](/guide/data-modeling) in feathers-pinia v4.2.
+
+</BlockQuote>
+
 Learn how to model data with `defineValues`, `defineGetters`, and `defineSetters`
 
 [[toc]]
@@ -16,7 +23,7 @@ Learn how to model data with `defineValues`, `defineGetters`, and `defineSetters
 These utilities are a shorthand for adding properties to objects. They can be useful for data modeling. Arrow functions
 are not supported.
 
-## defineValues
+## defineValues <Badge type="danger"> Deprecated </Badge>
 
 ```ts
 defineValues(record, object)
@@ -24,7 +31,7 @@ defineValues(record, object)
 
 For adding configurable, non-enumerable properties to items.
 
-## defineGetters
+## defineGetters <Badge type="danger"> Deprecated </Badge>
 
 For adding configurable, non-enumerable getters to items.
 
@@ -32,7 +39,7 @@ For adding configurable, non-enumerable getters to items.
 defineGetters(record, objectOfFunctions)
 ```
 
-## defineSetters
+## defineSetters <Badge type="danger"> Deprecated </Badge>
 
 ```ts
 defineSetters(record, objectOfFunctions)

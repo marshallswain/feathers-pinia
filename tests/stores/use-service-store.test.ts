@@ -4,11 +4,13 @@ describe('useServiceStore', () => {
   test('setup', () => {
     const service = useServiceStore({
       idField: 'id',
+      servicePath: 'posts',
     })
 
     expect(Object.keys(service)).toEqual([
       'new',
       'idField',
+      'servicePath',
       'isSsr',
       'defaultLimit',
 
@@ -39,6 +41,13 @@ describe('useServiceStore', () => {
       'patchInStore',
       'removeFromStore',
       'clearAll',
+
+      // ssr query cache
+      'resultsByQid',
+      'getQid',
+      'setQid',
+      'clearQid',
+      'clearAllQids',
 
       // server options
       'whitelist',

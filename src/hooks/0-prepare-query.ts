@@ -6,6 +6,9 @@ import { deepUnref } from '../utils/index.js'
  */
 export function unrefQuery() {
   return async (context: HookContext, next: NextFunction) => {
+    if (context.params.value)
+      context.params = deepUnref(context.params)
+
     if (context.params.query)
       context.params.query = deepUnref(context.params.query)
 

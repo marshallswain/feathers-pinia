@@ -57,9 +57,9 @@ export function pickDiff(obj: any, diffDef: DiffDefinition) {
   return _.pick(obj, ...topLevelKeys)
 }
 
-export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition) {
-  const originalVal = pickDiff(original, diffDef)
-  const cloneVal = pickDiff(clone, diffDef)
+export function diff(dest: AnyData, source: AnyData, diffDef?: DiffDefinition) {
+  const originalVal = pickDiff(dest, diffDef)
+  const cloneVal = pickDiff(source, diffDef)
 
   // If diff was an object, merge the values into the cloneVal
   if (typeof diffDef !== 'string' && !Array.isArray(diffDef))
@@ -72,7 +72,7 @@ export function diff(original: AnyData, clone: AnyData, diffDef: DiffDefinition)
 
   // Loop through clone, compare original value to clone value, if different add to diff object.
   const diff = Object.keys(cloneVal).reduce((diff: AnyData, key) => {
-    if (!isEqual(original[key], cloneVal[key]))
+    if (!isEqual(dest[key], cloneVal[key]))
       diff[key] = cloneVal[key]
 
     return diff

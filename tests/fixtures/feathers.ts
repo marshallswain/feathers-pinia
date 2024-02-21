@@ -61,6 +61,8 @@ const ContactService = memory<Contacts, ContactsData, Params<ContactsQuery>>({
 const AuthorService = memory({ paginate: paginate(), whitelist: whitelist() })
 const PostService = memory({ paginate: paginate(), whitelist: whitelist() })
 const CommentService = memory({ paginate: paginate(), whitelist: whitelist() })
+const BookService = memory({ paginate: paginate(), whitelist: whitelist() })
+const PageService = memory({ paginate: paginate(), whitelist: whitelist() })
 
 export interface ServiceTypes {
   users: typeof UserService
@@ -69,6 +71,8 @@ export interface ServiceTypes {
   authors: typeof AuthorService
   posts: typeof PostService
   comments: typeof CommentService
+  books: typeof BookService
+  pages: typeof PageService
 }
 
 /**
@@ -86,6 +90,8 @@ function createFeathers<F extends Application>(feathers: F) {
     .use('authors', AuthorService)
     .use('posts', PostService)
     .use('comments', CommentService)
+    .use('books', BookService)
+    .use('pages', PageService)
 
   // hooks to simulate auth responses
   feathersClient.authentication.service.hooks({
@@ -228,6 +234,19 @@ function wrapPiniaClient<F extends Application>(feathersClient: F) {
           })
           return withAssociations
         },
+      },
+      books: {
+        idField: 'id',
+        setupInstance(book, { app }) {
+          app.pushToStore(book.pages, 'pages')
+          app.defineVirtualProperty(book, 'pages', (book: any) => {
+            return app.service('pages').findInStore({ query: { bookId: book.id } }).data
+          })
+          return book
+        },
+      },
+      pages: {
+        idField: 'id',
       },
     },
   })

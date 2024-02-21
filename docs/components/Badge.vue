@@ -42,6 +42,9 @@ defineProps({
 .badge.error {
   background-color: #da5961;
 }
+.badge.danger {
+  background-color: #da5961;
+}
 
 .badge.warning,
 .badge.warn,

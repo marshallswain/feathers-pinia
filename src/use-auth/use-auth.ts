@@ -1,7 +1,7 @@
 import type { Ref } from 'vue-demi'
 import type { NullableId } from '@feathersjs/feathers'
 import { computed, ref } from 'vue-demi'
-import decode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { useCounter } from '../utils/use-counter'
 
 type SuccessHandler = (result: Record<string, any>) => Promise<Record<string, any> | void>
@@ -94,7 +94,7 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   // token check
   const isTokenExpired = (jwt: string) => {
     try {
-      const payload = decode(jwt) as any
+      const payload = jwtDecode(jwt) as any
       return new Date().getTime() > payload.exp * 1000
     }
     catch (error) {

@@ -134,9 +134,15 @@ function getGuideSidebar() {
     {
       text: 'Data Modeling',
       items: [
+        { text: 'Data Modeling in v4.2+', link: '/guide/data-modeling' },
         { text: 'useInstanceDefaults', link: '/guide/use-instance-defaults' },
-        { text: 'storeAssociated', link: '/guide/store-associated' },
-        { text: 'Utilities', link: '/guide/utilities' },
+        { 
+          text: 'Deprecated APIs', 
+          items: [
+            { text: 'storeAssociated', link: '/guide/store-associated' },
+            { text: 'Utilities', link: '/guide/utilities' },
+          ]
+        }
       ],
     },
     {
@@ -154,6 +160,7 @@ function getGuideSidebar() {
     {
       text: 'Other Tools',
       items: [
+        { text: 'useBackup', link: '/guide/use-backup' },
         { text: 'Storage Sync', link: '/guide/storage-sync' },
         { text: 'Auto-Imports', link: '/guide/auto-imports' },
         { text: 'Nuxt Module', link: '/guide/nuxt-module' },

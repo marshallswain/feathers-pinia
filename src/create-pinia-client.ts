@@ -8,16 +8,27 @@ import type { Service } from './modeling/use-feathers-instance.js'
 import { useServiceEvents, useServiceStore } from './stores/index.js'
 import { feathersPiniaHooks } from './hooks/index.js'
 import { storeAssociated, useServiceInstance } from './modeling/index.js'
-import { defineGetters } from './utils/index.js'
+import { defineGetters, defineVirtualProperties, defineVirtualProperty, pushToStore } from './utils/index.js'
 import { syncWithStorage as __sync, clearStorage } from './localstorage/index.js'
 
-interface SetupInstanceUtils {
+export interface SetupInstanceUtils {
   app?: any
   service?: any
   servicePath?: string
 }
 
 export interface PiniaServiceConfig {
+  /**
+   * The name of the store to use for this service. Defaults to `service:${servicePath}`.
+   * You can also use storeName to make two services share the same store.
+   */
+  storeName?: string
+  /**
+   * Overrides the service used for instance-level service methods, like patch, and remove.
+   * Useful for "proxy" services. For example: `pages/full` loads the page record with populated
+   * data, but you want to patch/remove the record through the `pages` service.
+   */
+  instanceServicePath?: string
   idField?: string
   defaultLimit?: number
   syncWithStorage?: boolean | string[]
@@ -40,19 +51,42 @@ export interface CreatePiniaClientConfig extends PiniaServiceConfig {
   services?: Record<string, PiniaServiceConfig>
 }
 
-export type CreatePiniaServiceTypes<T extends { [key: string]: FeathersService }> = {
-  [Key in keyof T]: PiniaService<T[Key]> & T[Key]
+export type AppWithServices = {
+  services: { [key: string]: FeathersService }
+}
+
+export type CreatePiniaServiceTypes<T extends AppWithServices> = {
+  [Key in keyof T['services']]: PiniaService<T['services'][Key]> & T['services'][Key]
 }
 
 export interface AppExtensions {
   storeAssociated: (data: any, config: Record<string, string>) => void
   clearStorage: () => void
+  pushToStore: <Data>(data: Data, servicePath: string) => void
+  defineVirtualProperty: <Data>(data: Data, key: string, getter: any) => void
+  defineVirtualProperties: <Data>(data: Data, getters: Record<string, any>) => void
 }
 
-export function createPiniaClient<Client extends Application>(
-  client: Client,
+/**
+ * ```ts
+ * import { FeathersPiniaClient } from 'feathers-pinia'
+ * import { Application, Service } from '@feathersjs/feathers'
+ * interface Book {
+ *   id: string
+ *   title: string
+ * }
+ * interface ServiceTypes {
+ *   books: Service<Book>
+ * }
+ * export type MyFeathersPiniaApp = FeathersPiniaClient<Application<ServiceTypes>>
+ * ```
+ */
+export type FeathersPiniaClient<App extends Application> = Application<CreatePiniaServiceTypes<App>> & AppExtensions
+
+export function createPiniaClient<App extends Application>(
+  client: App,
   options: CreatePiniaClientConfig,
-): Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions {
+): Application<CreatePiniaServiceTypes<App>> & AppExtensions {
   const vueApp = feathers()
 
     ;(vueApp as any).defaultService = function (location: string) {
@@ -85,36 +119,47 @@ export function createPiniaClient<Client extends Application>(
     }
 
     function wrappedSetupInstance(data: any) {
-      const svc = vueApp.service(location) as Service
+      // if serviceOptions.instanceServicePath is set, it's an instance-level override, so use that instead of location
+      const servicePath = serviceOptions.instanceServicePath || location
+      const service = vueApp.service(servicePath) as Service
+
       const asFeathersModel = useServiceInstance(data, {
-        service: svc,
+        service,
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         store,
       })
 
       // call the provided `setupInstance`
-      const utils = { app: vueApp, service: vueApp.service(location), servicePath: location }
+      const utils = { app: vueApp, service, servicePath }
       const fromGlobal = options.setupInstance ? options.setupInstance(asFeathersModel, utils) : asFeathersModel
-      const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(data, utils) : fromGlobal
+      const serviceLevel = serviceOptions.setupInstance ? serviceOptions.setupInstance(fromGlobal, utils) : fromGlobal
       return serviceLevel
     }
 
-    // create pinia store
-    const storeName = `service:${location}`
-    const useStore = defineStore(storeName, () => {
-      const utils = useServiceStore({
-        idField,
-        defaultLimit,
-        whitelist,
-        paramsForServer,
-        customSiftOperators,
-        ssr: options.ssr,
-        setupInstance: wrappedSetupInstance,
+    // create pinia store, or reuse existing one by storeName
+    const storeName = serviceOptions.storeName || `service:${location}`
+    const existingStore = options.pinia._s.get(storeName)
+    let store: any
+    if (existingStore) {
+      store = existingStore
+    }
+    else {
+      const useStore = defineStore(storeName, () => {
+        const utils = useServiceStore({
+          idField,
+          servicePath: location,
+          defaultLimit,
+          whitelist,
+          paramsForServer,
+          customSiftOperators,
+          ssr: options.ssr,
+          setupInstance: wrappedSetupInstance,
+        })
+        const custom = customizeStore(utils)
+        return { ...utils, ...custom }
       })
-      const custom = customizeStore(utils)
-      return { ...utils, ...custom }
-    })
-    const store = useStore(options.pinia)
+      store = useStore(options.pinia)
+    }
 
     // storage-sync
     if (!options.ssr && options.storage) {
@@ -177,7 +222,16 @@ export function createPiniaClient<Client extends Application>(
     },
   })
 
-  Object.assign(vueApp, { storeAssociated })
+  Object.assign(vueApp, {
+    // TODO: remove in v5
+    storeAssociated,
+    pushToStore<Data>(data: Data, servicePath: string) {
+      const service = vueApp.service(servicePath) as unknown as { createInStore: any }
+      return pushToStore(data, service)
+    },
+    defineVirtualProperty,
+    defineVirtualProperties,
+  })
 
-  return vueApp as Application<CreatePiniaServiceTypes<Client['services']>> & AppExtensions
+  return vueApp as FeathersPiniaClient<App>
 }
