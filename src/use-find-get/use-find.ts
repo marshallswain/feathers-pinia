@@ -5,7 +5,7 @@ import { useDebounceFn } from '@vueuse/core'
 import stringify from 'fast-json-stable-stringify'
 import { deepUnref, getExtendedQueryInfo } from '../utils/index.js'
 import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types.js'
-import { itemsFromPagination } from './utils.js'
+import { itemsFromPagination, allItemsFromPagination } from './utils.js'
 import { usePageData } from './utils-pagination.js'
 import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
 
@@ -115,13 +115,18 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
     return extendedInfo
   })
 
-  const allLocalData = computed(() => {
+  const allLocalData = computed<M[]>(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
     if (whichQuery == null && paginateOn !== 'client')
       return []
-
-    const allItems = service.findInStore(deepUnref(paramsWithoutPagination.value)).data
-    return allItems
+    
+    if (paginateOn === 'server') {
+      const values = allItemsFromPagination(store, service, cachedParams.value)
+      return values
+    } else {
+      const result = service.findInStore(deepUnref(paramsWithoutPagination.value)).data
+      return result.filter((i: any) => i)
+    }
   })
   const itemsBeforeCurrent = computed(() => {
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
