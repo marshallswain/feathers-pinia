@@ -16,17 +16,17 @@ export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
   const id = isRef(_id) ? _id : ref(_id)
   const params = isRef(_params) ? _params : ref(_params)
 
-  /** ID & PARAMS **/
+  /** ID & PARAMS */
   const { immediate = true, watch: _watch = true } = params.value
   const isSsr = computed<boolean>(() => service.store.isSsr)
 
-  /** REQUEST STATE **/
+  /** REQUEST STATE */
   const isPending = ref(false)
   const hasBeenRequested = ref(false)
   const error = ref<any>(null)
   const clearError = () => (error.value = null)
 
-  /** STORE ITEMS **/
+  /** STORE ITEMS */
   const ids = ref<Id[]>([])
   const mostRecentId = computed(() => {
     return ids.value.length && ids.value[ids.value.length - 1]
@@ -43,13 +43,13 @@ export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
 
   const hasLoaded = computed(() => !!data.value)
 
-  /** QUERY WHEN **/
+  /** QUERY WHEN */
   let queryWhenFn = () => true
   const queryWhen = (_queryWhenFn: () => boolean) => {
     queryWhenFn = _queryWhenFn
   }
 
-  /** SERVER FETCHING **/
+  /** SERVER FETCHING */
   const requestCount = ref(0)
   const request = ref<Promise<AnyData> | null>(null)
   async function get() {
