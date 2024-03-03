@@ -73,13 +73,15 @@ const User = useFeathersModel<Users, UsersData, UsersQuery, typeof modelFn>(
 
 ```ts [New API]
 import { createPiniaClient, useInstanceDefaults } from 'feathers-pinia'
+import type { ServiceInstance } from 'feathers-pinia'
+import type { Users } from 'my-feathers-api'
 
 const api = createPiniaClient(feathersClient, {
   pinia,
   idField: 'id',
   services: {
     users: {
-      setupInstance(data: any) {
+      setupInstance(data: ServiceInstance<Users>) {
         const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
         return withDefaults
       },
