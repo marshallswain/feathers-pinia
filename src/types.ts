@@ -1,4 +1,5 @@
 import type { Params as FeathersParams, Id } from '@feathersjs/feathers'
+import type { ComputedRef } from 'vue-demi'
 import type { MaybeRef } from '@vueuse/core'
 import type { ServiceInstance } from './modeling/index.js'
 import type { PaginationStateQuery } from './stores/index.js'
@@ -6,6 +7,8 @@ import type { PaginationStateQuery } from './stores/index.js'
 export type MaybeArray<T> = T | T[]
 export type AnyData = Record<string, any>
 export type AnyDataOrArray<M extends AnyData> = MaybeArray<M>
+
+export type MaybeRefOrComputed<T> = MaybeRef<T> | ComputedRef<T>
 
 export interface Filters {
   $sort?: { [prop: string]: number }
@@ -28,7 +31,7 @@ export interface QueryInfo {
   query: Query
   queryId: string
   queryParams: Query
-  pageParams: { $limit: MaybeRef<number>; $skip: MaybeRef<number> | undefined } | undefined
+  pageParams: { $limit: MaybeRef<number>, $skip: MaybeRef<number> | undefined } | undefined
   pageId: string | undefined
   isExpired: boolean
 }

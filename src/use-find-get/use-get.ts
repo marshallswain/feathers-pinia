@@ -1,15 +1,10 @@
 import type { Id } from '@feathersjs/feathers'
-import type { ComputedRef } from 'vue-demi'
 import type { MaybeRef } from '@vueuse/core'
 import { computed, isRef, reactive, ref, unref, watch } from 'vue-demi'
-import type { AnyData } from '../types.js'
+import type { AnyData, MaybeRefOrComputed } from '../types.js'
 import type { UseFindGetDeps, UseGetParams } from './types.js'
 
-type MaybeComputed<M> = ComputedRef<M> | MaybeRef<M>
-
-export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
-  _params: MaybeRef<UseGetParams> = ref({}),
-  deps: UseFindGetDeps) {
+export function useGet<M = AnyData>(_id: MaybeRefOrComputed<Id | null>, _params: MaybeRef<UseGetParams> = ref({}), deps: UseFindGetDeps) {
   const { service } = deps
 
   // normalize args into refs
@@ -90,15 +85,22 @@ export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
     return val
   }
 
-  // Watch the id
-  if (_watch) {
-    watch(
-      id,
-      async () => {
-        await makeRequest()
-      },
-      { immediate },
-    )
+  // SSR servers directly make the request
+  if (isSsr.value) {
+    if (immediate)
+      makeRequest()
+  }
+  // Browsers make requests from the watcher
+  else {
+    if (_watch) {
+      watch(
+        id,
+        async () => {
+          await makeRequest()
+        },
+        { immediate, flush: 'pre' },
+      )
+    }
   }
 
   return reactive({

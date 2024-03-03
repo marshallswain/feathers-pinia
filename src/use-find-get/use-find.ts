@@ -278,18 +278,33 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
   const pageData = usePageData({ limit, skip, total, request })
   const { pageCount, currentPage, canPrev, canNext, toStart, toEnd, toPage, next, prev } = pageData
 
-  /** Query Watching */
-  if (['server', 'hybrid'].includes(paginateOn) && _watch) {
-    watch(
-      paramsWithPagination,
-      () => {
-        makeRequest()
-      },
-      { immediate: false, flush: 'sync' },
-    )
+  const isSsr = computed(() => {
+    // hack: read total early during SSR to prevent hydration mismatch
+    setTimeout(() => {
+      ref(total.value)
+    }, 0)
+    return store.isSsr
+  })
 
+  // SSR servers directly make requests
+  if (isSsr.value) {
     if (immediate)
       makeRequest()
+  }
+  // Browsers make requests from the watcher
+  else {
+    if (['server', 'hybrid'].includes(paginateOn) && _watch) {
+      watch(
+        paramsWithPagination,
+        () => {
+          makeRequest()
+        },
+        { immediate: false, flush: 'sync' },
+      )
+
+      if (immediate)
+        makeRequest()
+    }
   }
 
   if (paginateOn === 'server' && service.on) {
@@ -313,13 +328,7 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
 
   const toReturn = reactive({
     paramsWithPagination,
-    isSsr: computed(() => {
-      // hack: read total early during SSR to prevent hydration mismatch
-      setTimeout(() => {
-        ref(total.value)
-      }, 0)
-      return store.isSsr
-    }), // ComputedRef<boolean>
+    isSsr, // ComputedRef<boolean>
     qid, // WritableComputedRef<string>
 
     // Data
