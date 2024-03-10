@@ -25,14 +25,14 @@ describe('use-service-storage', () => {
     const item = { id: 1, name: 'One' }
     const stored = storage.setItem(1, item)
     expect(stored).toEqual(item)
-    expect(storage.byId[1]).toEqual(item)
+    expect(storage.byId.value[1]).toEqual(item)
   })
 
   test('set', () => {
     const item = { id: 1, name: 'One' }
     const stored = storage.set(item)
     expect(stored).toEqual(item)
-    expect(storage.byId[1]).toEqual(item)
+    expect(storage.byId.value[1]).toEqual(item)
   })
 
   test('hasItem', () => {

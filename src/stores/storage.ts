@@ -1,5 +1,5 @@
 import type { Id } from '@feathersjs/feathers'
-import { computed, reactive, del as vueDel, set as vueSet } from 'vue-demi'
+import { type Ref, computed, ref, del as vueDel, set as vueSet } from 'vue-demi'
 import type { AnyData, ById } from '../types.js'
 import type { AssignFn, beforeWriteFn, onReadFn } from './types.js'
 
@@ -21,14 +21,14 @@ export function useServiceStorage<M extends AnyData>({
   beforeWrite = item => item,
   assign = (dest, src) => Object.assign(dest, src),
 }: UseServiceStorageOptions<M>) {
-  const byId: ById<M> = reactive({})
+  const byId: Ref<ById<M>> = ref({})
 
   const list = computed(() => {
-    return Object.values(byId)
+    return Object.values(byId.value)
   })
 
   const ids = computed(() => {
-    return Object.keys(byId)
+    return Object.keys(byId.value)
   })
 
   /**
@@ -37,7 +37,7 @@ export function useServiceStorage<M extends AnyData>({
    * @returns
    */
   const hasItem = (id: Id) => {
-    return !!byId[id]
+    return !!byId.value[id]
   }
 
   /**
@@ -56,7 +56,7 @@ export function useServiceStorage<M extends AnyData>({
    * @returns
    */
   const getItem = (id: Id) => {
-    const inStore = byId[id]
+    const inStore = byId.value[id]
     const _item = inStore ? onRead(inStore) : null
     return _item as M
   }
@@ -64,7 +64,7 @@ export function useServiceStorage<M extends AnyData>({
   const setItem = (id: Id, item: M) => {
     if (id == null)
       throw new Error('item has no id')
-    vueSet(byId, id, beforeWrite(item))
+    vueSet(byId.value, id, beforeWrite(item))
     return getItem(id)
   }
 
@@ -112,7 +112,7 @@ export function useServiceStorage<M extends AnyData>({
   const removeItem = (id: Id) => {
     const hadItem = hasItem(id)
     if (hadItem)
-      vueDel(byId, id)
+      vueDel(byId.value, id)
 
     return hadItem
   }
@@ -135,8 +135,8 @@ export function useServiceStorage<M extends AnyData>({
    * empties the store
    */
   const clear = () => {
-    Object.keys(byId).forEach((id) => {
-      vueDel(byId, id)
+    Object.keys(byId.value).forEach((id) => {
+      vueDel(byId.value, id)
     })
   }
 
