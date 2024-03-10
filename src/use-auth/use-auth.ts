@@ -147,6 +147,7 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   const loginRedirect = ref<string | Record<string, any> | null>(null)
 
   return {
+    userId,
     user,
     error,
     isPending,
