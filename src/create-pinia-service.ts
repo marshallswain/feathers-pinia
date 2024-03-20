@@ -156,7 +156,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * find a single record in the local store by query.
    */
-  findOneInStore(params?: MaybeRef<SvcParams<Svc>>): SvcModel<Svc>
+  findOneInStore(params?: MaybeRef<SvcParams<Svc>>): ComputedRef<SvcModel<Svc>>
   findOneInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.findOneInStore(params)
     return result

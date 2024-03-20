@@ -48,10 +48,10 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   // user
   const userId = ref<NullableId>(null)
   const user = computed(() => {
-    if (!entityService)
+    if (!entityService || !userId.value)
       return null
-    const u = entityService?.getFromStore(userId)
-    return u.value || null
+    const u = entityService?.store.itemsById[userId.value]
+    return u || null
   })
 
   // error
@@ -147,6 +147,7 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
   const loginRedirect = ref<string | Record<string, any> | null>(null)
 
   return {
+    userId,
     user,
     error,
     isPending,

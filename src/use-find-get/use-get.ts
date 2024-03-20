@@ -1,32 +1,27 @@
 import type { Id } from '@feathersjs/feathers'
-import type { ComputedRef } from 'vue-demi'
 import type { MaybeRef } from '@vueuse/core'
 import { computed, isRef, reactive, ref, unref, watch } from 'vue-demi'
-import type { AnyData } from '../types.js'
+import type { AnyData, MaybeRefOrComputed } from '../types.js'
 import type { UseFindGetDeps, UseGetParams } from './types.js'
 
-type MaybeComputed<M> = ComputedRef<M> | MaybeRef<M>
-
-export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
-  _params: MaybeRef<UseGetParams> = ref({}),
-  deps: UseFindGetDeps) {
+export function useGet<M = AnyData>(_id: MaybeRefOrComputed<Id | null>, _params: MaybeRef<UseGetParams> = ref({}), deps: UseFindGetDeps) {
   const { service } = deps
 
   // normalize args into refs
   const id = isRef(_id) ? _id : ref(_id)
   const params = isRef(_params) ? _params : ref(_params)
 
-  /** ID & PARAMS **/
+  /** ID & PARAMS */
   const { immediate = true, watch: _watch = true } = params.value
   const isSsr = computed<boolean>(() => service.store.isSsr)
 
-  /** REQUEST STATE **/
+  /** REQUEST STATE */
   const isPending = ref(false)
   const hasBeenRequested = ref(false)
   const error = ref<any>(null)
   const clearError = () => (error.value = null)
 
-  /** STORE ITEMS **/
+  /** STORE ITEMS */
   const ids = ref<Id[]>([])
   const mostRecentId = computed(() => {
     return ids.value.length && ids.value[ids.value.length - 1]
@@ -43,13 +38,13 @@ export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
 
   const hasLoaded = computed(() => !!data.value)
 
-  /** QUERY WHEN **/
+  /** QUERY WHEN */
   let queryWhenFn = () => true
   const queryWhen = (_queryWhenFn: () => boolean) => {
     queryWhenFn = _queryWhenFn
   }
 
-  /** SERVER FETCHING **/
+  /** SERVER FETCHING */
   const requestCount = ref(0)
   const request = ref<Promise<AnyData> | null>(null)
   async function get() {
@@ -90,15 +85,22 @@ export function useGet<M = AnyData>(_id: MaybeComputed<Id | null>,
     return val
   }
 
-  // Watch the id
-  if (_watch) {
-    watch(
-      id,
-      async () => {
-        await makeRequest()
-      },
-      { immediate },
-    )
+  // SSR servers directly make the request
+  if (isSsr.value) {
+    if (immediate)
+      makeRequest()
+  }
+  // Browsers make requests from the watcher
+  else {
+    if (_watch) {
+      watch(
+        id,
+        async () => {
+          await makeRequest()
+        },
+        { immediate, flush: 'pre' },
+      )
+    }
   }
 
   return reactive({

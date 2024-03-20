@@ -1,4 +1,5 @@
 import ObjectID from 'isomorphic-mongo-objectid'
+import type { Ref } from 'vue-demi'
 import type { CloneOptions } from '../stores/index.js'
 import type { AnyData, ById, Params } from '../types.js'
 import { defineValues } from '../utils/define-properties'
@@ -6,7 +7,7 @@ import type { BaseModelData, ModelInstanceData, StoreInstanceProps } from './typ
 
 interface UseModelInstanceOptions<M, Q extends AnyData> {
   idField: string
-  clonesById: ById<AnyData>
+  clonesById: Ref<ById<AnyData>>
   clone: (item: M, data?: Record<string, any>, options?: CloneOptions) => M
   commit: (item: M, data?: Partial<M>) => M
   reset: (item: M, data?: Record<string, any>) => M
@@ -39,7 +40,7 @@ export function useModelInstance<M extends AnyData, Q extends AnyData>(data: Mod
     __tempId: data[idField] == null && data.__tempId == null ? new ObjectID().toString() : data.__tempId || undefined,
     hasClone(this: M) {
       const id = this[this.__idField] || this.__tempId
-      const item = clonesById[id]
+      const item = clonesById.value[id]
       return item || null
     },
     clone(this: M, data: Partial<M> = {}, options: CloneOptions = {}) {
