@@ -1,4 +1,4 @@
-import type { Params as FeathersParams, FeathersService, Id, Paginated, PaginationOptions } from '@feathersjs/feathers'
+import { Params as FeathersParams, FeathersService, Id, Paginated, PaginationOptions, SERVICE } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
 import type { ComputedRef } from 'vue-demi'
 import { computed, isRef, reactive, ref, unref } from 'vue-demi'
@@ -12,6 +12,8 @@ import type { ServiceInstance } from './modeling/index.js'
 interface PiniaServiceOptions {
   servicePath: string
   store: any
+  methods?: string[]
+  events?: string[]
 }
 
 // FIXME: Those are very hacky, there should be a simpler way of recovering service types
@@ -25,10 +27,13 @@ type SvcModel<S extends FeathersService> = ServiceInstance<SvcResult<S>>
 export class PiniaService<Svc extends FeathersService> {
   store
   servicePath = ''
-
+  
   constructor(public service: Svc, public options: PiniaServiceOptions) {
     this.store = options.store
     this.servicePath = options.servicePath
+    this.options = options
+    this.options.methods = ['create', 'patch', 'remove']
+    this.options.events = ['created', 'patched', 'removed']
 
     // copy custom methods from service onto this instance, exclude existing methods
     const keysToIgnore = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).concat(existingServiceMethods)
@@ -36,8 +41,13 @@ export class PiniaService<Svc extends FeathersService> {
       if (typeof service[key] === 'function' && !keysToIgnore.includes(key)) {
         const instance = this as any
         instance[key] = (service[key] as any).bind(service)
+        this.options.methods.push(key)
       }
     }
+
+    Object.defineProperty(this, SERVICE, {
+      value: this.options
+    })
   }
 
   /**
