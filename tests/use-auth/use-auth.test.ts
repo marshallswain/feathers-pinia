@@ -51,8 +51,13 @@ describe('useAuth in Pinia store', () => {
       password?: string
     }
 
+    interface User {
+      id: number;
+      email: string;
+    }
+
     defineStore('auth', () => {
-      const utils = useAuth<AuthenticateData>({ api })
+      const utils = useAuth<AuthenticateData, User>({ api })
       utils.reAuthenticate()
       return { ...utils }
     })
