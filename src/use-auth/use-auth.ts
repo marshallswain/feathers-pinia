@@ -20,14 +20,14 @@ interface UseAuthOptions {
   onLogoutError?: ErrorHandler
 }
 
-interface AuthenticateData {
+export interface AuthenticateData {
   strategy: 'jwt' | 'local'
   accessToken?: string
   email?: string
   password?: string
 }
 
-export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
+export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) {
   const { api, servicePath, skipTokenCheck } = options
   const entityService = servicePath ? api.service(servicePath) : null
   const entityKey = options.entityKey || 'user'
@@ -47,7 +47,7 @@ export function useAuth<d = AuthenticateData>(options: UseAuthOptions) {
 
   // user
   const userId = ref<NullableId>(null)
-  const user = computed(() => {
+  const user = computed<U | null>(() => {
     if (!entityService || !userId.value)
       return null
     const u = entityService?.store.itemsById[userId.value]
