@@ -20,8 +20,13 @@ export function normalizeFind() {
 
     next && await next()
 
-    // if (context.method === 'find' && !context.result?.data) {
-    // context.result = { data: context.result }
-    // }
+    if (context.method === 'find' && !context.result?.data) {
+      context.result = {
+        data: [],
+        limit: context.params.$limit,
+        skip: context.params.$skip,
+        total: 0,
+      }
+    }
   }
 }
