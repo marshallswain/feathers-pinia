@@ -1,4 +1,5 @@
-import { Params as FeathersParams, FeathersService, Id, Paginated, PaginationOptions, SERVICE } from '@feathersjs/feathers'
+import type { Params as FeathersParams, FeathersService, Id, Paginated, PaginationOptions } from '@feathersjs/feathers'
+import { SERVICE } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
 import type { ComputedRef } from 'vue-demi'
 import { computed, isRef, reactive, ref, unref } from 'vue-demi'
@@ -233,21 +234,21 @@ export class PiniaService<Svc extends FeathersService> {
 
   /* hybrid methods */
 
-  useFind(params: ComputedRef<UseFindParams | null>, options?: UseFindOptions) {
+  useFind<M>(params: ComputedRef<UseFindParams | null>, options?: UseFindOptions) {
     const _params = isRef(params) ? params : ref(params)
-    return useFind<SvcModel<Svc>>(_params as ComputedRef<UseFindParams | null>, options, { service: this })
+    return useFind<M | SvcModel<Svc>>(_params as ComputedRef<UseFindParams | null>, options, { service: this })
   }
 
-  useGet(id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = ref({})) {
+  useGet<M>(id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = ref({})) {
     const _id = isRef(id) ? id : ref(id)
     const _params = isRef(params) ? params : ref(params)
-    return useGet<SvcModel<Svc>>(_id, _params, { service: this })
+    return useGet<M | SvcModel<Svc>>(_id, _params, { service: this })
   }
 
-  useGetOnce(_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {
+  useGetOnce<M>(_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {
     const _params = isRef(params) ? params : ref(params)
     Object.assign(_params.value, { immediate: false })
-    const results = this.useGet(_id, _params)
+    const results = this.useGet<M>(_id, _params)
     results.queryWhen(() => !results.data)
     results.get()
     return results
