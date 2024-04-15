@@ -257,14 +257,20 @@ export class PiniaService<Svc extends FeathersService> {
   /* events */
 
   on(eventName: string | symbol, listener: (...args: any[]) => void) {
+    if (!this.service.on)
+      return
     return this.service.on(eventName, listener)
   }
 
   emit(eventName: string | symbol, ...args: any[]): boolean {
+    if (!this.service.emit)
+      return false
     return this.service.emit(eventName, ...args)
   }
 
   removeListener(eventName: string | symbol, listener: (...args: any[]) => void) {
+    if (!this.service.removeListener)
+      return
     return this.service.removeListener(eventName, listener)
   }
 }

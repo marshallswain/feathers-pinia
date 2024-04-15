@@ -2,7 +2,7 @@ import type { Application, FeathersService } from '@feathersjs/feathers'
 import { feathers } from '@feathersjs/feathers'
 import { defineStore } from 'pinia'
 import type { HandleEvents } from './stores/index.js'
-import type { AnyData } from './types.js'
+import type { AnyData, CustomFilter } from './types.js'
 import { PiniaService } from './create-pinia-service.js'
 import type { Service } from './modeling/use-feathers-instance.js'
 import { useServiceEvents, useServiceStore } from './stores/index.js'
@@ -41,6 +41,11 @@ export interface PiniaServiceConfig {
   setupInstance?: (data: any, utils: SetupInstanceUtils) => any
   customizeStore?: (data: ReturnType<typeof useServiceStore>) => Record<string, any>
   customSiftOperators?: Record<string, any>
+  /**
+   * Custom filters are applied before the sift operators. They are useful for custom
+   * filters that are not supported by sift, like `$fuzzy`.
+   */
+  customFilters?: CustomFilter[]
 }
 
 export interface CreatePiniaClientConfig extends PiniaServiceConfig {
@@ -104,11 +109,8 @@ export function createPiniaClient<App extends Application>(
       = serviceOptions.debounceEventsGuarantee != null
         ? serviceOptions.debounceEventsGuarantee
         : options.debounceEventsGuarantee
-    const customSiftOperators = Object.assign(
-      {},
-      serviceOptions.customSiftOperators || {},
-      options.customSiftOperators || {},
-    )
+    const customSiftOperators = Object.assign({}, serviceOptions.customSiftOperators || {}, options.customSiftOperators || {})
+    const customFilters = [...(serviceOptions.customFilters || []), ...(options.customFilters || [])]
     function customizeStore(utils: any) {
       const fromGlobal = Object.assign(utils, options.customizeStore ? options.customizeStore(utils) : utils)
       const fromService = Object.assign(
@@ -152,6 +154,7 @@ export function createPiniaClient<App extends Application>(
           whitelist,
           paramsForServer,
           customSiftOperators,
+          customFilters,
           ssr: options.ssr,
           setupInstance: wrappedSetupInstance,
         })

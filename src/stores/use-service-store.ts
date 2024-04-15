@@ -2,7 +2,7 @@ import type { Query } from '@feathersjs/feathers'
 
 import { computed, unref } from 'vue-demi'
 import type { MaybeRef } from '@vueuse/core'
-import type { AnyData } from '../types.js'
+import type { AnyData, CustomFilter } from '../types.js'
 import { useModelInstance } from '../modeling/use-model-instance'
 import { useServiceLocal } from './local-queries.js'
 
@@ -21,6 +21,7 @@ export interface UseServiceStoreOptions {
   skipGetIfExists?: boolean
   ssr?: MaybeRef<boolean>
   customSiftOperators?: Record<string, any>
+  customFilters?: CustomFilter[]
   setupInstance?: any
 }
 
@@ -32,7 +33,7 @@ function makeDefaultOptions() {
 
 export function useServiceStore<M extends AnyData, Q extends Query>(_options: UseServiceStoreOptions) {
   const options = Object.assign({}, makeDefaultOptions(), _options)
-  const { idField, servicePath, whitelist, paramsForServer, defaultLimit, customSiftOperators } = options
+  const { idField, servicePath, whitelist, paramsForServer, defaultLimit, customSiftOperators, customFilters } = options
 
   // storage
   const { itemStorage, tempStorage, cloneStorage, clone, commit, reset, addItemToStorage } = useAllStorageTypes<M>({
@@ -51,6 +52,7 @@ export function useServiceStore<M extends AnyData, Q extends Query>(_options: Us
       whitelist,
       paramsForServer,
       customSiftOperators,
+      customFilters,
     })
 
   function setupInstance<N extends M>(this: any, data: N) {

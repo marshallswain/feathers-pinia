@@ -9,7 +9,7 @@ import auth from '@feathersjs/authentication-client'
 import { computed, ref } from 'vue'
 import { vi } from 'vitest'
 import type { AdapterParams } from '@feathersjs/adapter-commons'
-import { createPiniaClient, defineGetters, defineSetters, useInstanceDefaults } from '../../src'
+import { createPiniaClient, defineGetters, defineSetters, useInstanceDefaults, createUFuzzyOperator } from '../../src'
 import { timeout } from '../test-utils.js'
 import { makeContactsData } from './data.js'
 import type { Comments } from './schemas/comments'
@@ -142,6 +142,9 @@ function wrapPiniaClient<F extends Application>(feathersClient: F) {
     syncWithStorage: false,
     storage: localStorageMock,
     paramsForServer: [],
+    customFilters: [
+      { key: '$fuzzy', operator: createUFuzzyOperator() },
+    ],
     customizeStore() {
       return {
         globalCustom: true,

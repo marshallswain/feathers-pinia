@@ -16,7 +16,12 @@ export interface Filters {
   $skip?: MaybeRef<number>
   $select?: string[]
 }
-export interface Query extends Filters, AnyData {}
+export interface Query extends Filters, AnyData { }
+
+export interface CustomFilter {
+  key: string
+  operator: <M>(items: M[], queryValue: any, query: Record<string, any>) => M[]
+}
 
 export interface Paginated<T> {
   total: number

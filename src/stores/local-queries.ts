@@ -2,12 +2,13 @@ import type { MaybeRef } from '@vueuse/core'
 import type { Id } from '@feathersjs/feathers'
 import { _ } from '@feathersjs/commons'
 import { computed, reactive, unref } from 'vue-demi'
-import { filterQuery, select, sorter } from '@feathersjs/adapter-commons'
+import { select, sorter } from '@feathersjs/adapter-commons'
 import sift from 'sift'
 import fastCopy from 'fast-copy'
-import type { AnyData, Params } from '../types.js'
+import type { AnyData, CustomFilter, Params } from '../types.js'
 import { deepUnref, getArray } from '../utils/index.js'
-import { sqlOperations } from './utils-custom-operators.js'
+import { sqlOperations } from '../custom-operators/index.js'
+import { filterQuery } from './filter-query.js'
 import type { StorageMapUtils } from './storage.js'
 
 interface UseServiceLocalOptions<M extends AnyData> {
@@ -19,6 +20,7 @@ interface UseServiceLocalOptions<M extends AnyData> {
   whitelist?: string[]
   paramsForServer?: string[]
   customSiftOperators?: Record<string, any>
+  customFilters?: CustomFilter[]
 }
 
 const FILTERS = ['$sort', '$limit', '$skip', '$select']
@@ -49,6 +51,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     paramsForServer = [],
     whitelist = [],
     customSiftOperators = {},
+    customFilters = [],
   } = options
 
   const operations = Object.assign({}, sqlOperations, customSiftOperators)
@@ -60,9 +63,8 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
 
   const filterItems = (params: Params<Q>, startingValues: M[] = []) => {
     params = { ...unref(params) } || {}
-    const _paramsForServer = paramsForServer
-    const q = _.omit(params.query || {}, ..._paramsForServer)
 
+    const q = _.omit(params.query || {}, ...paramsForServer)
     const { query, filters } = filterQuery(q, {
       operators: _filterQueryOperators.value,
     })
@@ -71,11 +73,18 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
     if (tempStorage && params.temps)
       values.push(...tempStorage.list.value)
 
-    if (filters.$or)
-      query.$or = filters.$or
+    // pass values through each of the custom filters
+    values = customFilters.reduce((items, filter) => {
+      if (!q[filter.key])
+        return items
+      return filter.operator(items, q[filter.key], q)
+    }, values)
 
+    // put $or and $and back in the query for sift.js to handle
+    if (filters.$or)
+      query.$or = q.$or
     if (filters.$and)
-      query.$and = filters.$and
+      query.$and = q.$and
 
     values = values.filter(sift(query, { operations }))
     return { values, filters }
