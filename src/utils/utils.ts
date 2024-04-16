@@ -8,6 +8,13 @@ import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo 
 import { defineValues } from './define-properties.js'
 import { convertData } from './convert-data.js'
 
+// copied from @feathersjs/commons
+export function createSymbol(name: string) {
+  return typeof Symbol !== 'undefined' ? Symbol.for(name) : name
+}
+
+export const SERVICE = createSymbol('@feathersjs/service')
+
 interface GetExtendedQueryInfoOptions {
   queryInfo: QueryInfo
   service: any
