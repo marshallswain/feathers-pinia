@@ -14,6 +14,45 @@ import BlockQuote from '../components/BlockQuote.vue'
 Version 4 of Feathers-Pinia is about improving developer experience.  It focuses on the `useFind`, `findInStore`, and
 `useGet` APIs.
 
+## New in v4.5
+
+### :gift: Custom Query Filters
+
+Filters are top-level, custom parameters inside your `query` objects. You can now define custom operators **for local 
+queries** (the `findInStore` method). This new capability powers the new, built-in fuzzy search operator.  Read more about [Custom Query Filters](/guide/custom-query-filters).
+
+### :gift: Fuzzy Search Filter
+
+The `createPiniaClient` function now accepts a `customFilters` option. Custom operators are easier to define than 
+`customSiftOperators` because they need no prior knowledge of custom interfaces. Custom operators run **before** the 
+rest of the query operators. Read how to set up the [uFuzzy Custom Filter](/guide/custom-query-filters#the-ufuzzy-custom-filter).
+
+```ts
+const { data } = await api.service('users').findInStore({
+  query: {
+    $fuzzy: {
+      search: 'john',
+      fields: ['firstName', 'lastName', 'email']
+    }
+  }
+})
+```
+
+### :100: No Local Query Validation
+
+There should be no more need for a local `whitelist` option, since query validation has been removed from local queries.
+You should be able to use `$regex` and other operators without seeing any message about invalid operators or filters. At
+least... not from the client side. They should still arrive from your Feathers server if you're properly implementing
+query validation there.
+
+```ts
+createPiniaClient(feathersClient, {
+  pinia,
+  idField: '_id',
+  // whitelist: ['$regex'], no need for whitelist anymore
+})
+```
+
 ## New in v4.2
 
 ### 🎁 useBackup

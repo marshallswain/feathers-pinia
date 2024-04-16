@@ -43,7 +43,7 @@ const defaultUFuzzyOptions: UFuzzy.Options = {
   interChars: '.',
 }
 
-export function createUFuzzyOperator(ufOptions: UFuzzy.Options = {}) {
+export function createUFuzzyFilter(ufOptions: UFuzzy.Options = {}) {
   return <M>(items: M[], params: uFuzzyParams, _query: Record<string, any>) => {
     if (params.search == null || !params.fields)
       throw new Error('Missing required parameters \'search\' or \'fields\' for $fuzzy operator.')

@@ -111,6 +111,7 @@ function getGuideSidebar() {
       text: 'Feathers-Pinia Client',
       items: [
         { text: 'Client API', link: '/guide/create-pinia-client' },
+        { text: 'Custom Query Filters', link: '/guide/custom-query-filters' },
         { text: 'Common Pitfalls', link: '/guide/troubleshooting' },
       ],
     },
