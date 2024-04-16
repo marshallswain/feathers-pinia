@@ -33,6 +33,7 @@ createPiniaClient(feathersClient, {
   debounceEventsTime: 20,
   debounceEventsGuarantee: false,
   customSiftOperators: {}, // see sift docs
+  customFilters: {}, // see custom query filters
   // runs for every service
   setupInstance: (data = {}, { api, service, servicePath }) => {
     if (servicePath.startsWith('my-')) {
@@ -153,6 +154,7 @@ default.
 - **`customSiftOperators {Object}`** allows passing an object of custom [sift operators](https://github.com/crcn/sift.js/)
 which are used to query data from the store with `findInStore` and `useFind`. All sift operators are enabled for store
 queries.
+- **`customFilters {Object}`** allows passing an object of custom query filters. See [Custom Query Filters](/guide/custom-query-filters)
 - **`setupInstance {Function}`** a global model function that allows modifying instances from all services. It has the
 following shape:
 
