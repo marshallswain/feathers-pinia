@@ -9,6 +9,10 @@
         "default": "./dist/feathers-pinia.js"
       },
       "require": "./dist/feathers-pinia.umd.cjs"
+    },
+    "./ufuzzy": {
+      "import": "./dist/ufuzzy.js",
+      "require": "./dist/ufuzzy.cjs"
     }
   },
   "main": "./dist/feathers-pinia.umd.cjs",
