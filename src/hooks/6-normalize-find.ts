@@ -20,12 +20,14 @@ export function normalizeFind() {
 
     next && await next()
 
-    if (context.method === 'find' && !context.result?.data) {
+    // this makes sure it only affects finds that are not paginated and are not custom.
+    // so the custom find responses fall through.
+    if (context.method === 'find' && !context.result?.data && Array.isArray(context.result)) {
       context.result = {
-        data: [],
-        limit: context.params.$limit,
-        skip: context.params.$skip,
-        total: 0,
+        data: context.result,
+        limit: context.params.$limit || context.result.length,
+        skip: context.params.$skip || 0,
+        total: context.result.length,
       }
     }
   }
