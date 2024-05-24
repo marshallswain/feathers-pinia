@@ -21,11 +21,20 @@ export function normalizeFind() {
     next && await next()
 
     if (context.method === 'find' && !context.result?.data) {
-      context.result = {
-        data: [],
-        limit: context.params.$limit,
-        skip: context.params.$skip,
-        total: 0,
+      if (Array.isArray(context.result)) {
+        context.result = {
+          data: context.result,
+          limit: context.result.length,
+          skip: 0,
+          total: context.result.length,
+        }
+      } else {
+        context.result = {
+          data: [],
+          limit: context.params.$limit,
+          skip: context.params.$skip,
+          total: 0,
+        }
       }
     }
   }
