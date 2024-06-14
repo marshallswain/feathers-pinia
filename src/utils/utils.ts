@@ -67,6 +67,10 @@ export function pickDiff(obj: any, diffDef: DiffDefinition) {
 export function diff(dest: AnyData, source: AnyData, diffDef?: DiffDefinition) {
   const originalVal = pickDiff(dest, diffDef)
   const cloneVal = pickDiff(source, diffDef)
+  
+  // If diff is explicitly off, return everything
+  if (diffDef === false)
+    return cloneVal
 
   // If diff was an object, merge the values into the cloneVal
   if (typeof diffDef !== 'string' && !Array.isArray(diffDef))
