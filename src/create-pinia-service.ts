@@ -233,18 +233,18 @@ export class PiniaService<Svc extends FeathersService> {
 
   /* hybrid methods */
 
-  useFind<M>(params: ComputedRef<UseFindParams | null>, options?: UseFindOptions) {
+  useFind<M = SvcModel<Svc>>(params: ComputedRef<UseFindParams | null>, options?: UseFindOptions) {
     const _params = isRef(params) ? params : ref(params)
-    return useFind<M | SvcModel<Svc>>(_params as ComputedRef<UseFindParams | null>, options, { service: this })
+    return useFind<M>(_params as ComputedRef<UseFindParams | null>, options, { service: this })
   }
 
-  useGet<M>(id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = ref({})) {
+  useGet<M = SvcModel<Svc>>(id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = ref({})) {
     const _id = isRef(id) ? id : ref(id)
     const _params = isRef(params) ? params : ref(params)
-    return useGet<M | SvcModel<Svc>>(_id, _params, { service: this })
+    return useGet<M>(_id, _params, { service: this })
   }
 
-  useGetOnce<M>(_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {
+  useGetOnce<M = SvcModel<Svc>>(_id: MaybeRef<Id | null>, params: MaybeRef<UseGetParams> = {}) {
     const _params = isRef(params) ? params : ref(params)
     Object.assign(_params.value, { immediate: false })
     const results = this.useGet<M>(_id, _params)
