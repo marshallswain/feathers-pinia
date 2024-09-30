@@ -107,7 +107,7 @@ function createFeathers<F extends Application>(feathers: F) {
             context.result = {
               accessToken: 'jwt-access-token',
               payload: { test: true },
-              user: { id: 1, email: 'test@test.com' },
+              user: { id: 0, email: 'test@test.com' },
             }
           }
         },

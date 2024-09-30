@@ -48,7 +48,7 @@ export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) 
   // user
   const userId = ref<NullableId>(null)
   const user = computed<U | null>(() => {
-    if (!entityService || !userId.value)
+    if (!entityService || userId.value === null)
       return null
     const u = entityService?.store.itemsById[userId.value]
     return u || null
@@ -66,7 +66,7 @@ export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) 
     const entity = result[entityKey]
     if (entityService && entity) {
       const stored = entityService.store.createInStore(entity)
-      userId.value = stored[entityService.store.idField] || stored.__tempId
+      userId.value = stored[entityService.store.idField] ?? stored.__tempId
     }
     isAuthenticated.value = true
     return result

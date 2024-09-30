@@ -78,7 +78,7 @@ describe('useAuth in Pinia store', () => {
       },
       user: {
         email: 'test@test.com',
-        id: 1,
+        id: 0,
       },
     }
     const request = await authStore.reAuthenticate()
