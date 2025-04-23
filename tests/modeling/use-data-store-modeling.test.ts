@@ -372,28 +372,28 @@ describe('standalone stores', () => {
       expect(task.__isTemp).toBe(true)
     })
 
-    test('instances are not automatically added to the store when calling new', async () => {
+    it('instances are not automatically added to the store when calling new', async () => {
       const task = store.new(record)
       expect(task).toBeDefined()
       const stored = store.getFromStore(1)
       expect(stored.value).toBeNull()
     })
 
-    test('can add instances to the store', async () => {
+    it('can add instances to the store', async () => {
       const task = store.new(record)
       task.createInStore()
       const stored = store.getFromStore(1)
       expect(stored.value?.id).toBe(1)
     })
 
-    test('instances intact after clone', async () => {
+    it('instances intact after clone', async () => {
       const task = store.new(record)
       const clone = task.clone()
       expect(clone.id).toBe(1)
       expect(clone.__isClone).toBe(true)
     })
 
-    test('instances intact after commit', async () => {
+    it('instances intact after commit', async () => {
       const task = store.new(record)
       const clone = task.clone()
       clone.description = 'foo'
@@ -403,7 +403,7 @@ describe('standalone stores', () => {
       expect(committed.__isClone).toBe(false)
     })
 
-    test('instances intact after removeFromStore', async () => {
+    it('instances intact after removeFromStore', async () => {
       const task = store.new(record)
       task.createInStore()
 
@@ -411,7 +411,7 @@ describe('standalone stores', () => {
       clone.description = 'foo'
     })
 
-    test('instances are still instances after findInStore', async () => {
+    it('instances are still instances after findInStore', async () => {
       const task = store.new(record)
       expect(task.__isStoreInstance).toBe(true)
 

@@ -31,7 +31,7 @@ describe('Clear Storage', () => {
     reset()
   })
 
-  test('clear storage', async () => {
+  it('clear storage', async () => {
     service.createInStore({ name: 'test' })
     await timeout(600)
 

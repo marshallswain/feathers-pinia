@@ -5,7 +5,7 @@ import { api } from '../fixtures/index.js'
 describe('useAuth return values', () => {
   const utils = useAuth({ api })
 
-  test('can authenticate', async () => {
+  it('can authenticate', async () => {
     const response = await utils.authenticate({ strategy: 'jwt', accessToken: 'hi' })
     expect(response).toHaveProperty('accessToken')
     expect(response).toHaveProperty('payload')
@@ -20,7 +20,7 @@ describe('useAuth in Pinia store', () => {
   })
   const authStore = useAuthStore(pinia)
 
-  test('has all useAuth values', async () => {
+  it('has all useAuth values', async () => {
     expect(authStore.$id).toBe('auth')
     expect(typeof authStore.authenticate).toBe('function')
     expect(typeof authStore.clearError).toBe('function')
@@ -37,13 +37,13 @@ describe('useAuth in Pinia store', () => {
     expect(authStore.user).toBeNull()
   })
 
-  test('authenticate', async () => {
+  it('authenticate', async () => {
     await authStore.authenticate({ strategy: 'jwt', accessToken: 'hi' })
     expect(authStore.isAuthenticated).toBe(true)
     expect(authStore.user).toBeNull()
   })
 
-  test('custom types', async () => {
+  it('custom types', async () => {
     interface AuthenticateData {
       strategy: 'jwt' | 'local' | 'ldap'
       accessToken?: string
@@ -63,7 +63,7 @@ describe('useAuth in Pinia store', () => {
     })
   })
 
-  test('reAuthenticate', async () => {
+  it('reAuthenticate', async () => {
     const useAuthStore = defineStore('auth', () => {
       const utils = useAuth({ api })
       utils.reAuthenticate()
@@ -94,7 +94,7 @@ describe('useAuth in Pinia store with userStore', () => {
   })
   const authStore = useAuthStore(pinia)
 
-  test('authenticate populates user', async () => {
+  it('authenticate populates user', async () => {
     await authStore.authenticate({ strategy: 'jwt', accessToken: 'hi' })
     expect(authStore.isAuthenticated).toBe(true)
     expect(authStore.user.email).toBeDefined()

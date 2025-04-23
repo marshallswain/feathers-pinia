@@ -10,7 +10,7 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 describe('PiniaService', () => {
-  test('includes model methods', () => {
+  it('includes model methods', () => {
     // create an instance
     expect(typeof service.new).toBe('function')
 
@@ -41,7 +41,7 @@ describe('PiniaService', () => {
     expect(service.servicePath).toBe('contacts')
   })
 
-  test('count', async () => {
+  it('count', async () => {
     const response = await service.count()
     expect(response.data.length).toBe(0)
     expect(response.total).toBe(12)
@@ -49,7 +49,7 @@ describe('PiniaService', () => {
     expect(response.skip).toBe(0)
   })
 
-  test('count custom query', async () => {
+  it('count custom query', async () => {
     const response = await service.count({ query: { age: { $lt: 6 } } })
     expect(response.data.length).toBe(0)
     expect(response.total).toBe(3)
@@ -57,7 +57,7 @@ describe('PiniaService', () => {
     expect(response.skip).toBe(0)
   })
 
-  test('count cannot override limit', async () => {
+  it('count cannot override limit', async () => {
     const response = await service.count({ query: { $limit: 5 } })
     expect(response.data.length).toBe(0)
     expect(response.total).toBe(12)

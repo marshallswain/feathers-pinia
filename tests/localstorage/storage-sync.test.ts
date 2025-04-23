@@ -10,7 +10,7 @@ describe('Storage Sync', () => {
     reset()
   })
 
-  test('writes to storage', async () => {
+  it('writes to storage', async () => {
     const msg = service.createInStore({ name: 'test' })
     await timeout(600)
     expect(localStorageMock.setItem).toHaveBeenCalled()
@@ -20,7 +20,7 @@ describe('Storage Sync', () => {
     expect(val.tempsById[msg.__tempId]).toBeTruthy()
   })
 
-  test('reads from storage', async () => {
+  it('reads from storage', async () => {
     service.createInStore({ name: 'test2' })
     await timeout(1000)
     expect(localStorageMock.getItem).toHaveBeenCalled()

@@ -9,7 +9,7 @@ describe('use-service-storage', () => {
     storage.clear()
   })
 
-  test('list and ids', () => {
+  it('list and ids', () => {
     const items = [
       { id: 1, name: 'One' },
       { id: 2, name: 'Two' },
@@ -21,35 +21,35 @@ describe('use-service-storage', () => {
     expect(storage.ids.value).toEqual(ids)
   })
 
-  test('setItem', () => {
+  it('setItem', () => {
     const item = { id: 1, name: 'One' }
     const stored = storage.setItem(1, item)
     expect(stored).toEqual(item)
     expect(storage.byId.value[1]).toEqual(item)
   })
 
-  test('set', () => {
+  it('set', () => {
     const item = { id: 1, name: 'One' }
     const stored = storage.set(item)
     expect(stored).toEqual(item)
     expect(storage.byId.value[1]).toEqual(item)
   })
 
-  test('hasItem', () => {
+  it('hasItem', () => {
     const item = { id: 1, name: 'One' }
     expect(storage.hasItem(1)).toBeFalsy()
     storage.set(item)
     expect(storage.hasItem(1)).toBeTruthy()
   })
 
-  test('has', () => {
+  it('has', () => {
     const item = { id: 1, name: 'One' }
     expect(storage.has(item)).toBeFalsy()
     storage.set(item)
     expect(storage.has(item)).toBeTruthy()
   })
 
-  test('merge', () => {
+  it('merge', () => {
     const item = { id: 1, name: 'One' }
     storage.merge(item)
     expect(storage.has(item)).toBeTruthy()
@@ -58,19 +58,19 @@ describe('use-service-storage', () => {
     expect(storage.getItem(1)).toEqual({ id: 1, name: 'One', test: true })
   })
 
-  test('getItem', () => {
+  it('getItem', () => {
     const item = { id: 1, name: 'One' }
     storage.set(item)
     expect(storage.getItem(1)).toEqual(item)
   })
 
-  test('get', () => {
+  it('get', () => {
     const item = { id: 1, name: 'One' }
     storage.set(item)
     expect(storage.get({ id: 1 })).toEqual(item)
   })
 
-  test('removeItem', () => {
+  it('removeItem', () => {
     const item = { id: 1, name: 'One' }
     storage.set(item)
     expect(storage.list.value.length).toBe(1)
@@ -78,7 +78,7 @@ describe('use-service-storage', () => {
     expect(storage.list.value.length).toBe(0)
   })
 
-  test('remove', () => {
+  it('remove', () => {
     const item = { id: 1, name: 'One' }
     storage.set(item)
     expect(storage.list.value.length).toBe(1)
@@ -86,13 +86,13 @@ describe('use-service-storage', () => {
     expect(storage.list.value.length).toBe(0)
   })
 
-  test('getKeys', () => {
+  it('getKeys', () => {
     const item = { id: 1, name: 'One' }
     storage.set(item)
     expect(storage.getKeys()).toEqual(['1'])
   })
 
-  test('clear', () => {
+  it('clear', () => {
     const items = [
       { id: 1, name: 'One' },
       { id: 2, name: 'Two' },

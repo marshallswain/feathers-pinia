@@ -11,7 +11,7 @@ beforeEach(async () => {
 afterEach(() => resetService(service))
 
 describe('paginateOn: server', () => {
-  test('paginateOn: server enables server requests', async () => {
+  it('paginateOn: server enables server requests', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
@@ -23,7 +23,7 @@ describe('paginateOn: server', () => {
     expect(contacts$.data.length).toBe(3)
   })
 
-  test('paginateOn: server with `immediate` false', async () => {
+  it('paginateOn: server with `immediate` false', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
@@ -34,7 +34,7 @@ describe('paginateOn: server', () => {
     expect(contacts$.data.length).toBe(0)
   })
 
-  test('use `queryWhen` to control queries', async () => {
+  it('use `queryWhen` to control queries', async () => {
     const params = computed(() => {
       return {
         query: { $limit: 3, $skip: 0 },
@@ -65,7 +65,7 @@ describe('paginateOn: server', () => {
     expect(contacts$.requestCount).toBe(2)
   })
 
-  test('loading indicators during server pagination', async () => {
+  it('loading indicators during server pagination', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
@@ -86,7 +86,7 @@ describe('paginateOn: server', () => {
     expect(contacts$.skip).toBe(3)
   })
 
-  test('errors populate during server pagination, manually clear error', async () => {
+  it('errors populate during server pagination, manually clear error', async () => {
     // Throw an error in a hook
     let hasHookRun = false
     const hook = () => {
@@ -116,7 +116,7 @@ describe('paginateOn: server', () => {
     }
   })
 
-  test('errors populate during server pagination, auto-clear error', async () => {
+  it('errors populate during server pagination, auto-clear error', async () => {
     // Throw an error in a hook
     let hasHookRun = false
     const hook = () => {
@@ -148,7 +148,7 @@ describe('paginateOn: server', () => {
 })
 
 describe('latestQuery and previousQuery', () => {
-  test('paginateOn: server stores latestQuery and previousQuery', async () => {
+  it('paginateOn: server stores latestQuery and previousQuery', async () => {
     const params = computed(() => {
       return { query: { $limit: 3, $skip: 0 } }
     })
@@ -187,7 +187,7 @@ describe('latestQuery and previousQuery', () => {
   })
 
   describe('Has `allLocalData`', () => {
-    test('allLocalData contains all stored data', async () => {
+    it('allLocalData contains all stored data', async () => {
       const _params = computed(() => {
         return { query: { $limit: 4, $skip: 0 } }
       })
@@ -197,7 +197,7 @@ describe('latestQuery and previousQuery', () => {
       expect(contacts$.allLocalData.length).toBe(8)
     })
 
-    test('shows current data while loading new data', async () => {
+    it('shows current data while loading new data', async () => {
       // A hook to cause a delay so we can check pending state
       let hasHookRun = false
       const hook = async () => {
@@ -236,7 +236,7 @@ describe('latestQuery and previousQuery', () => {
     }, 400000)
   })
 
-  test('return null from computed params to prevent a request', async () => {
+  it('return null from computed params to prevent a request', async () => {
     const shouldQuery = ref(true)
     const name = ref('Moose')
 
