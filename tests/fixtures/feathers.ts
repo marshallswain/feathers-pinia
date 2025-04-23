@@ -19,6 +19,9 @@ import type { Posts } from './schemas/posts'
 import type { Contacts, ContactsData, ContactsQuery } from './schemas/contacts'
 import type { Users, UsersData } from './schemas/users'
 import type { Tasks, TasksData, TasksQuery } from './schemas/tasks'
+import events from 'node:events'
+
+events.EventEmitter.defaultMaxListeners = 11;
 
 const pinia = createPinia()
 const restClient = rest()

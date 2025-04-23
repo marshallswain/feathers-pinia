@@ -62,6 +62,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
   })
 
   const filterItems = (params: Params<Q>, startingValues: M[] = []) => {
+    //@ts-expect-error test
     params = { ...unref(params) } || {}
 
     const q = _.omit(params.query || {}, ...paramsForServer)
@@ -185,6 +186,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       return stored
     })
 
+    //@ts-expect-error test
     return isArray ? _items : _items[0]
   }
 

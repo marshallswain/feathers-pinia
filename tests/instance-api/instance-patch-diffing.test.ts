@@ -18,9 +18,7 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
-    const hook = vi.fn(async (context) => {
-      return context
-    })
+    const hook = vi.fn((context) => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save()
