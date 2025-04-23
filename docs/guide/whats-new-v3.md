@@ -17,7 +17,7 @@ smaller, implicitly modular and much faster package. This page will go over more
 ## Leading in Simplicity
 
 Complex setup is a thing of the past. Version 3 combines the best patterns from all previous versions, makes everything
-implicit, and almost does your job for you.  The result is a work of art.  
+implicit, and almost does your job for you.  The result is a work of art.
 
 You can configure all services in one line of code:
 
@@ -35,7 +35,7 @@ That line of code gives you a lot:
 - All Feathers Service Interface methods and some extras like `findOne`, for convenience.
 - All of the local, data-related store methods, with its Live Queries and Lists.
 - Pinia stores created on the fly.
-- Implicit Models created for you. Manually wrangling stores and Models is no longer even an option.  
+- Implicit Models created for you. Manually wrangling stores and Models is no longer even an option.
 
 Data modeling still runs the show "under the hood," and all data is turned into `Feathers` instances, by default. You
 can customize instances using the `services` option of the config with a `setupInstance` method, like this:
@@ -59,7 +59,7 @@ const api = createVueClient(feathersClient, {
 })
 ```
 
-And with the above code in place you have a default `name` property on every `user`.  
+And with the above code in place you have a default `name` property on every `user`.
 
 ### Feathers Dove TS Support 🎉
 
@@ -119,9 +119,9 @@ Feathers-Pinia publishes a couple of Composition API utilities for creating Pini
 Create ultra-flexible auth stores with the new [useAuth](/guide/use-auth) utility.
 
 ```ts
+import { useAuth } from 'feathers-pinia'
 // src/store/store.auth.ts
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
@@ -313,7 +313,7 @@ const task = api.service('tasks').new({
 
 ## Handle Associations
 
-Update: `storeAssociated` has been replaced by new lower-level [Data Modeling utilities](/guide/data-modeling) in 
+Update: `storeAssociated` has been replaced by new lower-level [Data Modeling utilities](/guide/data-modeling) in
 Feathers-Pinia 4.2.
 
 Use the [modeling utilities](/guide/utilities) to define associations on your data. The new methods assure that new

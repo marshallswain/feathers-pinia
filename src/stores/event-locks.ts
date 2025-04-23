@@ -1,8 +1,8 @@
 import type { Id } from '@feathersjs/feathers'
-import { del, reactive, set } from 'vue-demi'
 import type { MaybeArray } from '../types.js'
-import { getArray } from '../utils/index.js'
 import type { EventLocks, EventName } from './types.js'
+import { del, reactive, set } from 'vue-demi'
+import { getArray } from '../utils/index.js'
 
 export function useServiceEventLocks() {
   const eventLocks = reactive<EventLocks>({

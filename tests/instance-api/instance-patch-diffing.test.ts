@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import { _ } from '@feathersjs/commons'
+import { vi } from 'vitest'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService } from '../test-utils.js'
 
@@ -18,7 +18,7 @@ describe('instance patch diffing', () => {
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
-    const hook = vi.fn((context) => context)
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save()

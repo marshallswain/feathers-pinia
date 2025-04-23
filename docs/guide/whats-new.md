@@ -18,13 +18,13 @@ Version 4 of Feathers-Pinia is about improving developer experience.  It focuses
 
 ### :gift: Custom Query Filters
 
-Filters are top-level, custom parameters inside your `query` objects. You can now define custom operators **for local 
+Filters are top-level, custom parameters inside your `query` objects. You can now define custom operators **for local
 queries** (the `findInStore` method). This new capability powers the new, built-in fuzzy search operator.  Read more about [Custom Query Filters](/guide/custom-query-filters).
 
 ### :gift: Fuzzy Search Filter
 
-The `createPiniaClient` function now accepts a `customFilters` option. Custom operators are easier to define than 
-`customSiftOperators` because they need no prior knowledge of custom interfaces. Custom operators run **before** the 
+The `createPiniaClient` function now accepts a `customFilters` option. Custom operators are easier to define than
+`customSiftOperators` because they need no prior knowledge of custom interfaces. Custom operators run **before** the
 rest of the query operators. Read how to set up the [uFuzzy Custom Filter](/guide/custom-query-filters#the-ufuzzy-custom-filter).
 
 ```ts
@@ -57,20 +57,20 @@ createPiniaClient(feathersClient, {
 
 ### 🎁 useBackup
 
-The new [useBackup utility]() is the opposite of working with clones. Instead of binding your form to a clone, you use 
+The new [useBackup utility]() is the opposite of working with clones. Instead of binding your form to a clone, you use
 the original record. It keeps a copy, letting you call `backup` or `restore` to revert changes. The `save` method
-auto-diffs from the backup, keeping data size to a minimum.  
+auto-diffs from the backup, keeping data size to a minimum.
 
 ### 🎁 New Relationship Utilities
 
 New methods have been added to the FeathersPinia Client. These utilities can be used inside `setupInstance` functions to
 help form relationships between services:
 
-- [app.pushToStore](/guide/data-modeling#pushtostore) pushes data into other service stores. It replaces `storeAssociated`. 
+- [app.pushToStore](/guide/data-modeling#pushtostore) pushes data into other service stores. It replaces `storeAssociated`.
 - [app.defineVirtualProperty](/guide/data-modeling#definevirtualproperty) sets up a virtual property on an object.
 - [app.defineVirtualProperties](/guide/data-modeling#definevirtualproperties) sets up many virtual properties on an object.
 
-### 🔥 `storeAssociated` Deprecated 
+### 🔥 `storeAssociated` Deprecated
 
 As of Feathers-Pinia v4.2, the `storeAssociated` utility has been replaced with a suite of smaller, more-flexible,
 single-purpose utilities. See [Data Modeling](/guide/data-modeling) for the new way to store associated data.
@@ -102,7 +102,8 @@ const orgsParams = computed(() => ({ query: { slug: $route.params.orgSlug } }))
 const {
   data: orgs,
   request: orgsRequest,
-  isSsr, areOrgsPending,
+  isSsr,
+  areOrgsPending,
   next: orgsNext,
   prev: orgsPrev
 } = api.service('orgs').useFind(orgsParams, { paginateOn: 'hybrid' })
@@ -111,7 +112,8 @@ const projectsParams = computed(() => ({ query: { slug: $route.params.projectSlu
 const {
   data: projects,
   request: projectsRequest,
-  isSsr, areProjectsPending,
+  isSsr,
+  areProjectsPending,
   next: projectsNext,
   prev: projectsPrev
 } = api.service('projects').useFind(projectsParams, { paginateOn: 'hybrid' })
@@ -157,7 +159,8 @@ const orgsParams = computed(() => ({ query: { slug: $route.params.orgSlug } }))
 const {
   data: orgs,
   request: orgsRequest,
-  isSsr, areOrgsPending,
+  isSsr,
+  areOrgsPending,
   next: orgsNext,
   prev: orgsPrev
 } = toRefs(api.service('orgs').useFind(orgsParams, { paginateOn: 'hybrid' }))
@@ -166,7 +169,8 @@ const projectsParams = computed(() => ({ query: { slug: $route.params.projectSlu
 const {
   data: projects,
   request: projectsRequest,
-  isSsr, areProjectsPending,
+  isSsr,
+  areProjectsPending,
   next: projectsNext,
   prev: projectsPrev
 } = toRefs(api.service('projects').useFind(projectsParams, { paginateOn: 'hybrid' }))
@@ -207,7 +211,8 @@ const orgsParams = computed(() => ({ query: { slug: $route.params.orgSlug } }))
 const {
   data: orgs,
   limit: orgsLimit,
-  skip, orgsSkip,
+  skip,
+  orgsSkip,
   total: orgsTotal,
 } = api.service('orgs').findInStore(orgsParams)
 
@@ -244,7 +249,8 @@ const orgsParams = computed(() => ({ query: { slug: $route.params.orgSlug } }))
 const {
   data: orgs,
   limit: orgsLimit,
-  skip, orgsSkip,
+  skip,
+  orgsSkip,
   total: orgsTotal,
 } = toRefs(api.service('orgs').findInStore(orgsParams))
 

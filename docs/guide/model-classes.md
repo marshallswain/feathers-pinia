@@ -122,8 +122,8 @@ I've not tried this, but it might be possible to support compound keys in the `i
 It would look something like the example, below.
 
 ```ts
-import { BaseModel, defineStore } from 'feathers-pinia'
 import { Id } from '@feathersjs/feathers'
+import { BaseModel, defineStore } from 'feathers-pinia'
 import { api } from '../feathers'
 
 // (1)^

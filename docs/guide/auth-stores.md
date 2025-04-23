@@ -39,8 +39,8 @@ Let's take a look at the example:
 
 ```ts
 import { defineAuthStore } from 'feathers-pinia'
-import { User } from './users.ts'
 import { api as feathersClient } from '~/feathers'
+import { User } from './users.ts'
 
 const authStore = defineAuthStore({
   feathersClient,
@@ -67,8 +67,8 @@ Notice that we're using `User` model class this time. This will require us to ca
 In Vuex this was done automatically in the root Vuex module. Pinia is a more decentralized store, so we're responsible for that ourselves.
 
 ```ts
-import { useUsers } from '~/store/users'
 import { useAuth } from '~/store/auth'
+import { useUsers } from '~/store/users'
 
 const users = useUsers()
 const auth = useAuth()

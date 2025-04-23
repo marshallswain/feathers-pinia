@@ -55,8 +55,9 @@ export class User extends BaseModel {
 ```
 
 ```ts [Old Model Fn]
+import type { ModelInstance } from 'feathers-pinia'
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
-import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
+import { useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
 
 const service = api.service('users')
@@ -72,9 +73,9 @@ const User = useFeathersModel<Users, UsersData, UsersQuery, typeof modelFn>(
 ```
 
 ```ts [New API]
-import { createPiniaClient, useInstanceDefaults } from 'feathers-pinia'
 import type { ServiceInstance } from 'feathers-pinia'
 import type { Users } from 'my-feathers-api'
+import { createPiniaClient, useInstanceDefaults } from 'feathers-pinia'
 
 const api = createPiniaClient(feathersClient, {
   pinia,

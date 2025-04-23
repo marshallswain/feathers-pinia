@@ -1,7 +1,7 @@
 import type { NullableId } from '@feathersjs/feathers'
 import type { Ref } from 'vue-demi'
-import { computed, del, ref, set } from 'vue-demi'
 import type { RequestTypeById } from './types.js'
+import { computed, del, ref, set } from 'vue-demi'
 
 function defaultPending() {
   return {

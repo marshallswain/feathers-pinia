@@ -1,9 +1,9 @@
 import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
-import { _ } from '@feathersjs/commons'
-import { unref } from 'vue-demi'
 import type { Params, Query } from '../types.js'
 import type { UseFindParams } from './types.js'
+import { _ } from '@feathersjs/commons'
+import { unref } from 'vue-demi'
 
 export function makeParamsWithoutPage(params: MaybeRef<UseFindParams>) {
   params = unref(params)
@@ -49,12 +49,12 @@ export function itemsFromPagination(store: any, service: any, params: Params<Que
 export function getAllIdsFromQueryInfo(pagination: any, queryInfo: any): any[] {
   const { queryId } = queryInfo
   const queryLevel = pagination[queryId] || {}
-  
+
   const ids = [...new Set(Object.keys(queryLevel).filter(key => !['total', 'queryParams'].includes(key)).reduce((acc, qkey) => {
     acc = acc.concat(queryLevel?.[qkey]?.ids || [])
     return acc
   }, []))]
-  
+
   return ids || []
 }
 

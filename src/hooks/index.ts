@@ -9,7 +9,7 @@ import { skipGetIfExists } from './7-skip-get-if-exists.js'
 import { patchDiffing } from './8-patch-diffs.js'
 import { handleQidCache } from './9-ssr-qid-cache.js'
 
-export { syncStore, setPending, eventLocks, normalizeFind, skipGetIfExists, makeModelInstances }
+export { eventLocks, makeModelInstances, normalizeFind, setPending, skipGetIfExists, syncStore }
 
 export function feathersPiniaHooks() {
   return [

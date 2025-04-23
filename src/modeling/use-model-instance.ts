@@ -1,9 +1,9 @@
-import ObjectID from 'isomorphic-mongo-objectid'
 import type { Ref } from 'vue-demi'
 import type { CloneOptions } from '../stores/index.js'
 import type { AnyData, ById, Params } from '../types.js'
-import { defineValues } from '../utils/define-properties'
 import type { BaseModelData, ModelInstanceData, StoreInstanceProps } from './types.js'
+import ObjectID from 'isomorphic-mongo-objectid'
+import { defineValues } from '../utils/define-properties'
 
 interface UseModelInstanceOptions<M, Q extends AnyData> {
   idField: string
@@ -15,8 +15,7 @@ interface UseModelInstanceOptions<M, Q extends AnyData> {
   removeFromStore: (data: M | M[] | null, params?: Params<Q>) => M | M[] | null
 }
 
-export function useModelInstance<M extends AnyData, Q extends AnyData>(data: ModelInstanceData<M>,
-  options: UseModelInstanceOptions<M, Q>) {
+export function useModelInstance<M extends AnyData, Q extends AnyData>(data: ModelInstanceData<M>, options: UseModelInstanceOptions<M, Q>) {
   if (data.__isStoreInstance)
     return data
 

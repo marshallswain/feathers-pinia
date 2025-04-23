@@ -1,7 +1,8 @@
 /// <reference types="vitest" />
 import path from 'node:path'
-import { defineConfig } from 'vite'
+import process from 'node:process'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
 // https://vitejs.dev/config/

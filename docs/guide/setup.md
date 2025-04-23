@@ -75,12 +75,12 @@ Feathers-Pinia supports multiple, simultaneous Feathers API servers. The process
 Here's an example **feathers-socket.io** client:
 
 ```ts
+import auth from '@feathersjs/authentication-client'
 // src/feathers.ts
 import feathers from '@feathersjs/feathers'
 import socketio from '@feathersjs/socketio-client'
-import auth from '@feathersjs/authentication-client'
-import io from 'socket.io-client'
 import { discard, iff } from 'feathers-hooks-common'
+import io from 'socket.io-client'
 
 const socket = io('http://localhost:3030', { transports: ['websocket'] })
 
@@ -95,10 +95,10 @@ For additional Feathers APIs, export another Feathers client instance with a uni
 Here's an example that exports a couple of **feathers-rest** clients:
 
 ```ts
+import auth from '@feathersjs/authentication-client'
 // src/feathers.ts
 import feathers from '@feathersjs/feathers'
 import rest from '@feathersjs/rest-client'
-import auth from '@feathersjs/authentication-client'
 
 // The variable name of each client becomes the alias for its server.
 export const api = feathers()
@@ -119,9 +119,9 @@ Adding `.pinia.` to each store's filename will help disambiguate utilities from 
 :::
 
 ```ts
+import { setupFeathersPinia } from 'feathers-pinia'
 // store/store.pinia.ts
 import { createPinia } from 'pinia'
-import { setupFeathersPinia } from 'feathers-pinia'
 import { api } from '../feathers'
 
 export const pinia = createPinia()
@@ -139,10 +139,10 @@ The final step to setup `pinia` is to add `pinia` as an app plugin, like this:
 ```ts
 // src/main.ts
 import { App as AppType, createApp } from 'vue-demi'
-import { router } from './routes'
-
-import { pinia } from './store/store.pinia' // import from the file you just created.
 import App from './App.vue'
+
+import { router } from './routes'
+import { pinia } from './store/store.pinia' // import from the file you just created.
 
 const app = createApp(App)
   .use(pinia) // register pinia as a plugin. This also enables devtools support

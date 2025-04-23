@@ -43,7 +43,7 @@ reloaded after a hot module swap. To implement, import `acceptHMRUpdate` from `p
 your store declaration block:
 
 ```ts
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useMyStore = defineStore('my-store', () => {
   // implement store logic

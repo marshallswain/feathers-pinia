@@ -1,6 +1,5 @@
-import { _ } from '@feathersjs/commons'
-import type { Query } from '@feathersjs/feathers'
 import type { FilterQueryOptions, FilterSettings, PaginationParams } from '@feathersjs/adapter-commons'
+import type { Query } from '@feathersjs/feathers'
 
 const parse = (value: any) => (typeof value !== 'undefined' ? Number.parseInt(value, 10) : value)
 
@@ -84,7 +83,7 @@ export const FILTERS: FilterSettings = {
  * as `query`. `options` also gets passed the pagination settings and
  * a list of additional `operators` to allow when querying properties.
  *
- * @param query The initial query
+ * @param _query The initial query
  * @param options Options for filtering the query
  * @returns An object with `query` which contains the query without `filters`
  * and `filters` which contains the converted values for each filter.

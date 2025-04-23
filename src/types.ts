@@ -1,6 +1,6 @@
 import type { Params as FeathersParams, Id } from '@feathersjs/feathers'
-import type { ComputedRef } from 'vue-demi'
 import type { MaybeRef } from '@vueuse/core'
+import type { ComputedRef } from 'vue-demi'
 import type { ServiceInstance } from './modeling/index.js'
 import type { PaginationStateQuery } from './stores/index.js'
 

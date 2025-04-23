@@ -82,13 +82,14 @@ The `useInstanceDefaults` utility allows you to specify default values to assign
 only assigns a value if it the attribute not already specified on the incoming object.
 
 ```ts
+import type { ModelInstance } from 'feathers-pinia'
 import type { Users, UsersData, UsersQuery } from 'my-feathers-api'
-import { type ModelInstance, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
+import { useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
 
 const service = api.service('users')
 
-const modelFn = (data: ModelInstance<Users>) => {
+function modelFn(data: ModelInstance<Users>) {
   const withDefaults = useInstanceDefaults({ name: '', email: '', password: '' }, data)
   return withDefaults
 }

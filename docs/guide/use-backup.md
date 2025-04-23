@@ -10,7 +10,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 [[toc]]
 
-The new `useBackup` utility is the opposite of working with clones. Instead of binding your form to a clone, you use the original record. It keeps a copy, letting you call `backup` or `restore` to revert changes. The `save` method auto-diffs from the backup, keeping data size to a minimum.  
+The new `useBackup` utility is the opposite of working with clones. Instead of binding your form to a clone, you use the original record. It keeps a copy, letting you call `backup` or `restore` to revert changes. The `save` method auto-diffs from the backup, keeping data size to a minimum.
 
 ## API
 
@@ -33,9 +33,9 @@ Here's an example:
 
 ```vue
 <script setup lang="ts">
-import { useBackup } from 'feathers-pinia'
-
 import type { User } from '~/services/users' // wherever your User type is
+
+import { useBackup } from 'feathers-pinia'
 
 const props = defineProps<{
   user: User

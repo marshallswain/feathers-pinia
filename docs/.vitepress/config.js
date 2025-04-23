@@ -137,13 +137,13 @@ function getGuideSidebar() {
       items: [
         { text: 'Data Modeling in v4.2+', link: '/guide/data-modeling' },
         { text: 'useInstanceDefaults', link: '/guide/use-instance-defaults' },
-        { 
-          text: 'Deprecated APIs', 
+        {
+          text: 'Deprecated APIs',
           items: [
             { text: 'storeAssociated', link: '/guide/store-associated' },
             { text: 'Utilities', link: '/guide/utilities' },
-          ]
-        }
+          ],
+        },
       ],
     },
     {

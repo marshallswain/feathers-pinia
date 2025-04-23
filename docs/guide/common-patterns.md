@@ -88,7 +88,7 @@ const pastAppointments$ = api.service('appointments').useFind(pastParams)
 ```
 
 in the above example of component code, the `futureAppointments$.data` and `pastAppointments$.data` will automatically
-update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.  
+update as more data is fetched using the `find` utility.  New items will show up in one of the lists, automatically.
 `feathers-pinia` listens to socket events automatically, so you don't have to manually wire any of this up!
 
 ## Query Once Per Record
@@ -189,10 +189,10 @@ For additional Feathers APIs, export another Feathers client instance with a uni
 Here's an example that exports a couple of **feathers-rest** clients:
 
 ```ts
+import auth from '@feathersjs/authentication-client'
 // src/feathers.ts
 import { feathers } from '@feathersjs/feathers'
 import rest from '@feathersjs/rest-client'
-import auth from '@feathersjs/authentication-client'
 
 const fetch = window.fetch.bind(window)
 

@@ -1,5 +1,5 @@
-import { Type, querySyntax } from '@feathersjs/typebox'
 import type { Static } from '@feathersjs/typebox'
+import { querySyntax, Type } from '@feathersjs/typebox'
 
 // Full Schema
 export const contactsSchema = Type.Object(

@@ -1,5 +1,5 @@
-import { reactive } from 'vue'
 import type { AnyData } from '../types'
+import { reactive } from 'vue'
 
 export function useSsrQueryCache() {
   const resultsByQid = reactive<Record<string, AnyData>>({})

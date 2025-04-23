@@ -1,7 +1,7 @@
-import type { Ref } from 'vue-demi'
 import type { NullableId } from '@feathersjs/feathers'
-import { computed, ref } from 'vue-demi'
+import type { Ref } from 'vue-demi'
 import { jwtDecode } from 'jwt-decode'
+import { computed, ref } from 'vue-demi'
 import { useCounter } from '../utils/use-counter'
 
 type SuccessHandler = (result: Record<string, any>) => Promise<Record<string, any> | void>
@@ -28,7 +28,7 @@ export interface AuthenticateData {
 }
 
 export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) {
-  const { api, servicePath, skipTokenCheck } = options
+  const { api, servicePath } = options
   const entityService = servicePath ? api.service(servicePath) : null
   const entityKey = options.entityKey || 'user'
 
@@ -97,7 +97,7 @@ export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) 
       const payload = jwtDecode(jwt) as any
       return new Date().getTime() > payload.exp * 1000
     }
-    catch (error) {
+    catch {
       return false
     }
   }

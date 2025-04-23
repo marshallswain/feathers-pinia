@@ -11,7 +11,7 @@ import BlockQuote from '../components/BlockQuote.vue'
 
 <BlockQuote type="danger" label="Deprecated APIs">
 
-The `defineValues`, `defineGetters`, and `defineSetters` utilities are all deprecated. They have been replaced by new 
+The `defineValues`, `defineGetters`, and `defineSetters` utilities are all deprecated. They have been replaced by new
 [Data Modeling utilities](/guide/data-modeling) in feathers-pinia v4.2.
 
 </BlockQuote>

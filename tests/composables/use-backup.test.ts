@@ -1,7 +1,7 @@
 import { computed } from 'vue'
+import { useBackup } from '../../src/index.js'
 import { api } from '../fixtures/index.js'
 import { resetService } from '../test-utils.js'
-import { useBackup } from '../../src/index.js'
 
 beforeEach(async () => {
   resetService(api.service('posts'))

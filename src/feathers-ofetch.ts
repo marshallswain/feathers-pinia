@@ -1,5 +1,5 @@
-import { FetchClient } from '@feathersjs/rest-client'
 import type { Params } from '@feathersjs/feathers'
+import { FetchClient } from '@feathersjs/rest-client'
 
 // A feathers-rest transport adapter for https://github.com/unjs/ofetch
 export class OFetch extends FetchClient {

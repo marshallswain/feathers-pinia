@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true,
     "target": "esnext",
+    "jsx": "preserve",
+    "lib": ["esnext", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "types": ["vite/client", "node", "vitest/globals"],
     "strict": true,
-    "jsx": "preserve",
+    "strictPropertyInitialization": false,
+    "declaration": true,
     "outDir": "dist",
     "sourceMap": true,
-    "resolveJsonModule": true,
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
-    "types": ["vite/client", "node", "vitest/globals"],
-    "declaration": true,
-    "strictPropertyInitialization": false
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

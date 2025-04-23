@@ -1,9 +1,9 @@
-import fastCopy from 'fast-copy'
 import type { AnyData, MakeCopyOptions } from '../types.js'
+import fastCopy from 'fast-copy'
 import { defineValues } from '../utils/index.js'
-import { useServiceTemps } from './temps.js'
 import { useServiceClones } from './clones.js'
 import { useServiceStorage } from './storage.js'
+import { useServiceTemps } from './temps.js'
 
 interface UseAllStorageOptions {
   getIdField: (val: AnyData) => any

@@ -17,8 +17,8 @@ describe('Custom Filters for findInStore', () => {
         $fuzzy: {
           search: 'gose',
           fields: ['name'],
-        }
-      }
+        },
+      },
     })
     expect(data[0].name).toEqual('Goose')
   })
@@ -29,8 +29,8 @@ describe('Custom Filters for findInStore', () => {
         $fuzzy: {
           search: '25',
           fields: ['name', 'age'],
-        }
-      }
+        },
+      },
     })
     expect(data[0].name).toEqual('Batman')
   })

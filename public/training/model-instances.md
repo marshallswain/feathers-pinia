@@ -55,7 +55,7 @@ API is far more convenient than a verbose API like the one in this next example:
 
 ```ts
 // This type of API couples this code to the `feathers-pinia` module
-// This doesn't actually exist. 
+// This doesn't actually exist.
 import { createInStore } from 'feathers-pinia'
 
 createInStore(todo)

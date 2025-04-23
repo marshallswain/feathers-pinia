@@ -1,4 +1,5 @@
-import { type Static, Type, querySyntax } from '@feathersjs/typebox'
+import type { Static } from '@feathersjs/typebox'
+import { querySyntax, Type } from '@feathersjs/typebox'
 
 // Main data model schema
 export const commentsSchema = Type.Object(

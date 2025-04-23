@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-invalid-this */
 import { vi } from 'vitest'
 import { clearStorage, syncWithStorage } from '../../src'
 import { api } from '../fixtures/index.js'

@@ -19,7 +19,7 @@ Custom filters provide the following benefits:
 
 - Custom filters let you attach functionality to your own, custom query parameters.
 - Custom filters run **before** the rest of the query operators, giving you access to the full list of stored items for a service.
-- Custom filters are easier to define than `customSiftOperators` because they need no prior knowledge of custom interfaces. 
+- Custom filters are easier to define than `customSiftOperators` because they need no prior knowledge of custom interfaces.
 
 Note: You cannot override built-in query operators like `$limit`, `$skip`, `$sort`, or `$select` with custom filters.
 
@@ -85,9 +85,9 @@ const johnDoe = {
   lastName: 'Doe',
   email: 'johndoe@gmail.com',
   __ranges: {
-    "firstName": [0, 3],
-    "lastName": [],
-    "email": [],
+    firstName: [0, 3],
+    lastName: [],
+    email: [],
   }
 }
 ```
@@ -120,7 +120,7 @@ export interface PaginateAfterOptions {
 }
 
 // define the shape of the query params specific to your custom operator
-export type PaginateAfterQueryParams {
+export interface PaginateAfterQueryParams {
   after: string
   limit?: number
 }
@@ -129,7 +129,7 @@ const defaultOptions: PaginateAfterOptions = {
   defaultLimit: 10
 }
 
-export function createCursorPaginationFilter = function (options = {}) {
+export function createCursorPaginationFilter(options = {}) {
   const { idField, defaultLimit } = { ...defaultOptions, ...options }
   return <M>(items: M[], queryParams: PaginateAfterQueryParams, query: Record<string, any>) => {
     const { after, limit = defaultLimit } = queryParams

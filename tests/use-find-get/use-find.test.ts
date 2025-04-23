@@ -1,5 +1,5 @@
-import { computed } from 'vue-demi'
 import { toRefs } from '@vueuse/core'
+import { computed } from 'vue-demi'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService } from '../test-utils.js'
 

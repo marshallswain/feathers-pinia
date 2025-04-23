@@ -47,7 +47,7 @@ model and store:
 
 ```ts
 const { data } = service.findInStore({ query: {}, clones: true })
-data.forEach(item => {
+data.forEach((item) => {
   console.log(item.__isClone) // --> true
 })
 ```

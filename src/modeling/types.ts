@@ -1,5 +1,5 @@
-import type { AnyData, PatchParams } from '../types.js'
 import type { CloneOptions } from '../stores/index.js'
+import type { AnyData, PatchParams } from '../types.js'
 
 export interface BaseModelData {
   /**
@@ -46,36 +46,36 @@ export interface StoreInstanceProps<M extends AnyData = AnyData> {
   /**
    * Returns the item's clone from the store, if one exists.
    */
-  hasClone<N extends AnyData>(this: N): N | null
+  hasClone: <N extends AnyData>(this: N) => N | null
   /**
    * Creates a copy of an item or temp record. The copy will have `__isClone` set to `true` and will be added to the
    * Model's clone storage. If not already stored, the original item  will be added to the appropriate store.
    * @param data
    * @param options
    */
-  clone<N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions): N
+  clone: <N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions) => N
   /**
    * Copies a clone's data onto the original item or temp record.
    * @param data
    * @param options
    */
-  commit<N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions): N
+  commit: <N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions) => N
   /**
    * Resets a clone's data to match the original item or temp record. If additional properties were added to the clone,
    * they will be removed to exactly match the original.
    * @param data
    * @param options
    */
-  reset<N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions): N
+  reset: <N extends AnyData>(this: N, data?: Partial<M>, options?: CloneOptions) => N
   /**
    * Adds the current instance to the appropriate store. If the instance is a clone, it will be added to `clones`. If it
    * has an `idField`, it will be added to items, otherwise it will be added to temps.
    */
-  createInStore<N extends AnyData>(this: N): N
+  createInStore: <N extends AnyData>(this: N) => N
   /**
    * Removes the current instance from items, temps, and clones.
    */
-  removeFromStore<N extends AnyData>(this: N): N
+  removeFromStore: <N extends AnyData>(this: N) => N
 }
 
 export type ModelInstanceData<M extends AnyData> = Partial<M & BaseModelData>
@@ -92,5 +92,5 @@ export interface ServiceInstanceProps<M extends AnyData, Q extends AnyData, P ex
   remove: (this: ModelInstance<M>, params?: P) => Promise<M>
 }
 export type ServiceInstance<M extends AnyData, Q extends AnyData = AnyData> = ModelInstanceData<M> &
-StoreInstanceProps<M> &
-ServiceInstanceProps<M, Q>
+  StoreInstanceProps<M> &
+  ServiceInstanceProps<M, Q>

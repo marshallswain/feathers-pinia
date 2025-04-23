@@ -53,7 +53,7 @@ grab the data that you want. It's really quite simple when you're "populating" d
 look at some pretend component logic. It's pretty clean to pull in stored data.
 
 ```ts
-import { User, Post } from '../models'
+import { Post, User } from '../models'
 
 interface Props {
   userId: string | number
@@ -69,7 +69,7 @@ component receives a list of `userIds` and retrieves `users` and a big list of `
 matching users.
 
 ```ts
-import { User, Post } from '../models'
+import { Post, User } from '../models'
 
 interface Props {
   userIds: Array<string | number>
@@ -117,7 +117,7 @@ if it holds a `user` object, the `user` will be moved into the `users` store whi
 ```ts
 import { User } from './users'
 
-const modelFn = (data: ModelInstance<Messages>) => {
+function modelFn(data: ModelInstance<Messages>) {
   if (data.user) {
     data.user = User(data.user).createInStore()
   }
@@ -139,7 +139,7 @@ relationship. They have the benefit of being lazily evaluated when read, which p
 ```ts
 import { User } from './users'
 
-const modelFn = (data: ModelInstance<Messages>) => {
+function modelFn(data: ModelInstance<Messages>) {
   if (message.user) {
     // convert a plain `user` object into a `User` instance and add to store
     User(message.user).createInStore()
@@ -166,11 +166,13 @@ cloning and committing. In order for accessors to work, you might choose to spec
 
 ```ts
 // gives access the message.user through the `users` store.
-get user() {
+function user() {
   return User.getFromStore(this.userId)
 }
+```
+```ts
 // an empty setter allows clone and commit, while also being fugly
-set user(val) {}
+function user(val) {}
 ```
 
 Alternatively, you could use the `Object.defineProperty` method to declare the attribute as `enumerable: false`. Either
@@ -212,15 +214,16 @@ And all of the functionality comes in a clean, short syntax. Here's an example o
 onto each message:
 
 ```ts
+import type { ModelInstance } from 'feathers-pinia'
 import type { Messages } from 'my-feathers-api'
-import { type ModelInstance, useInstanceDefaults, associateGet } from 'feathers-pinia'
+import { associateGet, useInstanceDefaults } from 'feathers-pinia'
 import { User } from './user'
 
-const modelFn = (data: ModelInstance<Messages>) => {
+function modelFn(data: ModelInstance<Messages>) {
   const withDefaults = useInstanceDefaults({ text: '', userId: null }, data)
   const withUser = associateFind(withDefaults, 'user', {
     Model: User,
-    getId: (data) => data.messageId
+    getId: data => data.messageId
   })
   return withUser
 }
@@ -229,15 +232,16 @@ const modelFn = (data: ModelInstance<Messages>) => {
 And here's an example of using `associateFind` to populate `messages` onto each `user`.
 
 ```ts
+import type { ModelInstance } from 'feathers-pinia'
 import type { Users } from 'my-feathers-api'
-import { type ModelInstance, useInstanceDefaults, associateFind } from 'feathers-pinia'
+import { associateFind, useInstanceDefaults } from 'feathers-pinia'
 import { Message } from './message'
 
-const modelFn = (data: ModelInstance<Users>) => {
+function modelFn(data: ModelInstance<Users>) {
   const withDefaults = useInstanceDefaults({ email: '', password: '' }, data)
   const withMessages = associateFind(withDefaults, 'messages', {
     Model: Message,
-    makeParams: (data) => ({ query: { userId: data.id } }),
+    makeParams: data => ({ query: { userId: data.id } }),
     handleSetInstance(message) {
       message.userId = data.id
     },

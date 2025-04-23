@@ -1,16 +1,16 @@
 ::: code-group
 
 ```ts [createClient]
+import rest from '@feathersjs/rest-client'
+// socket.io imports for the browser
+import socketio from '@feathersjs/socketio-client'
+
+import { createPiniaClient, OFetch } from 'feathers-pinia'
 // plugins/1.feathers.ts
 import { createClient } from 'feathers-pinia-api'
-import { OFetch, createPiniaClient } from 'feathers-pinia'
 
 // rest imports for the server
 import { $fetch } from 'ofetch'
-import rest from '@feathersjs/rest-client'
-
-// socket.io imports for the browser
-import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
 
 /**
@@ -54,17 +54,18 @@ export default defineNuxtPlugin(async (nuxt) => {
 ```
 
 ```ts [Manual setup]
-// plugins/1.feathers.ts
-import { type Service, feathers } from '@feathersjs/feathers'
+import type { Service } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
-import { OFetch, createPiniaClient } from 'feathers-pinia'
-
-// rest imports for the server
-import { $fetch } from 'ofetch'
+// plugins/1.feathers.ts
+import { feathers } from '@feathersjs/feathers'
 import rest from '@feathersjs/rest-client'
 
 // socket.io imports for the browser
 import socketio from '@feathersjs/socketio-client'
+import { createPiniaClient, OFetch } from 'feathers-pinia'
+
+// rest imports for the server
+import { $fetch } from 'ofetch'
 import io from 'socket.io-client'
 
 // Define your custom types (usually imported from another file)
@@ -75,7 +76,7 @@ export interface Book {
 
 // Define ServiceTypes by wrapping your custom type in the `Service` type
 export interface ServiceTypes {
-  'book': Service<Book>
+  book: Service<Book>
 }
 
 /**
@@ -100,7 +101,7 @@ export default defineNuxtPlugin(async (nuxt) => {
     : socketio(io(host, { transports: ['websocket'] }))
 
   // create the feathers client
-  const feathersClient = feathers<ServiceTypes>>()
+  const feathersClient = feathers<ServiceTypes>()
     .configure(connection)
     .configure(authenticationClient({ storage, storageKey }))
 

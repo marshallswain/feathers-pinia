@@ -1,4 +1,3 @@
-
 <BlockQuote label="Note about Feathers Types" type="info">
 
 Replace `my-feathers-api` in the below example with the package installed

@@ -1,12 +1,12 @@
 import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
-import { _ } from '@feathersjs/commons'
-import { unref } from 'vue-demi'
-import isEqual from 'fast-deep-equal'
-import fastCopy from 'fast-copy'
 import type { AnyData, AnyDataOrArray, DiffDefinition, Params, Query, QueryInfo } from '../types.js'
-import { defineValues } from './define-properties.js'
+import { _ } from '@feathersjs/commons'
+import fastCopy from 'fast-copy'
+import isEqual from 'fast-deep-equal'
+import { unref } from 'vue-demi'
 import { convertData } from './convert-data.js'
+import { defineValues } from './define-properties.js'
 
 // copied from @feathersjs/commons
 export function createSymbol(name: string) {
@@ -98,7 +98,7 @@ export function diff(dest: AnyData, source: AnyData, diffDef?: DiffDefinition) {
  * records are moved from tempsById to itemsById
  *
  * @param data item(s) before being passed to the server
- * @param responseData items(s) returned from the server
+ * @param resData items(s) returned from the server
  */
 export function restoreTempIds(data: AnyDataOrArray<any>, resData: AnyDataOrArray<any>, tempIdField = '__tempId') {
   const { items: sourceItems, isArray } = getArray(data)
