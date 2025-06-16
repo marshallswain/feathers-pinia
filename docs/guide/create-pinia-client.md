@@ -100,6 +100,7 @@ interface CreatePiniaClientConfig {
   storage?: undefined
   services?: Record<string, PiniaServiceConfig>
   // global and per-service options
+  defaultLimit?: 10
   syncWithStorage?: undefined
   whitelist?: string[]
   paramsForServer?: string[]
@@ -125,6 +126,8 @@ clear the `ssr` flag for that request.
 `window.localStorage`.
 - **`services {Record<string, PiniaServiceConfig>}`** an object, keyed by service path, which allows passing specific
 configuration to individual services. See [Service Configuration](#service-configuration).
+- **`defaultLimit {Number}`** sets the default limit for paginated queries when no `$limit` is specified. Defaults to `10`.
+This helps ensure consistent pagination behavior and can be overridden per-service.
 - **`syncWithStorage`** can be set to `true` or to an array of store keys to sync to the `storage` adapter. If set to
 `true`, the default keys will be used, which are `['itemsById', 'pagination']`.  See [Storage Sync](/guide/storage-sync)
 - **`whitelist`** is an array of keys to allow in the `findInStore` queries.
@@ -187,6 +190,7 @@ interface PiniaServiceConfig {
    * The name of the id field for this service. Overrides the global idField.
    */
   idField?: string
+  defaultLimit?: number
   whitelist?: string[]
   paramsForServer?: string[]
   skipGetIfExists?: boolean
@@ -218,6 +222,7 @@ These options are all configurable at the global and service levels. See descrip
 section. Here is a description of how each option is handled when it's also configured globally:
 
 - **`idField`** overrides the global value
+- **`defaultLimit`** overrides the global value
 - **`whitelist`** concatenated with the global value
 - **`paramsForServer`** concatenated with the global value
 - **`skipGetIfExists {Boolean}`** overrides the global value
