@@ -1,7 +1,7 @@
 {
   "name": "@gabortorma/feathers-pinia",
   "type": "module",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "packageManager": "pnpm@10.14.0",
   "exports": {
     ".": {
