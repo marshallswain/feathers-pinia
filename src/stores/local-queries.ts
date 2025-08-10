@@ -186,7 +186,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       return stored
     })
 
-    // @ts-expect-error test
+    // @ts-expect-error: The return type depends on the input (array or single item), but TypeScript cannot infer this from the generic signature.
     return isArray ? _items : _items[0]
   }
 
