@@ -11,13 +11,13 @@ beforeEach(async () => {
 afterEach(() => resetService(service))
 
 describe('useInstanceDefaults', () => {
-  test('has defaults', async () => {
+  it('has defaults', async () => {
     const contact = service.new({})
     expect(contact.name).toBe('')
     expect(contact.age).toBe(0)
   })
 
-  test('overwrite defaults with data', async () => {
+  it('overwrite defaults with data', async () => {
     const contact = service.new({ name: 'foo', age: 55 })
     expect(contact.name).toBe('foo')
     expect(contact.age).toBe(55)

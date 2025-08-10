@@ -26,9 +26,9 @@ so we'll get to that next.
 <!--@include: ../partials/notification-access-token.md-->
 
 ```ts
+import { useAuth } from 'feathers-pinia'
 // src/stores/auth.ts
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()
@@ -238,9 +238,9 @@ To obtain the payload, you can do one of the following:
 response in a ref:
 
     ```ts
+    import { useAuth } from 'feathers-pinia'
     // src/store/store.auth.ts
     import { acceptHMRUpdate, defineStore } from 'pinia'
-    import { useAuth } from 'feathers-pinia'
 
     export const useAuthStore = defineStore('auth', () => {
       const { api } = useFeathers()

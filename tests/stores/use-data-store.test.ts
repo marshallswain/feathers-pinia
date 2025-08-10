@@ -1,7 +1,7 @@
 import { useDataStore } from '../../src'
 
 describe('useDataStore', () => {
-  test('setup', () => {
+  it('setup', () => {
     const service = useDataStore({
       idField: 'id',
     })

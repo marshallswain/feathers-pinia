@@ -85,9 +85,9 @@ comes with Dove apps.
 ::: code-group
 
 ```ts [createClient Socket.io]
+import socketio from '@feathersjs/socketio-client'
 // src/feathers.ts
 import { createClient } from 'feathers-pinia-api'
-import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
 
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
@@ -97,9 +97,9 @@ const feathersClient = createClient(socketio(socket), { storage: window.localSto
 ```
 
 ```ts [createClient fetch]
+import rest from '@feathersjs/rest-client'
 // src/feathers.ts
 import { createClient } from 'feathers-pinia-api'
-import rest from '@feathersjs/rest-client'
 
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
 const fetch = window.fetch.bind(window)
@@ -108,9 +108,10 @@ const feathersClient = createClient(rest(host).fetch(fetch), { storage: window.l
 ```
 
 ```ts [Socket.io]
-// src/feathers.ts
-import { type Service, feathers } from '@feathersjs/feathers'
+import type { Service } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
+// src/feathers.ts
+import { feathers } from '@feathersjs/feathers'
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
 
@@ -122,7 +123,7 @@ export interface Book {
 
 // Create a ServiceTypes generic
 export interface ServiceTypes {
-  'book': Service<Book>
+  book: Service<Book>
 }
 
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
@@ -134,9 +135,10 @@ export const feathersClient = feathers<ServiceTypes>()
 ```
 
 ```ts [fetch]
-// src/feathers.ts
-import { type Service, feathers } from '@feathersjs/feathers'
+import type { Service } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
+// src/feathers.ts
+import { feathers } from '@feathersjs/feathers'
 import rest from '@feathersjs/rest-client'
 
 // Define your custom types (usually imported from another file)
@@ -147,7 +149,7 @@ export interface Book {
 
 // Create a ServiceTypes generic
 export interface ServiceTypes {
-  'book': Service<Book>
+  book: Service<Book>
 }
 
 const host = import.meta.env.VITE_MY_API_URL as string || 'http://localhost:3030'
@@ -401,9 +403,9 @@ file-based routing rules similar to how Nuxt works.
 The route middleware starts with `router.beforeEach`.
 
 ```ts
+import { setupLayouts } from 'virtual:generated-layouts'
 // src/router.ts
 import { createRouter, createWebHistory } from 'vue-router'
-import { setupLayouts } from 'virtual:generated-layouts'
 import generatedRoutes from '~pages'
 
 const routes = setupLayouts(generatedRoutes)

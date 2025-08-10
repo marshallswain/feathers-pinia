@@ -1,6 +1,6 @@
-import { computed, watch } from 'vue-demi'
 import { _ } from '@feathersjs/commons'
 import debounce from 'just-debounce'
+import { computed, watch } from 'vue-demi'
 
 // Writes data to localStorage
 export function writeToStorage(id: string, data: any, storage: any) {
@@ -20,7 +20,8 @@ export function hydrateStore(store: any, storage: any) {
 /**
  *
  * @param store pinia store
- * @param keys an array of keys to watch and write to localStorage.
+ * @param stateKeys an array of keys to watch and write to localStorage.
+ * @param storage the storage to use. Defaults to window.localStorage.
  */
 export function syncWithStorage(store: any, stateKeys: Array<string>, storage: Storage = window.localStorage) {
   hydrateStore(store, storage)

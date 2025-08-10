@@ -5,11 +5,12 @@ import { createEqualsOperation } from 'sift'
 export function like(value: string, search: string, regexOptions = 'g') {
   const specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\']
   // Remove specials
+  // eslint-disable-next-line regexp/prefer-character-class
   search = search.replace(new RegExp(`(\\${specials.join('|\\')})`, regexOptions), '\\$1')
   // Replace % and _ with equivalent regex
   search = search.replace(/%/g, '.*').replace(/_/g, '.')
   // Check matches
-  return RegExp(`^${search}$`, regexOptions).test(value)
+  return new RegExp(`^${search}$`, regexOptions).test(value)
 }
 
 // Simulate PostgreSQL's case-insensitive ILIKE

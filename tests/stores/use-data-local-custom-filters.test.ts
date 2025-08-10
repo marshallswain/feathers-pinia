@@ -11,26 +11,26 @@ describe('Custom Filters for findInStore', () => {
   })
   afterEach(() => resetService(service))
 
-  test('can filter objects with $fuzzy', async () => {
+  it('can filter objects with $fuzzy', async () => {
     const { data } = service.findInStore({
       query: {
         $fuzzy: {
           search: 'gose',
           fields: ['name'],
-        }
-      }
+        },
+      },
     })
     expect(data[0].name).toEqual('Goose')
   })
 
-  test('$fuzzy can filter multiple fields', async () => {
+  it('$fuzzy can filter multiple fields', async () => {
     const { data } = service.findInStore({
       query: {
         $fuzzy: {
           search: '25',
           fields: ['name', 'age'],
-        }
-      }
+        },
+      },
     })
     expect(data[0].name).toEqual('Batman')
   })

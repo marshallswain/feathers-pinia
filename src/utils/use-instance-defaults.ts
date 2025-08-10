@@ -1,6 +1,6 @@
-import fastCopy from 'fast-copy'
-import { _ } from '@feathersjs/commons'
 import type { AnyData } from '../types.js'
+import { _ } from '@feathersjs/commons'
+import fastCopy from 'fast-copy'
 
 export function useInstanceDefaults<D extends AnyData, M extends AnyData>(defaults: D, data: M) {
   const dataKeys = Object.keys(data)

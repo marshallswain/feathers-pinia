@@ -33,5 +33,10 @@
     "json",
     "jsonc",
     "yaml"
+  ],
+  "cSpell.words": [
+    "flexsearch",
+    "leeoniya",
+    "ufuzzy"
   ]
 }

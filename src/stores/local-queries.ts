@@ -1,15 +1,15 @@
-import type { MaybeRef } from '@vueuse/core'
 import type { Id } from '@feathersjs/feathers'
-import { _ } from '@feathersjs/commons'
-import { computed, reactive, unref } from 'vue-demi'
-import { select, sorter } from '@feathersjs/adapter-commons'
-import sift from 'sift'
-import fastCopy from 'fast-copy'
+import type { MaybeRef } from '@vueuse/core'
 import type { AnyData, CustomFilter, Params } from '../types.js'
-import { deepUnref, getArray } from '../utils/index.js'
-import { sqlOperations } from '../custom-operators/index.js'
-import { filterQuery } from './filter-query.js'
 import type { StorageMapUtils } from './storage.js'
+import { select, sorter } from '@feathersjs/adapter-commons'
+import { _ } from '@feathersjs/commons'
+import fastCopy from 'fast-copy'
+import sift from 'sift'
+import { computed, reactive, unref } from 'vue-demi'
+import { sqlOperations } from '../custom-operators/index.js'
+import { deepUnref, getArray } from '../utils/index.js'
+import { filterQuery } from './filter-query.js'
 
 interface UseServiceLocalOptions<M extends AnyData> {
   idField: string
@@ -62,6 +62,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
   })
 
   const filterItems = (params: Params<Q>, startingValues: M[] = []) => {
+    // @ts-expect-error: After unref, params may not exactly match Params<Q> type, but we ensure it is an object for downstream logic.
     params = { ...unref(params) } || {}
 
     const q = _.omit(params.query || {}, ...paramsForServer)
@@ -185,6 +186,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
       return stored
     })
 
+    // @ts-expect-error: The return type depends on the input (array or single item), but TypeScript cannot infer this from the generic signature.
     return isArray ? _items : _items[0]
   }
 

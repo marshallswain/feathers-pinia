@@ -1,8 +1,8 @@
-import { del as vueDelete } from 'vue-demi'
-import fastCopy from 'fast-copy'
 import type { AnyData, MakeCopyOptions } from '../types.js'
-import type { CloneOptions, beforeWriteFn, onReadFn } from './types.js'
 import type { StorageMapUtils } from './storage.js'
+import type { beforeWriteFn, CloneOptions, onReadFn } from './types.js'
+import fastCopy from 'fast-copy'
+import { del as vueDelete } from 'vue-demi'
 import { useServiceStorage } from './storage.js'
 
 export interface UseServiceClonesOptions<M extends AnyData> {
@@ -55,7 +55,7 @@ export function useServiceClones<M extends AnyData>(options: UseServiceClonesOpt
    * Fast-copies the provided `item`, placing it in `cloneStorage`.
    * @param item the object to clone.
    * @param data an object to be merged before storing in cloneStorage.
-   * @param options.useExisting {Boolean} allows using the existing clone instead of re-cloning.
+   * @param options .useExisting {Boolean} allows using the existing clone instead of re-cloning.
    * @returns
    */
   function clone(item: M, data = {}, options: CloneOptions = {}): M {

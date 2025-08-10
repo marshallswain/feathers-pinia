@@ -1,7 +1,7 @@
 import { useServiceStore } from '../../src'
 
 describe('useServiceStore', () => {
-  test('setup', () => {
+  it('setup', () => {
     const service = useServiceStore({
       idField: 'id',
       servicePath: 'posts',

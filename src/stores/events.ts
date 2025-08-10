@@ -1,10 +1,10 @@
 import type { FeathersService } from '@feathersjs/feathers'
-import { del, ref, set } from 'vue-demi'
-import _debounce from 'just-debounce'
-import type { AnyData } from '../types.js'
-import { convertData, getId, hasOwn } from '../utils/index.js'
 import type { PiniaService } from '../create-pinia-service.js'
-import type { HandleEvents, HandledEvents } from './types.js'
+import type { AnyData } from '../types.js'
+import type { HandledEvents, HandleEvents } from './types.js'
+import _debounce from 'just-debounce'
+import { del, ref, set } from 'vue-demi'
+import { convertData, getId, hasOwn } from '../utils/index.js'
 
 interface UseServiceStoreEventsOptions<M extends AnyData> {
   service: PiniaService<FeathersService<any, any>>

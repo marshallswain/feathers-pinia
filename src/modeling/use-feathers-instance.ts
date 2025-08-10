@@ -1,9 +1,9 @@
-import { BadRequest } from '@feathersjs/errors'
 import type { FeathersService, Params } from '@feathersjs/feathers'
-import type { AnyData } from '../types.js'
-import { defineGetters, defineValues } from '../utils/define-properties'
 import type { PiniaService } from '../create-pinia-service.js'
+import type { AnyData } from '../types.js'
 import type { ServiceInstanceProps } from './types.js'
+import { BadRequest } from '@feathersjs/errors'
+import { defineGetters, defineValues } from '../utils/define-properties'
 
 export type Service = FeathersService | PiniaService<FeathersService>
 
@@ -12,8 +12,7 @@ export interface useServiceInstanceOptions<S extends Service> {
   store: any
 }
 
-export function useServiceInstance<M extends AnyData, S extends Service, P extends Params = Params>(data: M,
-  options: useServiceInstanceOptions<S>) {
+export function useServiceInstance<M extends AnyData, S extends Service, P extends Params = Params>(data: M, options: useServiceInstanceOptions<S>) {
   if (data.__isServiceInstance)
     return data
 

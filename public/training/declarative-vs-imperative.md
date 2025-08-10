@@ -1,4 +1,3 @@
-
 ## Declarative vs. Imperative Flow
 
 We stated earlier that the new `useFind` supports both declarative and imperative workflows. What's the difference and
@@ -35,9 +34,9 @@ const { api } = useFeathers()
 const dueDate = ref(new Date())
 
 // 5 most-upvoted tasks for the day
-const paramsMostUpvoted = computed(() => ({ 
-  query: { 
-    dueDate, 
+const paramsMostUpvoted = computed(() => ({
+  query: {
+    dueDate,
     $sort: { upvotes: -1 },
     $limit: 5,
   },
@@ -46,9 +45,9 @@ const paramsMostUpvoted = computed(() => ({
 const { data: mostUpvoted } = api.service('tasks').useFind(paramsMostUpvoted)
 
 // 5 least-upvoted tasks for the day
-const paramsLeastUpvoted = computed(() => ({ 
-  query: { 
-    dueDate, 
+const paramsLeastUpvoted = computed(() => ({
+  query: {
+    dueDate,
     $sort: { upvotes: 1 },
     $limit: 5,
   },
@@ -57,9 +56,9 @@ const paramsLeastUpvoted = computed(() => ({
 const { data: leastUpvotedTasks } = api.service('tasks').useFind(paramsLeastUpvoted)
 
 // Twenty completed tasks for the day
-const paramsComplete = computed(() => ({ 
-  query: { 
-    dueDate, 
+const paramsComplete = computed(() => ({
+  query: {
+    dueDate,
     isCompleted: true,
     $limit: 20,
   },
@@ -68,9 +67,9 @@ const paramsComplete = computed(() => ({
 const { data: completedTasks } = api.service('tasks').useFind(paramsComplete)
 
 // Ten most-voted-for, incomplete tasks for the day
-const paramsIncomplete = computed(() => ({ 
-  query: { 
-    dueDate, 
+const paramsIncomplete = computed(() => ({
+  query: {
+    dueDate,
     isCompleted: false,
     $sort: { upvotes: -1 },
     $limit: 10,
@@ -92,7 +91,7 @@ own. As long as your template is rendering correctly, there's no more work to do
 
 ```ts
 // A handler to change the date from the UI
-const setDate = (newDate) => {
+function setDate(newDate) {
   date.value = newDate
 }
 ```
@@ -106,9 +105,9 @@ have more repetition. Notice how the same date is specified four times.
 const { api } = useFeathers()
 
 // 5 most-upvoted tasks for the day
-const paramsMostUpvoted = reactive({ 
-  query: { 
-    dueDate: new Date(), 
+const paramsMostUpvoted = reactive({
+  query: {
+    dueDate: new Date(),
     $sort: { upvotes: -1 },
     $limit: 5,
   },
@@ -117,9 +116,9 @@ const paramsMostUpvoted = reactive({
 const { data: mostUpvoted, find: findMostUpvoted } = api.service('tasks').useFind(paramsMostUpvoted)
 
 // 5 least-upvoted tasks for the day
-const paramsLeastUpvoted = reactive({ 
-  query: { 
-    dueDate: new Date(), 
+const paramsLeastUpvoted = reactive({
+  query: {
+    dueDate: new Date(),
     $sort: { upvotes: 1 },
     $limit: 5,
   },
@@ -128,9 +127,9 @@ const paramsLeastUpvoted = reactive({
 const { data: leastUpvotedTasks, find: findLeastUpvoted } = api.service('tasks').useFind(paramsLeastUpvoted)
 
 // Twenty completed tasks for the day
-const paramsComplete = reactive({ 
-  query: { 
-    dueDate: new Date(), 
+const paramsComplete = reactive({
+  query: {
+    dueDate: new Date(),
     isCompleted: true,
     $limit: 20,
   },
@@ -139,9 +138,9 @@ const paramsComplete = reactive({
 const { data: completedTasks, find: findComplete } = api.service('tasks').useFind(paramsComplete)
 
 // Ten most-voted-for, incomplete tasks for the day
-const paramsIncomplete = reactive({ 
-  query: { 
-    dueDate: new Date(), 
+const paramsIncomplete = reactive({
+  query: {
+    dueDate: new Date(),
     isCompleted: false,
     $sort: { upvotes: -1 },
     $limit: 10,
@@ -159,16 +158,16 @@ for). Then we have to manually tell `useFind` to request the new data.
 
 ```ts
 // A handler to change the date for each query
-const setDate = async (newDate) => {
+async function setDate(newDate) {
   paramsMostUpvoted.query.date = newDate
   paramsLeastUpvoted.query.date = newDate
   paramsComplete.query.date = newDate
   paramsIncomplete.query.date = newDate
   // fetch data for the new date
   await Promise.all([
-    findMostUpvoted()
-    findLeastUpvoted()
-    findComplete()
+    findMostUpvoted(),
+    findLeastUpvoted(),
+    findComplete(),
     findIncomplete()
   ])
 }

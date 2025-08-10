@@ -150,8 +150,9 @@ When setting up a new project, TypeScript may report that the FeathersPinia serv
 The [setup examples](/setup/) show how to properly setup the Feathers client for your framework. If you don't have custom types provided from a Feathers v5 Dove API, you can use the following generic:
 
 ```ts
+import type { Service } from '@feathersjs/feathers'
 // import the Service type
-import { type Service, feathers } from '@feathersjs/feathers'
+import { feathers } from '@feathersjs/feathers'
 
 // Define your custom types (usually imported from another file)
 export interface Book {
@@ -161,7 +162,7 @@ export interface Book {
 
 // Create a ServiceTypes generic
 export interface ServiceTypes {
-  'book': Service<Book>
+  book: Service<Book>
 }
 
 // Provide `ServiceTypes` in angle brackets before the parentheses

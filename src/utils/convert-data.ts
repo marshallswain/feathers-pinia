@@ -1,7 +1,7 @@
 import type { FeathersService } from '@feathersjs/feathers'
 import type { PiniaService } from '../create-pinia-service.js'
-import type { AnyData, AnyDataOrArray } from '../types.js'
 import type { ServiceInstance } from '../modeling/index.js'
+import type { AnyData, AnyDataOrArray } from '../types.js'
 
 export function convertData(service: PiniaService<FeathersService>, result: AnyDataOrArray<AnyData>) {
   if (!result) {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-invalid-this */
 import { vi } from 'vitest'
 import { clearStorage, syncWithStorage } from '../../src'
 import { api } from '../fixtures/index.js'
@@ -32,7 +31,7 @@ describe('Clear Storage', () => {
     reset()
   })
 
-  test('clear storage', async () => {
+  it('clear storage', async () => {
     service.createInStore({ name: 'test' })
     await timeout(600)
 

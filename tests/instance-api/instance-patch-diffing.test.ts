@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import { _ } from '@feathersjs/commons'
+import { vi } from 'vitest'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService } from '../test-utils.js'
 
@@ -12,15 +12,13 @@ beforeEach(async () => {
 afterEach(() => resetService(service))
 
 describe('instance patch diffing', () => {
-  test('diff by default ', async () => {
+  it('diff by default ', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
     clone.isComplete = true
 
-    const hook = vi.fn(async (context) => {
-      return context
-    })
+    const hook = vi.fn(context => context)
     service.hooks({ before: { patch: [hook] } })
 
     await clone.save()
@@ -29,7 +27,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'it was the size of texas', isComplete: true })
   })
 
-  test('turn diff off with diff:false', async () => {
+  it('turn diff off with diff:false', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
@@ -45,7 +43,7 @@ describe('instance patch diffing', () => {
     expect(callData).toHaveProperty('_id', contact._id)
   })
 
-  test('diff string overrides the default diffing algorithm', async () => {
+  it('diff string overrides the default diffing algorithm', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
@@ -60,7 +58,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'it was the size of texas' })
   })
 
-  test('diff with invalid string produces empty diff, does not send a request', async () => {
+  it('diff with invalid string produces empty diff, does not send a request', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
@@ -77,7 +75,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({})
   })
 
-  test('diff array of strings', async () => {
+  it('diff array of strings', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
@@ -93,7 +91,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
-  test('diff array of strings, only one value changes', async () => {
+  it('diff array of strings, only one value changes', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
@@ -109,7 +107,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'it was the size of texas', test: true })
   })
 
-  test('diff with object', async () => {
+  it('diff with object', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
@@ -125,7 +123,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'test' })
   })
 
-  test('diff and with as string', async () => {
+  it('diff and with as string', async () => {
     const contact = await service.new({ test: 'foo' } as any).save()
     const clone = contact.clone()
     clone.name = 'it was the size of texas'
@@ -139,7 +137,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'it was the size of texas', test: 'foo' })
   })
 
-  test('diff and with as array', async () => {
+  it('diff and with as array', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
@@ -154,7 +152,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
-  test('diff and with as object', async () => {
+  it('diff and with as object', async () => {
     const contact = await service.new({}).save()
     const clone = contact.clone() as any
     clone.name = 'it was the size of texas'
@@ -169,7 +167,7 @@ describe('instance patch diffing', () => {
     expect(callData).toEqual({ name: 'it was the size of texas', test: false })
   })
 
-  test('eager updates are reversed if saving fails', async () => {
+  it('eager updates are reversed if saving fails', async () => {
     const contact = await service.new({ name: 'hi' }).save()
     Object.assign(contact, { test: false })
     const clone = contact.clone()

@@ -32,8 +32,9 @@ hooks**, not app-level hooks.
 <!--@include: ./notification-feathers-client.md-->
 
 ```ts
+import type { ModelInstance } from 'feathers-pinia'
 import type { Tasks, TasksData, TasksQuery } from 'my-feathers-api'
-import { type ModelInstance, feathersPiniaHooks, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
+import { feathersPiniaHooks, useFeathersModel, useInstanceDefaults } from 'feathers-pinia'
 import { api } from '../feathers'
 
 const service = api.service('tasks')

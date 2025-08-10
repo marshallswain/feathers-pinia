@@ -1,15 +1,15 @@
 import type { Query } from '@feathersjs/feathers'
 
-import { computed, unref } from 'vue-demi'
 import type { MaybeRef } from '@vueuse/core'
 import type { AnyData, CustomFilter } from '../types.js'
+import { computed, unref } from 'vue-demi'
 import { useModelInstance } from '../modeling/use-model-instance'
-import { useServiceLocal } from './local-queries.js'
+import { useAllStorageTypes } from './all-storage-types.js'
 
+import { useServiceEventLocks } from './event-locks.js'
+import { useServiceLocal } from './local-queries.js'
 import { useServicePagination } from './pagination.js'
 import { useServicePending } from './pending.js'
-import { useServiceEventLocks } from './event-locks.js'
-import { useAllStorageTypes } from './all-storage-types.js'
 import { useSsrQueryCache } from './ssr-query-cache.js'
 
 export interface UseServiceStoreOptions {

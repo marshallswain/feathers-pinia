@@ -1,5 +1,5 @@
-import { ref } from 'vue-demi'
 import { vi } from 'vitest'
+import { ref } from 'vue-demi'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService, timeout } from '../test-utils.js'
 
@@ -13,21 +13,21 @@ afterEach(() => resetService(service))
 
 describe('useGet', () => {
   describe('Default behavior fetched data from the server', () => {
-    test('can pass a primitive id', async () => {
+    it('can pass a primitive id', async () => {
       const contact$ = service.useGet('1')
       await contact$.request
       expect(contact$.data?._id).toBe('1')
       expect(contact$.requestCount).toBe(1)
     })
 
-    test('can pass a ref id', async () => {
+    it('can pass a ref id', async () => {
       const id = ref('1')
       const contact$ = service.useGet(id)
       await contact$.request
       expect(contact$.data?._id).toBe('1')
     })
 
-    test.skip('changing id updates data', async () => {
+    it.skip('changing id updates data', async () => {
       const id = ref('1')
       const contact$ = service.useGet(id)
       await contact$.request
@@ -43,13 +43,13 @@ describe('useGet', () => {
       expect(contact$.data?._id).toBe('2')
     })
 
-    test('id can be null', async () => {
+    it('id can be null', async () => {
       const id = ref(null)
       const contact$ = service.useGet(id, {})
       expect(contact$.data).toBe(null)
     })
 
-    test.skip('can show previous record while a new one loads', async () => {
+    it.skip('can show previous record while a new one loads', async () => {
       // A hook to cause a delay so we can check pending state
       let hookRunCount = 0
       const hook = async () => {
@@ -81,7 +81,7 @@ describe('useGet', () => {
       expect(contact$.data?._id).toBe('2')
     })
 
-    test.skip('can prevent a query with queryWhen', async () => {
+    it.skip('can prevent a query with queryWhen', async () => {
       const id = ref('1')
       const contact$ = service.useGet(id, {
         immediate: false,
@@ -112,7 +112,7 @@ describe('useGet', () => {
       expect(queryWhenFn).toHaveBeenCalledTimes(3)
     })
 
-    test.skip('can disable watch', async () => {
+    it.skip('can disable watch', async () => {
       const id = ref('1')
       const contact$ = service.useGet(id, { watch: false })
       expect(contact$.requestCount).toBe(0)
@@ -136,7 +136,7 @@ describe('useGet', () => {
   })
 
   describe('Manual Get with Ref', () => {
-    test('can update ref and manually get correct data', async () => {
+    it('can update ref and manually get correct data', async () => {
       const id = ref('1')
       const contact$ = service.useGet(id, { immediate: false })
       expect(contact$.data).toBeNull()
@@ -153,7 +153,7 @@ describe('useGet', () => {
   })
 
   describe('Can be configured to not fetch data', () => {
-    test('no watch, no immediate', async () => {
+    it('no watch, no immediate', async () => {
       // assume we fetched data separately
       await service.find({ query: { $limit: 20 } })
 
@@ -166,7 +166,7 @@ describe('useGet', () => {
   })
 
   describe('clones', () => {
-    test('can return clones', async () => {
+    it('can return clones', async () => {
       const id = ref('1')
       const contact$ = service.useGet(id, { clones: true })
       await contact$.request
@@ -176,7 +176,7 @@ describe('useGet', () => {
   })
 
   describe('useGetOnce', () => {
-    test('store.useGetOnce only queries once per id', async () => {
+    it('store.useGetOnce only queries once per id', async () => {
       const id = ref('1')
       const contact$ = service.useGetOnce(id)
       expect(contact$.requestCount).toBe(1)
@@ -205,7 +205,7 @@ describe('useGet', () => {
   })
 
   describe('Errors', () => {
-    test('sets and clears errors', async () => {
+    it('sets and clears errors', async () => {
       // Throw an error in a hook
       let hasHookRun = false
       const hook = () => {
@@ -231,7 +231,7 @@ describe('useGet', () => {
       expect(contact$.error).toBe(null)
     })
 
-    test('swallows error and sets error ref if a service error is received', async () => {
+    it('swallows error and sets error ref if a service error is received', async () => {
       const contact$ = service.useGet('A', { immediate: false })
 
       await contact$.get()

@@ -1,5 +1,5 @@
-import { computed } from 'vue-demi'
 import { toRefs } from '@vueuse/core'
+import { computed } from 'vue-demi'
 import { api, makeContactsData } from '../fixtures/index.js'
 import { resetService } from '../test-utils.js'
 
@@ -12,7 +12,7 @@ beforeEach(async () => {
 afterEach(() => resetService(service))
 
 describe('useFind', () => {
-  test('correct default immediate values', async () => {
+  it('correct default immediate values', async () => {
     const p = computed(() => {
       return { query: { name: 'Moose' } }
     })
@@ -82,7 +82,7 @@ describe('useFind', () => {
     expect(typeof toStart.value).toBe('function')
   })
 
-  test('applies default limit to query', async () => {
+  it('applies default limit to query', async () => {
     const result = await service.find()
     // defaultLimit is 20 but there are only 12 records.
     expect(result.data.length).toBe(12)

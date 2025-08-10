@@ -8,7 +8,7 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 describe('Custom Service Methods', () => {
-  test('has custom methods', async () => {
+  it('has custom methods', async () => {
     expect(typeof service.customCreate).toBe('function')
     const result = await service.customCreate({
       email: 'test@test.com',

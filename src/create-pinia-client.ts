@@ -1,15 +1,15 @@
 import type { Application, FeathersService } from '@feathersjs/feathers'
-import { feathers } from '@feathersjs/feathers'
-import { defineStore } from 'pinia'
+import type { Service } from './modeling/use-feathers-instance.js'
 import type { HandleEvents } from './stores/index.js'
 import type { AnyData, CustomFilter } from './types.js'
+import { feathers } from '@feathersjs/feathers'
+import { defineStore } from 'pinia'
 import { PiniaService } from './create-pinia-service.js'
-import type { Service } from './modeling/use-feathers-instance.js'
-import { useServiceEvents, useServiceStore } from './stores/index.js'
 import { feathersPiniaHooks } from './hooks/index.js'
-import { storeAssociated, useServiceInstance } from './modeling/index.js'
-import { defineGetters, defineVirtualProperties, defineVirtualProperty, pushToStore } from './utils/index.js'
 import { syncWithStorage as __sync, clearStorage } from './localstorage/index.js'
+import { storeAssociated, useServiceInstance } from './modeling/index.js'
+import { useServiceEvents, useServiceStore } from './stores/index.js'
+import { defineGetters, defineVirtualProperties, defineVirtualProperty, pushToStore } from './utils/index.js'
 
 export interface SetupInstanceUtils {
   app?: any
@@ -56,7 +56,7 @@ export interface CreatePiniaClientConfig extends PiniaServiceConfig {
   services?: Record<string, PiniaServiceConfig>
 }
 
-export type AppWithServices = {
+export interface AppWithServices {
   services: { [key: string]: FeathersService }
 }
 
@@ -127,7 +127,7 @@ export function createPiniaClient<App extends Application>(
 
       const asFeathersModel = useServiceInstance(data, {
         service,
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        // eslint-disable-next-line ts/no-use-before-define
         store,
       })
 

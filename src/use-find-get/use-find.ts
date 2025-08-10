@@ -1,13 +1,13 @@
 import type { ComputedRef, Ref, UnwrapNestedRefs, WritableComputedRef } from 'vue-demi'
-import { computed, reactive, ref, unref, watch } from 'vue-demi'
+import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types.js'
+import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
 import { _ } from '@feathersjs/commons'
 import { useDebounceFn } from '@vueuse/core'
 import stringify from 'fast-json-stable-stringify'
+import { computed, reactive, ref, unref, watch } from 'vue-demi'
 import { deepUnref, getExtendedQueryInfo } from '../utils/index.js'
-import type { AnyData, ExtendedQueryInfo, Paginated, Params, Query } from '../types.js'
-import { itemsFromPagination, allItemsFromPagination } from './utils.js'
 import { usePageData } from './utils-pagination.js'
-import type { UseFindGetDeps, UseFindOptions, UseFindParams } from './types.js'
+import { allItemsFromPagination, itemsFromPagination } from './utils.js'
 
 export type UseFindReturn<M = AnyData> = UnwrapNestedRefs<{
   paramsWithPagination: ComputedRef<Params<Query>>
@@ -119,11 +119,12 @@ export function useFind<M = AnyData>(params: ComputedRef<UseFindParams | null>, 
     const whichQuery = isPending.value ? cachedQuery.value : currentQuery.value
     if (whichQuery == null && paginateOn !== 'client')
       return []
-    
+
     if (paginateOn === 'server') {
       const values = allItemsFromPagination(store, service, cachedParams.value)
       return values
-    } else {
+    }
+    else {
       const result = service.findInStore(deepUnref(paramsWithoutPagination.value)).data
       return result.filter((i: any) => i)
     }

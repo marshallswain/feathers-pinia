@@ -75,7 +75,7 @@ troubleshoot reactivity.
   - **`clones` {Boolean}** returns result as clones. See [Querying Data](/data-stores/querying-data#local-params-api)
   - **`temps` {Boolean}** includes temp records in the results. See [Querying Data](/data-stores/querying-data#local-params-api)
   - **`qid` {string}** an identifier for this query. Allows pagination data to be tracked separately.
-  
+
 - `options`
   - **`paginateOn` {string}** can be `'client'`, `'server'`, or `'hybrid'` Default is `'client'`.
     - when set to `'client'`, you need to manually make API queries using `service.find()`, then you can paginate on

@@ -1,10 +1,10 @@
 import type { ComputedRef, Ref } from 'vue-demi'
-import { ref, set } from 'vue-demi'
-import stringify from 'fast-json-stable-stringify'
-import { _ } from '@feathersjs/commons/lib'
-import { deepUnref, getId, hasOwn } from '../utils/index.js'
 import type { Params, Query, QueryInfo } from '../types.js'
 import type { PaginationState, UpdatePaginationForQueryOptions } from './types.js'
+import { _ } from '@feathersjs/commons/lib'
+import stringify from 'fast-json-stable-stringify'
+import { ref, set } from 'vue-demi'
+import { deepUnref, getId, hasOwn } from '../utils/index.js'
 
 export interface UseServicePagination {
   idField: string

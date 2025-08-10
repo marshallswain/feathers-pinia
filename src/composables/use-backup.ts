@@ -1,8 +1,8 @@
+import type { ComputedRef, Ref } from 'vue'
+import type { AnyData, DiffDefinition } from '../types'
 import { copyStrict } from 'fast-copy'
 import { isRef, ref, unref, watch } from 'vue'
-import type { ComputedRef, Ref } from 'vue'
 import { diff } from '../utils/utils'
-import type { AnyData, DiffDefinition } from '../types'
 
 type AnyRef<D> = Ref<D> | ComputedRef<D>
 

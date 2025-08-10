@@ -82,9 +82,9 @@ export const useAuth = defineAuthStore({
 ```
 
 ```ts [useAuth (new)]
+import { useAuth } from 'feathers-pinia'
 // src/stores/auth.ts (new way)
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useAuth } from 'feathers-pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const { api } = useFeathers()

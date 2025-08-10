@@ -10,7 +10,7 @@ beforeEach(async () => {
 afterEach(() => resetService(service))
 
 describe('useModelInstance clones', () => {
-  test('clone an item', async () => {
+  it('clone an item', async () => {
     const contact = service.new({ _id: '1', name: 'Evan' })
     const cloned = contact.clone()
     expect(cloned._id).toBe('1')
@@ -18,7 +18,7 @@ describe('useModelInstance clones', () => {
     expect(cloned.name).toBe('Evan')
   })
 
-  test('clone a temp keeps the tempId', async () => {
+  it('clone a temp keeps the tempId', async () => {
     const contact = service.new({ name: 'Evan' })
     expect(contact.__tempId).toBeDefined()
     expect(typeof contact.clone).toBe('function')
@@ -28,7 +28,7 @@ describe('useModelInstance clones', () => {
     expect(cloned.name).toBe('Evan')
   })
 
-  test('clone a non-stored temp adds it to temps with __isClone set to false', () => {
+  it('clone a non-stored temp adds it to temps with __isClone set to false', () => {
     const contact = service.new({ name: 'Evan' })
     contact.clone()
     const storedTemp = service.store.tempsById[contact.__tempId as string]
@@ -36,7 +36,7 @@ describe('useModelInstance clones', () => {
     expect(storedTemp.__isClone).toBe(false)
   })
 
-  test('clone values are independent, do not leak into original item', async () => {
+  it('clone values are independent, do not leak into original item', async () => {
     const contact = service.new({ name: 'Evan' })
 
     const cloned = contact.clone()
@@ -44,7 +44,7 @@ describe('useModelInstance clones', () => {
     expect(contact.name).toBe('Evan')
   })
 
-  test('modified clone properties commit to the original item', async () => {
+  it('modified clone properties commit to the original item', async () => {
     const contact = service.new({ name: 'Evan' })
 
     const cloned = contact.clone()
@@ -54,7 +54,7 @@ describe('useModelInstance clones', () => {
     expect(committed.name).toEqual('George')
   })
 
-  test('committing a temp keeps the tempId', async () => {
+  it('committing a temp keeps the tempId', async () => {
     const contact = service.new({ name: 'Evan' })
     const cloned = contact.clone()
     const committed = cloned.commit()
@@ -62,7 +62,7 @@ describe('useModelInstance clones', () => {
     expect(committed).toEqual(contact)
   })
 
-  test('can re-clone after commit', async () => {
+  it('can re-clone after commit', async () => {
     const contact = service.new({ name: 'Evan' })
     const cloned = contact.clone()
     const committed = cloned.commit()
@@ -70,7 +70,7 @@ describe('useModelInstance clones', () => {
     expect(cloned).toBe(recloned)
   })
 
-  test('calling reset on an original item clones the item', async () => {
+  it('calling reset on an original item clones the item', async () => {
     const contact = service.new({ name: 'Evan' })
     const resetted = contact.reset()
 
@@ -78,7 +78,7 @@ describe('useModelInstance clones', () => {
     expect(storedClone).toBe(resetted)
   })
 
-  test('calling reset on a clone resets the clone', async () => {
+  it('calling reset on a clone resets the clone', async () => {
     const contact = service.new({ name: 'Evan' })
     const clone = contact.clone()
     clone.name = 'George'
@@ -88,7 +88,7 @@ describe('useModelInstance clones', () => {
     expect(resetted.name).toBe('Evan')
   })
 
-  test('saving a clone', async () => {
+  it('saving a clone', async () => {
     const contact = service.new({ name: 'test' })
     const clone = contact.clone()
     const result = await clone.save()

@@ -8,7 +8,7 @@ beforeEach(async () => {
 })
 afterEach(() => resetService(service))
 describe('The general types work for typed Feathers clients', () => {
-  test('has custom methods', async () => {
+  it('has custom methods', async () => {
     // create data instances
     expect(service.new).toBeTruthy()
 

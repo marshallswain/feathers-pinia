@@ -11,21 +11,21 @@ describe('use-service-clones', () => {
     cloneStorage.clear()
   })
 
-  test('can clone', () => {
+  it('can clone', () => {
     const item = { id: 1, name: '1' }
     itemStorage.setItem(1, item)
     const cloned = clone(item)
     expect(cloned).toBe(cloneStorage.getItem(1))
   })
 
-  test('can clone with data', () => {
+  it('can clone with data', () => {
     const item = { id: 1, name: '1' }
     itemStorage.setItem(1, item)
     const cloned = clone(item, { test: true })
     expect(cloned.test).toBe(true)
   })
 
-  test('can useExisting clone', () => {
+  it('can useExisting clone', () => {
     const item = { id: 1, name: '1' }
     itemStorage.setItem(1, item)
     clone(item, { test: true })
@@ -36,7 +36,7 @@ describe('use-service-clones', () => {
     expect(cloned2.name).toBe('1')
   })
 
-  test('can commit', () => {
+  it('can commit', () => {
     const item = { id: 1, name: '1' }
     itemStorage.setItem(1, item)
     const cloned = clone(item)
@@ -45,7 +45,7 @@ describe('use-service-clones', () => {
     expect(committed).toBe(itemStorage.getItem(1))
   })
 
-  test('can reset', () => {
+  it('can reset', () => {
     const item = { id: 1, name: '1' }
     itemStorage.setItem(1, item)
     const cloned = clone(item)
@@ -54,20 +54,20 @@ describe('use-service-clones', () => {
     expect(cloned.name).toBe('1')
   })
 
-  test('clone when missing original: `item` is stored in cloneStorage', () => {
+  it('clone when missing original: `item` is stored in cloneStorage', () => {
     const item = { id: 1, name: '1' }
     const cloned = clone(item)
     expect(cloned.name).toBe('1')
     expect(itemStorage.getItem(1)).toEqual(item)
   })
 
-  test('commit when missing clone: `item` stored in itemStorage', () => {
+  it('commit when missing clone: `item` stored in itemStorage', () => {
     const item = { id: 1, name: '1' }
     const cloned = clone(item)
     expect(cloned.name).toBe('1')
   })
 
-  test('reset when missing original: `item` stored in cloneStorage', () => {
+  it('reset when missing original: `item` stored in cloneStorage', () => {
     const item = { id: 1, name: '1' }
     const cloned = reset(item)
     expect(cloned.name).toBe('1')

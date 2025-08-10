@@ -1,6 +1,6 @@
 import type { AnyData } from '../types.js'
-import type { beforeWriteFn, onReadFn } from './types.js'
 import type { StorageMapUtils } from './storage.js'
+import type { beforeWriteFn, onReadFn } from './types.js'
 import { useServiceStorage } from './storage.js'
 
 interface UseServiceTempsOptions<M extends AnyData> {

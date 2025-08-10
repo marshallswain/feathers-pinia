@@ -13,7 +13,7 @@ afterEach(() => resetService(service))
 
 describe('Local Pagination', () => {
   describe('paginate on client', () => {
-    test('returns stored data', async () => {
+    it('returns stored data', async () => {
       const name = ref('Moose')
       const params = computed(() => ({ query: { name } }))
       const contacts$ = service.useFind(params)
@@ -31,7 +31,7 @@ describe('Local Pagination', () => {
       expect(contacts$.data[0].name).toBe('Goose')
     })
 
-    test('shows correct paginated store results', async () => {
+    it('shows correct paginated store results', async () => {
       const params = computed(() => {
         return { query: { $limit: 3 } }
       })
@@ -45,7 +45,7 @@ describe('Local Pagination', () => {
       expect(contacts$.data[0].name).toBe('Loose')
     })
   })
-  test('pagination attributes enabled on the store', async () => {
+  it('pagination attributes enabled on the store', async () => {
     const _params = computed(() => {
       return { query: { name: 'Moose' } }
     })
@@ -56,7 +56,7 @@ describe('Local Pagination', () => {
     expect(contacts$.total).toBeDefined()
   })
 
-  test('pagination attributes in the params', async () => {
+  it('pagination attributes in the params', async () => {
     // request all data
     await service.find({ query: { $limit: 300 } })
 
@@ -82,7 +82,7 @@ describe('Local Pagination', () => {
     expect(result.data[0]._id).toBe('6')
   })
 
-  test('pagination attributes in second argument', async () => {
+  it('pagination attributes in second argument', async () => {
     // request all data
     await service.find({ query: { $limit: 300 } })
 
@@ -108,7 +108,7 @@ describe('Local Pagination', () => {
     expect(result.data[0]._id).toBe('6')
   })
 
-  test('can use `find` to query the server with current params', async () => {
+  it('can use `find` to query the server with current params', async () => {
     // Throw an error in a hook
     const hook = vi.fn()
     service.hooks({ before: { find: [hook] } })
@@ -127,7 +127,7 @@ describe('Local Pagination', () => {
     expect(contacts$.data.length).toBe(3)
   })
 
-  test('allLocalData contains all stored data', async () => {
+  it('allLocalData contains all stored data', async () => {
     const _params = computed(() => {
       return { query: { $limit: 4, $skip: 0 } }
     })

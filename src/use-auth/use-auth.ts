@@ -1,7 +1,7 @@
-import type { Ref } from 'vue-demi'
 import type { NullableId } from '@feathersjs/feathers'
-import { computed, ref } from 'vue-demi'
+import type { Ref } from 'vue-demi'
 import { jwtDecode } from 'jwt-decode'
+import { computed, ref } from 'vue-demi'
 import { useCounter } from '../utils/use-counter'
 
 type SuccessHandler = (result: Record<string, any>) => Promise<Record<string, any> | void>
@@ -28,7 +28,7 @@ export interface AuthenticateData {
 }
 
 export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) {
-  const { api, servicePath, skipTokenCheck } = options
+  const { api, servicePath } = options
   const entityService = servicePath ? api.service(servicePath) : null
   const entityKey = options.entityKey || 'user'
 
@@ -48,7 +48,7 @@ export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) 
   // user
   const userId = ref<NullableId>(null)
   const user = computed<U | null>(() => {
-    if (!entityService || !userId.value)
+    if (!entityService || (userId.value === null))
       return null
     const u = entityService?.store.itemsById[userId.value]
     return u || null
@@ -66,7 +66,7 @@ export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) 
     const entity = result[entityKey]
     if (entityService && entity) {
       const stored = entityService.store.createInStore(entity)
-      userId.value = stored[entityService.store.idField] || stored.__tempId
+      userId.value = stored[entityService.store.idField] !== null ? stored[entityService.store.idField] : stored.__tempId
     }
     isAuthenticated.value = true
     return result
@@ -97,7 +97,7 @@ export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) 
       const payload = jwtDecode(jwt) as any
       return new Date().getTime() > payload.exp * 1000
     }
-    catch (error) {
+    catch {
       return false
     }
   }

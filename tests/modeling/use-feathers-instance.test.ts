@@ -8,7 +8,7 @@ beforeEach(() => {
 })
 
 describe('PiniaService', () => {
-  test('instances have pending state', async () => {
+  it('instances have pending state', async () => {
     const contact = service.new({})
     expect(contact.isSavePending).toBeDefined()
     expect(contact.isCreatePending).toBeDefined()
@@ -16,7 +16,7 @@ describe('PiniaService', () => {
     expect(contact.isRemovePending).toBeDefined()
   })
 
-  test('isSavePending with isCreatePending state properly updates', async () => {
+  it('isSavePending with isCreatePending state properly updates', async () => {
     service.hooks({ before: { all: [timeoutHook(20)] } })
     const contact = service.new({})
 
@@ -30,7 +30,7 @@ describe('PiniaService', () => {
     expect(contact.isCreatePending).toBeFalsy()
   })
 
-  test('isSavePending with isPatchPending state properly updates', async () => {
+  it('isSavePending with isPatchPending state properly updates', async () => {
     service.hooks({ before: { all: [timeoutHook(20)] } })
     const contact = await service.new({}).save()
     contact.name = 'foo'
@@ -45,7 +45,7 @@ describe('PiniaService', () => {
     expect(contact.isPatchPending).toBeFalsy()
   })
 
-  test('isRemovePending properly updates', async () => {
+  it('isRemovePending properly updates', async () => {
     service.hooks({ before: { all: [timeoutHook(20)] } })
     const contact = await service.new({}).save()
 
@@ -57,7 +57,7 @@ describe('PiniaService', () => {
     expect(contact.isRemovePending).toBeFalsy()
   })
 
-  test('instances have methods', async () => {
+  it('instances have methods', async () => {
     const contact = service.new({})
     expect(typeof contact.save).toBe('function')
     expect(typeof contact.create).toBe('function')
@@ -65,7 +65,7 @@ describe('PiniaService', () => {
     expect(typeof contact.remove).toBe('function')
   })
 
-  test('instance.create', async () => {
+  it('instance.create', async () => {
     const contact = service.new({ _id: '1' })
     const result = await contact.create()
     expect(result._id).toBe('1')
@@ -73,7 +73,7 @@ describe('PiniaService', () => {
     expect(service.store.items.length).toBe(1)
   })
 
-  test('instance.patch', async () => {
+  it('instance.patch', async () => {
     const contact = service.new({ _id: '1' })
     expect(contact.name).toEqual('')
     expect(contact.age).toEqual(0)
@@ -87,7 +87,7 @@ describe('PiniaService', () => {
     expect(result.name).toBe('do the dishes')
   })
 
-  test('instance.remove', async () => {
+  it('instance.remove', async () => {
     const contact = service.new({ name: 'test' })
     const saved = await contact.save()
 

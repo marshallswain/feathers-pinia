@@ -1,13 +1,13 @@
 import type { Params as FeathersParams, FeathersService, Id, Paginated, PaginationOptions } from '@feathersjs/feathers'
 import type { MaybeRef } from '@vueuse/core'
 import type { ComputedRef } from 'vue-demi'
-import { computed, isRef, reactive, ref, unref } from 'vue-demi'
-import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get/index.js'
+import type { ServiceInstance } from './modeling/index.js'
 import type { AnyData, Params, Query } from './types.js'
-import { SERVICE, existingServiceMethods, getParams } from './utils/index.js'
+import type { UseFindOptions, UseFindParams, UseGetParams } from './use-find-get/index.js'
+import { computed, isRef, reactive, ref, unref } from 'vue-demi'
 import { useFind, useGet } from './use-find-get/index.js'
 import { convertData } from './utils/convert-data'
-import type { ServiceInstance } from './modeling/index.js'
+import { existingServiceMethods, getParams, SERVICE } from './utils/index.js'
 
 interface PiniaServiceOptions {
   servicePath: string
@@ -27,7 +27,7 @@ type SvcModel<S extends FeathersService> = ServiceInstance<SvcResult<S>>
 export class PiniaService<Svc extends FeathersService> {
   store
   servicePath = ''
-  
+
   constructor(public service: Svc, public options: PiniaServiceOptions) {
     this.store = options.store
     this.servicePath = options.servicePath
@@ -46,7 +46,7 @@ export class PiniaService<Svc extends FeathersService> {
     }
 
     Object.defineProperty(this, SERVICE, {
-      value: this.options
+      value: this.options,
     })
   }
 

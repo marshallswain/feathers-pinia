@@ -209,7 +209,7 @@ interface SetupInstanceUtils {
 }
 ```
 
-The `storeName` and `instanceServicePath` options were introduced in Feathers-Pinia 4.2. They are not configurable at 
+The `storeName` and `instanceServicePath` options were introduced in Feathers-Pinia 4.2. They are not configurable at
 the global level.
 
 - **`storeName {String}`** is the name of the store to use for this service. Defaults to `service:${servicePath}`. You can

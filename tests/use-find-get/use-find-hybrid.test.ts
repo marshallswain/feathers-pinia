@@ -11,7 +11,7 @@ beforeEach(async () => {
 afterEach(() => resetService(service))
 
 describe('useFind', () => {
-  test('limit: 10, skip: 0', async () => {
+  it('limit: 10, skip: 0', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 0 } }
     })
@@ -22,7 +22,7 @@ describe('useFind', () => {
     expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
-  test('limit: 10, skip: 0', async () => {
+  it('limit: 10, skip: 0', async () => {
     const pagination = { limit: ref(10), skip: ref(0) }
     const params = computed(() => {
       return { query: {} }
@@ -34,7 +34,7 @@ describe('useFind', () => {
     expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
-  test('limit: 10, skip: 10', async () => {
+  it('limit: 10, skip: 10', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10 } }
     })
@@ -56,7 +56,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('limit: 10, skip: 10', async () => {
+  it('limit: 10, skip: 10', async () => {
     const pagination = { limit: ref(10), skip: ref(10) }
     const params = computed(() => {
       return { query: {} }
@@ -79,7 +79,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('limit: 10, skip: 20', async () => {
+  it('limit: 10, skip: 20', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 20 } }
     })
@@ -101,7 +101,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('limit: 10, skip: 20', async () => {
+  it('limit: 10, skip: 20', async () => {
     const pagination = { limit: ref(10), skip: ref(20) }
     const params = computed(() => {
       return { query: {} }
@@ -124,7 +124,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('limit: 10, skip: 30', async () => {
+  it('limit: 10, skip: 30', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 30 } }
     })
@@ -146,7 +146,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('paginating from beginning', async () => {
+  it('paginating from beginning', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 0 } }
     })
@@ -202,7 +202,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('paginating from beginning', async () => {
+  it('paginating from beginning', async () => {
     const pagination = { limit: ref(10), skip: ref(0) }
     const params = computed(() => {
       return { query: {} }
@@ -259,7 +259,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('paginating from middle', async () => {
+  it('paginating from middle', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 30 } }
     })
@@ -315,7 +315,7 @@ describe('useFind', () => {
     expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
-  test('paginating from middle', async () => {
+  it('paginating from middle', async () => {
     const pagination = { limit: ref(10), skip: ref(30) }
     const params = computed(() => {
       return { query: {} }
@@ -372,7 +372,7 @@ describe('useFind', () => {
     expect(contacts$.data.map((item: any) => item._id)).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
   })
 
-  test('paginating from middle to middle forwards', async () => {
+  it('paginating from middle to middle forwards', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 20 } }
     })
@@ -409,7 +409,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('paginating from middle to middle forwards', async () => {
+  it('paginating from middle to middle forwards', async () => {
     const pagination = { limit: ref(10), skip: ref(20) }
     const params = computed(() => {
       return { query: {} }
@@ -447,7 +447,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('paginating from middle to middle backwards', async () => {
+  it('paginating from middle to middle backwards', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 40 } }
     })
@@ -484,7 +484,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('paginating from middle to middle backwards', async () => {
+  it('paginating from middle to middle backwards', async () => {
     const pagination = { limit: ref(10), skip: ref(40) }
     const params = computed(() => {
       return { query: {} }
@@ -522,7 +522,7 @@ describe('useFind', () => {
     ])
   })
 
-  test('live list after first with sort - item appears on the page', async () => {
+  it('live list after first with sort - item appears on the page', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
@@ -538,7 +538,7 @@ describe('useFind', () => {
     expect(contacts$.data[1]).toEqual(copyOfFirst)
   })
 
-  test('live list after first with sort - item appears on the page', async () => {
+  it('live list after first with sort - item appears on the page', async () => {
     const pagination = { limit: ref(10), skip: ref(10) }
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
@@ -555,7 +555,7 @@ describe('useFind', () => {
     expect(contacts$.data[1]).toEqual(copyOfFirst)
   })
 
-  test('live list before first with sort - item not present because it fits in the 10-item $skip buffer', async () => {
+  it('live list before first with sort - item not present because it fits in the 10-item $skip buffer', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
@@ -571,7 +571,7 @@ describe('useFind', () => {
     expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
   })
 
-  test('live list before first with sort - item not present because it fits in the 10-item $skip buffer', async () => {
+  it('live list before first with sort - item not present because it fits in the 10-item $skip buffer', async () => {
     const pagination = { limit: ref(10), skip: ref(10) }
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
@@ -588,7 +588,7 @@ describe('useFind', () => {
     expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
   })
 
-  test('live list before first with sort - added item moves to top because there is no $skip buffer', async () => {
+  it('live list before first with sort - added item moves to top because there is no $skip buffer', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 0, $sort: { birthdate: 1 } } }
     })
@@ -604,7 +604,7 @@ describe('useFind', () => {
     expect(contacts$.data[0]).toEqual(copyOfFirst)
   })
 
-  test('live list before first with sort - added item moves to top because there is no $skip buffer', async () => {
+  it('live list before first with sort - added item moves to top because there is no $skip buffer', async () => {
     const pagination = { limit: ref(10), skip: ref(0) }
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
@@ -621,7 +621,7 @@ describe('useFind', () => {
     expect(contacts$.data[0]).toEqual(copyOfFirst)
   })
 
-  test('live list before first with sort - added item appears in second page after prev and next', async () => {
+  it('live list before first with sort - added item appears in second page after prev and next', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
@@ -643,7 +643,7 @@ describe('useFind', () => {
     expect(contacts$.data.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
   })
 
-  test('live list before first with sort - added item appears in second page after prev and next', async () => {
+  it('live list before first with sort - added item appears in second page after prev and next', async () => {
     const pagination = { limit: ref(10), skip: ref(10) }
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }
@@ -666,7 +666,7 @@ describe('useFind', () => {
     expect(contacts$.data.find((item: any) => item._id === 100)).toEqual(copyOfFirst)
   })
 
-  test('live list before first with sort - added item appears in second page after prev and next', async () => {
+  it('live list before first with sort - added item appears in second page after prev and next', async () => {
     const params = computed(() => {
       return { query: { $limit: 10, $skip: 10, $sort: { birthdate: 1 } } }
     })
@@ -693,7 +693,7 @@ describe('useFind', () => {
     expect(contacts$.data.find((item: any) => item._id === 100)).toBeUndefined()
   })
 
-  test('live list before first with sort - added item appears in second page after prev and next', async () => {
+  it('live list before first with sort - added item appears in second page after prev and next', async () => {
     const pagination = { limit: ref(10), skip: ref(10) }
     const params = computed(() => {
       return { query: { $sort: { birthdate: 1 } } }

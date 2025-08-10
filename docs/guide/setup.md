@@ -25,5 +25,3 @@ The new guide includes everything from this page plus additional framework-speci
 - **Installation**: [Install Packages](/setup/install)
 - **Other Frameworks**: [Setup Overview](/setup/)
 - **Migration**: [From Feathers-Vuex](/migrate/from-feathers-vuex)
-
-If you're working with a different framework or have specific questions, check out the [setup overview](/setup/) page for framework-specific guidance.
