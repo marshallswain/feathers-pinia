@@ -48,7 +48,7 @@ export function useAuth<d = AuthenticateData, U = any>(options: UseAuthOptions) 
   // user
   const userId = ref<NullableId>(null)
   const user = computed<U | null>(() => {
-    if (!entityService || userId.value === null)
+    if (!entityService || (userId.value === null))
       return null
     const u = entityService?.store.itemsById[userId.value]
     return u || null
