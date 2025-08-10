@@ -62,7 +62,7 @@ export function useServiceLocal<M extends AnyData, Q extends AnyData>(options: U
   })
 
   const filterItems = (params: Params<Q>, startingValues: M[] = []) => {
-    // @ts-expect-error test
+    // @ts-expect-error: After unref, params may not exactly match Params<Q> type, but we ensure it is an object for downstream logic.
     params = { ...unref(params) } || {}
 
     const q = _.omit(params.query || {}, ...paramsForServer)
