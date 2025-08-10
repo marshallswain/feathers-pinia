@@ -65,11 +65,15 @@ export function pickDiff(obj: any, diffDef: DiffDefinition) {
 }
 
 export function diff(dest: AnyData, source: AnyData, diffDef?: DiffDefinition) {
+  // If diffDef is false, return the entire source object (turn off diffing)
+  if (diffDef === false)
+    return source
+
   const originalVal = pickDiff(dest, diffDef)
   const cloneVal = pickDiff(source, diffDef)
 
   // If diff was an object, merge the values into the cloneVal
-  if (typeof diffDef !== 'string' && !Array.isArray(diffDef))
+  if (typeof diffDef === 'object' && diffDef !== null && !Array.isArray(diffDef))
     Object.assign(cloneVal, diffDef)
 
   const areEqual = isEqual(originalVal, cloneVal)

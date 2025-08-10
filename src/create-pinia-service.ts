@@ -175,7 +175,7 @@ export class PiniaService<Svc extends FeathersService> {
   /**
    * count records matching a query in the store.
    */
-  countInStore(params?: MaybeRef<SvcParams<Svc>>): Paginated<never>
+  countInStore(params?: MaybeRef<SvcParams<Svc>>): ComputedRef<number>
   countInStore(params?: MaybeRef<Params<Query>>) {
     const result = this.store.countInStore(params)
     return result

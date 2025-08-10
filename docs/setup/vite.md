@@ -7,11 +7,28 @@ import Badge from '../components/Badge.vue'
 import BlockQuote from '../components/BlockQuote.vue'
 </script>
 
-# Starting a Vite Project
+# Getting Started with Vite
 
-Learn how to setup Feathers-Pinia 3 with Vite.
+Learn how to setup Feathers-Pinia with Vite and Vue.js.
 
 [[toc]]
+
+## Installation
+
+Install these packages using your preferred package manager:
+
+```bash
+# Core packages
+pinia feathers-pinia
+
+# For Socket.io (realtime) apps
+@feathersjs/feathers @feathersjs/authentication-client @feathersjs/socketio-client socket.io-client
+
+# For REST (no realtime) apps
+@feathersjs/feathers @feathersjs/authentication-client @feathersjs/rest-client
+```
+
+You can also use the [install guide](./install) for more detailed installation instructions.
 
 ## Prerequisites
 
@@ -21,9 +38,43 @@ Follow these steps to get started with a new single-page Vite app:
 2. [Install packages](./install),
 3. Follow the instructions, below
 
+## Project Configuration
+
+### TypeScript
+
+By default, TypeScript will expect you to strictly identify properties on Model classes. See the `!` in the following example:
+
+```ts
+class UserModel extends BaseModel {
+  foo!: string
+  bar!: number
+}
+```
+
+You can optionally configure TypeScript to not require the `!` on every property in your `tsconfig.json`. The `strictPropertyInitialization` property goes at the top level of the config, and not in the `compilerOptions`:
+
+```json
+{
+  "strictPropertyInitialization": false,
+  "compilerOptions": {
+    // not in here
+  }
+}
+```
+
+With `strictPropertyInitialization` turned off, you can declare class properties as normal:
+
+```ts
+// No `!` needed after every property
+class UserModel extends BaseModel {
+  foo: string
+  bar: number
+}
+```
+
 ## 1. Feathers Client
 
-The first step is to setup a Feathers Client.
+The first step is to setup a Feathers Client. Feathers-Pinia supports multiple, simultaneous Feathers API servers. The process is the same with one exception: the name of the client must be unique and becomes the alias for that particular API server.
 
 The new [FeathersJS v5 Dove CLI](https://feathersjs.com/guides/cli/index.html) now creates [a fully-typed Feathers
 Client](https://feathersjs.com/guides/cli/client.html) for you. The next examples use the new CLI-generated client that
@@ -114,6 +165,28 @@ export const feathersClient = feathers<ServiceTypes>()
 You can see an SSG-compatible localStorage example on the [Common Patterns](/guide/common-patterns#ssg-compatible-localstorage)
 page.
 
+### Multiple Feathers Clients
+
+For additional Feathers APIs, export another Feathers client instance with a unique variable name. Here's an example that exports multiple **feathers-rest** clients:
+
+```ts
+// src/feathers.ts
+import { feathers } from '@feathersjs/feathers'
+import rest from '@feathersjs/rest-client'
+import auth from '@feathersjs/authentication-client'
+
+// The variable name of each client becomes the alias for its server.
+export const feathersClient = feathers()
+  .configure(rest('http://localhost:3030').fetch(fetch))
+  .configure(auth())
+
+export const analyticsClient = feathers()
+  .configure(rest('http://localhost:3031').fetch(fetch))
+  .configure(auth())
+```
+
+### Create Pinia Client
+
 Now add this code to the bottom of the same file:
 
 ```ts
@@ -198,13 +271,77 @@ We can retrieve the `api` in one line of code, now:
 const { api } = useFeathers()
 ```
 
-## 4. Authentication
+## 4. Service Stores
+
+With `createPiniaClient`, service stores are created automatically when you access a service. Here's how to use them:
+
+```ts
+// Access a service - this automatically creates a store if it doesn't exist
+const usersService = api.service('users')
+
+// Use the service like any Feathers service
+const user = await usersService.get(1)
+
+// The service also has store methods
+const users = usersService.findInStore({ query: { active: true } })
+```
+
+For more advanced scenarios, you can create custom service configurations:
+
+```ts
+// src/feathers.ts
+export const api = createPiniaClient(feathersClient, {
+  pinia,
+  idField: '_id',
+  services: {
+    users: {
+      idField: 'id', // Override global setting for this service
+      setupInstance(data, { app, service, servicePath }) {
+        // Custom instance setup for users service
+        return data
+      },
+    },
+  },
+})
+```
+
+The `setupInstance` function is powerful for data modeling, relationships, and custom instance behavior. Learn more about advanced data modeling techniques in the [Data Modeling guide](/guide/data-modeling).
+
+
+### Using Stores in Components
+
+Now you can use the services in your Vue components:
+
+```vue
+<template>
+  <div>
+    <h1>Users</h1>
+    <ul>
+      <li v-for="user in users" :key="user.id">
+        {{ user.name }}
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script setup>
+const { api } = useFeathers()
+
+// Get the users service
+const usersService = api.service('users')
+
+// Fetch users
+const { data: users } = await usersService.useFind({ query: {} })
+</script>
+```
+
+## 5. Authentication
 
 If your app requires user login, the following sections demonstrate how to implement it.
 
 <!--@include: ../partials/assess-your-auth-risk.md-->
 
-### 4.1 Auth Store
+### 5.1 Auth Store
 
 Feathers-Pinia 3.0 uses a `setup` store for the auth store. The new `useAuth` utility contains all of the logic for
 authentication in most apps. Using the composition API allows more simplicity and more flexibility for custom scenarios.
@@ -232,7 +369,7 @@ Notice that we've called `useAuth` with the `api` and `userStore`. Providing the
 non-expired accessToken in the Feathers Client and automatically authenticates if one is found. It will fail silently
 to avoid the need to catch errors during app initialization.
 
-### 4.2 `App.vue` Updates
+### 5.2 `App.vue` Updates
 
 With the auth store in place, we can now use it in our App.vue file to only show the UI once auth initialization has
 completed. The auth store includes an `isInitDone` attribute to handle this scenario. It will become `true` after auth
@@ -253,7 +390,7 @@ const authStore = useAuthStore()
 
 Now a loading screen will show until auth is ready.
 
-### 4.3 Route Middleware
+### 5.3 Route Middleware
 
 The final step is to protect our routes with Route Middleware, also known as navigation guards.
 

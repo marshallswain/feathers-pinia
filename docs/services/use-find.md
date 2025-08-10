@@ -86,7 +86,8 @@ troubleshoot reactivity.
     happens whenever a `created`, `updated`, or `removed` event is provided. This will potentially be refined in the
     future.
     - when set to `'hybrid'`, you get server-side pagination with live lists. This will likely become the default in
-    the future.
+    the future. **Important**: Hybrid pagination requires that your frontend and backend data structures match exactly. 
+    See [Hybrid Paging with Live Lists](#hybrid-paging-with-live-lists) for details and limitations.
   - **`pagination` {Object}** an object containing two refs: `$limit` and `$skip`. This allows you to synchronize the
   internally-controlled pagination with UI-bound `$limit` and `$skip` properties.
   - **`immediate` {boolean = true}** when `paginateOn: 'server'` is set, by default it will make an initial request. Set
@@ -227,3 +228,89 @@ await posts$.next()
 // move to the previous page
 await posts$.prev()
 ```
+
+### Hybrid Paging with Live Lists
+
+Hybrid pagination combines server-side pagination with live-updating lists. It provides the best of both worlds by fetching paginated data from the server while maintaining reactive updates from real-time events.
+
+```ts
+const { api } = useFeathers()
+
+const params = computed(() => ({ query: { userId: 123 } }))
+const posts$ = api.service('posts').useFind(params, { paginateOn: 'hybrid' })
+
+// move to the next page (fetches from server)
+await posts$.next()
+
+// move to the previous page (fetches from server)
+await posts$.prev()
+```
+
+#### Important Limitation: Data Structure Consistency
+
+<BlockQuote type="warning">
+
+**Hybrid pagination only works correctly when your frontend and backend data structures match exactly.** If your backend returns populated/joined data that differs from what's stored in your frontend service store, you may encounter issues where `useFind` returns only IDs or totals without the actual items.
+
+</BlockQuote>
+
+For example, if your backend returns:
+```ts
+// Backend response with populated user data
+{
+  id: 1,
+  title: 'My Post',
+  user: { id: 5, name: 'John Doe' } // populated user object
+}
+```
+
+But your frontend posts store expects:
+```ts
+// Frontend store expects simple user ID
+{
+  id: 1,
+  title: 'My Post', 
+  userId: 5 // simple user ID reference
+}
+```
+
+In this case, hybrid pagination may not work as expected because the local store filtering cannot match the server response structure.
+
+#### Workaround for Mismatched Data Structures
+
+When your frontend and backend data structures don't match, use manual queries instead of `useFind` with hybrid pagination:
+
+```ts
+const { api } = useFeathers()
+
+// Manual approach for mismatched data structures
+const posts = ref([])
+const total = ref(0)
+const isPending = ref(false)
+
+async function loadPosts(query = {}) {
+  isPending.value = true
+  try {
+    // Fetch from server with your complex query/population
+    const response = await api.service('posts').find({ 
+      query: { ...query, $limit: 10 } 
+    })
+    
+    // Transform and store the data as needed
+    posts.value = response.data
+    total.value = response.total
+    
+    // Optionally, also query local store for additional filtering
+    const localResults = api.service('posts').findInStore({ 
+      query: { userId: response.data[0]?.userId } 
+    })
+  } finally {
+    isPending.value = false
+  }
+}
+
+// Use it
+await loadPosts({ userId: 123 })
+```
+
+This approach gives you full control over data fetching and transformation while still allowing you to use `findInStore` for local querying when needed.
