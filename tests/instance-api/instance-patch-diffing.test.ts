@@ -40,7 +40,9 @@ describe('instance patch diffing', () => {
     await clone.save({ diff: false })
 
     const callData = hook.mock.results[0].value.data
-    expect(callData).toEqual({ name: 'it was the size of texas' })
+    // When diff: false, the entire clone object should be sent
+    expect(callData).toHaveProperty('name', 'it was the size of texas')
+    expect(callData).toHaveProperty('_id', contact._id)
   })
 
   test('diff string overrides the default diffing algorithm', async () => {
